@@ -1,0 +1,12 @@
+{
+  "name": "AmericanScoresApp",
+  "displayName": "AmericanScoresApp",
+  "expo": {
+    "name": "AmericanScoresApp",
+    "slug": "AmericanScoresApp",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
