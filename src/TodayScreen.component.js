@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon } from '@ui-kitten/components';
 
-import { TopBarNavigation } from "./components/navigation.component";
+import  TopBarNavigation  from "./components/navigation.component";
 
 export default class TodayScreen extends Component {
     constructor(props) {
@@ -17,7 +17,7 @@ export default class TodayScreen extends Component {
             {title: 'Soccer', description: 'School A - Season 1 - 10:30 AM'},
             {title: 'Soccer', description: 'School B - Season 1 - 3:00 PM'}
         ]
-        this.setState({data: dataArray})
+        this.setState({data: dataArray});
     }
 
     render() {
@@ -37,7 +37,7 @@ export default class TodayScreen extends Component {
 
         return(
             <Layout style={{ flex: 1, justifyContent: 'center' }}>
-                <TopBarNavigation/>
+                <TopBarNavigation navigation={navigation}/>
                 <List
                     style={{width:"100%"}}
                     data={this.state.data}

@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon } from '@ui-kitten/components';
 
-import { TopBarNavigation } from './components/navigation.component';
+import TopBarNavigation  from './components/navigation.component';
 
 export default class SchoolsScreen extends Component {
     constructor(props) {
@@ -17,6 +17,8 @@ export default class SchoolsScreen extends Component {
     }
 
     render() {
+        const {navigation} = this.props;
+
         const renderItemIcon = (props) => (
             <Icon {...props} name='arrow-ios-forward-outline'/>
         );
@@ -26,13 +28,13 @@ export default class SchoolsScreen extends Component {
                 title={`${item.title} ${index + 1}`}
                 description={`${item.description} ${index + 1}`}
                 accessoryRight={renderItemIcon}
-                onPress={() => console.log("panda")}
+                onPress={() => {}}
             />
         );
 
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                <TopBarNavigation/>
+                <TopBarNavigation navigation={navigation} />
                 <List
                     style={{width:"100%"}}
                     data={this.state.data}
