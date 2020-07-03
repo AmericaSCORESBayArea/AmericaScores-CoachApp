@@ -43,8 +43,6 @@ export const HomeScreen = ({navigation}) => {
         </SafeAreaView>
     );
 }
-// <TopBarNavigation navigation={navigation}/>
-//
 /* 
     - Create new student
     - Add student existense to class
