@@ -19,14 +19,23 @@ const Header = (props) => (
     </View>
 );
 
+const GoogleIcon = (props) => (
+  <Icon {...props} name='google-outline'/>
+);
+
+const FacebookIcon = (props) => (
+  <Icon {...props} name='facebook-outline'/>
+);
+
+const WhatsAppIcon = (props) => (
+  <Icon {...props} name='message-circle-outline'/>
+)
+
 export const LogInScreen = ({ navigation }) => {
   const navigateDetails = () => navigation.navigate('Home');
 
-
   const loginInputState = useInputState();
   const secretInputState = useInputState();
-
-  const [value, setValue] = React.useState('');
 
   const [secureTextEntry, setSecureTextEntry] = React.useState(true);
   const toggleSecureEntry = () => setSecureTextEntry(!secureTextEntry);
@@ -64,8 +73,9 @@ export const LogInScreen = ({ navigation }) => {
                 </Card>                
 
                 <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-                    <Button style={{width:'100%'}} appearance="ghost" onPress={navigateDetails}>USE GOOGLE</Button>
-                    <Button style={{width:'100%'}} appearance="ghost" onPress={navigateDetails}>USE FACEBOOK</Button>
+                    <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={navigateDetails}>GOOGLE</Button>
+                    <Button style={{width:'100%'}} accessoryLeft={FacebookIcon} appearance="ghost" status="info" onPress={navigateDetails}>FACEBOOK</Button>
+                    <Button style={{width:'100%'}} accessoryLeft={WhatsAppIcon} appearance="ghost" status="success" onPress={navigateDetails}>WHATSAPP</Button>
                     <Button style={{width:'100%'}} onPress={navigateDetails}>LOG IN</Button>
                 </Layout>            
             </Layout>   
