@@ -28,7 +28,7 @@ export default class SchoolsScreen extends Component {
                 title={`${item.title} ${index + 1}`}
                 description={`${item.description} ${index + 1}`}
                 accessoryRight={renderItemIcon}
-                onPress={() => {}}
+                onPress={() => navigation.navigate("Activities")}
             />
         );
 

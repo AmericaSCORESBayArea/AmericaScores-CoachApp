@@ -3,7 +3,7 @@ import { Layout, Divider, List, ListItem, Icon } from '@ui-kitten/components';
 
 import  TopBarNavigation  from "./components/navigation.component";
 
-export default class TodayScreen extends Component {
+export default class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
