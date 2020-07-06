@@ -43,18 +43,19 @@ export default class AttendanceScreen extends Component {
             <Layout style={{ flex: 1}}>
                 <TopBarNavigation navigation={navigation}/>
                 <Divider/> 
-                <Button style={{width:"100%"}} appearance='ghost' status='primary' accessoryLeft={cameraIcon}>
+                <Button style={{width:"100%"}} appearance='ghost' status='primary' accessoryLeft={cameraIcon} onPress={() => navigation.navigate("QRScreen")}>
                     SCAN QR CODE
                 </Button> 
-                <Divider/> 
+                <Divider/>
                 <List
-                        style={{width: "100%"}}
-                        data={this.state.studentsList}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={userItem}
+                    style={{width: "100%"}}
+                    data={this.state.studentsList}
+                    ItemSeparatorComponent={Divider}
+                    renderItem={userItem}
                     />
             </Layout>
         )
     }
 }
+
 
