@@ -32,7 +32,7 @@ const WhatsAppIcon = (props) => (
 )
 
 export const LogInScreen = ({ navigation }) => {
-  const navigateDetails = () => navigation.navigate('Home');
+  const navigateDetails = () => navigation.navigate('HomeRoot');
 
   const loginInputState = useInputState();
   const secretInputState = useInputState();

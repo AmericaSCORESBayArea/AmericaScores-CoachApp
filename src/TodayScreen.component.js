@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text } from '@ui-kitten/components';
 
 import  TopBarNavigation  from "./components/navigation.component";
 
@@ -23,7 +23,12 @@ export default class ActivitiesScreen extends Component {
     render() {
         const { navigation } = this.props;
         const renderItemIcon = (props) => (
-            <Icon {...props} name='arrow-ios-forward-outline'/>
+            <Layout {...props} style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
+                <Icon {...props} name='checkmark-outline'/> 
+                <Text  style={{alignSelf:"baseline"}} >1 / 21 </Text>
+                <Icon {...props} name='people-outline'/> 
+                <Icon {...props} name='arrow-ios-forward-outline'/> 
+            </Layout>
         );
 
         let renderItem = ({ item, index }) => (
