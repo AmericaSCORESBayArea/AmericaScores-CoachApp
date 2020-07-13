@@ -1,10 +1,7 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete,
-        Modal, Card, Button, Text } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete } from '@ui-kitten/components';
 
-import TopBarNavigation  from './components/navigation.component';
-
-export default class SchoolsScreen extends Component {
+export default class TeamsScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -56,7 +53,6 @@ export default class SchoolsScreen extends Component {
   
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                <TopBarNavigation navigation={navigation} />
                 <Autocomplete style={{margin:"2%"}}
                     placeholder='Place your Text'
                     ItemSeparatorComponent={Divider}

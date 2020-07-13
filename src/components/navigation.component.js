@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {  Icon,TopNavigation, TopNavigationAction, Text, Button, OverflowMenu, MenuItem } from '@ui-kitten/components';
+import {SafeAreaView} from "react-native-safe-area-context";
 
 export default class TopBarNavigation extends Component {
     constructor(props) {
@@ -41,11 +42,13 @@ export default class TopBarNavigation extends Component {
         };  
 
         const TitleText = () => {
-            return(<Text style={{color:"white", fontWeight:'bold'}}>Home Screen</Text>);
+            return(<Text style={{color:"white", fontWeight:'bold'}}> Home Screen</Text>);
         }
 
         return (
-            <TopNavigation style={{backgroundColor: '#284de0'}} title={TitleText} alignment='center' accessoryLeft={() => <BackAction />} accessoryRight={()=> <OptionOverflowMenu />} />
+            <SafeAreaView  style={{ backgroundColor:'#284de0'}} edges={['right', 'top', 'left']} >
+                <TopNavigation style={{ backgroundColor: '#284de0'}} title={TitleText} alignment='center' accessoryLeft={() => <BackAction />} accessoryRight={()=> <OptionOverflowMenu />} />
+            </SafeAreaView>
         )
     }
 }
