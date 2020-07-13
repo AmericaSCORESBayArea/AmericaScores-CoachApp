@@ -39,7 +39,7 @@ const HomeNavigator = () => (
 );
 
 export const AppNavigator = () => (
-  <NavigationContainer>
-    <HomeNavigator />
-  </NavigationContainer>
+    <NavigationContainer>
+      <HomeNavigator />
+    </NavigationContainer>  
 );

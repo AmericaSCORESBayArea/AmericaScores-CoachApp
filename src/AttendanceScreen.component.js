@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { Layout,CheckBox, Text, Button, Divider, Icon, List, ListItem } from '@ui-kitten/components';
-import TopBarNavigation from './components/navigation.component';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem } from '@ui-kitten/components';
 
 export default class AttendanceScreen extends Component {
     constructor(props) {
@@ -41,8 +40,6 @@ export default class AttendanceScreen extends Component {
 
         return(
             <Layout style={{ flex: 1}}>
-                <TopBarNavigation navigation={navigation}/>
-                <Divider/> 
                 <Button style={{width:"100%"}} appearance='ghost' status='primary' accessoryLeft={cameraIcon} onPress={() => navigation.navigate("QRScreen")}>
                     SCAN QR CODE
                 </Button> 
