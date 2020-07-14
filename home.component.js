@@ -70,8 +70,11 @@ export const HomeScreen = ({navigation}) => {
 const OptionOverflowMenu = (navigation) => {
     const [visoverflowMenuVisibleble, setOverflowMenuVisible] = React.useState(false);
     const [nameValue, setNameValue] = React.useState();
-
+    
     const OptionsIcon = (props) => ( <Icon {...props} name='more-vertical-outline' /> );
+    const addStudentToSchoolIcon = (props) => (<Icon {...props} name="person-add-outline"/>);
+    const addStudentIcon = (props) => (<Icon {...props} name="plus-outline"/>);
+    const logoutIcon = (props) => (<Icon {...props} name="log-out-outline"/>);
     const OptionButtons = () => (
         <Button style={{flex:1}} accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
     );
@@ -87,8 +90,9 @@ const OptionOverflowMenu = (navigation) => {
         visible={visoverflowMenuVisibleble} 
         placement={"bottom"} 
         onBackdropPress={() => setOverflowMenuVisible(false)}>
-            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")}/>
-            <MenuItem title='Add student' onPress={() => menuItemOnPress("AddStudentToTeamModal")}/>
+            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
+            <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
+            <MenuItem title="Log out" accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
 };  
