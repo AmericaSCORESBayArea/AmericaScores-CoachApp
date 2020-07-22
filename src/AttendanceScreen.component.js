@@ -60,7 +60,7 @@ export default class AttendanceScreen extends Component {
                 <Layout style={{padding: 5}}level="2">
                     <View style={styles.row}>
                         <Layout style={{margin: 5, flex: 0.5}} level="2">
-                            <Image style={{width:100, height:100, alignSelf:"center"}} source={require("./../resources/ASBA_Logo.png")}/>
+                            <Image style={{width:100, height:100, alignSelf:"center"}} source={require("./../assets/ASBA_Logo.png")}/>
                         </Layout>
                         <View style={styles.column}>
                             {descriptionRowText("Team","School A - Season 1")}

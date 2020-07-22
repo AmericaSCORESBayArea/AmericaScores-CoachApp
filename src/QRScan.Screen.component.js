@@ -20,3 +20,13 @@ export default QRScanScreen = ({navigation}) => {
         </Layout>
     );
 }
+
+
+/* 
+// provider:
+// userId
+
+Google -> service provider google
+
+Coach-Id
+*/
