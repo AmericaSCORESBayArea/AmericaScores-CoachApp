@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete } from '@ui-kitten/components';
+import Axios from "axios";
 
 export default class TeamsScreen extends Component {
     constructor(props) {
@@ -12,18 +13,18 @@ export default class TeamsScreen extends Component {
     }
 
     componentDidMount() {
-        let dataArray = [
-            {title: 'School A - Season 1', description: 'Description for Item'},
-            {title: 'School A - Season 2', description: 'Description for Item'},
-            {title: 'School B - Season 1', description: 'Description for Item'},
-            {title: 'School C - Season 1', description: 'Description for Item'}
-        ];
-        this.setState({data: dataArray, selectedData: dataArray})
+        Axios.get("http://salesforce-data-api.us-e2.cloudhub.io/api/coach/0031T00003OcljGQAR/teamseasons", {
+            params: {
+                date: `2020-07-15`
+            }
+        })
+        .then(response => this.setState({data: response.data, selectedData: response.data}))
+        .catch(e => console.log(e));
     }
 
     setSearchBarValue(value) { this.setState({value: value}); }
-    onSelect = (index) => { this.setSearchBarValue(this.state.selectedData[index].title)};
-    filter(item, query) { return item.title.toLowerCase().includes(query.toLowerCase()) };
+    onSelect = (index) => { this.setSearchBarValue(this.state.selectedData[index].TeamSeasonName)};
+    filter(item, query) { return item.TeamSeasonName.toLowerCase().includes(query.toLowerCase()) };
 
     setData(data) { this.setState({selectedData: data}) };
     
@@ -37,7 +38,8 @@ export default class TeamsScreen extends Component {
 
         const renderItemIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline'/>);
         let renderItem = ({ item, index }) => (
-            <ListItem title={`${item.title} ${index + 1}`}
+            <ListItem 
+                title={`${item.TeamSeasonName}`}
                 description={`${item.description} ${index + 1}`}
                 accessoryRight={renderItemIcon}
                 onPress={() => navigation.navigate("Activities")}
