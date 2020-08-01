@@ -2,9 +2,10 @@ import React from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LogInScreen } from './login.component';
+import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone } from './src/components/login.component';
 import { HomeScreen } from './home.component';
-import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
+import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.Component';
+import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -31,9 +32,20 @@ const HomeRootStackScreen = () => {
   );
 }
 
+const LoginStack = createStackNavigator();
+const LoginStackScreen = () => {
+  return(
+    <LoginStack.Navigator headerMode="none" mode="card">
+      <LoginStack.Screen name="MainLogin" component={LogInScreen_Google}/>
+      <LoginStack.Screen name="PhoneLogin_phone" component={LogInScreen_PhoneAuth_Phone}/>
+      <LoginStack.Screen name="PhoneLogin_code" component={LogInScreen_PhoneAuth_Code}/>
+    </LoginStack.Navigator>
+  );
+}
+
 const HomeNavigator = () => (
     <Navigator headerMode='none'>
-      <Screen name='Login' component={LogInScreen}/>
+      <Screen name='Login' component={LoginStackScreen}/>
       <Screen name="HomeRoot" component={HomeRootStackScreen}/>
     </Navigator>
 );

@@ -25,7 +25,6 @@ export default class StudentsScreen extends Component {
 
     setFilteredStudentsList(data) { 
         this.setState({ selectedStudents: data})
-        console.log(this.state.selectedStudents);
     };
     
     onChangeText = (query) => {

@@ -80,7 +80,6 @@ target 'AmericanScoresApp' do
 
   use_unimodules!
   use_native_modules!
-
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -90,6 +89,7 @@ target 'AmericanScoresApp' do
 
   permissions_path = '../node_modules/react-native-permissions/ios'
   pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+
 
   post_install do |installer|
     flipper_post_install(installer)

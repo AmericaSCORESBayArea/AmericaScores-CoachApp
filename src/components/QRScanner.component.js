@@ -3,7 +3,7 @@ import { Layout, Text } from '@ui-kitten/components';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import { RNCamera } from 'react-native-camera';
 
-export default QRScanScreen = ({navigation}) => {
+export default QRScanScreen = () => {
     return(
         <Layout style={{flex:1}}>
             <QRCodeScanner
@@ -21,12 +21,3 @@ export default QRScanScreen = ({navigation}) => {
     );
 }
 
-
-/* 
-// provider:
-// userId
-
-Google -> service provider google
-
-Coach-Id
-*/

@@ -7,6 +7,19 @@
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
-  }
+    ],
+    "ios": {
+      "bundleIdentifier": "America-Scores-Ios",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com"
+        }
+      },
+      "googleServicesFile": "./GoogleService-info.plist"
+    },
+    "android": {
+      "package": "com.americaScores.app",
+      "googleServicesFile": "./google-services.json"
+    }
+  },
 }
