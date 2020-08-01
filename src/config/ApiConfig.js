@@ -1,3 +1,4 @@
 export const ApiConfig = {
-    baseUrl: 'https://anypoint.mulesoft.com/mocking/api/v1/links/d970eabb-fa3a-4f01-95cb-8be7ee94c236'
+    baseUrl: 'http://salesforce-auth-api.us-e2.cloudhub.io/api',
+    dataApi: 'http://salesforce-data-api.us-e2.cloudhub.io/api/coach'
 }
