@@ -24,8 +24,8 @@ const BottomTabBar = ({ navigation, state }) => (
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
         <BottomNavigationTab title='Activities' icon={TodayIcon}/>
-        <BottomNavigationTab title='Team Seasons' icon={SchoolIcon}/>
-        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
+        <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
+        <BottomNavigationTab title='Students' icon={StudentsIcon}/>
     </BottomNavigation>
 );
 
@@ -41,7 +41,7 @@ const Stack_Activities_Navigation = () => (
 const Stack_Teams = createStackNavigator();
 const Stack_Teams_Navigation = ({navigation}) => (
     <Stack_Teams.Navigator>
-        <Stack_Teams.Screen name="Team Seasons" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
+        <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
         <Stack_Teams.Screen name='Team Activities' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
@@ -105,8 +105,8 @@ export default OptionOverflowMenu = (navigation) => {
         visible={visoverflowMenuVisibleble} 
         placement={"bottom"} 
         onBackdropPress={() => setOverflowMenuVisible(false)}>
-            {/* <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/> */}
-            {/* <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/> */}
+            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
+            <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
             <MenuItem title="Log out" onPress={() => logOutOnPress()} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
@@ -116,7 +116,7 @@ export default OptionOverflowMenu = (navigation) => {
 //this.menuItemOnPress("AddStudentToTeamModal")
 const headerOptions = ({navigation}) => ({
         headerStyle: {
-          backgroundColor: '#2C7DB2',
+          backgroundColor: '#3366FF',
         },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
