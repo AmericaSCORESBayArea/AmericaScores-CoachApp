@@ -2,6 +2,5 @@ export const USER_LOGIN = 'USER_LOGIN';
 export const USER_LOGOUT = 'USER_LOGOUT';
 
 export const SYNC = 'SYNC';
-export const UPDATE_ATTENDANCE = 'UPDATE_ATTENDANCE';
 
 export const PHONE_AUTH_CONFIRMATION = 'PHONE_AUTH_CONFIRMATION'
