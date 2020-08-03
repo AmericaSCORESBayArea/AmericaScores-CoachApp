@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, Alert } from 'react-native';
 import { Button, Layout, Icon, Input, Text, Card } from '@ui-kitten/components';
 import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from 'axios';
+import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 const useInputState = (initialValue = '') => {
     const [value, setValue] = React.useState(initialValue);
@@ -37,7 +38,7 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
       const confirmation = await auth().signInWithPhoneNumber(loginPhoneNumber.value).catch(e =>console.log(e));
       dispatch(setPhoneAuthConfirmation(confirmation));
       if (confirmation) navigation.navigate("PhoneLogin_code");
-      else console.log("SMS Was not sent")
+      else Alert.alert("SMS Not sent", "Check the example phone number or contact your Salesforce administrator.")
     } catch(error) {console.log(error)}
   }
 
@@ -75,7 +76,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   async function _setupUser(userIdentifier, serviceProvider) {
     await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
-        useridentifier: "415-815-7825",
+        useridentifier: "415-815-7825",//userIdentifier,
         serviceprovider: serviceProvider
       }
       }).then(res => {
@@ -88,8 +89,8 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
               navigation.navigate("HomeRoot");
             }).catch(error => {console.log(error); _rollbackSetupUser()});
         } else {
-          console.log("This user does not exist in salesforce");
-          _rollbackSetupUser()
+          Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          return _rollbackSetupUser()
         };
       }).catch(error => console.log(error));
   }
@@ -100,10 +101,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
       let newPhoneNumber = res.user.phoneNumber;
       newPhoneNumber = newPhoneNumber.replace('+1', '');
       _setupUser(newPhoneNumber, "Phone")
-    } catch (error) {
-      console.log(error)
-      console.log('Invalid code.');
-    }
+    } catch (error) { Alert.alert("Login error: Invalid code","The code entered is invalid, please check your SMS message again."); }
   }
 
   const _rollbackSetupUser = async () => {
