@@ -112,7 +112,7 @@ class LogInScreen_Google extends Component {
 
                       <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} appearance="ghost" status="primary" onPress={() => navigation.navigate("PhoneLogin_phone")}>SIGN IN WITH PHONE</Button>
-                          <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={() => this.signInGoogle()}>GOOGLE</Button>
+                          <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={() => this.signInGoogle()}>SIGN IN WITH GOOGLE</Button>
                         </Layout>            
                       </Layout>   
                     </View>

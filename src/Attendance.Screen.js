@@ -3,7 +3,7 @@ import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Popover, 
 import { StyleSheet, View, Image } from 'react-native';
 
 import { connect } from 'react-redux';
-import { syncSessions } from "./Redux/actions/Session.actions";
+import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
@@ -25,30 +25,52 @@ class AttendanceScreen extends Component {
         this._setCurrentSessionData();
     }
 
+    formatEnrollmentsToRequest(enrollments, sessionId) {
+        let studentsList = [];
+            
+        enrollments.forEach(student => {
+            let attendance = false;
+            if (student.attended) attendance = true; 
+
+            studentsList.push({
+                SessionId: sessionId,
+                Attended: attendance,
+                StudentId: student.StudentId
+            })
+        });
+
+        return studentsList;
+    }
+
+    updateEnrollmentsToRedux() {
+        const { actions } = this.props;
+        const {completeTeamSeasonId, enrollments} = this.state.completeTeamSeasonId
+        let payload = {
+            TeamSeasonId: completeTeamSeasonId,
+            enrollments: enrollments
+        }
+        actions.updateSession(payload);
+    }
+
+    formatStateStudentsListToEnrollment() {
+        console.log(this.state);
+        let enrollmentList = this.state.enrollments.forEach(enrollment => {
+            console.log("enrollment",enrollment)
+        });
+    }
+
     //Filters the current session and sets the student list for attendance 
     _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
 
-        // console.log(currentSession.Sessions[0].SessionId, route.params.teamSeasonId);
-        if (currentSession) {
-            let studentsList = [];
-            
-            currentSession.Enrollments.forEach(student => {
-                let attendance = false;
-                if (student.attended) attendance = true; 
-                studentsList.push({
-                    SessionId: currentSession.Sessions[0].SessionId,
-                    Attended: attendance,
-                    StudentName: student.StudentName,
-                    StudentId: student.StudentId
-                })
-            });
+        if (currentSession) {            
             const newState = {
                 sessionId: currentSession.Sessions[0].SessionId,
-                studentsList: studentsList,
+                enrollments: currentSession.Enrollments,
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+                completeTeamSeasonId: currentSession.TeamSeasonId,
                 topic: currentSession.Sessions[0].SessionTopic,
                 date: currentSession.Sessions[0].SessionDate,
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
@@ -60,28 +82,30 @@ class AttendanceScreen extends Component {
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index) {
-        let newStudentsList = [...this.state.studentsList]; //Get the new list
-        newStudentsList[index].Attended = !this.state.studentsList[index].Attended; //Change the student attendance
-        this.setState({studentsList: newStudentsList, isUpdated: true}) //Set the new list
+        let newEnrollments = [...this.state.enrollments]; //Get the new list
+        newEnrollments[index].Attended = !this.state.enrollments[index].Attended; //Change the student attendance
+        this.setState({enrollments: newEnrollments, isUpdated: true}) //Set the new list
     }
 
     updateAttendance() {
-        this._fetchUpdateAttendance()
-            .catch(error =>console.log(error))
+        const {enrollments, sessionId} = this.state;
+        let attendanceFetchData = this.formatEnrollmentsToRequest(enrollments, sessionId); 
+        this._fetchUpdateAttendance(attendanceFetchData)
+            .then(() => this.updateEnrollmentsToRedux())
+            .catch(error => {throw error})
     }
 
-    _fetchUpdateAttendance = async () => {
+    _fetchUpdateAttendance = async (enrollments) => {
         const {user} = this.props.user;
-        console.log(this.state.studentsList);
         Axios.post(
                 `${ApiConfig.dataApi}/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
-                this.state.studentsList
+                enrollments
             ).then(res => {
                 if (res.status === 200) this.setState({responseSuccess: true, isUpdated: false, responseStatusModal: true})
                 else this.setState({responseStatusModal: true})
             }).catch(error => {
-                console.log(error);
-                this.setState({responseStatusModal: true})
+                this.setState({responseStatusModal: true});
+                throw error;
             })
     }
 
@@ -100,7 +124,10 @@ class AttendanceScreen extends Component {
             <ListItem
               title={`${item.StudentName}`}
               onPress={() => this.checkStudent(index)}
-              accessoryLeft={() =><CheckBox checked={this.state.studentsList[index].Attended} onChange={() => this.checkStudent(index)} /> }
+              accessoryLeft={() => {
+                if (this.state.enrollments[index].Attended) return <CheckBox checked={true} onChange={() => this.checkStudent(index)} />
+                else return <CheckBox checked={false} onChange={() => this.checkStudent(index)} />
+              }}
             />
         );
 
@@ -149,7 +176,7 @@ class AttendanceScreen extends Component {
                 {updateButton()}
                 <List
                     style={{width: "100%"}}
-                    data={this.state.studentsList}
+                    data={this.state.enrollments}
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
@@ -161,7 +188,7 @@ class AttendanceScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user  });
   
-const ActionCreators = Object.assign( {}, { syncSessions } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateSession } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
