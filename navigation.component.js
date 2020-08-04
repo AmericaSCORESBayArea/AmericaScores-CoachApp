@@ -10,7 +10,7 @@ import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 const { Navigator, Screen } = createStackNavigator();
 
 const HomeRootStack = createStackNavigator();
-const HomeRootStackScreen = () => {
+export const HomeRootStackScreen = () => {
   return(
     <HomeRootStack.Navigator headerMode="none" mode="modal" screenOptions={{
       headerShown: false,
@@ -33,7 +33,7 @@ const HomeRootStackScreen = () => {
 }
 
 const LoginStack = createStackNavigator();
-const LoginStackScreen = () => {
+export const LoginStackScreen = () => {
   return(
     <LoginStack.Navigator headerMode="none" mode="card">
       <LoginStack.Screen name="MainLogin" component={LogInScreen_Google}/>
@@ -42,16 +42,3 @@ const LoginStackScreen = () => {
     </LoginStack.Navigator>
   );
 }
-
-const HomeNavigator = () => (
-    <Navigator headerMode='none'>
-      <Screen name='Login' component={LoginStackScreen}/>
-      <Screen name="HomeRoot" component={HomeRootStackScreen}/>
-    </Navigator>
-);
-
-export const AppNavigator = () => (
-    <NavigationContainer>
-      <HomeNavigator />
-    </NavigationContainer>  
-);

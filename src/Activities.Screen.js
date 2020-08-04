@@ -14,7 +14,7 @@ class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment("2019-09-10").toDate(),
+            date: moment("08/21/2019").toDate(),
             activities: "",
         }
     }
@@ -36,6 +36,7 @@ class ActivitiesScreen extends Component {
             .catch(error => console.log(error));
     }
 
+    //Syncs activitiesToRedux and state
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         actions.syncSessions(activitiesList);
@@ -61,9 +62,9 @@ class ActivitiesScreen extends Component {
     }
 
     async selectDate(date) { 
-        this.setState({date: date})
+        await this.setState({date: date})
         const activitiesList = await this.fetchActivities();
-        this.props.actions.syncSessions(activitiesList);
+        this._syncReduxActivities(activitiesList);
     }
 
     selectActivity(teamSeasonId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId}) }
@@ -90,27 +91,29 @@ class ActivitiesScreen extends Component {
             }
         }
 
+        const minDatePickerDate = moment("01/01/2019").toDate();
+
+        const ItemDivider = (props) => <Divider {...props}/>
 
         return(
-            <Layout style={{ flex: 1, justifyContent: 'center' }}>
-                    <Layout style={{margin: "2%"}}>
-                        <Datepicker
-                            placeholder='Pick Date'
-                            date={this.state.date}
-                            onSelect={nextDate => this.selectDate(nextDate)}
-                            accessoryRight={CalendarIcon}
-                        />
-                        <Divider/>
-                    </Layout>
-                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
-                        <List
-                            style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
-                            data={this.state.activities}
-                            ItemSeparatorComponent={Divider}
-                            renderItem={activityItem}
-                            />
-                    </ImageBackground>
-            </Layout>                            
+            <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+                <Layout style={{ flex: 1, justifyContent: 'center', backgroundColor: "rgba(255,255,255,0.95)"}}>
+                    <Datepicker
+                        placeholder='Pick Date'
+                        date={this.state.date}
+                        min={minDatePickerDate}
+                        style={{margin: "2%", }}
+                        onSelect={nextDate => this.selectDate(nextDate)}
+                        accessoryRight={CalendarIcon}
+                    />
+
+                    <List
+                        style={{backgroundColor: "rgba(0,0,0,0.0)"}}
+                        data={this.state.activities}
+                        renderItem={activityItem}
+                    />
+                </Layout>      
+            </ImageBackground>                      
         );
     };
 };
