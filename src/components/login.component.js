@@ -76,7 +76,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   async function _setupUser(userIdentifier, serviceProvider) {
     await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
-        useridentifier: "415-815-7825",//userIdentifier,
+        useridentifier: userIdentifier,
         serviceprovider: serviceProvider
       }
       }).then(res => {
