@@ -10,7 +10,7 @@ The following steps are needed in order to run the project.
 The project requires the following apps running over the project. You can follow the steps in the [Official React-Native guide](https://reactnative.dev/docs/environment-setup). Or install them by yourself.
   - [Node](https://nodejs.org/en/) or if using mac `brew install node && brew install watchman`
   - React-native-cli by running `npm install -g expo-cli`
-  - [For IOS] [Cocoa pods](https://cocoapods.org/)
+  - [For IOS] [Cocoa pods](https://cocoapods.org/)  || If any errors while installing cocoa pods please follow this link (https://stackoverflow.com/questions/20939568/error-error-installing-cocoapods-error-failed-to-build-gem-native-extension)
   - **Physical device** connected to your computer with USB debugging enabled or an **Emulator** `(**IOS** download XCode from your appstore | **Android** Download android studio)`
   - Text editor of your choice `[XCode | Android studio | Visual studio Code ]`
 
