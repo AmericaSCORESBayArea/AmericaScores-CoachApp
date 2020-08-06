@@ -1,4 +1,4 @@
-import { PHONE_AUTH_CONFIRMATION, USER_LOGIN, USER_LOGOUT } from '../constants';
+import { PHONE_AUTH_CONFIRMATION, USER_LOGIN, USER_LOGOUT, UPDATE_FIRSTTIME } from '../constants';
 
 export function loginUser(user) {
     return {
@@ -18,5 +18,12 @@ export function setPhoneAuthConfirmation(confirmation) {
     return {
         type: PHONE_AUTH_CONFIRMATION,
         payload: confirmation
+    }
+}
+
+export function updateFirstTimeLoggedIn() {
+    return {
+        type: UPDATE_FIRSTTIME,
+        payload: null,
     }
 }

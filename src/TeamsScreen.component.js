@@ -24,7 +24,7 @@ class TeamsScreen extends Component {
 
     componentDidMount() {
         const {user} = this.props.user;
-        Axios.get(`${ApiConfig.dataApi}/${user.ContactId}/teamseasons`, {
+        Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
                 params: {
                     date: moment().format("YYYY-MM-DD")
                 }
