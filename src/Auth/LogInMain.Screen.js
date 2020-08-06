@@ -123,9 +123,6 @@ class LogInScreen_Google extends Component {
     }
   }
 
-  // <Button style={{width:'100%'}} accessoryLeft={WhatsAppIcon} appearance="ghost" status="success" onPress={navigateDetails}>WHATSAPP</Button>
-  //                       <Button style={{width:'100%'}} onPress={navigateDetails}>LOG IN</Button>
-
   const mapStateToProps = state => ({
     user: state.user,
     sessions: state.sessions,

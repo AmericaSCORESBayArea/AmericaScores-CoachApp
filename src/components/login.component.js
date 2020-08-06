@@ -136,7 +136,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
 };
 
 const _syncUserSessions = async (user) => {
-  Axios.get(`${ApiConfig.dataApi}/${user.ContactId}/all`, {
+  Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
       params: {
         date: moment("2019-08-21").format("YYYY-MM-DD")
       }

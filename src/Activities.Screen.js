@@ -1,6 +1,8 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker } from '@ui-kitten/components';
-import { ImageBackground, View } from "react-native";
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Tooltip, Modal, Card, Button } from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet } from "react-native";
+
+
 import Axios from "axios";
 import moment from "moment";
 
@@ -8,6 +10,7 @@ import {ApiConfig} from "./config/ApiConfig";
 
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
+import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { bindActionCreators } from 'redux';
 
 class ActivitiesScreen extends Component {
@@ -16,11 +19,13 @@ class ActivitiesScreen extends Component {
         this.state = {
             date: moment("08/21/2019").toDate(),
             activities: "",
+            welcomeModalVisibility: false,
         }
     }
 
     componentDidMount() {
         this._syncActivities();
+        if (this.props.user.firstTimeLoggedIn) this.setState({welcomeModalVisibility: true});
         console.log(this.props.user);
     }
 
@@ -52,7 +57,7 @@ class ActivitiesScreen extends Component {
 
     async fetchActivities() {
         const { user } = this.props;
-        return await Axios.get(`${ApiConfig.dataApi}/${user.user.ContactId}/all`, {
+        return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
             params: {
                 // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
                 date: moment(this.state.date).format("YYYY-MM-DD")
@@ -69,6 +74,12 @@ class ActivitiesScreen extends Component {
     }
 
     selectActivity(teamSeasonId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId}) }
+
+    toggleWelcomeModalOff() { 
+        const { actions } = this.props;
+        this.setState({welcomeModalVisibility: false})
+        actions.updateFirstTimeLoggedIn();
+    }
 
     render() {
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
@@ -96,6 +107,17 @@ class ActivitiesScreen extends Component {
 
         const ItemDivider = (props) => <Divider {...props}/>
 
+        const presentationModal = () => (
+            <Modal visible={this.state.welcomeModalVisibility} style={styles.popOverContent} onBackdropPress={() => this.toggleWelcomeModalOff()}>
+                <Card disabled={true}>
+                    <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
+                    <Button appearance='outline' size={'small'} onPress={() => this.toggleWelcomeModalOff()} status='primary'>
+                        DISMISS
+                    </Button>
+                </Card>
+            </Modal>
+        );
+
         return(
             <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                 <Layout style={{ flex: 1, justifyContent: 'center', backgroundColor: "rgba(255,255,255,0.95)"}}>
@@ -107,7 +129,7 @@ class ActivitiesScreen extends Component {
                         onSelect={nextDate => this.selectDate(nextDate)}
                         accessoryRight={CalendarIcon}
                     />
-
+                    {presentationModal()}
                     <List
                         style={{backgroundColor: "rgba(0,0,0,0.0)"}}
                         data={this.state.activities}
@@ -121,8 +143,19 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user });
   
-const ActionCreators = Object.assign( {}, { syncSessions } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ActivitiesScreen);
+
+const styles = StyleSheet.create({
+    popOverContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    }
+});

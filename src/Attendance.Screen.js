@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Popover, Modal } from '@ui-kitten/components';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Popover, Modal, Card } from '@ui-kitten/components';
 import { StyleSheet, View, Image } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -30,7 +30,7 @@ class AttendanceScreen extends Component {
             
         enrollments.forEach(student => {
             let attendance = false;
-            if (student.attended) attendance = true; 
+            if (student.Attended) attendance = true; 
 
             studentsList.push({
                 SessionId: sessionId,
@@ -52,15 +52,8 @@ class AttendanceScreen extends Component {
         actions.updateSession(payload);
     }
 
-    formatStateStudentsListToEnrollment() {
-        console.log(this.state);
-        let enrollmentList = this.state.enrollments.forEach(enrollment => {
-            console.log("enrollment",enrollment)
-        });
-    }
-
     //Filters the current session and sets the student list for attendance 
-    _setCurrentSessionData() {
+    async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
 
@@ -76,14 +69,17 @@ class AttendanceScreen extends Component {
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
 
-            this.setState(newState);//a0q1T000008Jt3NQAS
+            await this.setState(newState);
+            await this._fetchGetEnrollments();
+            // console.log("enrollments", this.state.enrollments);
         }
     }
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index) {
         let newEnrollments = [...this.state.enrollments]; //Get the new list
-        newEnrollments[index].Attended = !this.state.enrollments[index].Attended; //Change the student attendance
+        //Change the student attendance
+        newEnrollments[index].Attended = !this.state.enrollments[index].Attended;
         this.setState({enrollments: newEnrollments, isUpdated: true}) //Set the new list
     }
 
@@ -98,7 +94,7 @@ class AttendanceScreen extends Component {
     _fetchUpdateAttendance = async (enrollments) => {
         const {user} = this.props.user;
         Axios.post(
-                `${ApiConfig.dataApi}/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
+                `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
                 enrollments
             ).then(res => {
                 if (res.status === 200) this.setState({responseSuccess: true, isUpdated: false, responseStatusModal: true})
@@ -108,6 +104,41 @@ class AttendanceScreen extends Component {
                 throw error;
             })
     }
+
+    async _fetchGetEnrollments() {
+        const {user} = this.props.user;
+        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE") 
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
+        .then(res => {
+            if (res.status === 200) {
+                if (res.data.length <= 0) {
+                    console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
+                } else {
+                    console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
+                    let enrollments = this.parseFetchedEnrollmentToObject(res.data);
+                    this.setState({enrollments: enrollments})
+                }
+            }
+            else console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");
+        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ATTENDANCE |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`) })
+    }
+
+    parseFetchedEnrollmentToObject(enrollmentData) {
+        let parsedEnrollments = [];
+        enrollmentData.forEach(enrollment => {
+            let attendance = false;
+            if (enrollment.Attended === "true") attendance = true;
+            let student = {
+                Attended: attendance,
+                StudentId: enrollment.StudentId,
+                StudentName: enrollment.StudentName,
+            };
+            parsedEnrollments.push(student);
+        })
+        return parsedEnrollments;
+    }
+
+    toggleNotificationOff() { this.setState({responseStatusModal: false, responseSuccess: false}) }
 
     render() {
         const {navigation} = this.props;
@@ -142,18 +173,26 @@ class AttendanceScreen extends Component {
             if (this.state.isUpdated) return (<Button onPress={() => this.updateAttendance()} appearance="outline" status="success"> Update Attendance </Button>)
         }
 
-        const updateModal = () => {
-            return <Modal
+        const updateSuccessCard = (status, text) => (
+            <Card disabled={true}>
+                <Text style={styles.modalText} status={status}>{text}</Text> 
+                <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOff()} status={status}>
+                    OK
+                </Button>
+            </Card>
+        )
+
+        const updateModal = () => (
+            <Modal
                 visible={this.state.responseStatusModal}
-                onBackdropPress={() => this.setState({responseStatusModal: false, responseSuccess: false})}>
-                <Layout style={styles.popOverContent} level="1">
-                    { (this.state.responseSuccess) ?
-                        <Text status='success'>Attendance updated successfuly</Text> :
-                        <Text status='danger'>Something went wrong. Please, try again.</Text>
-                    }
-                </Layout>
-            </Modal>
-        }
+                style={styles.popOverContent}
+                onBackdropPress={() => this.toggleNotificationOff()}>
+                { (this.state.responseSuccess) ?
+                    updateSuccessCard("success", "Attendance updated successfuly") :
+                    updateSuccessCard("danger", "Something went wrong. Please, try again.")
+                }
+            </Modal>)
+        
 
         return(
             <Layout style={{ flex: 1}} level="1">
@@ -209,11 +248,12 @@ const styles = StyleSheet.create({
     popOverContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingVertical: 20,
         alignSelf:'center',
-        shadowRadius: 18,
-        shadowOpacity: 0.10,
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
         shadowColor: "#000"
+    },
+    modalText: {
+        margin: 15
     }
 });
