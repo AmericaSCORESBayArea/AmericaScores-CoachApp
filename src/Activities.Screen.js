@@ -21,6 +21,7 @@ class ActivitiesScreen extends Component {
 
     componentDidMount() {
         this._syncActivities();
+        console.log(this.props.user);
     }
 
     _syncActivities() {
