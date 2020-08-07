@@ -2,7 +2,7 @@
   <uses-permission android:name="android.permission.INTERNET"/>
   <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
-  <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/>
+  <!-- <uses-permission android:name="android.permission.MANAGE_DOCUMENTS"/> -->
   <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
   <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
@@ -18,7 +18,7 @@
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   <uses-permission android:name="android.permission.RECORD_AUDIO"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-  <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
+  <!-- <uses-permission android:name="android.permission.WRITE_SETTINGS"/> -->
   <!-- END OPTIONAL PERMISSIONS -->
   <application
     android:name=".MainApplication"

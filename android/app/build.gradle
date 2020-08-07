@@ -139,6 +139,7 @@ android {
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [appAuthRedirectScheme: 'com.redirectScheme.comm']
+        multiDexEnabled true
     }
     splits {
         abi {
@@ -197,6 +198,8 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    // implementation 'com.android.support:multidex:1.0.3'
+    compile 'com.android.support:multidex:1.0.1'
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
