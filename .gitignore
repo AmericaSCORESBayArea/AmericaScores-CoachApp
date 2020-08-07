@@ -65,3 +65,5 @@ web-build/
 
 google-services.json
 GoogleService-info.plist
+
+*.lock
