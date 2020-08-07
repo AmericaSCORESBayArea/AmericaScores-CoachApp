@@ -30,7 +30,7 @@ const BackArrrowIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outlin
 
 export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   const dispatch = useDispatch();
-  const loginPhoneNumber = useInputState("+54 358 602-2629");
+  const loginPhoneNumber = useInputState("+1 415-815-7825");
   //Auth
   // Handle the button press
   async function loginWithPhoneNumber() {
