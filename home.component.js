@@ -116,7 +116,7 @@ export default OptionOverflowMenu = (navigation) => {
 //this.menuItemOnPress("AddStudentToTeamModal")
 const headerOptions = ({navigation}) => ({
         headerStyle: {
-          backgroundColor: '#2C7DB2',
+          backgroundColor: '#00467F',
         },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },

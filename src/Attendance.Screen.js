@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Popover, Modal, Card } from '@ui-kitten/components';
-import { StyleSheet, View, Image } from 'react-native';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card } from '@ui-kitten/components';
+import { StyleSheet, View } from 'react-native';
 
 import { connect } from 'react-redux';
 import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
