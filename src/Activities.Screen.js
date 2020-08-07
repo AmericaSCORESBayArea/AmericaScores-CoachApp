@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Tooltip, Modal, Card, Button } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Modal, Card, Button } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
 
 
@@ -17,7 +17,7 @@ class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment("08/21/2019").toDate(),
+            date: moment("20190821", "YYYYMMDD").toDate(),
             activities: "",
             welcomeModalVisibility: false,
         }

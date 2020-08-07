@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Image, ImageBackground, SafeAreaView } from 'react-native';
-import { Button, Layout, Input, Card, Text, Icon } from '@ui-kitten/components';
+import { Button, Layout, Input, Card, Text, Icon, Divider } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 import Axios from "axios";
 import {ApiConfig} from "../config/ApiConfig";
@@ -90,9 +90,9 @@ class LogInScreen_Google extends Component {
           }
 
         const Header = (props) => (
-            <View {...props}>
+            <View {...props} style={{margin: "3%"}}>
               <Text category='h6'>Log in</Text>
-              <Text category='s1'>America Scores Attendance</Text>
+              <Text category='s1'>America Scores Attendance APP</Text>
             </View>
         );
         const PhoneIcon = (props) => ( <Icon {...props} name='phone-outline'/> );
@@ -105,15 +105,17 @@ class LogInScreen_Google extends Component {
               <ImageBackground source={require('../../assets/LogInBackground.jpeg')} style={{flex: 1}}>
                 <SafeAreaView style={{ flex: 1,backgroundColor:"rgba(0,0,0,0.5)" }}>
                   <View style={{flex: 1, justifyContent: "center", alignItems: 'center'}} >
-                    <Layout style={{padding: '5%', width:'100%', height:'100%', backgroundColor:"rgba(0,0,0,0)"}} level="4">
-                      <Card style={{flex: 1, backgroundColor:"rgba(255,255,255,0.85)"}} status="basic" header={Header}>
-
-                      </Card>      
-
-                      <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
-                        <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} appearance="ghost" status="primary" onPress={() => navigation.navigate("PhoneLogin_phone")}>SIGN IN WITH PHONE</Button>
+                    <Layout style={{width:'100%', height:'100%', backgroundColor:"rgba(0,0,0,0)"}} level="4">
+                      <Layout style={{flex: 1, margin: '5%', backgroundColor:"rgba(255,255,255,0.85)"}} status="basic" header={Header}>
+                        {Header()}
+                        <View style={{flex: 1, margin: '5%'}}>
+                          <Image source={require(`../../assets/ASBA_Logo.png`)} style={styles.image} />
+                        </View>
+                        <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
+                          <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} appearance="ghost" status="primary" onPress={() => navigation.navigate("PhoneLogin_phone")}>SIGN IN WITH PHONE</Button>
                           <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={() => this.signInGoogle()}>SIGN IN WITH GOOGLE</Button>
-                        </Layout>            
+                        </Layout>
+                      </Layout>            
                       </Layout>   
                     </View>
                 </SafeAreaView>
@@ -138,3 +140,24 @@ class LogInScreen_Google extends Component {
   });
 
   export default connect(mapStateToProps, mapDispatchToProps)(LogInScreen_Google);
+
+  const styles = StyleSheet.create({
+    popOverContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
+    image: {
+      flex:1, 
+      width: null,
+      height:null,
+      resizeMode: 'contain',
+      opacity: 0.2
+    },
+    loginTittle: {
+      margin: '5%',
+    }
+});
