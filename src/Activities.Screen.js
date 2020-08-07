@@ -109,8 +109,11 @@ class ActivitiesScreen extends Component {
 
         const presentationModal = () => (
             <Modal visible={this.state.welcomeModalVisibility} style={styles.popOverContent} onBackdropPress={() => this.toggleWelcomeModalOff()}>
-                <Card disabled={true}>
-                    <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
+                <Card disabled={true} status="primary">
+                    {
+                        this.props.user.user &&
+                        <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
+                    }
                     <Button appearance='outline' size={'small'} onPress={() => this.toggleWelcomeModalOff()} status='primary'>
                         DISMISS
                     </Button>
