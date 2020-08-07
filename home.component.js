@@ -1,61 +1,125 @@
 import React from 'react';
-import {Image} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TopNavigation, BottomNavigationTab, BottomNavigation, Icon, TopNavigationAction, Divider } from "@ui-kitten/components";
-import SchoolsScreen from "./src/SchoolsScreen.component";
-import ActivitiesScreen from "./src/TodayScreen.component";
-import AttendanceScreen from "./src/AttendanceScreen.component";
-import QRScanScreen from "./src/QRScan.Screen.component";
+import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem } from "@ui-kitten/components";
+import TeamsScreen from "./src/TeamsScreen.component";
+import ActivitiesScreen from "./src/Activities.Screen";
+import AttendanceScreen from "./src/Attendance.Screen";
+import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
+import StudentsScreen from "./src/StudentsScreen.component";
+
+import * as GoogleSignIn from 'expo-google-sign-in';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { useSelector, useDispatch } from 'react-redux';
+import { logOutUser } from "./src/Redux/actions/user.actions";
 
 const SchoolIcon = (props) => ( <Icon {...props} name='home-outline'/> );
 const TodayIcon = (props) => ( <Icon {...props} name='calendar-outline'/> );
-  
+const StudentsIcon = (props) => ( <Icon {...props} name='people-outline'/> );
+
 const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation 
-        selectedIndex={state.index} 
-        onSelect={index => navigation.navigate(state.routeNames[index])} >
-        <BottomNavigationTab title='Today' icon={TodayIcon}/>
-        <BottomNavigationTab title='Schools' icon={SchoolIcon}/>
+    selectedIndex={state.index} 
+    onSelect={index => navigation.navigate(state.routeNames[index])} >
+        <BottomNavigationTab title='Activities' icon={TodayIcon}/>
+        <BottomNavigationTab title='Team Seasons' icon={SchoolIcon}/>
+        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
     </BottomNavigation>
 );
 
-const StackTodayNavigator = createStackNavigator();
-const StackTodayScreen = ({navigation}) => (
-    <StackTodayNavigator.Navigator headerMode="none">
-        <StackTodayNavigator.Screen name='TodayActivities' component={ActivitiesScreen} navigation={navigation}/>
-        <StackTodayNavigator.Screen name="Attendance" component={AttendanceScreen} />
-        <StackTodayNavigator.Screen name="QRScreen" component={QRScanScreen}/>
-    </StackTodayNavigator.Navigator>
+const Stack_Activities = createStackNavigator();
+const Stack_Activities_Navigation = () => (
+    <Stack_Activities.Navigator>
+        <Stack_Activities.Screen options={headerOptions} name='Activities' component={ActivitiesScreen}/>
+        <Stack_Activities.Screen options={headerOptions} name="Attendance" component={AttendanceScreen} />
+        <Stack_Activities.Screen options={headerOptions} name="Scan students QR" component={QRScanScreen}/>
+    </Stack_Activities.Navigator>
 );
 
-const StackSchoolsNavigator = createStackNavigator();
-const StackSchoolsScreen = ({navigation}) => (
-    <StackSchoolsNavigator.Navigator headerMode="none">
-        <StackSchoolsNavigator.Screen name="Schools" component={SchoolsScreen} navigation={navigation} />
-        <StackTodayNavigator.Screen name='Activities' component={ActivitiesScreen} navigation={navigation}/>
-        <StackTodayNavigator.Screen name="Attendance" component={AttendanceScreen} />
-        <StackTodayNavigator.Screen name="QRScreen" component={QRScanScreen}/>
-    </StackSchoolsNavigator.Navigator>
+const Stack_Teams = createStackNavigator();
+const Stack_Teams_Navigation = ({navigation}) => (
+    <Stack_Teams.Navigator>
+        <Stack_Teams.Screen name="Team Seasons" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
+        <Stack_Teams.Screen name='Team Activities' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
+        <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
+        <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
+    </Stack_Teams.Navigator>
+);
+
+const Stack_Students = createStackNavigator();
+const Stack_Students_Navigation = ({navigation}) => (
+    <Stack_Students.Navigator>
+        <Stack_Students.Screen name="Students" component={StudentsScreen} options={headerOptions}/>
+    </Stack_Students.Navigator>
 );
 
 const { Navigator, Screen } = createBottomTabNavigator();
-const TabNavigator = ({navigation}) => (
-    <Navigator  tabBar={props => <BottomTabBar {...props} /> }>
-        <Screen name="TodayStack" component={StackTodayScreen} options={({route}) => ({ tittle: "Today activities"})}/>
-        <Screen name='SchoolsStack' component={StackSchoolsScreen} options={({route})=> ({ tittle: "Schools Seasons"})}/>
+const TabNavigator = () => (
+    <Navigator tabBar={props => <BottomTabBar {...props} /> } >
+        <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
+        <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
+        <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
     </Navigator>
   );
 
 export const HomeScreen = ({navigation}) => {
     return(
-        <SafeAreaView style={{flex: 1}}>
+        <SafeAreaView  style={{flex: 1, backgroundColor:'white'}} edges={['right', 'bottom', 'left']} >
             <TabNavigator navigation={navigation}/>
         </SafeAreaView>
     );
 }
-/* 
-    - Create new student
-    - Add student existense to class
-*/
+
+export default OptionOverflowMenu = (navigation) => {
+    const state = useSelector(state => state.user);
+    const dispatch = useDispatch();
+
+    const [visoverflowMenuVisibleble, setOverflowMenuVisible] = React.useState(false);
+    
+    const OptionsIcon = (props) => ( <Icon {...props} name='more-vertical-outline' /> );
+    const addStudentToSchoolIcon = (props) => (<Icon {...props} name="person-add-outline"/>);
+    const addStudentIcon = (props) => (<Icon {...props} name="plus-outline"/>);
+    const logoutIcon = (props) => (<Icon {...props} name="log-out-outline"/>);
+    const OptionButtons = () => (
+        <Button style={{flex:1}} accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
+    );
+
+    function menuItemOnPress(modalScreen) {
+        setOverflowMenuVisible(false);
+        navigation.navigate(modalScreen);
+    };
+
+    logOutOnPress = async () => {
+        try {
+            await GoogleSignIn.signOutAsync();
+            dispatch(logOutUser());
+            navigation.navigate("Login");
+        } catch (error) {console.log(error)}
+    }
+
+    return (
+        <OverflowMenu
+        anchor={OptionButtons}
+        visible={visoverflowMenuVisibleble} 
+        placement={"bottom"} 
+        onBackdropPress={() => setOverflowMenuVisible(false)}>
+            {/* <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/> */}
+            {/* <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/> */}
+            <MenuItem title="Log out" onPress={() => logOutOnPress()} accessoryLeft={logoutIcon}/>
+        </OverflowMenu>
+    );  
+    
+}; 
+
+//this.menuItemOnPress("AddStudentToTeamModal")
+const headerOptions = ({navigation}) => ({
+        headerStyle: {
+          backgroundColor: '#2C7DB2',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: 'bold' },
+        headerRight: () => <OptionOverflowMenu {...navigation}/>
+    })
+
