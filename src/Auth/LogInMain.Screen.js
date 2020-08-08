@@ -106,7 +106,7 @@ class LogInScreen_Google extends Component {
                 <SafeAreaView style={{ flex: 1,backgroundColor:"rgba(0,0,0,0.5)" }}>
                   <View style={{flex: 1, justifyContent: "center", alignItems: 'center'}} >
                     <Layout style={{width:'100%', height:'100%', backgroundColor:"rgba(0,0,0,0)"}} level="4">
-                      <Layout style={{flex: 1, margin: '5%', backgroundColor:"rgba(255,255,255,0.85)"}} status="basic" header={Header}>
+                      <Layout style={{flex: 1, margin: '5%', opacity: 0.85}} status="basic" header={Header}>
                         {Header()}
                         <View style={{flex: 1, margin: '5%'}}>
                           <Image source={require(`../../assets/ASBA_Logo.png`)} style={styles.image} />
@@ -155,7 +155,7 @@ class LogInScreen_Google extends Component {
       width: null,
       height:null,
       resizeMode: 'contain',
-      opacity: 0.2
+      opacity: 0.8
     },
     loginTittle: {
       margin: '5%',

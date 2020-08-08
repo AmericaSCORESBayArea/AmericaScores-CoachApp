@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Modal, Card, Button } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Modal, Card, Button, Popover } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
 
 
@@ -23,9 +23,12 @@ class ActivitiesScreen extends Component {
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._syncActivities();
-        if (this.props.user.firstTimeLoggedIn) this.setState({welcomeModalVisibility: true});
+        if (this.props.user.firstTimeLoggedIn) {
+            setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
+            setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
+        }
         console.log(this.props.user);
     }
 
@@ -107,36 +110,42 @@ class ActivitiesScreen extends Component {
 
         const ItemDivider = (props) => <Divider {...props}/>
 
+        const searchBox = () => (
+            <Datepicker
+                placeholder='Pick Date'
+                date={this.state.date}
+                min={minDatePickerDate}
+                style={{margin: "2%", }}
+                onSelect={nextDate => this.selectDate(nextDate)}
+                accessoryRight={CalendarIcon}
+            />
+        );
+
         const presentationModal = () => (
-            <Modal visible={this.state.welcomeModalVisibility} style={styles.popOverContent} onBackdropPress={() => this.toggleWelcomeModalOff()}>
-                <Card disabled={true} status="primary">
+            <Popover 
+                visible={this.state.welcomeModalVisibility} 
+                style={styles.popOverContent} 
+                onBackdropPress={() => this.toggleWelcomeModalOff()}
+                anchor={searchBox}
+                >
+                <View disabled={true} status="primary">
                     {
                         this.props.user.user &&
                         <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
                     }
-                    <Button appearance='outline' size={'small'} onPress={() => this.toggleWelcomeModalOff()} status='primary'>
-                        DISMISS
-                    </Button>
-                </Card>
-            </Modal>
+                </View>
+            </Popover>
         );
 
         return(
             <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
-                <Layout style={{ flex: 1, justifyContent: 'center', backgroundColor: "rgba(255,255,255,0.95)"}}>
-                    <Datepicker
-                        placeholder='Pick Date'
-                        date={this.state.date}
-                        min={minDatePickerDate}
-                        style={{margin: "2%", }}
-                        onSelect={nextDate => this.selectDate(nextDate)}
-                        accessoryRight={CalendarIcon}
-                    />
-                    {presentationModal()}
+                <Layout style={{ flex: 1, justifyContent: 'center', opacity: 0.95}}>
+                    {searchBox()}
                     <List
-                        style={{backgroundColor: "rgba(0,0,0,0.0)"}}
+                        style={{opacity: 1}}
                         data={this.state.activities}
                         renderItem={activityItem}
+                        Divider={Divider}
                     />
                 </Layout>      
             </ImageBackground>                      
