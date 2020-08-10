@@ -36,6 +36,7 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   async function loginWithPhoneNumber() {
     try {
       const confirmation = await auth().signInWithPhoneNumber(loginPhoneNumber.value).catch(e =>console.log(e));
+      console.log("Tryed to log in", confirmation);
       dispatch(setPhoneAuthConfirmation(confirmation));
       if (confirmation) navigation.navigate("PhoneLogin_code");
       else Alert.alert("SMS Not sent", "Check the example phone number or contact your Salesforce administrator.")
@@ -138,7 +139,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
 const _syncUserSessions = async (user) => {
   Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
       params: {
-        date: moment("2019-08-21").format("YYYY-MM-DD")
+        date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
       }
     })
     .then(res => res.data)

@@ -76,11 +76,17 @@ class AttendanceScreen extends Component {
     }
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
-    checkStudent(index) {
+    checkStudent(index, value) {
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
-        newEnrollments[index].Attended = !this.state.enrollments[index].Attended;
+        if (value) newEnrollments[index].Attended = true;
+        else newEnrollments[index].Attended = false;
         this.setState({enrollments: newEnrollments, isUpdated: true}) //Set the new list
+    }
+
+    checkStudentById = enrollmentId => {
+        const enrollmentIndex = this.state.enrollments.findIndex(enrollment => enrollment.StudentId === enrollmentId);
+        this.checkStudent(enrollmentIndex, true);
     }
 
     updateAttendance() {
@@ -115,8 +121,8 @@ class AttendanceScreen extends Component {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
-                    let enrollments = this.parseFetchedEnrollmentToObject(res.data);
-                    this.setState({enrollments: enrollments})
+                    let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
+                    this.setState({enrollments: parsedEnrollments});
                 }
             }
             else console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");
@@ -143,21 +149,14 @@ class AttendanceScreen extends Component {
     render() {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
-        const checkIcon = (props) => ( <Icon {...props} name='checkmark'/> );
-        const doubledCheckedIcon = (props) => ( <Icon {...props} name='done-all' /> );
-
-        const checkMark = (props) => {
-            if (false) return checkIcon(props);
-            else return doubledCheckedIcon(props);
-        }
 
         const studentAttendanceItem = ({ item, index }) => (
             <ListItem
               title={`${item.StudentName}`}
-              onPress={() => this.checkStudent(index)}
+              onPress={() => this.checkStudent(index, !this.state.enrollments[index].Attended)}
               accessoryLeft={() => {
-                if (this.state.enrollments[index].Attended) return <CheckBox checked={true} onChange={() => this.checkStudent(index)} />
-                else return <CheckBox checked={false} onChange={() => this.checkStudent(index)} />
+                if (this.state.enrollments[index].Attended) return <CheckBox checked={true} onChange={() => this.checkStudent(index, false)} />
+                else return <CheckBox checked={false} onChange={() => this.checkStudent(index,true)} />
               }}
             />
         );
@@ -170,7 +169,7 @@ class AttendanceScreen extends Component {
         );
 
         const updateButton = () => {
-            if (this.state.isUpdated) return (<Button onPress={() => this.updateAttendance()} appearance="outline" status="success"> Update Attendance </Button>)
+            if (this.state.isUpdated) return <Button style={{flex:1}} onPress={() => this.updateAttendance()} appearance="outline" status="success"> Update Attendance </Button>
         }
 
         const updateSuccessCard = (status, text) => (
@@ -193,24 +192,36 @@ class AttendanceScreen extends Component {
                 }
             </Modal>)
         
+        const descriptionArea = () => (
+            <Layout style={{padding: 5}}level="2">
+                <View style={styles.row}>
+                    <View style={styles.column}>
+                        {descriptionRowText("Team",this.state.teamName)}
+                        {descriptionRowText("Class",this.state.topic)}
+                        {descriptionRowText("Date", this.state.date)}
+                        {descriptionRowText("Students", this.state.numberOfStudents)}
+                    </View>
+                </View>
+                <Divider/>
+            </Layout>
+        );
 
         return(
             <Layout style={{ flex: 1}} level="1">
-                <Button style={{width:"100%"}} appearance='ghost' status='primary' accessoryLeft={cameraIcon} onPress={() => navigation.navigate("Scan students QR")}>
+                <Button style={{width:"100%"}} 
+                    appearance='ghost' 
+                    status='primary' 
+                    accessoryLeft={cameraIcon} 
+                    onPress={() => navigation.navigate("Scan students QR", {
+                            enrollments: this.state.enrollments,
+                            checkStudentById: this.checkStudentById
+                        }
+                    )}
+                >
                     SCAN QR CODE
                 </Button> 
                 <Divider/>
-                <Layout style={{padding: 5}}level="2">
-                    <View style={styles.row}>
-                        <View style={styles.column}>
-                            {descriptionRowText("Team",this.state.teamName)}
-                            {descriptionRowText("Class",this.state.topic)}
-                            {descriptionRowText("Date", this.state.date)}
-                            {descriptionRowText("Students", this.state.numberOfStudents)}
-                        </View>
-                    </View>
-                    <Divider/>
-                </Layout>
+                {descriptionArea()}
                 {updateModal()}
                 {updateButton()}
                 <List

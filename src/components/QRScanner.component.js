@@ -10,41 +10,62 @@ export default class QRScanScreen extends React.Component {
         this.state = {
             onReadFoundStudent: false,
             onReadNotFoundStudent: false,
+            enrollments: [],
+            scannedStudent: null,
         }
+
     }
 
-    componentDidMount() {
-        setTimeout(() => {this.setState({onReadFoundStudent: true})}, 3000);
+    async componentDidMount() {
+        const { route } = this.props;
+        await this.setState({enrollments: route.params.enrollments});
     }
 
-    toggleModalOff() { 
-        this.setState({onReadFoundStudent: false})
-        setTimeout(() => {this.setState({onReadNotFoundStudent: true})}, 3000);
+    async checkIfStudentIsEnrolled(enrollmentId) {
+        let enrollment = await this.state.enrollments.find(enrollment => enrollmentId === enrollment.StudentId);
+        console.log("Enrollment", enrollment);
+        if (enrollment !== null && enrollment !== undefined) this.setState({onReadFoundStudent: true, scannedStudent: enrollment});
+        else this.setState({onReadNotFoundStudent: true});
     }
+
+    markStudent() {
+        this.props.route.params.checkStudentById(this.state.scannedStudent.StudentId);
+        this.toggleFoundModalOff();
+    }
+
+    toggleFoundModalOff() {  this.setState({onReadFoundStudent: false, scannedStudent: null}) }
 
     toggleNotFoundModalOff() { this.setState({onReadNotFoundStudent: false}) };
+
+    onScannerRead(scannedMessage) {
+        console.log("[QR-Scanner | On Read] ", scannedMessage);
+        this.checkIfStudentIsEnrolled(scannedMessage);
+    }
 
     render() {
 
         const foundStudentModal = () => (
-            <Modal visible={this.state.onReadFoundStudent} style={styles.popOverContent}>
-                <Card disabled={true} status="success">
-                    <Text style={{marginVertical: 15, alignSelf: 'center'}} category={'s1'} status="success">Student Found</Text>
-                    <Text style={{marginBottom: 15, alignSelf: 'center'}}>Alexander Diaz</Text>
-                    <View style={{flexDirection:'row', flex:1, width: 300}}>
-                        <View style={{flexDirection:'column', flex:1}}>
-                            <Button appearance='outline' size={'small'} onPress={() => this.toggleModalOff()} status="basic">
-                                Cancel
-                            </Button>
+            (
+                this.state.scannedStudent && 
+                <Modal visible={this.state.onReadFoundStudent} style={styles.popOverContent}>
+                    <Card disabled={true} status="success">
+                        <Text style={{marginVertical: 15, alignSelf: 'center'}} category={'s1'} status="success">Student Found</Text>
+                        <Text style={{marginBottom: 15, alignSelf: 'center'}}>{this.state.scannedStudent.StudentName}</Text>
+                        <View style={{flexDirection:'row', flex:1, width: 300}}>
+                            <View style={{flexDirection:'column', flex:1}}>
+                                <Button appearance='outline' size={'small'} onPress={() => this.toggleFoundModalOff()} status="basic">
+                                    Cancel
+                                </Button>
+                            </View>
+                            <View style={{flexDirection:'column', flex: 1}}>
+                                <Button appearance='outline' size={'small'} onPress={() => this.markStudent()} status="success">
+                                    Update
+                                </Button>
+                            </View>
                         </View>
-                        <View style={{flexDirection:'column', flex: 1}}>
-                            <Button appearance='outline' size={'small'} onPress={() => this.toggleModalOff()} status="success">
-                                Update
-                            </Button>
-                        </View>
-                    </View>
-                </Card>
-            </Modal>
+                    </Card>
+                </Modal>
+            )
         );
 
         const notFoundStudentModal = () => (
@@ -68,7 +89,7 @@ export default class QRScanScreen extends React.Component {
                 {foundStudentModal()}
                 {notFoundStudentModal()}
                 <QRCodeScanner
-                    onRead={e =>{console.log("message readed", e)}}
+                    onRead={message => this.onScannerRead(message)}
                     flashMode={RNCamera.Constants.FlashMode.torch}
                     reactivate={true} //Let us scan as many qr code as we want
                     reactivateTimeout={1}
