@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Modal, Card, Button, Popover } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
 
 
@@ -106,9 +106,7 @@ class ActivitiesScreen extends Component {
             }
         }
 
-        const minDatePickerDate = moment("01/01/2019").toDate();
-
-        const ItemDivider = (props) => <Divider {...props}/>
+        const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
 
         const searchBox = () => (
             <Datepicker
@@ -121,34 +119,32 @@ class ActivitiesScreen extends Component {
             />
         );
 
-        const presentationModal = () => (
-            <Popover 
-                visible={this.state.welcomeModalVisibility} 
-                style={styles.popOverContent} 
-                onBackdropPress={() => this.toggleWelcomeModalOff()}
-                anchor={searchBox}
-                >
-                <View disabled={true} status="primary">
-                    {
-                        this.props.user.user &&
-                        <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
-                    }
-                </View>
-            </Popover>
+        const helloMessage = (status) => (
+            (
+                (this.state.welcomeModalVisibility) &&
+                <Card style={{opacity: 0.9}}>
+                    <Text category="s2" status={status} style={{alignSelf: 'center'}}>
+                        Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                    </Text>
+                </Card>
+            )
         );
 
         return(
-            <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
-                <Layout style={{ flex: 1, justifyContent: 'center', opacity: 0.95}}>
-                    {searchBox()}
-                    <List
-                        style={{opacity: 1}}
-                        data={this.state.activities}
-                        renderItem={activityItem}
-                        Divider={Divider}
-                    />
+            <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+                <Layout style={{ flex: 1, justifyContent: 'center'}}>
+                {searchBox()}
+                {helloMessage("info")}
+                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
+                        <List
+                            style={{opacity: 0.95}}
+                            data={this.state.activities}
+                            renderItem={activityItem}
+                            Divider={Divider}
+                        />
+                    </ImageBackground>
                 </Layout>      
-            </ImageBackground>                      
+            </View>                      
         );
     };
 };
@@ -169,5 +165,10 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOpacity: 0.12,
         shadowColor: "#000"
-    }
+    },
+    image: {
+        flex:1, 
+        resizeMode: 'contain',
+        opacity: 0.99
+    },
 });
