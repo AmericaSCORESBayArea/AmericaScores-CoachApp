@@ -13,7 +13,6 @@ export default class QRScanScreen extends React.Component {
             enrollments: [],
             scannedStudent: null,
         }
-
     }
 
     async componentDidMount() {
@@ -22,7 +21,9 @@ export default class QRScanScreen extends React.Component {
     }
 
     async checkIfStudentIsEnrolled(enrollmentId) {
-        let enrollment = await this.state.enrollments.find(enrollment => enrollmentId === enrollment.StudentId);
+        let enrollment = await this.state.enrollments.find(enrollment => {
+            if (enrollment.StudentId.includes(enrollmentId)) return enrollment;
+        });
         console.log("Enrollment", enrollment);
         if (enrollment !== null && enrollment !== undefined) this.setState({onReadFoundStudent: true, scannedStudent: enrollment});
         else this.setState({onReadNotFoundStudent: true});
@@ -39,7 +40,7 @@ export default class QRScanScreen extends React.Component {
 
     onScannerRead(scannedMessage) {
         console.log("[QR-Scanner | On Read] ", scannedMessage);
-        this.checkIfStudentIsEnrolled(scannedMessage);
+        this.checkIfStudentIsEnrolled(scannedMessage.data);
     }
 
     render() {

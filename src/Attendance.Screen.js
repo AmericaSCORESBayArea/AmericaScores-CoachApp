@@ -71,7 +71,7 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
-            // console.log("enrollments", this.state.enrollments);
+            console.log("enrollments", this.state.enrollments);
         }
     }
 
