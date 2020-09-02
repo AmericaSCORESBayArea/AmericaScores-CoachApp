@@ -26,6 +26,7 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = AmericanScoresApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AmericanScoresApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AmericanScoresApp/main.m; sourceTree = "<group>"; };
+		4956256524E5B256001B21B6 /* America Scores Attendance.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "America Scores Attendance.entitlements"; path = "AmericanScoresApp/America Scores Attendance.entitlements"; sourceTree = "<group>"; };
 		49573C5224C917B80049F233 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../src/config/ios/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-AmericanScoresApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AmericanScoresApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C2E3173556A471DD304B334 /* Pods-AmericanScoresApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmericanScoresApp.debug.xcconfig"; path = "Target Support Files/Pods-AmericanScoresApp/Pods-AmericanScoresApp.debug.xcconfig"; sourceTree = "<group>"; };
@@ -51,6 +52,7 @@
 		13B07FAE1A68108700A75B9A /* AmericanScoresApp */ = {
 			isa = PBXGroup;
 			children = (
+				4956256524E5B256001B21B6 /* America Scores Attendance.entitlements */,
 				49573C5224C917B80049F233 /* GoogleService-Info.plist */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -311,7 +313,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = "AmericanScoresApp/America Scores Attendance.entitlements";
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEVELOPMENT_TEAM = 946F7TCJW5;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -321,6 +324,7 @@
 				INFOPLIST_FILE = AmericanScoresApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -341,11 +345,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CODE_SIGN_ENTITLEMENTS = "AmericanScoresApp/America Scores Attendance.entitlements";
+				CURRENT_PROJECT_VERSION = 1.3;
 				DEVELOPMENT_TEAM = 946F7TCJW5;
 				INFOPLIST_FILE = AmericanScoresApp/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				MARKETING_VERSION = 1.0.3;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",

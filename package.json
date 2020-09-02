@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@eva-design/eva": "^2.0.0",
+    "@invertase/react-native-apple-authentication": "^1.1.2",
     "@react-native-community/google-signin": "^4.0.3",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-firebase/app": "^8.2.0",

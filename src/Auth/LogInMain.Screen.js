@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Image, ImageBackground, SafeAreaView } from 'react-native';
-import { Button, Layout, Input, Card, Text, Icon, Divider } from '@ui-kitten/components';
+import { Alert, Image, ImageBackground, SafeAreaView } from 'react-native';
+import { Button, Layout, Text, Icon } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 import Axios from "axios";
 import {ApiConfig} from "../config/ApiConfig";
@@ -8,13 +8,17 @@ import {ApiConfig} from "../config/ApiConfig";
 import moment from "moment";
 
 import * as GoogleSignIn from 'expo-google-sign-in';
+import auth from '@react-native-firebase/auth';
+import appleAuth, {
+  AppleButton,
+  AppleAuthRequestScope,
+  AppleAuthRequestOperation,
+} from '@invertase/react-native-apple-authentication';
 
 import { connect } from 'react-redux';
 import { loginUser, logOutUser } from '../Redux/actions/user.actions';
 import { syncSessions } from '../Redux/actions/Session.actions';
 import { bindActionCreators } from 'redux';
-import { _syncUserSessions, _fetchUserProfile } from '../components/login.component';
-
 
 class LogInScreen_Google extends Component {
     constructor(props) {
@@ -27,26 +31,37 @@ class LogInScreen_Google extends Component {
 
     initAsync = async () => {
         await GoogleSignIn.initAsync({clientId: '688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com'});
-        this._syncUserWithStateAsync();
     };
 
     _syncUserWithStateAsync = async () => {
         const loggedUser = await GoogleSignIn.signInSilentlyAsync();
-        if (loggedUser !== null) this._setupUser(loggedUser.email,"gmail");
-        else this._rollbackSetupUser();
+        if (loggedUser !== null) this._setupUser(loggedUser.email,"google");
     };
 
-    _setupUser =  async (userIdentifier, serviceProvider) => {
+    _setupUser = async (userIdentifier, serviceProvider) => {
       const {actions, navigation} = this.props;
-      const userProfile = await _fetchUserProfile(userIdentifier, serviceProvider);
-      if (userProfile) {
-        _syncUserSessions()
-          .then(userSessions => {
-            actions.loginUser(userProfile);
-            actions.syncSessions(userSessions);
-            navigation.navigate("HomeRoot");
-          }).catch(error => {console.log(error); this._rollbackSetupUser()});
-      } else this._rollbackSetupUser();
+
+      Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
+        params: {
+          useridentifier: userIdentifier,
+          serviceprovider: serviceProvider
+        }})
+      .then(response => {
+        const userProfile = response.data;
+        if (userProfile.ContactId) {
+          console.log(userProfile);
+          this._syncUserSessions(userProfile)
+            .then(userSessions => {
+              console.log(userSessions);
+              actions.loginUser(userProfile);
+              actions.syncSessions(userSessions);
+              navigation.navigate("HomeRoot");
+            }).catch(error => {console.log(error); this._rollbackSetupUser()});
+        } else {
+          Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          return _rollbackSetupUser()
+        };
+      }).catch(error => Alert.alert("Login Error", "User not found, please contact your company admin."))
     }
 
     _rollbackSetupUser = async () => {
@@ -71,33 +86,63 @@ class LogInScreen_Google extends Component {
       }
     };
 
+    signInApple = async () => {
+      console.log("[APPLE LOGIN | Start]");
+      try {
+        const appleAuthRequestResponse = await appleAuth.performRequest({
+          requestedOperation: AppleAuthRequestOperation.LOGIN,
+          requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+        });
+        // Ensure Apple returned a user identityToken
+        if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+
+        if (!appleAuthRequestResponse.email) Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);
+        console.log("[APPLE LOGIN] Successful request");
+        // Create a Firebase credential from the response
+        const { identityToken, nonce } = appleAuthRequestResponse;
+        const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+  
+        if (!appleCredential) {
+          Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+          throw "[APPLE LOGIN | ERROR] in appleCredential"; 
+        } else console.log("[APPLE LOGIN] got appleCredential ");
+
+        // Sign the user in with the credential
+        const response = auth().signInWithCredential(appleCredential);
+        if (!response) {
+          Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+          throw "[APPLE LOGIN | ERROR] in signInWithCredentials" 
+        } else console.log("[APPLE LOGIN] signed In with credentials");
+        
+        //TODO Change the gmail for email in backend
+        this._setupUser(appleAuthRequestResponse.email,"email");
+      } catch (error) {
+        Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+        console.log("[APPLE LOGIN ERROR]", error);
+      }
+    }
+
+    async _syncUserSessions(user) {
+      Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
+          params: {
+            date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
+          }
+        })
+        .then(res => res.data)
+        .catch(e => console.log(e));
+    }   
+
     render() {
         const {navigation} = this.props;
-
-        const navigateDetails = async () => {
-            await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
-              params: {
-                useridentifier: 'test@gmail.com',
-                serviceprovider: 'google'
-              }
-            })
-            .then(res => {
-              if (res.status === 200) console.log("Success!", res.data)
-              else console.log(res.status, res);
-            })
-            .catch(e => console.log(e));
-            return navigation.navigate('HomeRoot');
-          }
-
         const Header = (props) => (
             <View {...props} style={{margin: "3%"}}>
               <Text category='h6'>Log in</Text>
               <Text category='s1'>America Scores Attendance APP</Text>
             </View>
         );
-        const PhoneIcon = (props) => ( <Icon {...props} name='phone-outline'/> );
-        const GoogleIcon = (props) => ( <Icon {...props} name='google-outline'/> );
-        const WhatsAppIcon = (props) => ( <Icon {...props} name='message-circle-outline'/> )
+        const PhoneIcon = (props) => ( <Icon {...props} name='phone'/> );
+        const GoogleIcon = (props) => ( <Icon {...props} name='google'/> );
+        const AppleIcon = (props) => ( <Icon {...props} name='external-link'/> )
         const BackArrrowIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline'/> )
         
         return(
@@ -114,6 +159,17 @@ class LogInScreen_Google extends Component {
                         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                           <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} appearance="ghost" status="primary" onPress={() => navigation.navigate("PhoneLogin_phone")}>SIGN IN WITH PHONE</Button>
                           <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={() => this.signInGoogle()}>SIGN IN WITH GOOGLE</Button>
+                          {appleAuth.isSupported && (
+                            <AppleButton
+                              buttonStyle={AppleButton.Style.BLACK}
+                              buttonType={AppleButton.Type.SIGN_IN}
+                              style={{
+                                width: '100%',
+                                height: 50
+                              }}
+                              onPress={() => this.signInApple()}
+                            />
+                          )}
                         </Layout>
                       </Layout>            
                       </Layout>   

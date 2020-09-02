@@ -23,8 +23,8 @@ const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation 
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
-        <BottomNavigationTab title='Activities' icon={TodayIcon}/>
-        <BottomNavigationTab title='Team Seasons' icon={SchoolIcon}/>
+        <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
+        <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
         {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
     </BottomNavigation>
 );
@@ -32,7 +32,7 @@ const BottomTabBar = ({ navigation, state }) => (
 const Stack_Activities = createStackNavigator();
 const Stack_Activities_Navigation = () => (
     <Stack_Activities.Navigator>
-        <Stack_Activities.Screen options={headerOptions} name='Activities' component={ActivitiesScreen}/>
+        <Stack_Activities.Screen options={headerOptions} name='Sessions' component={ActivitiesScreen}/>
         <Stack_Activities.Screen options={headerOptions} name="Attendance" component={AttendanceScreen} />
         <Stack_Activities.Screen options={headerOptions} name="Scan students QR" component={QRScanScreen}/>
     </Stack_Activities.Navigator>
@@ -41,7 +41,7 @@ const Stack_Activities_Navigation = () => (
 const Stack_Teams = createStackNavigator();
 const Stack_Teams_Navigation = ({navigation}) => (
     <Stack_Teams.Navigator>
-        <Stack_Teams.Screen name="Team Seasons" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
+        <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
         <Stack_Teams.Screen name='Team Activities' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>

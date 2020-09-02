@@ -68,3 +68,5 @@ GoogleService-info.plist
 
 *.lock
 *.hprof
+*.apk
+*.apb
