@@ -91,7 +91,7 @@ export default class QRScanScreen extends React.Component {
                 {notFoundStudentModal()}
                 <QRCodeScanner
                     onRead={message => this.onScannerRead(message)}
-                    flashMode={RNCamera.Constants.FlashMode.torch}
+                    flashMode={RNCamera.Constants.FlashMode.auto}
                     reactivate={true} //Let us scan as many qr code as we want
                     reactivateTimeout={1}
                     topContent={

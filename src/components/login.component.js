@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from 'axios';
-import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 const useInputState = (initialValue = '') => {
     const [value, setValue] = React.useState(initialValue);
@@ -144,17 +143,6 @@ const _syncUserSessions = async (user) => {
     })
     .then(res => res.data)
     .catch(e => console.log(e));
-}
-
-export const _fetchUserProfile = async (userIdentifier, serviceProvider) => {
-  Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
-      params: {
-        useridentifier: userIdentifier,
-        serviceprovider: serviceProvider
-      }
-  })
-  .then(res => res.data)
-  .catch(e => console.log(e));
 }
 
 //style={styles.card} header={Header} footer={Footer}
