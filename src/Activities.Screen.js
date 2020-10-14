@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Tooltip, Modal, Card, Button } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
 
 
@@ -17,15 +17,18 @@ class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment("08/21/2019").toDate(),
+            date: moment("20190821", "YYYYMMDD").toDate(),
             activities: "",
             welcomeModalVisibility: false,
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
         this._syncActivities();
-        if (this.props.user.firstTimeLoggedIn) this.setState({welcomeModalVisibility: true});
+        if (this.props.user.firstTimeLoggedIn) {
+            setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
+            setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
+        }
         console.log(this.props.user);
     }
 
@@ -103,40 +106,45 @@ class ActivitiesScreen extends Component {
             }
         }
 
-        const minDatePickerDate = moment("01/01/2019").toDate();
+        const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
 
-        const ItemDivider = (props) => <Divider {...props}/>
+        const searchBox = () => (
+            <Datepicker
+                placeholder='Pick Date'
+                date={this.state.date}
+                min={minDatePickerDate}
+                style={{margin: "2%", }}
+                onSelect={nextDate => this.selectDate(nextDate)}
+                accessoryRight={CalendarIcon}
+            />
+        );
 
-        const presentationModal = () => (
-            <Modal visible={this.state.welcomeModalVisibility} style={styles.popOverContent} onBackdropPress={() => this.toggleWelcomeModalOff()}>
-                <Card disabled={true}>
-                    <Text style={{margin: 15}} category={'s1'}>Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}</Text>
-                    <Button appearance='outline' size={'small'} onPress={() => this.toggleWelcomeModalOff()} status='primary'>
-                        DISMISS
-                    </Button>
+        const helloMessage = (status) => (
+            (
+                (this.state.welcomeModalVisibility) &&
+                <Card style={{opacity: 0.9}}>
+                    <Text category="s2" status={status} style={{alignSelf: 'center'}}>
+                        Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                    </Text>
                 </Card>
-            </Modal>
+            )
         );
 
         return(
-            <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
-                <Layout style={{ flex: 1, justifyContent: 'center', backgroundColor: "rgba(255,255,255,0.95)"}}>
-                    <Datepicker
-                        placeholder='Pick Date'
-                        date={this.state.date}
-                        min={minDatePickerDate}
-                        style={{margin: "2%", }}
-                        onSelect={nextDate => this.selectDate(nextDate)}
-                        accessoryRight={CalendarIcon}
-                    />
-                    {presentationModal()}
-                    <List
-                        style={{backgroundColor: "rgba(0,0,0,0.0)"}}
-                        data={this.state.activities}
-                        renderItem={activityItem}
-                    />
+            <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+                <Layout style={{ flex: 1, justifyContent: 'center'}}>
+                {searchBox()}
+                {helloMessage("info")}
+                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
+                        <List
+                            style={{opacity: 0.95}}
+                            data={this.state.activities}
+                            renderItem={activityItem}
+                            Divider={Divider}
+                        />
+                    </ImageBackground>
                 </Layout>      
-            </ImageBackground>                      
+            </View>                      
         );
     };
 };
@@ -157,5 +165,10 @@ const styles = StyleSheet.create({
         shadowRadius: 10,
         shadowOpacity: 0.12,
         shadowColor: "#000"
-    }
+    },
+    image: {
+        flex:1, 
+        resizeMode: 'contain',
+        opacity: 0.99
+    },
 });

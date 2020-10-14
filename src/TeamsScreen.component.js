@@ -58,8 +58,6 @@ class TeamsScreen extends Component {
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
         );
-
-        const searchOptionItem = (item, index) => <AutocompleteItem key={index} title={item.TeamSeasonName} />;
   
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
@@ -69,7 +67,6 @@ class TeamsScreen extends Component {
                     value={this.state.value}
                     onSelect={this.onSelect}
                     onChangeText={this.onChangeText} >
-                    {this.state.selectedData.map(searchOptionItem)}
                 </Autocomplete>
                 <Divider/>
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>

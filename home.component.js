@@ -93,8 +93,9 @@ export default OptionOverflowMenu = (navigation) => {
 
     logOutOnPress = async () => {
         try {
+            setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
-            dispatch(logOutUser());
+            await dispatch(logOutUser());
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
@@ -107,7 +108,7 @@ export default OptionOverflowMenu = (navigation) => {
         onBackdropPress={() => setOverflowMenuVisible(false)}>
             {/* <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/> */}
             {/* <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/> */}
-            <MenuItem title="Log out" onPress={() => logOutOnPress()} accessoryLeft={logoutIcon}/>
+            <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
     
@@ -116,7 +117,7 @@ export default OptionOverflowMenu = (navigation) => {
 //this.menuItemOnPress("AddStudentToTeamModal")
 const headerOptions = ({navigation}) => ({
         headerStyle: {
-          backgroundColor: '#2C7DB2',
+          backgroundColor: '#00467F',
         },
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
