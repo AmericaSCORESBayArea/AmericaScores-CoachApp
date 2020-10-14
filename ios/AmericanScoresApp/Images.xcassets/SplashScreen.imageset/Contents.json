@@ -1,21 +1,26 @@
 {
-  "images": [
+  "images" : [
     {
-      "idiom": "universal",
-      "filename": "splashscreen.png",
-      "scale": "1x"
+      "filename" : "ASBA_Logo_Only.jpeg",
+      "idiom" : "universal",
+      "scale" : "1x"
     },
     {
-      "idiom": "universal",
-      "scale": "2x"
+      "filename" : "ASBA_Logo_Only-1.jpeg",
+      "idiom" : "universal",
+      "scale" : "2x"
     },
     {
-      "idiom": "universal",
-      "scale": "3x"
+      "filename" : "ASBA_Logo_Only-2.jpeg",
+      "idiom" : "universal",
+      "scale" : "3x"
     }
   ],
-  "info": {
-    "version": 1,
-    "author": "xcode"
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  },
+  "properties" : {
+    "localizable" : true
   }
 }
