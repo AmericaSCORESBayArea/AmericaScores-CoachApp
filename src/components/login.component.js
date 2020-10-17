@@ -80,6 +80,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         serviceprovider: serviceProvider
       }
       }).then(res => {
+        if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
         const userProfile = res.data;
         if (userProfile.ContactId) {
           _syncUserSessions(userProfile)
@@ -90,9 +91,10 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
             }).catch(error => {console.log(error); _rollbackSetupUser()});
         } else {
           Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          console.log("[AUTH FETCH ISSUE NO userProfile", res.data);
           return _rollbackSetupUser()
         };
-      }).catch(error => console.log(error));
+      }).catch(error => console.log("[AUTH ERROR] SOMETHING ELSE HAPPENED", error));
   }
 
   async function confirmCode() {

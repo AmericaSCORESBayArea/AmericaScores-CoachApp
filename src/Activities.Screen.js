@@ -97,8 +97,11 @@ class ActivitiesScreen extends Component {
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null) return ;
             else {
+                let sessionTopic = "Unasigned"
+                if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
+
                 return <ListItem
-                    title={`${item.Sessions[0].SessionTopic}`}
+                    title={sessionTopic}
                     description={`${item.TeamSeasonName}`}
                     accessoryRight={renderItemIcon}
                     onPress={() => this.selectActivity(item.TeamSeasonId)}
