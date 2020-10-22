@@ -20,6 +20,7 @@
     "@react-navigation/stack": "^5.9.3",
     "@ui-kitten/components": "^5.0.0",
     "@ui-kitten/eva-icons": "^5.0.0",
+    "@ui-kitten/moment": "^5.0.0",
     "axios": "^0.19.2",
     "expo": "^38.0.10",
     "expo-app-auth": "~9.1.1",
