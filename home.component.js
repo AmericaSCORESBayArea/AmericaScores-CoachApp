@@ -7,7 +7,7 @@ import AttendanceScreen from "./src/Attendance.Screen";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
-
+import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -96,6 +96,8 @@ export default OptionOverflowMenu = (navigation) => {
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
             await dispatch(logOutUser());
+            auth().signOut();
+            // logged = false;
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
@@ -106,9 +108,9 @@ export default OptionOverflowMenu = (navigation) => {
         visible={visoverflowMenuVisibleble} 
         placement={"bottom"} 
         onBackdropPress={() => setOverflowMenuVisible(false)}>
-            {/* <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/> */}
-            {/* <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/> */}
-            <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
+            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
+            <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
+            <MenuItem title="Log out" onPress={() => (logOutOnPress(logged))} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
     
