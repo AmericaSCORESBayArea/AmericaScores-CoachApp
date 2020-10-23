@@ -1,7 +1,7 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
-
+import { MomentDateService } from '@ui-kitten/moment';
 
 import Axios from "axios";
 import moment from "moment";
@@ -17,7 +17,7 @@ class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            date: moment("20190821", "YYYYMMDD").toDate(),
+            date: moment(),
             activities: "",
             welcomeModalVisibility: false,
         }
@@ -63,7 +63,7 @@ class ActivitiesScreen extends Component {
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
             params: {
                 // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                date: moment(this.state.date).format("YYYY-MM-DD")
+                date: this.state.date
             }
           })
           .then(res => res.data)
@@ -97,23 +97,29 @@ class ActivitiesScreen extends Component {
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null) return ;
             else {
+                let sessionTopic = "Unasigned"
+                if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
+
                 return <ListItem
-                    title={`${item.Sessions[0].SessionTopic}`}
+                    title={sessionTopic}
                     description={`${item.TeamSeasonName}`}
                     accessoryRight={renderItemIcon}
                     onPress={() => this.selectActivity(item.TeamSeasonId)}
             />
             }
         }
+        const dateService = new MomentDateService();
+        // var date = moment();
 
-        const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
+        // const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
 
         const searchBox = () => (
             <Datepicker
                 placeholder='Pick Date'
                 date={this.state.date}
-                min={minDatePickerDate}
+                // min={minDatePickerDate}
                 style={{margin: "2%", }}
+                dateService={dateService}
                 onSelect={nextDate => this.selectDate(nextDate)}
                 accessoryRight={CalendarIcon}
             />

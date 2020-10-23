@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from 'axios';
-import { getAppLoadingLifecycleEmitter } from 'expo/build/launch/AppLoading';
 
 const useInputState = (initialValue = '') => {
     const [value, setValue] = React.useState(initialValue);
@@ -81,6 +80,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         serviceprovider: serviceProvider
       }
       }).then(res => {
+        if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
         const userProfile = res.data;
         if (userProfile.ContactId) {
           _syncUserSessions(userProfile)
@@ -91,9 +91,10 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
             }).catch(error => {console.log(error); _rollbackSetupUser()});
         } else {
           Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          console.log("[AUTH FETCH ISSUE NO userProfile", res.data);
           return _rollbackSetupUser()
         };
-      }).catch(error => console.log(error));
+      }).catch(error => console.log("[AUTH ERROR] SOMETHING ELSE HAPPENED", error));
   }
 
   async function confirmCode() {
@@ -144,17 +145,6 @@ const _syncUserSessions = async (user) => {
     })
     .then(res => res.data)
     .catch(e => console.log(e));
-}
-
-export const _fetchUserProfile = async (userIdentifier, serviceProvider) => {
-  Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
-      params: {
-        useridentifier: userIdentifier,
-        serviceprovider: serviceProvider
-      }
-  })
-  .then(res => res.data)
-  .catch(e => console.log(e));
 }
 
 //style={styles.card} header={Header} footer={Footer}

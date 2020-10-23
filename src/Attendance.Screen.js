@@ -140,7 +140,9 @@ class AttendanceScreen extends Component {
                 StudentName: enrollment.StudentName,
             };
             parsedEnrollments.push(student);
-        })
+        });
+        parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
+
         return parsedEnrollments;
     }
 
