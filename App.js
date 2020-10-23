@@ -7,14 +7,18 @@ import * as AppAuth from 'expo-app-auth';
 import { Provider } from 'react-redux';
 
 import { default as theme } from './assets/ASBA_Theme_Light_v1.json'; // <-- Import app theme
+import {ApiConfig} from "./src/config/ApiConfig";
 
 import configureStore from './src/config/ConfigureStore';
+import Axios from 'axios';
 
 // When configured correctly, URLSchemes should contain your REVERSED_CLIENT_ID
 const { URLSchemes } = AppAuth;
 const store = configureStore()
 
 export default function App() {
+  Axios.defaults.headers.common['client_id'] = ApiConfig.clientId;
+  Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecret;
 
   return (
     <>

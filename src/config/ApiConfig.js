@@ -1,4 +1,5 @@
 export const ApiConfig = {
-    baseUrl: 'http://salesforce-auth-api.us-e2.cloudhub.io/api',
-    dataApi: 'http://salesforce-data-api.us-e2.cloudhub.io/api'
+    baseUrl: 'https://salesforce-auth-api-prod.us-e2.cloudhub.io/api',
+    dataApi: 'https://salesforce-data-api-proxy-prod.us-e2.cloudhub.io/api',
+    
 }

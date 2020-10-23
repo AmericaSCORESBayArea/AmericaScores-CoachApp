@@ -7,7 +7,7 @@ import AttendanceScreen from "./src/Attendance.Screen";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
-
+import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,16 +23,16 @@ const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation 
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
-        <BottomNavigationTab title='Activities' icon={TodayIcon}/>
-        <BottomNavigationTab title='Team Seasons' icon={SchoolIcon}/>
-        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
+        <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
+        <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
+        <BottomNavigationTab title='Students' icon={StudentsIcon}/>
     </BottomNavigation>
 );
 
 const Stack_Activities = createStackNavigator();
 const Stack_Activities_Navigation = () => (
     <Stack_Activities.Navigator>
-        <Stack_Activities.Screen options={headerOptions} name='Activities' component={ActivitiesScreen}/>
+        <Stack_Activities.Screen options={headerOptions} name='Sessions' component={ActivitiesScreen}/>
         <Stack_Activities.Screen options={headerOptions} name="Attendance" component={AttendanceScreen} />
         <Stack_Activities.Screen options={headerOptions} name="Scan students QR" component={QRScanScreen}/>
     </Stack_Activities.Navigator>
@@ -41,7 +41,7 @@ const Stack_Activities_Navigation = () => (
 const Stack_Teams = createStackNavigator();
 const Stack_Teams_Navigation = ({navigation}) => (
     <Stack_Teams.Navigator>
-        <Stack_Teams.Screen name="Team Seasons" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
+        <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
         <Stack_Teams.Screen name='Team Activities' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
@@ -96,6 +96,8 @@ export default OptionOverflowMenu = (navigation) => {
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
             await dispatch(logOutUser());
+            auth().signOut();
+            // logged = false;
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
@@ -106,9 +108,9 @@ export default OptionOverflowMenu = (navigation) => {
         visible={visoverflowMenuVisibleble} 
         placement={"bottom"} 
         onBackdropPress={() => setOverflowMenuVisible(false)}>
-            {/* <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/> */}
-            {/* <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/> */}
-            <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
+            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
+            <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
+            <MenuItem title="Log out" onPress={() => (logOutOnPress(logged))} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
     
