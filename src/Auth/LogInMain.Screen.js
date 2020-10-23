@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Alert, Image, ImageBackground, SafeAreaView } from 'react-native';
 import { Button, Layout, Text, Icon } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
@@ -125,7 +125,7 @@ class LogInScreen_Google extends Component {
     async _syncUserSessions(user) {
       Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
           params: {
-            date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
+            date: moment()
           }
         })
         .then(res => res.data)
