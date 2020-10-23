@@ -25,6 +25,7 @@ Check if everything was installed propertly.
 
 Clone the project from github into your local machine.
 `cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
+
 - If running in IOS `cd ios && pod install && cd ..` and then `react-native run-ios`
 - If running on Android
   `react-native run-android`
@@ -35,7 +36,9 @@ Clone the project from github into your local machine.
 Here are a list of errors that may occur when installing the project and how to handle them.
 
 - **ERROR: JAVA_HOME is set to an invalid directory..**. Search for "enviroment variables" in your computers search bar and open "Edit the System Enviroment Variables", click "Enviroment Variables" and check that `JAVA_HOME` variable is referencing your jdk package path, and that it is also being referenced in your "Path" system variable. You can also set the variable from the terminal by typing `JAVA_HOME = C:\YourJDKPath`.
+
 - **adb is not recognized as a command**. Check your system enviroment variables to see if adb exists, if not, create it and set the adb's path in value, it should be in `C:\Users\YourUser\AppData\Local\Android\Sdk\platform-tools`. You can check this yourself by typing `%appdata%` in the windows search bar, this will give you acces to your AppData folder.
+
 - **Keystore file '/Project-Folder/android/app/debug.keystore' not found for signing config 'debug'**. Search for your keytools.exe file, it should be in C:\Program Files\Java\jdk.x.x.xx\bin. Copy the path of the file's folder. Open a terminal and type `cd C:\"yourkeytoolsfolderpath"`. Once you are in your keytools folder, copy and execute the following: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000`. This will create a file called **debug.keystore** in the same path as the keytools.exe file. Copy the new file and paste it in AmericaScores-attendanceApp\android\app
 
 ### Dependencies
@@ -47,4 +50,5 @@ Here are a list of errors that may occur when installing the project and how to 
 **Miscellaneous**
 
 - [React permissions](https://github.com/react-native-community/react-native-permissions) permissions for using device hardware like camera or bluetooth
+
 - [Eva Icons](https://akveo.github.io/eva-icons/) Selected Icons Pack
