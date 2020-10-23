@@ -25,7 +25,7 @@ const BottomTabBar = ({ navigation, state }) => (
     onSelect={index => navigation.navigate(state.routeNames[index])} >
         <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
         <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
-        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
+        <BottomNavigationTab title='Students' icon={StudentsIcon}/>
     </BottomNavigation>
 );
 
