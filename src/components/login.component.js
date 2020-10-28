@@ -34,7 +34,7 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   // Handle the button press
   async function loginWithPhoneNumber() {
     try {
-      const confirmation = await auth().signInWithPhoneNumber(loginPhoneNumber.value).catch(e =>console.log(e));
+      const confirmation = await auth().signInWithPhoneNumber('+1' + loginPhoneNumber.value).catch(e =>console.log(e));
       console.log("Tryed to log in", confirmation);
       dispatch(setPhoneAuthConfirmation(confirmation));
       if (confirmation) navigation.navigate("PhoneLogin_code");
@@ -51,9 +51,10 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
               <Text style={{paddingBottom: "5%"}}>We will send verification SMS code to the following phone number.</Text>
               <Input
                 // style={styles.input}
+                keyboardType="numeric"
                 status='primary'
                 label='Phone number'
-                placeholder='+1 646 660 0404' //America scores phone
+                placeholder='646 660 0404' //America scores phone
                 {...loginPhoneNumber}
               />
             </Card>                
@@ -82,7 +83,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
       }).then(res => {
         if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
         const userProfile = res.data;
-        if (userProfile.ContactId) {
+        if (userProfile.ContactId != null) {
           _syncUserSessions(userProfile)
             .then(userSessions => {
               dispatch(loginUser(userProfile));
@@ -120,6 +121,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
               <Text style={{paddingBottom: "5%"}}>Insert the received code</Text>
               <Input
                 // style={styles.input}
+                keyboardType="numeric"
                 status='primary'
                 label='Code'
                 placeholder='123456' //America scores phone

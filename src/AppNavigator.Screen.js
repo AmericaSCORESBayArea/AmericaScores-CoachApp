@@ -8,6 +8,10 @@ import auth from '@react-native-firebase/auth';
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
+import Axios from 'axios';
+import {ApiConfig} from "./config/ApiConfig";
+import moment from "moment";
+
 
 class AppNavigator extends Component {
     constructor(props) {
@@ -16,9 +20,29 @@ class AppNavigator extends Component {
     }
 
     componentDidMount() {
-            
+        // var user = auth().currentUser;
+        // await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
+        //     params: {
+        //       useridentifier: userIdentifier,
+        //       serviceprovider: serviceProvider
+        //     }
+        //     }).then(res => {
+        //       if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
+        //       const userProfile = res.data;
+        //     const _syncUserSessions = async () => {
+        //         Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
+        //             params: {
+        //             date: moment()
+        //             }
+        //         })
+        //         .then(res => res.data)
+        //         .catch(e => console.log(e));
+        //     }
+        // }
     }
 
+    
+    
     
     
     render () { 
@@ -27,8 +51,8 @@ class AppNavigator extends Component {
             <NavigationContainer>
                 <Navigator headerMode='none'>
                     {
-                        (this.props.islogged.login) ? 
-                        <Screen name="HomeRoot" component={HomeRootStackScreen}/>
+                        (this.props.user.logged) ? 
+                        <Screen name="HomeRoot" component={HomeRootStackScreen}/> && this._syncUserSessions
                         :
                         <Screen name='Login' component={LoginStackScreen}/>
                     }

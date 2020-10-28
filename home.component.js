@@ -110,7 +110,7 @@ export default OptionOverflowMenu = (navigation) => {
         onBackdropPress={() => setOverflowMenuVisible(false)}>
             <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
             <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
-            <MenuItem title="Log out" onPress={() => (logOutOnPress(logged))} accessoryLeft={logoutIcon}/>
+            <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
     
