@@ -63,7 +63,7 @@ class ActivitiesScreen extends Component {
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
             params: {
                 // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                date: this.state.date
+                date: this.state.date.format("YYYY-MM-DD")
             }
           })
           .then(res => res.data)
