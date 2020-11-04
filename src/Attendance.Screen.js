@@ -141,11 +141,8 @@ class AttendanceScreen extends Component {
             let student = {
                 Attended: attendance,
                 StudentId: enrollment.StudentId,
-                StudentFname: "Test",      //change to enrollment.FirstName when API is fixed
-                StudentLname: "Student",   //change to enrollment.LastName when APi is fixed
-                StudentName: ""
+                StudentName: enrollment.StudentName
             };
-            student.StudentName = student.StudentLname + ", " + student.StudentFname;
             console.log(student.StudentName);
             parsedEnrollments.push(student);
         });
