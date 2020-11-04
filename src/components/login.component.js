@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { SafeAreaView, Alert } from 'react-native';
+import { SafeAreaView, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Button, Layout, Icon, Input, Text, Card } from '@ui-kitten/components';
 import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {ApiConfig} from "../config/ApiConfig";
 import * as GoogleSignIn from 'expo-google-sign-in';
 import moment from "moment";
-
 import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
@@ -43,11 +42,13 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   }
 
   return(
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+   
     <Layout style={{flex: 1}} level="4">
-      <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }}>
+      <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
         <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
           <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
-            <Card style={{flex: 1}} status="primary" header={Header}>
+            <Card style={{flex: 1}} status="primary" header={Header} onPress={Keyboard.dismiss}>
               <Text style={{paddingBottom: "5%"}}>We will send verification SMS code to the following phone number.</Text>
               <Input
                 // style={styles.input}
@@ -66,6 +67,8 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
         </Layout>
       </SafeAreaView>
     </Layout>
+       
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -113,11 +116,12 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   }
 
   return(
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
     <Layout style={{flex: 1}} level="4">
-      <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1}}>
+      <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1} } >
         <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
           <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
-            <Card style={{flex: 1}} status="primary" header={Header}>
+            <Card style={{flex: 1}} status="primary" header={Header} onPress={Keyboard.dismiss}>
               <Text style={{paddingBottom: "5%"}}>Insert the received code</Text>
               <Input
                 // style={styles.input}
@@ -136,6 +140,8 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         </Layout>
       </SafeAreaView>
     </Layout>
+       
+       </TouchableWithoutFeedback>
   );
 };
 
