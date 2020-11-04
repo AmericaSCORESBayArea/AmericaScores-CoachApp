@@ -24,6 +24,10 @@ class AttendanceScreen extends Component {
     componentDidMount() {
         this._setCurrentSessionData();
     }
+    
+    // componentWillMount() {
+    //     this._setCurrentSessionData();
+    // }
 
     formatEnrollmentsToRequest(enrollments, sessionId) {
         let studentsList = [];
@@ -137,8 +141,9 @@ class AttendanceScreen extends Component {
             let student = {
                 Attended: attendance,
                 StudentId: enrollment.StudentId,
-                StudentName: enrollment.StudentName,
+                StudentName: enrollment.StudentName
             };
+            console.log(student.StudentName);
             parsedEnrollments.push(student);
         });
         parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
