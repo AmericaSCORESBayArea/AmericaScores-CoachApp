@@ -31,7 +31,7 @@ Clone the project from github into your local machine.
   `react-native run-android`
 - Once the build is finished and the app installed, just open it in your emulator/device.
 
-### Frecuent errors
+### Frequent errors
 
 Here are a list of errors that may occur when installing the project and how to handle them.
 
@@ -52,3 +52,6 @@ Here are a list of errors that may occur when installing the project and how to 
 - [React permissions](https://github.com/react-native-community/react-native-permissions) permissions for using device hardware like camera or bluetooth
 
 - [Eva Icons](https://akveo.github.io/eva-icons/) Selected Icons Pack
+
+### Before Running
+ApiConfig.js needs to be updated with valid clientId and clientSecret so firebase can connect to the API's.
