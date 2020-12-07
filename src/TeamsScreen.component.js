@@ -5,7 +5,7 @@ import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
 import { ImageBackground } from "react-native";
 
-import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Text, Button } from '@ui-kitten/components';
 import Axios from "axios";
 
 import moment from "moment";
@@ -48,12 +48,20 @@ class TeamsScreen extends Component {
         this.props.navigation.navigate("Team Activities", {teamSeasonId: teamSeasonId});
     }
 
+    addTeamOnPress(modalScreen) {
+        // setOverflowMenuVisible(false);
+        this.props.navigation.navigate(modalScreen);
+    };
+
+    
+
     render() {
         const rightArrowIconRender = (props) => ( <Icon {...props} name='arrow-ios-forward-outline'/>);
         let teamItem = ({ item, index }) => (
             <ListItem 
                 title={`${item.TeamSeasonName}`}
                 // description={`${item.description} ${index + 1}`}
+                style= {{backgroundColor: "rgba(135,206,250,0.4)"}}
                 accessoryRight={rightArrowIconRender}
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
@@ -69,6 +77,7 @@ class TeamsScreen extends Component {
                     onChangeText={this.onChangeText} >
                 </Autocomplete>
                 <Divider/>
+                <Text style={{fontSize: 20, fontStyle: "italic"}}>  My Teams:</Text>
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                     <List
                         style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
@@ -76,7 +85,9 @@ class TeamsScreen extends Component {
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
                         />
+                        <Button style={{width:'100%'}} status="primary" onPress={() => this.addTeamOnPress("AddNewTeamModal")}>+ ADD A TEAM</Button>
                 </ImageBackground>
+                
 
             </Layout>
         );

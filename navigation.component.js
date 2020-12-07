@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone } from './src/components/login.component';
 import { HomeScreen } from './home.component';
 import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
+import { AddNewTeamModal} from './src/components/TeamModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 
 const { Navigator, Screen } = createStackNavigator();
@@ -28,6 +29,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name='Home' component={HomeScreen}/>
       <HomeRootStack.Screen name="CreateStudentModal" component={CreateStudentModal}/>
       <HomeRootStack.Screen name="AddStudentToTeamModal" component={AddStudentToTeamModal}/>
+      <HomeRootStack.Screen name="AddNewTeamModal" component={AddNewTeamModal}/>
     </HomeRootStack.Navigator>
   );
 }
