@@ -18,6 +18,9 @@ export const AddNewTeamModal = ({navigation}) => {
     const [filteredFilms, setFilteredFilms] = React.useState([]);
     // For Selected Data
     const [selectedValue, setSelectedValue] = React.useState({});
+    const [selectedValue1, setSelectedValue1] = React.useState({});
+    const [selectedValue2, setSelectedValue2] = React.useState({});
+    const [selectedValue3, setSelectedValue3] = React.useState({});
 
     function closeModal() {
         setVisible(false); 
@@ -177,26 +180,116 @@ export const AddNewTeamModal = ({navigation}) => {
                     )}
                     />
                  <Text >Soccer Coach</Text>
-                <Input
+                {/* <Input
                     placeholder='Name'
                     value={programSiteValue}
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
-                />
+                /> */}
+                <Autocomplete
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    containerStyle={styles.autocompleteContainer}
+                    // Data to show in suggestion
+                    data={filteredFilms}
+                    // Default value if you want to set something in input
+                    defaultValue={
+                        JSON.stringify(selectedValue) === '{}' ?
+                        '' :
+                        selectedValue
+                    }
+                    // Onchange of the text changing the state of the query
+                    // Which will trigger the findFilm method
+                    // To show the suggestions
+                    onChangeText={(text) => findFilm(text)}
+                    placeholder="Enter name here"
+                    renderItem={({item, i}) => (
+                        // For the suggestion view
+                        <TouchableOpacity
+                        onPress={() => {
+                            setSelectedValue1(item.title);
+                            setFilteredFilms([]);
+                        }}>
+                        <Text style={styles.itemText}>
+                            {item.title}
+                        </Text>
+                        </TouchableOpacity>
+                    )}
+                    />
                  <Text >Program Coordinator</Text>
-                <Input
+                {/* <Input
                     placeholder='Name'
                     value={programSiteValue}
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
-                />
+                /> */}
+                <Autocomplete
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    containerStyle={styles.autocompleteContainer}
+                    // Data to show in suggestion
+                    data={filteredFilms}
+                    // Default value if you want to set something in input
+                    defaultValue={
+                        JSON.stringify(selectedValue) === '{}' ?
+                        '' :
+                        selectedValue
+                    }
+                    // Onchange of the text changing the state of the query
+                    // Which will trigger the findFilm method
+                    // To show the suggestions
+                    onChangeText={(text) => findFilm(text)}
+                    placeholder="Enter name here"
+                    renderItem={({item, i}) => (
+                        // For the suggestion view
+                        <TouchableOpacity
+                        onPress={() => {
+                            setSelectedValue2(item.title);
+                            setFilteredFilms([]);
+                        }}>
+                        <Text style={styles.itemText}>
+                            {item.title}
+                        </Text>
+                        </TouchableOpacity>
+                    )}
+                    />
                  <Text >Program Manager</Text>
-                <Input
+                {/* <Input
                     placeholder='Name'
                     value={programSiteValue}
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
-                />
+                /> */}
+                <Autocomplete
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    containerStyle={styles.autocompleteContainer}
+                    // Data to show in suggestion
+                    data={filteredFilms}
+                    // Default value if you want to set something in input
+                    defaultValue={
+                        JSON.stringify(selectedValue) === '{}' ?
+                        '' :
+                        selectedValue
+                    }
+                    // Onchange of the text changing the state of the query
+                    // Which will trigger the findFilm method
+                    // To show the suggestions
+                    onChangeText={(text) => findFilm(text)}
+                    placeholder="Enter name here"
+                    renderItem={({item, i}) => (
+                        // For the suggestion view
+                        <TouchableOpacity
+                        onPress={() => {
+                            setSelectedValue3(item.title);
+                            setFilteredFilms([]);
+                        }}>
+                        <Text style={styles.itemText}>
+                            {item.title}
+                        </Text>
+                        </TouchableOpacity>
+                    )}
+                    />
             </Card>
         </Modal>
     );
