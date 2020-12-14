@@ -32,7 +32,6 @@
     "react": "16.13.1",
     "react-dom": "~16.11.0",
     "react-native": "0.63.3",
-    "react-native-autocomplete-input": "^4.2.0",
     "react-native-camera": "^3.40.0",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-permissions": "^2.2.2",

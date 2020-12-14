@@ -1,11 +1,33 @@
 import React from 'react';
-import { Modal, Card, Text, Button, Layout, Input, IndexPath, Select, SelectItem } from '@ui-kitten/components';
-import Autocomplete from 'react-native-autocomplete-input';
+import { Modal, Card, Text, Button, Layout, Input, IndexPath, Select, SelectItem, Autocomplete, AutocompleteItem } from '@ui-kitten/components';
 import {
     StyleSheet,
     TouchableOpacity,
+    ScrollView,
+    View,
+    Keyboard,
+    KeyboardAvoidingView
   } from 'react-native';
   
+  const suggestions = [
+    {
+        title: "Carlos Yanzon"
+    },
+    {
+        title: "Ignacio Lopez Scala"
+    },
+    {
+        title: "Pete Swearengen"
+    },
+    {
+        title: "Colin Schmidt"
+    },
+    {
+        title: "Santosh Mankala"
+    }
+  ];
+
+  const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
 
 export const AddNewTeamModal = ({navigation}) => {
     const [visible, setVisible] = React.useState(true);
@@ -13,65 +35,46 @@ export const AddNewTeamModal = ({navigation}) => {
     const [programSiteValue, setProgramSiteValue] = React.useState();
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
         // For Main Data
-    const [films, setFilms] = React.useState([]);
+    const [names, setNames] = React.useState(suggestions);
     // For Filtered Data
-    const [filteredFilms, setFilteredFilms] = React.useState([]);
+    
+    // const [filteredNames1, setFilteredNames1] = React.useState([]);
+    // const [filteredNames2, setFilteredNames2] = React.useState([]);
+    // const [filteredNames3, setFilteredNames3] = React.useState([]);
     // For Selected Data
-    const [selectedValue, setSelectedValue] = React.useState({});
-    const [selectedValue1, setSelectedValue1] = React.useState({});
-    const [selectedValue2, setSelectedValue2] = React.useState({});
-    const [selectedValue3, setSelectedValue3] = React.useState({});
+   var filteredNames = [{
+        "writingCoach": "",
+        "soccerCoach": "",
+        "programCoordinator": "",
+        "programManager": "",
+        "programSite": ""
+
+   }];
 
     function closeModal() {
         setVisible(false); 
         navigation.goBack();
     }
 
-    const suggestions = [
-        {
-            id: 1,
-            title: "Carlos Yanzon"},
-        {
-            id: 2,
-            title: "Ignacio Lopez Scala"
-        },
-        {
-            id: 3,
-            title: "Pete Swearengen"
-        },
-        {
-            id: 4,
-            title: "Colin Schmidt"
-        }
-      ]
 
-    // React.useEffect(() => {
-    //     fetch('https://aboutreact.herokuapp.com/getpost.php?offset=1')
-    //       .then((res) => res.json())
-    //       .then((json) => {
-    //         const {results: films} = json;
-    //         setFilms(films);
-    //         //setting the data in the films state
-    //       })
-    //       .catch((e) => {
-    //         alert(e);
-    //       });
-    //   }, []);
-
-      const findFilm = (query) => {
-        // Method called every time when we change the value of the input
-        if (query) {
-          // Making a case insensitive regular expression
-          const regex = new RegExp(`${query.trim()}`, 'i');
-          // Setting the filtered film array according the query
-          setFilteredFilms(
-              suggestions.filter((film) => film.title.search(regex) >= 0)
-          );
-        } else {
-          // If the query is null then return blank
-          setFilteredFilms([]);
-        }
+    const onSelect = (name, index) => {
+        filteredNames[name] = names[index].title;
       };
+    
+      const onChangeText = (name, query) => {
+        filteredNames[name] = query;
+        setNames(suggestions.filter(item => filter(item, query)));
+      };
+
+      
+    
+      const renderOptions = (item, index) => (
+        <AutocompleteItem
+          key={index}
+          title={item.title}
+        />
+      );
+
 
     function createTeam() {
         console.log(nameValue, programSiteValue);
@@ -113,11 +116,15 @@ export const AddNewTeamModal = ({navigation}) => {
     );
 
     return(
+        <KeyboardAvoidingView behavior={'position'} style={{flex: 1}}>
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{width:'90%'}}>
+            style={{width:'90%', overflow:"scroll"}}
+            >
+            
             <Card disabled={true} header={Header} footer={Footer}>
+            
                 <Text >Team Name</Text>
                 <Input
                     placeholder='Name'
@@ -126,12 +133,20 @@ export const AddNewTeamModal = ({navigation}) => {
                     size='small'
                 />
                 <Text >Program Site</Text>
-                <Input
+                {/* <Input
                     placeholder='Program Site'
                     value={programSiteValue}
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
-                />
+                /> */}
+                <Autocomplete
+                        placeholder='Name'
+                        value={filteredNames.programSite}
+                        size='small'
+                        onSelect={index => onSelect("programSite", index)}
+                        onChangeText={text => onChangeText("programSite", text)}>
+                        {names.map(renderOptions)}
+                </Autocomplete>
                 <Text >Scores Program Type</Text>
                 <Select
                     selectedIndex={selectedIndex}
@@ -149,36 +164,15 @@ export const AddNewTeamModal = ({navigation}) => {
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
                 /> */}
-                <Autocomplete
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    // Data to show in suggestion
-                    data={filteredFilms}
-                    // Default value if you want to set something in input
-                    defaultValue={
-                        JSON.stringify(selectedValue) === '{}' ?
-                        '' :
-                        selectedValue
-                    }
-                    // Onchange of the text changing the state of the query
-                    // Which will trigger the findFilm method
-                    // To show the suggestions
-                    onChangeText={(text) => findFilm(text)}
-                    placeholder="Enter name here"
-                    renderItem={({item, i}) => (
-                        // For the suggestion view
-                        <TouchableOpacity
-                        onPress={() => {
-                            setSelectedValue(item.title);
-                            setFilteredFilms([]);
-                        }}>
-                        <Text style={styles.itemText}>
-                            {item.title}
-                        </Text>
-                        </TouchableOpacity>
-                    )}
-                    />
+                    <Autocomplete
+                        placeholder='Name'
+                        value={filteredNames.writingCoach}
+                        size='small'
+                        onSelect={(index) => onSelect(filteredNames.writingCoach, index)}
+                        onChangeText={onChangeText}>
+                        {names.map(renderOptions)}
+                </Autocomplete>
+                    
                  <Text >Soccer Coach</Text>
                 {/* <Input
                     placeholder='Name'
@@ -186,36 +180,15 @@ export const AddNewTeamModal = ({navigation}) => {
                     onChangeText={enteredProgramSiteValue => setProgramSiteValue(enteredProgramSiteValue)}
                     size='small'
                 /> */}
-                <Autocomplete
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    // Data to show in suggestion
-                    data={filteredFilms}
-                    // Default value if you want to set something in input
-                    defaultValue={
-                        JSON.stringify(selectedValue) === '{}' ?
-                        '' :
-                        selectedValue
-                    }
-                    // Onchange of the text changing the state of the query
-                    // Which will trigger the findFilm method
-                    // To show the suggestions
-                    onChangeText={(text) => findFilm(text)}
-                    placeholder="Enter name here"
-                    renderItem={({item, i}) => (
-                        // For the suggestion view
-                        <TouchableOpacity
-                        onPress={() => {
-                            setSelectedValue1(item.title);
-                            setFilteredFilms([]);
-                        }}>
-                        <Text style={styles.itemText}>
-                            {item.title}
-                        </Text>
-                        </TouchableOpacity>
-                    )}
-                    />
+                    <Autocomplete
+                        placeholder='Name'
+                        value={filteredNames.soccerCoach}
+                        size='small'
+                        onSelect={(index) => onSelect(filteredNames.soccerCoach, index)}
+                        onChangeText={onChangeText}>
+                        {names.map(renderOptions)}
+                </Autocomplete>
+                    
                  <Text >Program Coordinator</Text>
                 {/* <Input
                     placeholder='Name'
@@ -224,35 +197,14 @@ export const AddNewTeamModal = ({navigation}) => {
                     size='small'
                 /> */}
                 <Autocomplete
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    // Data to show in suggestion
-                    data={filteredFilms}
-                    // Default value if you want to set something in input
-                    defaultValue={
-                        JSON.stringify(selectedValue) === '{}' ?
-                        '' :
-                        selectedValue
-                    }
-                    // Onchange of the text changing the state of the query
-                    // Which will trigger the findFilm method
-                    // To show the suggestions
-                    onChangeText={(text) => findFilm(text)}
-                    placeholder="Enter name here"
-                    renderItem={({item, i}) => (
-                        // For the suggestion view
-                        <TouchableOpacity
-                        onPress={() => {
-                            setSelectedValue2(item.title);
-                            setFilteredFilms([]);
-                        }}>
-                        <Text style={styles.itemText}>
-                            {item.title}
-                        </Text>
-                        </TouchableOpacity>
-                    )}
-                    />
+                        placeholder='Name'
+                        value={filteredNames.programCoordinator}
+                        size='small'
+                        onSelect={(index) => onSelect(filteredNames.programCoordinator, index)}
+                        onChangeText={onChangeText}>
+                        {names.map(renderOptions)}
+                </Autocomplete>
+                
                  <Text >Program Manager</Text>
                 {/* <Input
                     placeholder='Name'
@@ -261,39 +213,47 @@ export const AddNewTeamModal = ({navigation}) => {
                     size='small'
                 /> */}
                 <Autocomplete
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    containerStyle={styles.autocompleteContainer}
-                    // Data to show in suggestion
-                    data={filteredFilms}
-                    // Default value if you want to set something in input
-                    defaultValue={
-                        JSON.stringify(selectedValue) === '{}' ?
-                        '' :
-                        selectedValue
-                    }
-                    // Onchange of the text changing the state of the query
-                    // Which will trigger the findFilm method
-                    // To show the suggestions
-                    onChangeText={(text) => findFilm(text)}
-                    placeholder="Enter name here"
-                    renderItem={({item, i}) => (
-                        // For the suggestion view
-                        <TouchableOpacity
-                        onPress={() => {
-                            setSelectedValue3(item.title);
-                            setFilteredFilms([]);
-                        }}>
-                        <Text style={styles.itemText}>
-                            {item.title}
-                        </Text>
-                        </TouchableOpacity>
-                    )}
-                    />
+                        placeholder='Name'
+                        value={filteredNames.programManager}
+                        size='small'
+                        onSelect={(index) => onSelect(filteredNames.programManager, index)}
+                        onChangeText={onChangeText}>
+                        {names.map(renderOptions)}
+                </Autocomplete>
+                
+         
             </Card>
+            
         </Modal>
+        </KeyboardAvoidingView>
+       
+        
     );
 }
+
+// const autoSuggest = datos => {
+//     const onSelectWriteCoach = (index) => {
+//         setFilteredNames(names[index].title);
+//       };
+    
+//       const onChangeTextWriteCoach = (query) => {
+//         setFilteredNames(query);
+//         setNames(suggestions.filter(item => filter(item, query)));
+//       };
+//       const display = (
+//         <Autocomplete
+//                         placeholder='Name'
+//                         value={filteredNames3}
+//                         size='small'
+//                         onSelect={onSelectProgManager}
+//                         onChangeText={onChangeTextProgManager}>
+//                         {names.map(renderOptions)}
+//          </Autocomplete>
+//       );
+
+//       export default autoSuggest;   
+//     };
+   
 
 const styles = StyleSheet.create({
     container: {
