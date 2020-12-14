@@ -3,9 +3,6 @@ import { Modal, Card, Text, Button, Layout, Input, IndexPath, Select, SelectItem
 import {
     StyleSheet,
     TouchableOpacity,
-    ScrollView,
-    View,
-    Keyboard,
     KeyboardAvoidingView
   } from 'react-native';
   
@@ -58,11 +55,14 @@ export const AddNewTeamModal = ({navigation}) => {
 
 
     const onSelect = (name, index) => {
-        filteredNames[name] = names[index].title;
+        console.log(names[index].title);
+        filteredNames[0][name] = names[index].title;
       };
     
       const onChangeText = (name, query) => {
-        filteredNames[name] = query;
+        // filteredNames[name] = query;
+        filteredNames[0][name] = query;
+        console.log(filteredNames[0][name]);
         setNames(suggestions.filter(item => filter(item, query)));
       };
 
@@ -144,7 +144,7 @@ export const AddNewTeamModal = ({navigation}) => {
                         value={filteredNames.programSite}
                         size='small'
                         onSelect={index => onSelect("programSite", index)}
-                        onChangeText={text => onChangeText("programSite", text)}>
+                        onChangeText={query => onChangeText("programSite", query)}>
                         {names.map(renderOptions)}
                 </Autocomplete>
                 <Text >Scores Program Type</Text>
