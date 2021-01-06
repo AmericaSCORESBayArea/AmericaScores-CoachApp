@@ -176,7 +176,7 @@ class AttendanceScreen extends Component {
         );
 
         const updateButton = () => {
-            if (this.state.isUpdated) return <Button style={{flex:1}} onPress={() => this.updateAttendance()} appearance="outline" status="success"> Updated Attendance </Button>
+            if (this.state.isUpdated) return <Button style={{flex:1}} onPress={() => this.updateAttendance()} appearance="outline" status="success"> Update Attendance </Button>
         }
 
         const updateSuccessCard = (status, text) => (
@@ -187,7 +187,7 @@ class AttendanceScreen extends Component {
                 </Button>
             </Card>
         )
-
+        
         const updateModal = () => (
             <Modal
                 visible={this.state.responseStatusModal}

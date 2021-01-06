@@ -24,6 +24,24 @@ import {
     }
   ];
 
+  const psites = [
+    {
+        title: "Woodrow Wilson Elementary School"
+    },
+    {
+        title: "ASCEND Elementary School"
+    },
+    {
+        title: "Panorama Elementary School"
+    },
+    {
+        title: "Hayward Unified School District"
+    },
+    {
+        title: "Glassbrook Elementary School"
+    }
+  ];
+
   const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
 
 export const AddNewTeamModal = ({navigation}) => {
@@ -33,20 +51,22 @@ export const AddNewTeamModal = ({navigation}) => {
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
         // For Main Data
     const [names, setNames] = React.useState(suggestions);
+    const [sites, setSites] = React.useState(psites);
     // For Filtered Data
-    
-    // const [filteredNames1, setFilteredNames1] = React.useState([]);
-    // const [filteredNames2, setFilteredNames2] = React.useState([]);
-    // const [filteredNames3, setFilteredNames3] = React.useState([]);
+    const [filteredNames, setFilteredNames] = React.useState([]);
+    const [filteredNames1, setFilteredNames1] = React.useState([]);
+    const [filteredNames2, setFilteredNames2] = React.useState([]);
+    const [filteredNames3, setFilteredNames3] = React.useState([]);
+    const [filteredNames4, setFilteredNames4] = React.useState([]);
     // For Selected Data
-   var filteredNames = [{
-        "writingCoach": "",
-        "soccerCoach": "",
-        "programCoordinator": "",
-        "programManager": "",
-        "programSite": ""
+//    var filteredNames = [{
+//         "writingCoach": "",
+//         "soccerCoach": "",
+//         "programCoordinator": "",
+//         "programManager": "",
+//         "programSite": ""
 
-   }];
+//    }];
 
     function closeModal() {
         setVisible(false); 
@@ -55,17 +75,66 @@ export const AddNewTeamModal = ({navigation}) => {
 
 
     const onSelect = (name, index) => {
-        console.log(names[index].title);
-        filteredNames[0][name] = names[index].title;
+        console.log(sites[index].title);
+        setFilteredNames(sites[index].title);
       };
     
       const onChangeText = (name, query) => {
         // filteredNames[name] = query;
-        filteredNames[0][name] = query;
-        console.log(filteredNames[0][name]);
+        setFilteredNames(query);
+        // console.log(filteredNames[0][name]);
+        setSites(psites.filter(item => filter(item, query)));
+      };
+
+      const onSelect1 = (name, index) => {
+        console.log(names[index].title);
+        setFilteredNames1(names[index].title);
+      };
+    
+      const onChangeText1 = (name, query) => {
+        // filteredNames[name] = query;
+        setFilteredNames1(query);
+        // console.log(filteredNames[0][name]);
         setNames(suggestions.filter(item => filter(item, query)));
       };
 
+      const onSelect2 = (name, index) => {
+        console.log(names[index].title);
+        setFilteredNames2(names[index].title);
+      };
+    
+      const onChangeText2 = (name, query) => {
+        // filteredNames[name] = query;
+        setFilteredNames2(query);
+        // console.log(filteredNames[0][name]);
+        setNames(suggestions.filter(item => filter(item, query)));
+      };
+
+      const onSelect3 = (name, index) => {
+        console.log(names[index].title);
+        setFilteredNames3(names[index].title);
+      };
+    
+      const onChangeText3 = (name, query) => {
+        // filteredNames[name] = query;
+        setFilteredNames3(query);
+        // console.log(filteredNames[0][name]);
+        setNames(suggestions.filter(item => filter(item, query)));
+      };
+
+      const onSelect4 = (name, index) => {
+        console.log(names[index].title);
+        setFilteredNames4(names[index].title);
+      };
+    
+      const onChangeText4 = (name, query) => {
+        // filteredNames[name] = query;
+        setFilteredNames4(query);
+        // console.log(filteredNames[0][name]);
+        setNames(suggestions.filter(item => filter(item, query)));
+      };
+
+      
       
     
       const renderOptions = (item, index) => (
@@ -111,7 +180,7 @@ export const AddNewTeamModal = ({navigation}) => {
     const Header = (props) => (
         <Layout {...props}>
           <Text category='h6'>Add a Team</Text>
-          <Text category='s1' appearance='hint'>A team with the following attributes will be created.</Text>
+          <Text category='s1' appearance='hint'>A team with the following attributes will be created for the current season</Text>
         </Layout>
     );
 
@@ -141,11 +210,11 @@ export const AddNewTeamModal = ({navigation}) => {
                 /> */}
                 <Autocomplete
                         placeholder='Name'
-                        value={filteredNames.programSite}
+                        value={filteredNames}
                         size='small'
                         onSelect={index => onSelect("programSite", index)}
                         onChangeText={query => onChangeText("programSite", query)}>
-                        {names.map(renderOptions)}
+                        {sites.map(renderOptions)}
                 </Autocomplete>
                 <Text >Scores Program Type</Text>
                 <Select
@@ -166,10 +235,10 @@ export const AddNewTeamModal = ({navigation}) => {
                 /> */}
                     <Autocomplete
                         placeholder='Name'
-                        value={filteredNames.writingCoach}
+                        value={filteredNames1}
                         size='small'
-                        onSelect={(index) => onSelect(filteredNames.writingCoach, index)}
-                        onChangeText={onChangeText}>
+                        onSelect={index => onSelect1("programSite", index)}
+                        onChangeText={query => onChangeText1("programSite", query)}>
                         {names.map(renderOptions)}
                 </Autocomplete>
                     
@@ -182,10 +251,10 @@ export const AddNewTeamModal = ({navigation}) => {
                 /> */}
                     <Autocomplete
                         placeholder='Name'
-                        value={filteredNames.soccerCoach}
+                        value={filteredNames2}
                         size='small'
-                        onSelect={(index) => onSelect(filteredNames.soccerCoach, index)}
-                        onChangeText={onChangeText}>
+                        onSelect={index => onSelect2("programSite", index)}
+                        onChangeText={query => onChangeText2("programSite", query)}>
                         {names.map(renderOptions)}
                 </Autocomplete>
                     
@@ -198,10 +267,10 @@ export const AddNewTeamModal = ({navigation}) => {
                 /> */}
                 <Autocomplete
                         placeholder='Name'
-                        value={filteredNames.programCoordinator}
+                        value={filteredNames3}
                         size='small'
-                        onSelect={(index) => onSelect(filteredNames.programCoordinator, index)}
-                        onChangeText={onChangeText}>
+                        onSelect={index => onSelect3("programSite", index)}
+                        onChangeText={query => onChangeText3("programSite", query)}>
                         {names.map(renderOptions)}
                 </Autocomplete>
                 
@@ -214,10 +283,10 @@ export const AddNewTeamModal = ({navigation}) => {
                 /> */}
                 <Autocomplete
                         placeholder='Name'
-                        value={filteredNames.programManager}
+                        value={filteredNames4}
                         size='small'
-                        onSelect={(index) => onSelect(filteredNames.programManager, index)}
-                        onChangeText={onChangeText}>
+                        onSelect={index => onSelect4("programSite", index)}
+                        onChangeText={query => onChangeText4("programSite", query)}>
                         {names.map(renderOptions)}
                 </Autocomplete>
                 

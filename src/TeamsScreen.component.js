@@ -66,6 +66,16 @@ class TeamsScreen extends Component {
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
         );
+
+        let otherteamItem = ({ item, index }) => (
+            <ListItem 
+                title={`${item.TeamSeasonName}`}
+                // description={`${item.description} ${index + 1}`}
+                style= {{backgroundColor: "rgba(255,255,255,0.7)"}}
+                accessoryRight={rightArrowIconRender}
+                onPress={() => this.onPressTeam(item.TeamSeasonId)}
+            />
+        );
   
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
@@ -80,10 +90,19 @@ class TeamsScreen extends Component {
                 <Text style={{fontSize: 20, fontStyle: "italic"}}>  My Teams:</Text>
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                     <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
+                        style={{width:"100%", height: "5%" , backgroundColor: "rgba(255,255,255,0.9)"}}
                         data={this.state.selectedData}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
+                        />
+                        <Divider/>
+                        <Text style={{fontSize: 20, fontStyle: "italic"}}>  Other Teams:</Text>
+                        <Divider/>
+                        <List
+                        style={{width:"100%", height: "20%" , backgroundColor: "rgba(255,255,255,0.9)"}}
+                        data={this.state.selectedData}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={otherteamItem}
                         />
                         <Button style={{width:'100%'}} status="primary" onPress={() => this.addTeamOnPress("AddNewTeamModal")}>+ ADD A TEAM</Button>
                 </ImageBackground>
