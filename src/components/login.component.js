@@ -94,7 +94,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
               navigation.navigate("HomeRoot");
             }).catch(error => {console.log(error); _rollbackSetupUser()});
         } else {
-          Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");
           console.log("[AUTH FETCH ISSUE NO userProfile", res.data);
           return _rollbackSetupUser()
         };
