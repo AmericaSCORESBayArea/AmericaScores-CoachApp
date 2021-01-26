@@ -58,7 +58,7 @@ class LogInScreen_Google extends Component {
               navigation.navigate("HomeRoot");
             }).catch(error => {console.log(error); this._rollbackSetupUser()});
         } else {
-          Alert.alert("Not an America Scores account","This account appearenlty does not exist, please contact your Salesforce administrator.");
+          Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");
           return _rollbackSetupUser()
         };
       }).catch(error => Alert.alert("Login Error", "User not found, please contact your company admin."))
