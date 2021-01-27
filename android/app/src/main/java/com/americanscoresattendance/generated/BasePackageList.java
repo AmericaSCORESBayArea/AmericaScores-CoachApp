@@ -1,4 +1,4 @@
-package com.americanscoresapp.generated;
+package com.americanscoresattendance.generated;
 
 import java.util.Arrays;
 import java.util.List;

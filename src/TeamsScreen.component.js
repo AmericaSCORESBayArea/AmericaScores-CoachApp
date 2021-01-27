@@ -5,7 +5,7 @@ import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
 import { ImageBackground } from "react-native";
 
-import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Text } from '@ui-kitten/components';
 import Axios from "axios";
 
 import moment from "moment";
@@ -19,6 +19,10 @@ class TeamsScreen extends Component {
             data: [],
             selectedData: [],
             value: "",
+            otherTeamsData: [],
+            otherTeamsSelectedData: [],
+            season: "",
+            region: "",
         }
     }
 
@@ -31,6 +35,13 @@ class TeamsScreen extends Component {
             })
             .then(response => this.setState({data: response.data, selectedData: response.data}))
             .catch(e => console.log(e));
+            // Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
+            //     params: {
+            //         date: 
+            //     }
+            // })
+            // .then(response => this.setState({otherTeamsData: response.data, otherTeamsSelectedData: response.data}))
+            // .catch(e => console.log(e));
     }
 
     setSearchBarValue(value) { this.setState({value: value}); }
@@ -58,6 +69,16 @@ class TeamsScreen extends Component {
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
         );
+
+        let otherteamItem = ({ item, index }) => (
+            <ListItem 
+                title={`${item.TeamSeasonName}`}
+                // description={`${item.description} ${index + 1}`}
+                style= {{backgroundColor: "rgba(255,255,255,0.7)"}}
+                accessoryRight={rightArrowIconRender}
+                onPress={() => this.onPressTeam(item.TeamSeasonId)}
+            />
+        );
   
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
@@ -69,12 +90,22 @@ class TeamsScreen extends Component {
                     onChangeText={this.onChangeText} >
                 </Autocomplete>
                 <Divider/>
+                <Text style={{fontSize: 20, fontStyle: "italic"}}>  My Teams:</Text>
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                     <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
+                        style={{width:"100%", height: "5%" , backgroundColor: "rgba(255,255,255,0.9)"}}
                         data={this.state.selectedData}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
+                        />
+                        <Divider/>
+                        <Text style={{fontSize: 20, fontStyle: "italic"}}>  Other Teams:</Text>
+                        <Divider/>
+                        <List
+                        style={{width:"100%", height: "20%" , backgroundColor: "rgba(255,255,255,0.9)"}}
+                        data={this.state.selectedData}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={otherteamItem}
                         />
                 </ImageBackground>
 

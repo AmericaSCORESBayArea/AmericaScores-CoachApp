@@ -78,12 +78,14 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   const loginCode = useInputState();
 
   async function _setupUser(userIdentifier, serviceProvider) {
+    console.log(userIdentifier, serviceProvider);
     await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
         useridentifier: userIdentifier,
         serviceprovider: serviceProvider
       }
       }).then(res => {
+        console.log(res);
         if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
         const userProfile = res.data;
         if (userProfile.ContactId) {
