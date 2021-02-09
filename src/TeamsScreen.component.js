@@ -26,6 +26,19 @@ class TeamsScreen extends Component {
         }
     }
 
+    loadOtherTeams = () => {
+        const {user} = this.props.user;
+        Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasonsNotOwnedByCoach`, {
+            params: {
+                region: this.state.region,
+                season: this.state.season 
+            }
+        })
+        .then(responsed => {this.setState({otherTeamsData: responsed.data, otherTeamsSelectedData: responsed.data});
+    console.log(responsed.data);
+    })
+    }
+
     componentDidMount() {
         const {user} = this.props.user;
         Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
@@ -33,11 +46,18 @@ class TeamsScreen extends Component {
                     date: moment().format("YYYY-MM-DD")
                 }
             })
-            .then(response => this.setState({data: response.data, selectedData: response.data}))
+            .then(response => {
+                 this.setState({data: response.data, selectedData: response.data, season: response.data[0].SeasonId, region: response.data[0].Region});
+                console.log(this.state.region, this.state.season);
+            }).then(this.loadOtherTeams)
             .catch(e => console.log(e));
-            // Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
+
+            
+            
+            // Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasonsNotOwnedByCoach`, {
             //     params: {
-            //         date: 
+            //         region: this.state.region,
+            //         season: this.state.season 
             //     }
             // })
             // .then(response => this.setState({otherTeamsData: response.data, otherTeamsSelectedData: response.data}))
@@ -59,6 +79,12 @@ class TeamsScreen extends Component {
         this.props.navigation.navigate("Team Activities", {teamSeasonId: teamSeasonId});
     }
 
+    onPressOtherTeam(modalScreen, item) {
+        // setOverflowMenuVisible(false);
+        const {user} = this.props.user;
+        this.props.navigation.navigate(modalScreen, {item: item, user: user});
+    };
+
     render() {
         const rightArrowIconRender = (props) => ( <Icon {...props} name='arrow-ios-forward-outline'/>);
         let teamItem = ({ item, index }) => (
@@ -76,7 +102,7 @@ class TeamsScreen extends Component {
                 // description={`${item.description} ${index + 1}`}
                 style= {{backgroundColor: "rgba(255,255,255,0.7)"}}
                 accessoryRight={rightArrowIconRender}
-                onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                onPress={() => this.onPressOtherTeam("AddOtherTeamModal", item)}
             />
         );
   
@@ -103,7 +129,7 @@ class TeamsScreen extends Component {
                         <Divider/>
                         <List
                         style={{width:"100%", height: "20%" , backgroundColor: "rgba(255,255,255,0.9)"}}
-                        data={this.state.selectedData}
+                        data={this.state.otherTeamsSelectedData}
                         ItemSeparatorComponent={Divider}
                         renderItem={otherteamItem}
                         />
