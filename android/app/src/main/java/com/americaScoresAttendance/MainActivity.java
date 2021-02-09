@@ -1,4 +1,4 @@
-package com.americanscoresapp;
+package com.americaScoresAttendance;
 
 import android.os.Bundle;
 
