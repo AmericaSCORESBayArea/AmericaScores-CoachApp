@@ -132,7 +132,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.americaScores.app"
+        applicationId "com.americaScoresAttendance.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
