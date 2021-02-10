@@ -7,6 +7,7 @@ import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
+import moment from "moment";
 
 class AttendanceScreen extends Component {
     constructor(props) {
@@ -69,7 +70,7 @@ class AttendanceScreen extends Component {
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
                 completeTeamSeasonId: currentSession.TeamSeasonId,
                 topic: currentSession.Sessions[0].SessionTopic,
-                date: currentSession.Sessions[0].SessionDate,
+                date: moment(currentSession.Sessions[0].SessionDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
 
