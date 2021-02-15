@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
+
 
 const useInputState = (initialValue = '') => {
     const [value, setValue] = React.useState(initialValue);
@@ -83,9 +85,10 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         useridentifier: userIdentifier,
         serviceprovider: serviceProvider
       }
-      }).then(res => {
+      }).then(async res => {
         if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
         const userProfile = res.data;
+        await setLoginLocal(userProfile.ContactId);
         if (userProfile.ContactId) {
           _syncUserSessions(userProfile)
             .then(userSessions => {
@@ -100,6 +103,15 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         };
       }).catch(error => console.log("[AUTH ERROR] SOMETHING ELSE HAPPENED", error));
   }
+
+  async function setLoginLocal(loginData){
+    try {
+      await AsyncStorage.setItem('loginData', loginData);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  
 
   async function confirmCode() {
     try {
