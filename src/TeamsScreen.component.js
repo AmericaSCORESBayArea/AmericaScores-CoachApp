@@ -23,6 +23,7 @@ class TeamsScreen extends Component {
     }
 
     componentDidMount() {
+        
         const {user} = this.props.user;
         Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
                 params: {
@@ -45,7 +46,7 @@ class TeamsScreen extends Component {
     };
 
     onPressTeam(teamSeasonId) {
-        this.props.navigation.navigate("Team Activities", {teamSeasonId: teamSeasonId});
+        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId});
     }
 
     render() {
