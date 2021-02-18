@@ -9,11 +9,11 @@ import moment from "moment";
 
 import * as GoogleSignIn from 'expo-google-sign-in';
 import auth from '@react-native-firebase/auth';
-import appleAuth, {
-  AppleButton,
-  AppleAuthRequestScope,
-  AppleAuthRequestOperation,
-} from '@invertase/react-native-apple-authentication';
+// import appleAuth, {
+//   AppleButton,
+//   AppleAuthRequestScope,
+//   AppleAuthRequestOperation,
+// } from '@invertase/react-native-apple-authentication';
 
 import { connect } from 'react-redux';
 import { loginUser, logOutUser } from '../Redux/actions/user.actions';
@@ -86,41 +86,41 @@ class LogInScreen_Google extends Component {
       }
     };
 
-    signInApple = async () => {
-      console.log("[APPLE LOGIN | Start]");
-      try {
-        const appleAuthRequestResponse = await appleAuth.performRequest({
-          requestedOperation: AppleAuthRequestOperation.LOGIN,
-          requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
-        });
-        // Ensure Apple returned a user identityToken
-        if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+    // signInApple = async () => {
+    //   console.log("[APPLE LOGIN | Start]");
+    //   try {
+    //     const appleAuthRequestResponse = await appleAuth.performRequest({
+    //       requestedOperation: AppleAuthRequestOperation.LOGIN,
+    //       requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
+    //     });
+    //     // Ensure Apple returned a user identityToken
+    //     if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
 
-        if (!appleAuthRequestResponse.email) Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);
-        console.log("[APPLE LOGIN] Successful request");
-        // Create a Firebase credential from the response
-        const { identityToken, nonce } = appleAuthRequestResponse;
-        const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+    //     if (!appleAuthRequestResponse.email) Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);
+    //     console.log("[APPLE LOGIN] Successful request");
+    //     // Create a Firebase credential from the response
+    //     const { identityToken, nonce } = appleAuthRequestResponse;
+    //     const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
   
-        if (!appleCredential) {
-          Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
-          throw "[APPLE LOGIN | ERROR] in appleCredential"; 
-        } else console.log("[APPLE LOGIN] got appleCredential ");
+    //     if (!appleCredential) {
+    //       Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+    //       throw "[APPLE LOGIN | ERROR] in appleCredential"; 
+    //     } else console.log("[APPLE LOGIN] got appleCredential ");
 
-        // Sign the user in with the credential
-        const response = auth().signInWithCredential(appleCredential);
-        if (!response) {
-          Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
-          throw "[APPLE LOGIN | ERROR] in signInWithCredentials" 
-        } else console.log("[APPLE LOGIN] signed In with credentials");
+    //     // Sign the user in with the credential
+    //     const response = auth().signInWithCredential(appleCredential);
+    //     if (!response) {
+    //       Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+    //       throw "[APPLE LOGIN | ERROR] in signInWithCredentials" 
+    //     } else console.log("[APPLE LOGIN] signed In with credentials");
         
-        //TODO Change the gmail for email in backend
-        this._setupUser(appleAuthRequestResponse.email,"email");
-      } catch (error) {
-        Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
-        console.log("[APPLE LOGIN ERROR]", error);
-      }
-    }
+    //     //TODO Change the gmail for email in backend
+    //     this._setupUser(appleAuthRequestResponse.email,"email");
+    //   } catch (error) {
+    //     Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+    //     console.log("[APPLE LOGIN ERROR]", error);
+    //   }
+    // }
 
     async _syncUserSessions(user) {
       Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
@@ -142,7 +142,7 @@ class LogInScreen_Google extends Component {
         );
         const PhoneIcon = (props) => ( <Icon {...props} name='phone'/> );
         const GoogleIcon = (props) => ( <Icon {...props} name='google'/> );
-        const AppleIcon = (props) => ( <Icon {...props} name='external-link'/> )
+        // const AppleIcon = (props) => ( <Icon {...props} name='external-link'/> )
         const BackArrrowIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline'/> )
         
         return(
@@ -159,7 +159,7 @@ class LogInScreen_Google extends Component {
                         <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                           <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} appearance="ghost" status="primary" onPress={() => navigation.navigate("PhoneLogin_phone")}>SIGN IN WITH PHONE</Button>
                           <Button style={{width:'100%'}} accessoryLeft={GoogleIcon} appearance="ghost" status="danger" onPress={() => this.signInGoogle()}>SIGN IN WITH GOOGLE</Button>
-                          {appleAuth.isSupported && (
+                          {/* {appleAuth.isSupported && (
                             <AppleButton
                               buttonStyle={AppleButton.Style.BLACK}
                               buttonType={AppleButton.Type.SIGN_IN}
@@ -169,7 +169,7 @@ class LogInScreen_Google extends Component {
                               }}
                               onPress={() => this.signInApple()}
                             />
-                          )}
+                          )} */}
                         </Layout>
                       </Layout>            
                       </Layout>   
