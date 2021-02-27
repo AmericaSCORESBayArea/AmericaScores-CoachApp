@@ -55,3 +55,82 @@ Here are a list of errors that may occur when installing the project and how to 
 
 ### Before Running
 ApiConfig.js needs to be updated with valid clientId and clientSecret so firebase can connect to the API's.
+
+## Additional iOS Configuration Details
+The following files appear to contain important version information to getting the build to complete:
+ios/AmericanScoresApp.xcodeproj/project.pbxproj
+ios/Podfile
+ios/Podfile.lock
+This guide is useful to understanding how and when to use pod install, update, outdate.
+### A Step-by-Step Troubleshooting Record
+starting iOS build from scratch...
+- [x] npm install warning
+``Successfully installed react-native-unimodules. This package contains core unimodules that are commonly depended on by other unimodules. You will need to configure your project before using other unimodules like expo-camera, expo-media-library and others.
+See configuration guide:
+  https://www.npmjs.com/package/react-native-unimodules/v/0.10.1``
+  
+- [x] pod install has this warning
+``[!] CocoaPods could not find compatible versions for pod "Firebase/DynamicLinks":
+  In snapshot (Podfile.lock):
+    Firebase/DynamicLinks (= 6.30.0, ~> 6.30.0)
+  In Podfile:
+    RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links`) was resolved to 7.5.13, which depends on
+      Firebase/DynamicLinks (~> 6.34.0)
+You have either:
+ * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.
+ * changed the constraints of dependency `Firebase/DynamicLinks` inside your development pod `RNFBDynamicLinks`.
+   You should run `pod update Firebase/DynamicLinks` to apply changes you've made.``
+   
+- [x] additional warnings
+``[!] NPM package '@react-native-firebase/auth' depends on '@react-native-firebase/app' v8.3.1 but found v8.4.7, this might cause build issues or runtime crashes.
+[!] NPM package '@react-native-firebase/dynamic-links' depends on '@react-native-firebase/app' v9.0.0 but found v8.4.7, this might cause build issues or runtime crashes.
+[!] NPM package '@react-native-firebase/auth' depends on '@react-native-firebase/app' v8.3.1 but found v8.4.7, this might cause build issues or runtime crashes.
+[!] NPM package '@react-native-firebase/dynamic-links' depends on '@react-native-firebase/app' v9.0.0 but found v8.4.7, this might cause build issues or runtime crashes.``
+- [x] pod update then
+- [x] pod update Firebase/DynamicLinks
+this clears the red warnings leaving only the version warnings above.
+
+- [x] npm outdated
+``Package                                       Current   Wanted  Latest  Location
+@invertase/react-native-apple-authentication    1.1.2    1.1.2   2.1.0  global
+@react-native-community/eslint-config           0.0.5    0.0.5   2.0.0  global
+@react-native-community/google-signin           4.0.3    4.0.3   5.0.0  global
+@react-native-firebase/app                      8.4.7    8.4.7  10.8.1  global
+@react-native-firebase/auth                     8.3.3    8.3.3  10.8.1  global
+@react-native-firebase/dynamic-links           7.5.13   7.5.13  10.8.1  global
+babel-jest                                     24.9.0   24.9.0  26.6.3  global
+expo                                          38.0.11  38.0.11  40.0.1  global
+expo-app-auth                                   9.1.1    9.1.1  10.0.0  global
+expo-google-sign-in                             8.2.1    8.2.1   9.0.0  global
+expo-updates                                   0.2.14   0.2.14   0.4.2  global
+firebase                                        7.9.0    7.9.0   8.2.9  global
+jest                                           25.2.7   25.2.7  26.6.3  global
+metro-react-native-babel-preset                0.58.0   0.58.0  0.65.1  global
+react                                         16.13.1  16.13.1  17.0.1  global
+react-dom                                     16.11.0  16.11.0  17.0.1  global
+react-native                                   0.63.3   0.63.3  0.63.4  global
+react-native-permissions                        2.2.2    2.2.2   3.0.1  global
+react-native-safe-area-context                  3.0.2    3.0.2   3.1.9  global
+react-native-unimodules                        0.10.1   0.10.1  0.12.0  global
+react-native-web                               0.11.7   0.11.7  0.15.0  global
+react-test-renderer                           16.11.0  16.11.0  17.0.1  global``
+- [x] running react-native ios fails:
+``ld: warning: directory not found for option '-L-L/Users/retep/Library/Developer/Xcode/DerivedData/AmericanScoresApp-ekggsecaraotjqaswejufbfltlnu/Build/Products/Debug-iphonesimulator/AppAuth'
+ld: library not found for -lAppAuth
+clang: error: linker command failed with exit code 1 (use -v to see invocation)``
+- [x] load workspace in xcode
+- [x] bump iOS target to iOS 14.1
+- [x] bump project format to xcode 12.0
+- [x] bump Pods project from iOS 8.0 to 14.1.
+- [x] perform a first-time build in xcode
+Warnings that may be addressed in later builds
+``Conversion to Swift 5 is available
+Legacy build system will be removed in a future release.``
+Issue 'A':
+``Error: AppDelegame.m ... 'EXSplashScreen/EXSplashScreenService.h' file not found``
+- [x] Run the build again. 
+Issue 'B':
+``AmericaScores-attendanceApp/src/config/ios/GoogleService-Info.plist:0: Reading data: The file GoogleService-Info.plist couldn't be opened because there is no such file.``
+- [x] Verify the file is present in the project and build target selected. Re-Add it to the Project. Also add it to the Build Phases: Compile Sources list.
+Check and remove any incorrect references ``example../src/config/..``
+- [x] Select an appropriate build target and build again
