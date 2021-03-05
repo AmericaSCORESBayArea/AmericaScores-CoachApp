@@ -25,6 +25,7 @@ class ActivitiesScreen extends Component {
 
     async componentDidMount() {
         this._syncActivities();
+        await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
             setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
