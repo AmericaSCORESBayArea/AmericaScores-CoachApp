@@ -4,6 +4,7 @@ import { Button, Layout, Text, Icon } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 import Axios from "axios";
 import {ApiConfig} from "../config/ApiConfig";
+import AsyncStorage from '@react-native-community/async-storage';
 
 import moment from "moment";
 
@@ -23,6 +24,10 @@ import { bindActionCreators } from 'redux';
 class LogInScreen_Google extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+          logged: "false",
+          email: "",
+        };
     }
 
     componentDidMount() {
@@ -30,7 +35,19 @@ class LogInScreen_Google extends Component {
     }
 
     initAsync = async () => {
+      try {
         await GoogleSignIn.initAsync({clientId: '688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com'});
+
+        const loggedStat = await AsyncStorage.getItem('loggedStatus');
+        const email = await AsyncStorage.getItem('userAppleEmail');
+        if(loggedStat !== null) {
+          this.setState({logged: loggedStat});
+          this.setState({email: email});
+        }
+      } catch(e) {
+        // error reading value
+      }
+        
     };
 
     _syncUserWithStateAsync = async () => {
@@ -40,6 +57,7 @@ class LogInScreen_Google extends Component {
 
     _setupUser = async (userIdentifier, serviceProvider) => {
       const {actions, navigation} = this.props;
+      
 
       Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
@@ -50,8 +68,10 @@ class LogInScreen_Google extends Component {
         const userProfile = response.data;
         if (userProfile.ContactId) {
           console.log(userProfile);
+          this.setState({logged: "true"});
           this._syncUserSessions(userProfile)
             .then(userSessions => {
+              
               console.log(userSessions);
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
@@ -86,13 +106,45 @@ class LogInScreen_Google extends Component {
       }
     };
 
+    appleAlert = () =>{
+      if(this.state.logged === "true" && this.state.email !== null){
+        this._setupUser(this.state.email,"email");
+      } else{
+      Alert.alert(
+        "Alert Title",
+        "An America Scores account is not found linked to this Apple ID. Choose [Continue] to proceed and link or create your America Scores account. Your Apple ID will remain anonymous",
+        [
+          {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel"
+        },
+        { text: "Continue", onPress: () => this.signInApple() }
+      ],
+      { cancelable: false }
+    );
+      }
+    }
+
     signInApple = async () => {
       console.log("[APPLE LOGIN | Start]");
       try {
+        if(this.state.logged === "true"){
+          this._setupUser(this.state.email,"email");
+        } else{
         const appleAuthRequestResponse = await appleAuth.performRequest({
           requestedOperation: AppleAuthRequestOperation.LOGIN,
           requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
         });
+
+        console.log("email: "+appleAuthRequestResponse.email);
+        this.setState({email: appleAuthRequestResponse.email});
+        
+
+        await AsyncStorage.setItem('userAppleEmail', this.state.email);
+        
+
+        
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
 
@@ -116,6 +168,7 @@ class LogInScreen_Google extends Component {
         
         //TODO Change the gmail for email in backend
         this._setupUser(appleAuthRequestResponse.email,"email");
+      }
       } catch (error) {
         Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
         console.log("[APPLE LOGIN ERROR]", error);
@@ -167,7 +220,7 @@ class LogInScreen_Google extends Component {
                                 width: '100%',
                                 height: 50
                               }}
-                              onPress={() => this.signInApple()}
+                              onPress={() => this.appleAlert()}
                             />
                           )}
                         </Layout>
