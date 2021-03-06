@@ -6,6 +6,9 @@ import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
 
+import AsyncStorage from '@react-native-community/async-storage';
+
+
 import {ApiConfig} from "./config/ApiConfig";
 
 import { connect } from 'react-redux';
@@ -25,6 +28,7 @@ class ActivitiesScreen extends Component {
 
     async componentDidMount() {
         this._syncActivities();
+        await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
             setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
