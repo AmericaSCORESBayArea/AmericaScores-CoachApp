@@ -136,20 +136,24 @@ class LogInScreen_Google extends Component {
           requestedOperation: AppleAuthRequestOperation.LOGIN,
           requestedScopes: [AppleAuthRequestScope.EMAIL, AppleAuthRequestScope.FULL_NAME],
         });
-
-        console.log("email: "+appleAuthRequestResponse.email);
-        this.setState({email: appleAuthRequestResponse.email});
-        
-
-        await AsyncStorage.setItem('userAppleEmail', this.state.email);
         
 
         
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
 
-        if (!appleAuthRequestResponse.email) Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);
+        if (!appleAuthRequestResponse.email){
+          Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);}
+          else{
+            console.log("email: "+appleAuthRequestResponse.email);
+        this.setState({email: appleAuthRequestResponse.email});
+        
+
+        await AsyncStorage.setItem('userAppleEmail', this.state.email);
+
         console.log("[APPLE LOGIN] Successful request");
+          }
+        
         // Create a Firebase credential from the response
         const { identityToken, nonce } = appleAuthRequestResponse;
         const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
