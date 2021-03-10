@@ -35,12 +35,12 @@ class LogInScreen_Google extends Component {
     }
 
     initAsync = async () => {
+      await GoogleSignIn.initAsync({clientId: '688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com'});
       try {
-        await GoogleSignIn.initAsync({clientId: '688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com'});
-
         const loggedStat = await AsyncStorage.getItem('loggedStatus');
         const email = await AsyncStorage.getItem('userAppleEmail');
         if(loggedStat !== null) {
+          console.log(email);
           this.setState({logged: loggedStat});
           this.setState({email: email});
         }
@@ -146,12 +146,12 @@ class LogInScreen_Google extends Component {
           Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);}
           else{
             console.log("email: "+appleAuthRequestResponse.email);
-        this.setState({email: appleAuthRequestResponse.email});
-        
+            this.setState({email: appleAuthRequestResponse.email});
+            
 
-        await AsyncStorage.setItem('userAppleEmail', this.state.email);
+            await AsyncStorage.setItem('userAppleEmail', this.state.email);
 
-        console.log("[APPLE LOGIN] Successful request");
+            console.log("[APPLE LOGIN] Successful request");
           }
         
         // Create a Firebase credential from the response
