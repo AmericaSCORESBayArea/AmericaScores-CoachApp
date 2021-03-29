@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card } from '@ui-kitten/components';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -8,6 +8,12 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
+
+const loadingIndicator = (props) => (
+    <View style={[props.style, styles.indicator]}>
+      <Spinner size='medium' status='basic'/>
+    </View>
+  );
 
 class AttendanceScreen extends Component {
     constructor(props) {
@@ -19,6 +25,7 @@ class AttendanceScreen extends Component {
             responseSuccess: false,
             responseStatusModal: false,
             currentSession: undefined,
+            updatingModalstate: false,
         }
     }
 
@@ -108,10 +115,10 @@ class AttendanceScreen extends Component {
                 `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
                 enrollments
             ).then(res => {
-                if (res.status === 200) this.setState({responseSuccess: true, isUpdated: false, responseStatusModal: true})
-                else this.setState({responseStatusModal: true})
+                if (res.status === 200) this.setState({responseSuccess: true, isUpdated: false, responseStatusModal: true, updatingModalstate: false})
+                else this.setState({responseStatusModal: true, updatingModalstate: false})
             }).catch(error => {
-                this.setState({responseStatusModal: true});
+                this.setState({responseStatusModal: true, updatingModalstate: false});
                 throw error;
             })
     }
@@ -152,6 +159,14 @@ class AttendanceScreen extends Component {
         return parsedEnrollments;
     }
 
+    toogleUpdate(){
+        this.updateAttendance();
+        this.setState({updatingModalstate: true});
+        
+    }
+
+    toogleSpinnerOff(){ this.setState({updatingModalstate: false}) }
+
     toggleNotificationOff() { this.setState({responseStatusModal: false, responseSuccess: false}) }
 
     render() {
@@ -177,7 +192,11 @@ class AttendanceScreen extends Component {
         );
 
         const updateButton = () => {
-            if (this.state.isUpdated) return <Button style={{flex:1}} onPress={() => this.updateAttendance()} appearance="outline" status="success"> Update Attendance </Button>
+            if (this.state.isUpdated){
+                 return <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <Button style={{width:"70%"}} onPress={() => this.toogleUpdate()} size='large' appearance="filled" status="success"> Update Attendance </Button>
+                </View>
+                }
         }
 
         const updateSuccessCard = (status, text) => (
@@ -199,15 +218,30 @@ class AttendanceScreen extends Component {
                     updateSuccessCard("danger", "Something went wrong. Please, try again.")
                 }
             </Modal>)
+
+        const spinnerCard = () => (
+            <Card disabled={true}>
+                <Spinner size='large' status='primary'/>
+             </Card>
+        )
+
+        const updatingModal = () => (
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.updatingModalstate}
+                backdropStyle={styles.backdrop}>
+                    {spinnerCard()}
+            </Modal>
+        )
         
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <View style={styles.row}>
                     <View style={styles.column}>
-                        {descriptionRowText("Team",this.state.teamName)}
-                        {descriptionRowText("Class",this.state.topic)}
-                        {descriptionRowText("Date", this.state.date)}
-                        {descriptionRowText("Students", this.state.numberOfStudents)}
+                        {descriptionRowText("Team:",this.state.teamName)}
+                        {descriptionRowText("Session Type:",this.state.topic)}
+                        {descriptionRowText("Date:", this.state.date)}
+                        {descriptionRowText("Students:", this.state.numberOfStudents)}
                     </View>
                 </View>
                 <Divider/>
@@ -232,6 +266,7 @@ class AttendanceScreen extends Component {
                 {descriptionArea()}
                 {updateModal()}
                 {updateButton()}
+                {updatingModal()}
                 <List
                     style={{width: "100%"}}
                     data={this.state.enrollments}
@@ -274,5 +309,8 @@ const styles = StyleSheet.create({
     },
     modalText: {
         margin: 15
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     }
 });
