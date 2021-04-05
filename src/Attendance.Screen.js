@@ -68,7 +68,7 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-
+        
         if (currentSession) {            
             const newState = {
                 sessionId: currentSession.Sessions[0].SessionId,
@@ -83,6 +83,7 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
+            await this._fetchSessionInfo();
             console.log("enrollments", this.state.enrollments);
         }
     }
@@ -141,6 +142,18 @@ class AttendanceScreen extends Component {
         }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ATTENDANCE |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`) })
     }
 
+     async _fetchSessionInfo() {
+        console.log("[Attendance.Screen.js] : FETCH SESSION") 
+        await Axios.get(`${ApiConfig.dataApi}/sessions/${this.state.sessionId}`)
+        .then(async res => {
+            console.log(res.data.SessionTopic);
+            await this.setState({
+                date: res.data.SessionDate.format("MMM-DD-YYYY"),
+                topic: res.data.SessionTopic
+            });
+        }).catch(error => error)
+    }
+
     parseFetchedEnrollmentToObject(enrollmentData) {
         let parsedEnrollments = [];
         enrollmentData.forEach(enrollment => {
@@ -165,6 +178,10 @@ class AttendanceScreen extends Component {
         
     }
 
+    editSession(modalScreen){
+        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date, oldTopic: this.state.topic});
+    }
+
     toogleSpinnerOff(){ this.setState({updatingModalstate: false}) }
 
     toggleNotificationOff() { this.setState({responseStatusModal: false, responseSuccess: false}) }
@@ -172,6 +189,7 @@ class AttendanceScreen extends Component {
     render() {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
+        const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
 
         const studentAttendanceItem = ({ item, index }) => (
             <ListItem
@@ -273,6 +291,7 @@ class AttendanceScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
+                    <Button style={{width:'100%'}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
 
             </Layout>
         )

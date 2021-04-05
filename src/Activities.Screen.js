@@ -77,6 +77,7 @@ class ActivitiesScreen extends Component {
     async selectDate(date) { 
         await this.setState({date: date})
         const activitiesList = await this.fetchActivities();
+        console.log(activitiesList);
         this._syncReduxActivities(activitiesList);
     }
 
