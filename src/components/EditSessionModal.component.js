@@ -1,0 +1,170 @@
+import React from 'react';
+import { Modal, Card, Text, Button, Layout, Datepicker,Icon, IndexPath, Select, SelectItem, Spinner } from '@ui-kitten/components';
+import { MomentDateService } from '@ui-kitten/moment';
+import Axios from 'axios';
+import { ApiConfig } from '../config/ApiConfig';
+import { StyleSheet, View, Alert  } from 'react-native';
+import { AttendanceScreen } from '../Attendance.Screen';
+
+export const EditSessionModal = ({route, navigation}) => {
+    const [visible, setVisible] = React.useState(true);
+    const [date, setDate] = React.useState();
+    const {session, oldDate, oldTopic} = route.params;
+    const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
+    const [updatingModalstate, setupdatingModalstate] = React.useState(false);
+    const [responseSuccess, setResponseSuccess] = React.useState(false);
+
+    function closeModal() {
+        setVisible(false); 
+        navigation.goBack();
+    }
+
+    async function editSession() {
+        let changes =
+            {
+                "SessionDate": date.format("YYYY-MM-DD"),
+                "SessionTopic": displayValue,
+            };
+        console.log(changes);
+        await pushChanges(changes);
+        
+    }
+
+    const Footer = (props) => (
+        <Layout {...props}>
+            <Button appearance='ghost' status='danger' onPress={() => closeModal()}>
+                Cancel
+            </Button>
+            <Button onPress={() => editSession()}>
+                SAVE CHANGES
+            </Button>
+        </Layout>
+    );
+
+    const spinnerCard = () => (
+        <Card disabled={true}>
+            <Spinner size='large' status='primary'/>
+         </Card>
+    )
+
+    const updatingModal = () => (
+        <Modal
+            style={{flexDirection: 'row',
+            alignItems: 'center',
+            alignSelf:'center',
+            shadowRadius: 10,
+            shadowOpacity: 0.12,
+            shadowColor: "#000"}}
+            visible={updatingModalstate}
+            backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}>
+                {spinnerCard()}
+        </Modal>
+    )
+
+    async function pushChanges(changes){
+     setupdatingModalstate(true);   
+     Axios.patch(
+                `${ApiConfig.dataApi}/sessions/${session}`,
+                changes
+            ).then(res => {
+                Alert.alert(
+                    res.data.message,
+                    "Changes applied: \nOld: "+oldDate+" "+oldTopic+"\nNew: "+date.format("MMM-DD-YYYY")+" "+displayValue+"\n\nTo see this changes applied, return to the Sessions List and select the date again.",
+                    [
+                      { text: "OK", onPress: () => navigation.navigate('Home')}
+                    ]
+                  );
+                setupdatingModalstate(false);
+                
+            }).catch(error => {
+                throw error;
+            })
+    }
+
+    async function selectDate(date) { 
+        await setDate(date)
+        const activitiesList = await this.fetchActivities();
+        console.log(activitiesList);
+        this._syncReduxActivities(activitiesList);
+    }
+
+    const Header = (props) => (
+        <Layout {...props}>
+          <Text category='h6'>Edit Session</Text>
+          <Text category='s1' appearance='hint'>Select the properties you wish to change.</Text>
+        </Layout>
+    );
+
+    const data = [
+        'Soccer',
+        'Writing',
+      ];
+
+    
+
+    const renderOption = (title) => (
+        <SelectItem title={title}/>
+    );
+    
+
+    const displayValue = data[selectedIndex.row];
+
+    const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
+    const dateService = new MomentDateService();
+    const searchBox = () => (
+        <Datepicker
+            placeholder='Pick Date'
+            date={date}
+            // min={minDatePickerDate}
+            style={{margin: "2%", }}
+            dateService={dateService}
+            onSelect={nextDate => selectDate(nextDate)}
+            accessoryRight={CalendarIcon}
+        />
+    );
+
+    return(
+        <Modal
+            visible={visible}
+            onBackdropPress={() => closeModal()}
+            style={{width:'80%'}}>
+            <Card disabled={true} header={Header} footer={Footer}>
+                <Text >Change Session Date:</Text>
+                {searchBox()}
+                {updatingModal()}
+                <Text >Change Session Type:</Text>
+                <Select
+                    selectedIndex={selectedIndex}
+                    size='medium'
+                    value={displayValue}
+                    placeholder='Select a type'
+                    // label='Scores Program Type'
+                    onSelect={index => setSelectedIndex(index)}>
+                    {data.map(renderOption)}
+                </Select>
+            </Card>
+        </Modal>
+    );
+}
+
+const styles = StyleSheet.create({
+    popOverContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
+    modalText: {
+        margin: 15
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    }
+});
+
+
+
+  
+  

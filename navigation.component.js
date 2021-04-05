@@ -6,6 +6,7 @@ import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone } from './src/c
 import { HomeScreen } from './home.component';
 import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
+import { EditSessionModal } from './src/components/EditSessionModal.component';
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -28,6 +29,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name='Home' component={HomeScreen}/>
       <HomeRootStack.Screen name="CreateStudentModal" component={CreateStudentModal}/>
       <HomeRootStack.Screen name="AddStudentToTeamModal" component={AddStudentToTeamModal}/>
+      <HomeRootStack.Screen name="EditSessionModal" component={EditSessionModal}/>
     </HomeRootStack.Navigator>
   );
 }
