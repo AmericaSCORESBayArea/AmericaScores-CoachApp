@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, RefreshControl, ScrollView } from 'react-native';
 
 import { connect } from 'react-redux';
 import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
@@ -8,6 +8,10 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
+
+const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
 
 const loadingIndicator = (props) => (
     <View style={[props.style, styles.indicator]}>
@@ -28,6 +32,7 @@ class AttendanceScreen extends Component {
             updatingModalstate: false,
         }
     }
+    
 
     componentDidMount() {
         this._setCurrentSessionData();
@@ -68,16 +73,25 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        let currentDate = moment();
+        let currentTopic = "";
         
-        if (currentSession) {            
+        if (currentSession) {
+            console.log("[Attendance.Screen.js] : FETCH SESSION") 
+            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSession.Sessions[0].SessionId}`)
+            .then(async res => {
+                console.log(res.data.SessionTopic);
+                currentDate = res.data.SessionDate;
+                currentTopic = res.data.SessionTopic;
+            }).catch(error => error)            
             const newState = {
                 sessionId: currentSession.Sessions[0].SessionId,
                 enrollments: currentSession.Enrollments,
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
                 completeTeamSeasonId: currentSession.TeamSeasonId,
-                topic: currentSession.Sessions[0].SessionTopic,
-                date: moment(currentSession.Sessions[0].SessionDate).format("MMM-DD-YYYY"),
+                topic: currentTopic,
+                date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
 
@@ -87,6 +101,7 @@ class AttendanceScreen extends Component {
             console.log("enrollments", this.state.enrollments);
         }
     }
+    
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
@@ -190,6 +205,15 @@ class AttendanceScreen extends Component {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
         const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
+        let refreshing = false;
+
+        const onRefresh = () => {
+            refreshing = true;
+
+            this._setCurrentSessionData().then(() => refreshing = false);
+
+            // wait(2000).then(() => refreshing = false);
+        };
 
         const studentAttendanceItem = ({ item, index }) => (
             <ListItem
@@ -254,6 +278,15 @@ class AttendanceScreen extends Component {
         
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
+                <ScrollView
+                    contentContainerStyle={styles.scrollView}
+                    refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                    }
+                >
                 <View style={styles.row}>
                     <View style={styles.column}>
                         {descriptionRowText("Team:",this.state.teamName)}
@@ -262,6 +295,7 @@ class AttendanceScreen extends Component {
                         {descriptionRowText("Students:", this.state.numberOfStudents)}
                     </View>
                 </View>
+                </ScrollView>
                 <Divider/>
             </Layout>
         );
@@ -285,6 +319,7 @@ class AttendanceScreen extends Component {
                 {updateModal()}
                 {updateButton()}
                 {updatingModal()}
+                <Divider/>
                 <List
                     style={{width: "100%"}}
                     data={this.state.enrollments}
@@ -292,7 +327,7 @@ class AttendanceScreen extends Component {
                     renderItem={studentAttendanceItem}
                     />
                     <Button style={{width:'100%'}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
-
+                    
             </Layout>
         )
     }
@@ -331,5 +366,10 @@ const styles = StyleSheet.create({
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    }
+    },
+    scrollView: {
+        // flex: 1,
+        // backgroundColor: 'pink',
+        
+      }
 });

@@ -5,11 +5,13 @@ import Axios from 'axios';
 import { ApiConfig } from '../config/ApiConfig';
 import { StyleSheet, View, Alert  } from 'react-native';
 import { AttendanceScreen } from '../Attendance.Screen';
+import moment from 'moment';
 
 export const EditSessionModal = ({route, navigation}) => {
     const [visible, setVisible] = React.useState(true);
-    const [date, setDate] = React.useState();
+    
     const {session, oldDate, oldTopic} = route.params;
+    const [date, setDate] = React.useState(moment(oldDate));
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
     const [updatingModalstate, setupdatingModalstate] = React.useState(false);
     const [responseSuccess, setResponseSuccess] = React.useState(false);
@@ -69,7 +71,7 @@ export const EditSessionModal = ({route, navigation}) => {
             ).then(res => {
                 Alert.alert(
                     res.data.message,
-                    "Changes applied: \nOld: "+oldDate+" "+oldTopic+"\nNew: "+date.format("MMM-DD-YYYY")+" "+displayValue+"\n\nTo see this changes applied, return to the Sessions List and select the date again.",
+                    "Changes applied: \nOld: "+oldDate+" "+oldTopic+"\nNew: "+date.format("MMM-DD-YYYY")+" "+displayValue+"\n\nPull down on the session description to refresh.",
                     [
                       { text: "OK", onPress: () => navigation.navigate('Home')}
                     ]
@@ -98,6 +100,8 @@ export const EditSessionModal = ({route, navigation}) => {
     const data = [
         'Soccer',
         'Writing',
+        'Game Day',
+        'Soccer and Writing'
       ];
 
     
