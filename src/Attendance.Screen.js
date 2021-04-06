@@ -90,7 +90,7 @@ class AttendanceScreen extends Component {
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
                 completeTeamSeasonId: currentSession.TeamSeasonId,
-                topic: currentTopic,
+                topic: currentTopic.replace(/_/g,' '),
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }

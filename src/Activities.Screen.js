@@ -106,7 +106,7 @@ class ActivitiesScreen extends Component {
                 if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
 
                 return <ListItem
-                    title={sessionTopic}
+                    title={sessionTopic.replace(/_/g,' ')}
                     description={`${item.TeamSeasonName}`}
                     accessoryRight={renderItemIcon}
                     onPress={() => this.selectActivity(item.TeamSeasonId)}
