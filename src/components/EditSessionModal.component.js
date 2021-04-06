@@ -25,7 +25,7 @@ export const EditSessionModal = ({route, navigation}) => {
         let changes =
             {
                 "SessionDate": date.format("YYYY-MM-DD"),
-                "SessionTopic": displayValue,
+                "SessionTopic": displayValue.replace(/\s/g, '_'),
             };
         console.log(changes);
         await pushChanges(changes);
