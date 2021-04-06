@@ -76,9 +76,18 @@ export const EditSessionModal = ({route, navigation}) => {
                       { text: "OK", onPress: () => navigation.navigate('Home')}
                     ]
                   );
+                  console.log(changes);
                 setupdatingModalstate(false);
                 
             }).catch(error => {
+                setupdatingModalstate(false);
+                Alert.alert(
+                    "Oops",
+                    "Something went wrong, try again in a moment",
+                    [
+                      { text: "OK", onPress: () => navigation.goBack()}
+                    ]
+                  );
                 throw error;
             })
     }
