@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem } from "@ui-kitten/components";
+import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem,  TopNavigationAction} from "@ui-kitten/components";
 import TeamsScreen from "./src/TeamsScreen.component";
 import ActivitiesScreen from "./src/Activities.Screen";
 import AttendanceScreen from "./src/Attendance.Screen";
@@ -24,8 +24,8 @@ const BottomTabBar = ({ navigation, state }) => (
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
         <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
-        <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
-        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
+        <BottomNavigationTab title='Teams'  icon={StudentsIcon}/>
+        {/* <BottomNavigationTab title='Students'  icon={TodayIcon} /> */}
     </BottomNavigation>
 );
 
@@ -75,7 +75,6 @@ export const HomeScreen = ({navigation}) => {
 export default OptionOverflowMenu = (navigation) => {
     const state = useSelector(state => state.user);
     const dispatch = useDispatch();
-
     const [visoverflowMenuVisibleble, setOverflowMenuVisible] = React.useState(false);
     
     const OptionsIcon = (props) => ( <Icon {...props} name='more-vertical-outline' /> );
@@ -104,13 +103,13 @@ export default OptionOverflowMenu = (navigation) => {
 
     return (
         <OverflowMenu
-        anchor={OptionButtons}
-        visible={visoverflowMenuVisibleble} 
-        placement={"bottom"} 
-        onBackdropPress={() => setOverflowMenuVisible(false)}>
-            <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
-            <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
-            <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
+            anchor={OptionButtons}
+            visible={visoverflowMenuVisibleble} 
+            placement={"bottom"} 
+            onBackdropPress={() => setOverflowMenuVisible(false)}>
+                <MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
+                <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>
+                <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
     
