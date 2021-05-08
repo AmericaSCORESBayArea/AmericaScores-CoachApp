@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card,  IndexPath, Select, SelectItem } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 
@@ -23,12 +23,20 @@ class ActivitiesScreen extends Component {
             date: moment(),
             activities: "",
             welcomeModalVisibility: false,
+            nomatchModalVisibility: false,
+            regions:[
+                'All',
+                'San Rafael',
+                'San Francisco',
+                'Oakland',
+            ],
+            selectedIndex: "",
+            displayedValue: "",
         }
     }
 
     async componentDidMount() {
         this._syncActivities();
-        await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
             setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
@@ -88,29 +96,49 @@ class ActivitiesScreen extends Component {
         this.setState({welcomeModalVisibility: false})
         actions.updateFirstTimeLoggedIn();
     }
-
+    SelectIndex(index){
+        this.setState({selectedIndex: index});
+        this.setState({displayedValue: this.state.regions[index.row]});
+    }
     render() {
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Text  style={{alignSelf:"baseline"}}></Text>
-                <Icon {...props} name='people-outline'/> 
+                {/*<Icon {...props} name='people-outline'/>*/}
+                <Icon {...props} name='calendar-outline'/> 
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>
         );
 
         let activityItem = ({ item, index }) => {
-            if (item.Sessions === null) return ;
+            if (item.Sessions === null){
+                if(this.state.nomatchModalVisibility === false){
+                    this.setState({nomatchModalVisibility: true})
+                }else{
+                    return; 
+                }
+            }
             else {
                 let sessionTopic = "Unasigned"
                 if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-
-                return <ListItem
+                if(this.state.nomatchModalVisibility === true){
+                    this.setState({nomatchModalVisibility: false})
+                    return <ListItem
                     title={sessionTopic.replace(/_/g,' ')}
                     description={`${item.TeamSeasonName}`}
                     accessoryRight={renderItemIcon}
                     onPress={() => this.selectActivity(item.TeamSeasonId)}
-            />
+                    />
+                }else{
+                    return <ListItem
+                        title={`${item.TeamSeasonName} ${sessionTopic.replace(/_/g,' ')}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                />
+                }
             }
         }
         const dateService = new MomentDateService();
@@ -122,20 +150,46 @@ class ActivitiesScreen extends Component {
             <Datepicker
                 placeholder='Pick Date'
                 date={this.state.date}
+                size='large'
                 // min={minDatePickerDate}
-                style={{margin: "2%", }}
+                style={{margin: "2%"}}
                 dateService={dateService}
                 onSelect={nextDate => this.selectDate(nextDate)}
                 accessoryRight={CalendarIcon}
             />
         );
 
+        const selectBox = () => (
+            <Select
+                label="Select a Region"
+                placeholder={this.state.regions[0]}
+                selectedIndex={this.state.selectedIndex}
+                style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
+                value={this.state.displayedValue}
+                onSelect={index => this.SelectIndex(index)}>
+                {this.state.regions.map((title,i) =>
+                    <SelectItem key={title} title={title}/>
+                )}
+          </Select>
+        );
+
+
         const helloMessage = (status) => (
             (
                 (this.state.welcomeModalVisibility) &&
-                <Card style={{opacity: 0.9}}>
-                    <Text category="s2" status={status} style={{alignSelf: 'center'}}>
-                        Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                    <Card style={{opacity: 0.9}}>
+                        <Text category="s1" status={status} style={{alignSelf: 'center'}}>
+                            {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                        </Text>
+                    </Card>
+            )
+        );
+        const noMatch = (status) => (
+            (
+                (this.state.nomatchModalVisibility) &&
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        There are no active Sessions for the selected date.
                     </Text>
                 </Card>
             )
@@ -145,7 +199,10 @@ class ActivitiesScreen extends Component {
             <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 {searchBox()}
+                <Divider/>
                 {helloMessage("info")}
+                {selectBox()}
+                {noMatch("basic")}
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
                             style={{opacity: 0.95}}
