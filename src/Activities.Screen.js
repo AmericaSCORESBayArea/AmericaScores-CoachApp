@@ -1,13 +1,12 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card,  IndexPath, Select, SelectItem } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet } from "react-native";
+import { ImageBackground, View, StyleSheet, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 
 import Axios from "axios";
 import moment from "moment";
 
 import AsyncStorage from '@react-native-community/async-storage';
-
 
 import {ApiConfig} from "./config/ApiConfig";
 
@@ -62,6 +61,11 @@ class ActivitiesScreen extends Component {
         const { actions } = this.props;
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
+        activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
+            console.log(value.TeamSeasonName),
+            (value.Sessions) === null ? (this.setState({nomatchModalVisibility: true})) : (this.setState({nomatchModalVisibility: false})),
+            console.log(value.Sessions)
+        ));
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId) {
@@ -110,36 +114,61 @@ class ActivitiesScreen extends Component {
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>
         );
+        const RenderItemImageSW = () => (
+            <Image
+              style={{ width: 40, height: 40,resizeMode: "contain"}}
+              source={require('../assets/Scores_Soccer_and_writing.png')}
+            />
+          );
+        const RenderItemImageS = () => (
+                <Image
+                style={{ width: 35, height: 35}}
+                source={require('../assets/Scores_Ball.png')}
+                />
+            );
+        const RenderItemImageW = () => (
+                <Image
+                style={{  width: 40, height: 40,resizeMode: "contain"}}
+                source={require('../assets/Scores_Pencil.png')}
+                />
+        );
 
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
-                if(this.state.nomatchModalVisibility === false){
-                    this.setState({nomatchModalVisibility: true})
-                }else{
-                    return; 
-                }
+                return; 
             }
             else {
                 let sessionTopic = "Unasigned"
                 if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-                if(this.state.nomatchModalVisibility === true){
-                    this.setState({nomatchModalVisibility: false})
+                if(sessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
                     return <ListItem
-                    title={sessionTopic.replace(/_/g,' ')}
-                    description={`${item.TeamSeasonName}`}
-                    accessoryRight={renderItemIcon}
-                    onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }else{
-                    return <ListItem
-                        title={`${item.TeamSeasonName} ${sessionTopic.replace(/_/g,' ')}`}
+                        title={`${item.TeamSeasonName}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageSW}
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
-                />
+                    />
+                }else if(sessionTopic.replace(/_/g,' ') === "Soccer"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageS}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
+                }else if(sessionTopic.replace(/_/g,' ') === "Writing"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageW}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
                 }
-            }
+                }
         }
         const dateService = new MomentDateService();
         // var date = moment();
