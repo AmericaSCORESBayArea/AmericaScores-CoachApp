@@ -116,7 +116,7 @@ class ActivitiesScreen extends Component {
         );
         const RenderItemImageSW = () => (
             <Image
-              style={{ width: 40, height: 40,resizeMode: "contain"}}
+              style={{ width: 45, height: 45,resizeMode: "contain"}}
               source={require('../assets/Scores_Soccer_and_writing.png')}
             />
           );
@@ -128,8 +128,8 @@ class ActivitiesScreen extends Component {
             );
         const RenderItemImageW = () => (
                 <Image
-                style={{  width: 40, height: 40,resizeMode: "contain"}}
-                source={require('../assets/Scores_Pencil.png')}
+                style={{  width: 45, height: 45,resizeMode: "contain"}}
+                source={require('../assets/Scores_Pencil_Edit.png')}
                 />
         );
 
