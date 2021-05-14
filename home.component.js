@@ -27,7 +27,7 @@ const BottomTabBar = ({ navigation, state }) => (
     onSelect={index => navigation.navigate(state.routeNames[index])} >
         <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
         <BottomNavigationTab title='Teams' icon={SchoolIcon}/>
-        <BottomNavigationTab title='Students' icon={StudentsIcon}/>
+        {/* <BottomNavigationTab title='Students' icon={StudentsIcon}/> */}
     </BottomNavigation>
 );
 
@@ -66,7 +66,7 @@ const TabNavigator = () => (
     <Navigator tabBar={props => <BottomTabBar {...props} /> } >
         <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
         <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
-        <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
+        {/* <Screen name='StudentsScreen' component={Stack_Students_Navigation}/> */}
     </Navigator>
   );
 
@@ -97,7 +97,7 @@ export default OptionOverflowMenu = (navigation) => {
         navigation.navigate(modalScreen);
     };
 
-    logOutOnPress = async () => {
+    async function logOutOnPress(){
         try {
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
@@ -107,6 +107,7 @@ export default OptionOverflowMenu = (navigation) => {
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
+    
 
     return (
         <OverflowMenu
