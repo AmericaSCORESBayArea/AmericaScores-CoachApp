@@ -1,13 +1,14 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup} from '@ui-kitten/components';
+
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, SelectItem} from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView } from "react-native";
+
 import { MomentDateService } from '@ui-kitten/moment';
 
 import Axios from "axios";
 import moment from "moment";
 
 import AsyncStorage from '@react-native-community/async-storage';
-
 
 import {ApiConfig} from "./config/ApiConfig";
 
@@ -23,8 +24,18 @@ class ActivitiesScreen extends Component {
             date: moment(),
             activities: "",
             welcomeModalVisibility: false,
+            nomatchModalVisibility: false,
+            regions:[
+                'All',
+                'San Rafael',
+                'San Francisco',
+                'Oakland',
+            ],
+            selectedIndex: "",
+            displayedValue: "",
             isUpdated: false,
             teamSeasonId: "",
+
         }
     }
 
@@ -32,7 +43,6 @@ class ActivitiesScreen extends Component {
 
     async componentDidMount() {
         this._syncActivities();
-        await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
             setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
@@ -60,6 +70,11 @@ class ActivitiesScreen extends Component {
         const { actions } = this.props;
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
+       /* activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
+            console.log(value.TeamSeasonName),
+            (value.Sessions) === null ? (this.setState({nomatchModalVisibility: true})) : (this.setState({nomatchModalVisibility: false})),
+            console.log(value.Sessions)
+        ));*/
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId) {
@@ -94,7 +109,10 @@ class ActivitiesScreen extends Component {
         this.setState({welcomeModalVisibility: false})
         actions.updateFirstTimeLoggedIn();
     }
-
+    SelectIndex(index){
+        this.setState({selectedIndex: index});
+        this.setState({displayedValue: this.state.regions[index.row]});
+    }
     render() {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
@@ -110,24 +128,66 @@ class ActivitiesScreen extends Component {
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Text  style={{alignSelf:"baseline"}}></Text>
-                <Icon {...props} name='people-outline'/> 
+                {/*<Icon {...props} name='people-outline'/>*/}
+                <Icon {...props} name='calendar-outline'/> 
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>
         );
+        const RenderItemImageSW = () => (
+            <Image
+              style={{ width: 45, height: 45,resizeMode: "contain"}}
+              source={require('../assets/Scores_Soccer_and_writing.png')}
+            />
+          );
+        const RenderItemImageS = () => (
+                <Image
+                style={{ width: 40, height: 40, resizeMode: "contain"}}
+                source={require('../assets/Scores_Ball.png')}
+                />
+            );
+        const RenderItemImageW = () => (
+                <Image
+                style={{  width: 45, height: 45,resizeMode: "contain"}}
+                source={require('../assets/Scores_Pencil_Edit.png')}
+                />
+        );
 
         let activityItem = ({ item, index }) => {
-            if (item.Sessions === null) return ;
+            if (item.Sessions === null){
+                return; 
+            }
             else {
                 let sessionTopic = "Unasigned"
                 if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-
-                return <ListItem
-                    title={sessionTopic.replace(/_/g,' ')}
-                    description={`${item.TeamSeasonName}`}
-                    accessoryRight={renderItemIcon}
-                    onPress={() => this.selectActivity(item.TeamSeasonId)}
-            />
-            }
+                if(sessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageSW}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
+                }else if(sessionTopic.replace(/_/g,' ') === "Soccer"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageS}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
+                }else if(sessionTopic.replace(/_/g,' ') === "Writing"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageW}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
+                }
+                }
         }
         const dateService = new MomentDateService();
         // var date = moment();
@@ -138,24 +198,50 @@ class ActivitiesScreen extends Component {
             <Datepicker
                 placeholder='Pick Date'
                 date={this.state.date}
+                size='large'
                 // min={minDatePickerDate}
-                style={{margin: "2%", }}
+                style={{margin: "2%"}}
                 dateService={dateService}
                 onSelect={nextDate => this.selectDate(nextDate)}
                 accessoryRight={CalendarIcon}
             />
         );
 
+        /*const selectBox = () => (
+            <Select
+                label="Select a Region"
+                placeholder={this.state.regions[0]}
+                selectedIndex={this.state.selectedIndex}
+                style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
+                value={this.state.displayedValue}
+                onSelect={index => this.SelectIndex(index)}>
+                {this.state.regions.map((title,i) =>
+                    <SelectItem key={title} title={title}/>
+                )}
+          </Select>
+        );*/
+
+
         const helloMessage = (status) => (
             (
                 (this.state.welcomeModalVisibility) &&
-                <Card style={{opacity: 0.9}}>
-                    <Text category="s2" status={status} style={{alignSelf: 'center'}}>
-                        Welcome {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                    <Card style={{opacity: 0.9}}>
+                        <Text category="s1" status={status} style={{alignSelf: 'center'}}>
+                            {this.props.user.user.FirstName} {this.props.user.user.LastName}
+                        </Text>
+                    </Card>
+            )
+        );
+        /*const noMatch = (status) => (
+            (
+                (this.state.nomatchModalVisibility) &&
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        There are no active Sessions for the selected date.
                     </Text>
                 </Card>
             )
-        );
+        );*/
 
         const addButton = () => {
             if (this.state.isUpdated){
@@ -172,8 +258,10 @@ class ActivitiesScreen extends Component {
             <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 {searchBox()}
+                <Divider/>
                 {helloMessage("info")}
-                
+                {/*{selectBox()}*/}
+                {/*noMatch("basic")*/}
 
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
