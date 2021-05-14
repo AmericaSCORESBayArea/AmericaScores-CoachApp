@@ -7,6 +7,8 @@ import AttendanceScreen from "./src/Attendance.Screen";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
+import StudentSearchScreen from "./src/StudentSearch.Screen";
+
 import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
 
@@ -43,6 +45,7 @@ const Stack_Teams_Navigation = ({navigation}) => (
     <Stack_Teams.Navigator>
         <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
         <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
+        <Stack_Teams.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
     </Stack_Teams.Navigator>
@@ -51,7 +54,10 @@ const Stack_Teams_Navigation = ({navigation}) => (
 const Stack_Students = createStackNavigator();
 const Stack_Students_Navigation = ({navigation}) => (
     <Stack_Students.Navigator>
+        <Stack_Students.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
         <Stack_Students.Screen name="Students" component={StudentsScreen} options={headerOptions}/>
+        
+
     </Stack_Students.Navigator>
 );
 
@@ -91,7 +97,7 @@ export default OptionOverflowMenu = (navigation) => {
         navigation.navigate(modalScreen);
     };
 
-    logOutOnPress = async () => {
+    async function logOutOnPress(){
         try {
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
@@ -101,6 +107,7 @@ export default OptionOverflowMenu = (navigation) => {
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
+    
 
     return (
         <OverflowMenu
