@@ -122,7 +122,7 @@ class ActivitiesScreen extends Component {
           );
         const RenderItemImageS = () => (
                 <Image
-                style={{ width: 40, height: 40, resizeMode: "contain"}}
+                style={{ width: 45, height: 45, resizeMode: "contain"}}
                 source={require('../assets/Scores_Ball.png')}
                 />
             );
@@ -132,6 +132,12 @@ class ActivitiesScreen extends Component {
                 source={require('../assets/Scores_Pencil_Edit.png')}
                 />
         );
+        const RenderItemImageGD = () => (
+            <Image
+            style={{  width: 45, height: 45,resizeMode: "contain"}}
+            source={require('../assets/Scores_Game_Day.png')}
+            />
+    );
 
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
@@ -165,6 +171,16 @@ class ActivitiesScreen extends Component {
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
                         accessoryLeft={RenderItemImageW}
+                        onPress={() => this.selectActivity(item.TeamSeasonId)}
+                    />
+                }
+                else if(sessionTopic.replace(/_/g,' ') === "Game Day"){
+                    return <ListItem
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                        accessoryRight={renderItemIcon}
+                        accessoryLeft={RenderItemImageGD}
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
                     />
                 }
