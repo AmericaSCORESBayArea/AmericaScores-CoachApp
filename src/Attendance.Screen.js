@@ -82,7 +82,7 @@ class AttendanceScreen extends Component {
             .then(async res => {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
-                currentTopic = res.data.SessionTopic;
+                currentTopic = res.data.SessionTopic.replace(/_/g,' ');
             }).catch(error => error)            
             const newState = {
                 sessionId: currentSession.Sessions[0].SessionId,
@@ -90,7 +90,7 @@ class AttendanceScreen extends Component {
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
                 completeTeamSeasonId: currentSession.TeamSeasonId,
-                topic: currentTopic.replace(/_/g,' '),
+                topic: currentTopic,
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
