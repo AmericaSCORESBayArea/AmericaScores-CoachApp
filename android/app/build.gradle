@@ -137,12 +137,14 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 10
         versionName '1.6.2b'
+
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [appAuthRedirectScheme: 'com.redirectScheme.comm']
         multiDexEnabled true
     }
     splits {
         abi {
+
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
