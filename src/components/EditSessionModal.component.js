@@ -3,7 +3,7 @@ import { Modal, Card, Text, Button, Layout, Datepicker,Icon, IndexPath, Select, 
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from 'axios';
 import { ApiConfig } from '../config/ApiConfig';
-import { StyleSheet, View, Alert  } from 'react-native';
+import { StyleSheet, View, Alert, Image } from 'react-native';
 import { AttendanceScreen } from '../Attendance.Screen';
 import moment from 'moment';
 
@@ -112,11 +112,58 @@ export const EditSessionModal = ({route, navigation}) => {
         'Game Day',
         'Soccer and Writing'
       ];
-
-    
-
+    const renderImage = (title) => { 
+        if(title==="Soccer"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40, resizeMode: "contain"}}
+            source={require('../../assets/Scores_Ball.png')}
+            />)
+        }else if(title==="Soccer and Writing"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Soccer_and_writing.png')}
+          />)
+        }
+        else if(title==="Writing"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Pencil_Edit.png')}
+          />)
+        }
+        else if(title==="Game Day"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Game_Day.png')}
+          />)
+        }
+    };
+    const renderImageDisplay = (title) => { 
+        if(title==="Soccer"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40, resizeMode: "contain"}}
+            source={require('../../assets/Scores_Ball.png')}
+            />)
+        }else if(title==="Soccer and Writing"){
+            return(console.log(title),<Image
+            style={{ width: 30, height: 30,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Soccer_and_writing.png')}
+          />)
+        }
+        else if(title==="Writing"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Pencil_Edit.png')}
+          />)
+        }
+        else if(title==="Game Day"){
+            return(console.log(title),<Image
+            style={{ width: 40, height: 40,resizeMode: "contain"}}
+            source={require('../../assets/Scores_Game_Day.png')}
+          />)
+        }
+    };
     const renderOption = (title) => (
-        <SelectItem title={title}/>
+        <SelectItem title={title}  accessoryLeft={() => renderImage(title)}/>
     );
     
 
@@ -150,6 +197,7 @@ export const EditSessionModal = ({route, navigation}) => {
                     selectedIndex={selectedIndex}
                     size='medium'
                     value={displayValue}
+                    accessoryLeft={() => renderImageDisplay(displayValue)}
                     placeholder='Select a type'
                     // label='Scores Program Type'
                     onSelect={index => setSelectedIndex(index)}>
