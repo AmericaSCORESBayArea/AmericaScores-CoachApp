@@ -1,7 +1,6 @@
 import React, {Component} from "react";
-
 import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, SelectItem} from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Images} from "react-native";
+import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image} from "react-native";
 
 import { MomentDateService } from '@ui-kitten/moment';
 
