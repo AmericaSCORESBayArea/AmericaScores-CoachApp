@@ -226,7 +226,7 @@ export const AddSessionModal = ({route, navigation}) => {
             ).then(res => {
                 Alert.alert(
                     "Session created",
-                    "Pull down on the sessions list to refresh.",
+                    "Pull down on the sessions list to refresh, or select a new date in the calendar.",
                     [
                       { text: "OK", onPress: () => navigation.goBack()}
                     ]
