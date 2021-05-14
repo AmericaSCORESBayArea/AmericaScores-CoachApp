@@ -61,11 +61,11 @@ class ActivitiesScreen extends Component {
         const { actions } = this.props;
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
-        activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
+       /* activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
             console.log(value.TeamSeasonName),
             (value.Sessions) === null ? (this.setState({nomatchModalVisibility: true})) : (this.setState({nomatchModalVisibility: false})),
             console.log(value.Sessions)
-        ));
+        ));*/
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId) {
@@ -122,7 +122,7 @@ class ActivitiesScreen extends Component {
           );
         const RenderItemImageS = () => (
                 <Image
-                style={{ width: 35, height: 35}}
+                style={{ width: 40, height: 40, resizeMode: "contain"}}
                 source={require('../assets/Scores_Ball.png')}
                 />
             );
@@ -188,7 +188,7 @@ class ActivitiesScreen extends Component {
             />
         );
 
-        const selectBox = () => (
+        /*const selectBox = () => (
             <Select
                 label="Select a Region"
                 placeholder={this.state.regions[0]}
@@ -200,7 +200,7 @@ class ActivitiesScreen extends Component {
                     <SelectItem key={title} title={title}/>
                 )}
           </Select>
-        );
+        );*/
 
 
         const helloMessage = (status) => (
@@ -213,7 +213,7 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
-        const noMatch = (status) => (
+        /*const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -222,7 +222,7 @@ class ActivitiesScreen extends Component {
                     </Text>
                 </Card>
             )
-        );
+        );*/
 
         return(
             <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
@@ -230,8 +230,8 @@ class ActivitiesScreen extends Component {
                 {searchBox()}
                 <Divider/>
                 {helloMessage("info")}
-                {selectBox()}
-                {noMatch("basic")}
+                {/*{selectBox()}*/}
+                {/*noMatch("basic")*/}
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
                             style={{opacity: 0.95}}
