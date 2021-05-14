@@ -1,6 +1,8 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card,  IndexPath, Select, SelectItem } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, Image } from "react-native";
+
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, SelectItem} from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView } from "react-native";
+
 import { MomentDateService } from '@ui-kitten/moment';
 
 import Axios from "axios";
@@ -31,8 +33,13 @@ class ActivitiesScreen extends Component {
             ],
             selectedIndex: "",
             displayedValue: "",
+            isUpdated: false,
+            teamSeasonId: "",
+
         }
     }
+
+    
 
     async componentDidMount() {
         this._syncActivities();
@@ -43,15 +50,17 @@ class ActivitiesScreen extends Component {
         console.log(this.props.user);
     }
 
-    _syncActivities() {
+    async _syncActivities() {
         const { route } = this.props;
         //Syncs activities from endpoint
         this.fetchActivities()
             .then(activitiesList => this._syncReduxActivities(activitiesList))    
             .then(() =>{
                 //Check if we are in the team activities name
-                if (route.name === "Team Activities" && route.params && route.params.teamSeasonId)
+                if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId){
                     this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
+                }
             })
             .catch(error => console.log(error));
     }
@@ -105,6 +114,16 @@ class ActivitiesScreen extends Component {
         this.setState({displayedValue: this.state.regions[index.row]});
     }
     render() {
+        const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
+        let refreshing = false;
+        const onRefresh = () => {
+            refreshing = true;
+
+            this._syncActivities().then(() => refreshing = false);
+
+            // wait(2000).then(() => refreshing = false);
+        };
+        
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
@@ -224,6 +243,17 @@ class ActivitiesScreen extends Component {
             )
         );*/
 
+        const addButton = () => {
+            if (this.state.isUpdated){
+                 return <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <ButtonGroup>
+                <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
+                {/* <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>           */}
+                </ButtonGroup>
+                </View>
+                }
+        };
+
         return(
             <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
@@ -232,14 +262,23 @@ class ActivitiesScreen extends Component {
                 {helloMessage("info")}
                 {/*{selectBox()}*/}
                 {/*noMatch("basic")*/}
+
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
                             style={{opacity: 0.95}}
                             data={this.state.activities}
                             renderItem={activityItem}
                             Divider={Divider}
+                            refreshControl={
+                                <RefreshControl
+                                  refreshing={refreshing}
+                                  onRefresh={onRefresh}
+                                />
+                              }
                         />
+                        
                     </ImageBackground>
+                    {addButton()}
                 </Layout>      
             </View>                      
         );
