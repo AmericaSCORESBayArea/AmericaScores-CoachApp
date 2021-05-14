@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet } from "react-native";
+import { ImageBackground, View, StyleSheet, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 
 import Axios from "axios";
