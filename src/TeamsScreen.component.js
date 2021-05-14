@@ -87,7 +87,7 @@ class TeamsScreen extends Component {
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
         );
-        const noMatch = (status) => (
+        /*const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -96,8 +96,8 @@ class TeamsScreen extends Component {
                     </Text>
                 </Card>
             )
-        );
-        const selectBox = () => (
+        );*/
+        /*const selectBox = () => (
             <Select
                 label="Select a Region"
                 placeholder={this.state.regions[0]}
@@ -109,7 +109,7 @@ class TeamsScreen extends Component {
                     <SelectItem key={title} title={title}/>
                 )}
           </Select>
-        );
+                );*/
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 <Autocomplete style={{margin:"2%"}}
@@ -120,8 +120,8 @@ class TeamsScreen extends Component {
                     onChangeText={this.onChangeText} >
                 </Autocomplete>
                 <Divider/>
-                {selectBox()}
-                {noMatch("basic")}
+                {/*{selectBox()}*/}
+                {/*noMatch("basic")*/}
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                     <List
                         style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
