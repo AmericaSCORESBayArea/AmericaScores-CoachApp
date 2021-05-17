@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Card, Text, Button, Layout, Input } from '@ui-kitten/components';
+import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon } from '@ui-kitten/components';
 
 export const CreateStudentModal = ({navigation}) => {
     const [visible, setVisible] = React.useState(true);
