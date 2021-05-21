@@ -49,12 +49,11 @@ class TeamsScreen extends Component {
 
     setData(data,query) { 
         this.setState({selectedData: data})
-        this.state.data.filter(item => 
-            {if(this.filter(item, query)){
-                this.setState({nomatchModalVisibility: false})
-            }else{
-                this.setState({nomatchModalVisibility: true})
-            }})
+        if(!data.length){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
     };
 
     onChangeText = (query) => {
@@ -87,7 +86,7 @@ class TeamsScreen extends Component {
                 onPress={() => this.onPressTeam(item.TeamSeasonId)}
             />
         );
-        /*const noMatch = (status) => (
+        const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -96,7 +95,7 @@ class TeamsScreen extends Component {
                     </Text>
                 </Card>
             )
-        );*/
+        );
         /*const selectBox = () => (
             <Select
                 label="Select a Region"
@@ -121,10 +120,10 @@ class TeamsScreen extends Component {
                 </Autocomplete>
                 <Divider/>
                 {/*{selectBox()}*/}
-                {/*noMatch("basic")*/}
+                {noMatch("basic")}
                 <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
                     <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
+                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)", opacity: 0.95}}
                         data={this.state.selectedData}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
