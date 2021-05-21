@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView } from 'react-native';
+import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
 
 import { connect } from 'react-redux';
 import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
@@ -30,6 +30,7 @@ class AttendanceScreen extends Component {
             responseStatusModal: false,
             currentSession: undefined,
             updatingModalstate: false,
+            nomatchModalVisibility:false,
         }
     }
     
@@ -98,7 +99,12 @@ class AttendanceScreen extends Component {
             await this.setState(newState);
             await this._fetchGetEnrollments();
             await this._fetchSessionInfo();
-            console.log("enrollments", this.state.enrollments);
+            if(this.state.enrollments !== null){
+                this.setState({nomatchModalVisibility: false})
+                console.log("enrollments", this.state.enrollments);
+            }else{
+                this.setState({nomatchModalVisibility: true})
+            }
         }
     }
     
@@ -232,6 +238,20 @@ class AttendanceScreen extends Component {
                 <Text style={{fontSize: 14}} category="p1">{description}</Text>
             </View>
         );
+        const descriptionRowTextImage = (label, description) => (
+            <View style={styles.row}>
+                <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
+                <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                {description ==="Soccer" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Ball.png')}/>: null}
+                {description ==="Soccer and Writing" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Soccer_and_writing.png')}/>: null}
+                {description ==="Writing" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Pencil_Edit.png')}/>: null}
+                {description ==="Game Day" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Game_Day.png')}/>: null}
+            </View>
+        );
 
         const updateButton = () => {
             if (this.state.isUpdated){
@@ -275,7 +295,16 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
-        
+        const noMatch = (status) => (
+            (
+                (this.state.nomatchModalVisibility) &&
+                <Card style={{opacity: 0.9}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center'}}>
+                        This Session has not been set up with a roster of students.
+                    </Text>
+                </Card>
+            )
+        );
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -290,7 +319,7 @@ class AttendanceScreen extends Component {
                 <View style={styles.row}>
                     <View style={styles.column}>
                         {descriptionRowText("Team:",this.state.teamName)}
-                        {descriptionRowText("Session Type:",this.state.topic)}
+                        {descriptionRowTextImage("Session Type:",this.state.topic)}
                         {descriptionRowText("Date:", this.state.date)}
                         {descriptionRowText("Students:", this.state.numberOfStudents)}
                     </View>
@@ -319,6 +348,7 @@ class AttendanceScreen extends Component {
                 {updateModal()}
                 {updateButton()}
                 {updatingModal()}
+                {noMatch("basic")}
                 <Divider/>
                 <List
                     style={{width: "100%"}}
