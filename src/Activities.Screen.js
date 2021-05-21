@@ -34,7 +34,7 @@ class ActivitiesScreen extends Component {
             displayedValue: "",
             isUpdated: false,
             teamSeasonId: "",
-
+            listofSessions: null,
         }
     }
 
@@ -67,19 +67,43 @@ class ActivitiesScreen extends Component {
     //Syncs activitiesToRedux and state
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
+        const { route } = this.props;
+        this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
-       /* activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
-            console.log(value.TeamSeasonName),
-            (value.Sessions) === null ? (this.setState({nomatchModalVisibility: true})) : (this.setState({nomatchModalVisibility: false})),
-            console.log(value.Sessions)
-        ));*/
+        activitiesList.map(value => {
+                if(value.Sessions !== null){
+                    this.setState({ listofSessions: value.Sessions})
+                }
+            });
+        console.log(this.state.listofSessions)
+        if(this.state.listofSessions === null){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
+        if(route.name === "Team Sessions"){
+            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
+        }
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId) {
+        this.setState({listofSessions: null});
         const activities = this.state.activities.filter(
-            activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId; });
+            activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
+        activities.map(value => {
+            if(value.Sessions !== null){
+                this.setState({ listofSessions: value.Sessions})
+            }
+        });
+    console.log(this.state.listofSessions)
+    if(this.state.listofSessions === null){
+        this.setState({nomatchModalVisibility: true})
+    }else{
+        this.setState({nomatchModalVisibility: false})
+    }
     }
 
     async fetchActivities() {
@@ -162,10 +186,12 @@ class ActivitiesScreen extends Component {
                 return; 
             }
             else {
-                let sessionTopic = "Unasigned"
-                if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-                if(sessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
+                //let sessionTopic = "Unasigned"
+                //if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
+                return item.Sessions.map(value => {
+                if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
                     return <ListItem
+                        key={value.SessionId}
                         title={`${item.TeamSeasonName}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
@@ -173,8 +199,9 @@ class ActivitiesScreen extends Component {
                         accessoryLeft={RenderItemImageSW}
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
                     />
-                }else if(sessionTopic.replace(/_/g,' ') === "Soccer"){
+                }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
                     return <ListItem
+                        key={value.SessionId}
                         title={`${item.TeamSeasonName}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
@@ -182,8 +209,9 @@ class ActivitiesScreen extends Component {
                         accessoryLeft={RenderItemImageS}
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
                     />
-                }else if(sessionTopic.replace(/_/g,' ') === "Writing"){
+                }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
                     return <ListItem
+                        key={value.SessionId}
                         title={`${item.TeamSeasonName}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
@@ -192,8 +220,9 @@ class ActivitiesScreen extends Component {
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
                     />
                 }
-                else if(sessionTopic.replace(/_/g,' ') === "Game Day"){
+                else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
                     return <ListItem
+                        key={value.SessionId}
                         title={`${item.TeamSeasonName}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
@@ -202,7 +231,8 @@ class ActivitiesScreen extends Component {
                         onPress={() => this.selectActivity(item.TeamSeasonId)}
                     />
                 }
-                }
+                })
+            }
         }
         const dateService = new MomentDateService();
         // var date = moment();
@@ -247,7 +277,7 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
-        /*const noMatch = (status) => (
+        const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -256,7 +286,7 @@ class ActivitiesScreen extends Component {
                     </Text>
                 </Card>
             )
-        );*/
+        );
 
         const addButton = () => {
             if (this.state.isUpdated){
@@ -276,7 +306,7 @@ class ActivitiesScreen extends Component {
                 <Divider/>
                 {helloMessage("info")}
                 {/*{selectBox()}*/}
-                {/*noMatch("basic")*/}
+                {noMatch("basic")}
 
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
