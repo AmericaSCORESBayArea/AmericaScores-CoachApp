@@ -28,7 +28,7 @@
     "expo-google-sign-in": "~8.2.1",
     "expo-status-bar": "^1.0.0",
     "expo-updates": "~0.2.10",
-    "firebase": "7.9.0",
+    "firebase": "^8.6.1",
     "grpc": "^1.24.9",
     "hosted-git-info": "^4.0.2",
     "jpeg-js": "^0.4.3",
