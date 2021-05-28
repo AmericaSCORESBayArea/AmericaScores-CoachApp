@@ -14,6 +14,7 @@ import {ApiConfig} from "./config/ApiConfig";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
+import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
 
 class ActivitiesScreen extends Component {
@@ -35,6 +36,7 @@ class ActivitiesScreen extends Component {
             isUpdated: false,
             teamSeasonId: "",
             listofSessions: null,
+            seasonName: "",
         }
     }
 
@@ -71,12 +73,15 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
+        ((activitiesList === null)? 
+        (this.setState({seasonName: "Sessions"}))//saving seasonName
+        :
+        (this.setState({seasonName: activitiesList[0].Season_Name})))//saving seasonName
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
                 }
             });
-        console.log(this.state.listofSessions)
         if(this.state.listofSessions === null){
             this.setState({nomatchModalVisibility: true})
         }else{
@@ -85,6 +90,9 @@ class ActivitiesScreen extends Component {
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
             this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
+        }
+        if (this.state.seasonName !== ""){
+            actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
         }
     }
 
@@ -98,7 +106,6 @@ class ActivitiesScreen extends Component {
                 this.setState({ listofSessions: value.Sessions})
             }
         });
-    console.log(this.state.listofSessions)
     if(this.state.listofSessions === null){
         this.setState({nomatchModalVisibility: true})
     }else{
@@ -192,7 +199,7 @@ class ActivitiesScreen extends Component {
                 if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
                     return <ListItem
                         key={value.SessionId}
-                        title={`${item.TeamSeasonName}`}
+                        title={`${item.Team_Name}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
@@ -202,7 +209,7 @@ class ActivitiesScreen extends Component {
                 }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
                     return <ListItem
                         key={value.SessionId}
-                        title={`${item.TeamSeasonName}`}
+                        title={`${item.Team_Name}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
@@ -212,7 +219,7 @@ class ActivitiesScreen extends Component {
                 }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
                     return <ListItem
                         key={value.SessionId}
-                        title={`${item.TeamSeasonName}`}
+                        title={`${item.Team_Name}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
@@ -223,7 +230,7 @@ class ActivitiesScreen extends Component {
                 else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
                     return <ListItem
                         key={value.SessionId}
-                        title={`${item.TeamSeasonName}`}
+                        title={`${item.Team_Name}`}
                         style={{backgroundColor: "#C0E4F5"}}
                         /*description={sessionTopic.replace(/_/g,' ')}*/
                         accessoryRight={renderItemIcon}
@@ -330,9 +337,9 @@ class ActivitiesScreen extends Component {
     };
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
