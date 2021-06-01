@@ -73,10 +73,10 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
-        ((activitiesList === null)? 
-        (this.setState({seasonName: "Sessions"}))//saving seasonName
+        ((activitiesList.length === 0)? 
+        (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
         :
-        (this.setState({seasonName: activitiesList[0].Season_Name})))//saving seasonName
+        (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false})))//saving seasonName
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -92,7 +92,11 @@ class ActivitiesScreen extends Component {
             this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
         }
         if (this.state.seasonName !== ""){
-            actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+            if(this.state.seasonName !== "Sessions"){
+                actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+            }else{
+                actions.changeTitle(this.state.seasonName)//shows the actual season name
+            }
         }
     }
 
@@ -106,11 +110,11 @@ class ActivitiesScreen extends Component {
                 this.setState({ listofSessions: value.Sessions})
             }
         });
-    if(this.state.listofSessions === null){
-        this.setState({nomatchModalVisibility: true})
-    }else{
-        this.setState({nomatchModalVisibility: false})
-    }
+        if(this.state.listofSessions === null){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
     }
 
     async fetchActivities() {
