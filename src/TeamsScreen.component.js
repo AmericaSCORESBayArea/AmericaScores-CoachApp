@@ -73,10 +73,14 @@ class TeamsScreen extends Component {
     };*/
 
     regionFiltering = (data) =>{
-        this.setState({SFRegion:data.filter((value) =>(value.Region.match("IFC-SF")))})
-        this.setState({SJRegion:data.filter((value) =>(value.Region.match("San Jose")))})
-        this.setState({OARegion:data.filter((value) =>(value.Region.match("Oakland")))})
-        this.setState({OtherRegion:data.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})
+        if(data.length === 0){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({SFRegion:data.filter((value) =>(value.Region.match("IFC-SF")))})
+            this.setState({SJRegion:data.filter((value) =>(value.Region.match("San Jose")))})
+            this.setState({OARegion:data.filter((value) =>(value.Region.match("Oakland")))})
+            this.setState({OtherRegion:data.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})
+        }
     }
 
     render() {
@@ -199,69 +203,42 @@ class TeamsScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     value={this.state.value}
                     onSelect={this.onSelect}
+                    size="large"
                     onChangeText={this.onChangeText} >
                 </Autocomplete>
                 <Divider/>
                 {/*{selectBox()}*/}
                 {noMatch("basic")}
-                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
+                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99, flexWrap: 'wrap'}}>
                     {regionSF("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.SFRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSF}
                     />
                     {regionSJ("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.SJRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSJ}
                     />
                     {regionOA("basic")}
                     <List
-                        style={{opacity:0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.OARegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemOA}
                     />
                     {regionOther("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.OtherRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemOther}
                     />
-                     {/*<List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)", opacity: 0.95}}
-                        data={this.state.selectedData}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={teamItem}
-                />*/}
-                {/*!this.state.SFRegion.length? 
-                    <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)", opacity: 0.95}}
-                        data={this.state.selectedData}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={teamItem}
-                        />
-                    :
-                    <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)", opacity: 0.95}}
-                        data={this.state.SFRegion}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={teamItemSF}
-                    />)
-                
-                    <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)", opacity: 0.95}}
-                        data={this.state.selectedData}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={teamItem}
-                />*/}
                 </ImageBackground>
-
             </Layout>
         );
     };
