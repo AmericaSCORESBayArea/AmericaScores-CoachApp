@@ -117,7 +117,7 @@ class AttendanceScreen extends Component {
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        console.log(currentSession.Sessions[0].SessionId)
+        console.log("session id",currentSession.Sessions[0].SessionId)
         newEnrollments.map((value) =>{
             if(value.Attended !== undefined){
                 if(value.Attended === true){
