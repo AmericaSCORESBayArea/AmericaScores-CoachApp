@@ -167,6 +167,12 @@ class ActivitiesScreen extends Component {
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>
         );
+        const RenderItemImageNL = () => (
+            <Image
+              style={{ width: 45, height: 35,resizeMode: "contain"}}
+              source={require('../assets/Unassigned_Session.png')}
+            />
+          );
         const RenderItemImageSW = () => (
             <Image
               style={{ width: 45, height: 45,resizeMode: "contain"}}
@@ -200,48 +206,60 @@ class ActivitiesScreen extends Component {
                 //let sessionTopic = "Unasigned"
                 //if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
                 return item.Sessions.map(value => {
-                if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
-                    return <ListItem
-                        key={value.SessionId}
-                        title={`${item.Team_Name}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageSW}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
-                    return <ListItem
-                        key={value.SessionId}
-                        title={`${item.Team_Name}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageS}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
-                    return <ListItem
-                        key={value.SessionId}
-                        title={`${item.Team_Name}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageW}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }
-                else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
-                    return <ListItem
-                        key={value.SessionId}
-                        title={`${item.Team_Name}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageGD}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }
+                    if(value.SessionTopic === null){
+                        return <ListItem
+                            key={value.SessionId}
+                            title={`${item.Team_Name}`}
+                            style={{backgroundColor: "#C0E4F5"}}
+                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                            accessoryLeft={RenderItemImageNL}
+                            accessoryRight={renderItemIcon}
+                            onPress={() => this.selectActivity(item.TeamSeasonId)}
+                        />
+                    }else{
+                        if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageSW}
+                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                            />
+                        }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageS}
+                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                            />
+                        }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageW}
+                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                            />
+                        }
+                        else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageGD}
+                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                            />
+                        }
+                    }
                 })
             }
         }
@@ -311,14 +329,13 @@ class ActivitiesScreen extends Component {
         };
 
         return(
-            <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+            /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 {searchBox()}
                 <Divider/>
                 {helloMessage("info")}
                 {/*{selectBox()}*/}
                 {noMatch("basic")}
-
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
                             style={{opacity: 0.95}}
@@ -336,7 +353,7 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     {addButton()}
                 </Layout>      
-            </View>                      
+           /* </View>     */                 
         );
     };
 };
