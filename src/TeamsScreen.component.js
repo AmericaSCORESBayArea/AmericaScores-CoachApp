@@ -204,31 +204,31 @@ class TeamsScreen extends Component {
                 <Divider/>
                 {/*{selectBox()}*/}
                 {noMatch("basic")}
-                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
+                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99, flexWrap: 'wrap'}}>
                     {regionSF("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.SFRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSF}
                     />
                     {regionSJ("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.SJRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSJ}
                     />
                     {regionOA("basic")}
                     <List
-                        style={{opacity:0.95}}
+                        style={{opacity:0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.OARegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemOA}
                     />
                     {regionOther("basic")}
                     <List
-                        style={{opacity: 0.95}}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
                         data={this.state.OtherRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemOther}
