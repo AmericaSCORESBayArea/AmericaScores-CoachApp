@@ -31,6 +31,7 @@ class AttendanceScreen extends Component {
             currentSession: undefined,
             updatingModalstate: false,
             nomatchModalVisibility:false,
+            attendanceListRedux:[],
         }
     }
     
@@ -101,7 +102,6 @@ class AttendanceScreen extends Component {
             await this._fetchSessionInfo();
             if(this.state.enrollments !== null){
                 this.setState({nomatchModalVisibility: false})
-                console.log("enrollments", this.state.enrollments);
             }else{
                 this.setState({nomatchModalVisibility: true})
             }
@@ -111,11 +111,38 @@ class AttendanceScreen extends Component {
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
+        const {route} = this.props;
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
-        this.setState({enrollments: newEnrollments, isUpdated: true}) //Set the new list
+        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        console.log(currentSession.Sessions[0].SessionId)
+        newEnrollments.map((value) =>{
+            if(value.Attended !== undefined){
+                if(value.Attended === true){
+                    if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
+                    }else{
+                        this.state.attendanceListRedux.push(value)
+                    }
+                }
+                else{
+                    if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
+                        const index = this.state.attendanceListRedux.indexOf(value);
+                        if (index > -1) {
+                            this.state.attendanceListRedux.splice(index, 1);//saving a new array with all students with value True for attendence
+                        }
+                    }
+                }
+            }
+        })
+        console.log(this.state.attendanceListRedux)
+        if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
+            this.setState({isUpdated: true})
+        }else{
+            this.setState({isUpdated: false})
+        }
+        this.setState({enrollments: newEnrollments}) //Set the new list
     }
 
     checkStudentById = enrollmentId => {
@@ -241,7 +268,11 @@ class AttendanceScreen extends Component {
         const descriptionRowTextImage = (label, description) => (
             <View style={styles.row}>
                 <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
-                <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                {description === "" ?
+                    <Text style={{fontSize: 14}} category="p1">Unassigned</Text> 
+                    :
+                    <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                    }
                 {description ==="Soccer" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Ball.png')}/>: null}
                 {description ==="Soccer and Writing" ?
@@ -250,6 +281,8 @@ class AttendanceScreen extends Component {
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Pencil_Edit.png')}/>: null}
                 {description ==="Game Day" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Game_Day.png')}/>: null}
+                {description ==="" ?
+                <Image style={{ width: 40, height: 25, resizeMode: "contain"}} source={require('../assets/Unassigned_Session.png')}/>: null}
             </View>
         );
 
