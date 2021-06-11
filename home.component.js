@@ -25,8 +25,8 @@ const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation 
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
-        <BottomNavigationTab title='Sessions' icon={TodayIcon}/>
-        <BottomNavigationTab title='Teams'  icon={StudentsIcon}/>
+        <BottomNavigationTab title='Sessions' icon={TodayIcon} />
+        <BottomNavigationTab title='Teams'  icon={StudentsIcon} />
         {/* <BottomNavigationTab title='Students'  icon={TodayIcon} /> */}
     </BottomNavigation>
 );
@@ -34,7 +34,7 @@ const BottomTabBar = ({ navigation, state }) => (
 const Stack_Activities = createStackNavigator();
 const Stack_Activities_Navigation = () => (
     <Stack_Activities.Navigator>
-        <Stack_Activities.Screen options={headerOptions} name='Sessions' component={ActivitiesScreen}/>
+        <Stack_Activities.Screen options={headerOptionsParams} name="Sessions" component={ActivitiesScreen}/>
         <Stack_Activities.Screen options={headerOptions} name="Attendance" component={AttendanceScreen} />
         <Stack_Activities.Screen options={headerOptions} name="Scan students QR" component={QRScanScreen}/>
     </Stack_Activities.Navigator>
@@ -131,4 +131,12 @@ const headerOptions = ({navigation}) => ({
         headerTitleStyle: { fontWeight: 'bold' },
         headerRight: () => <OptionOverflowMenu {...navigation}/>
     })
-
+const headerOptionsParams = ({navigation}) => ({
+        title: useSelector(state => state.sessionScreen.title),
+        headerStyle: {
+          backgroundColor: '#00467F',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: 'bold' },
+        headerRight: () => <OptionOverflowMenu {...navigation}/>
+    })

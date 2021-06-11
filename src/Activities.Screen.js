@@ -14,6 +14,7 @@ import {ApiConfig} from "./config/ApiConfig";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
+import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
 
 class ActivitiesScreen extends Component {
@@ -34,7 +35,8 @@ class ActivitiesScreen extends Component {
             displayedValue: "",
             isUpdated: false,
             teamSeasonId: "",
-
+            listofSessions: null,
+            seasonName: "",
         }
     }
 
@@ -67,19 +69,52 @@ class ActivitiesScreen extends Component {
     //Syncs activitiesToRedux and state
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
+        const { route } = this.props;
+        this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});
-       /* activitiesList.map( (value) => ( //here replace teamSeasonName for only TeamName also set Header with the Season
-            console.log(value.TeamSeasonName),
-            (value.Sessions) === null ? (this.setState({nomatchModalVisibility: true})) : (this.setState({nomatchModalVisibility: false})),
-            console.log(value.Sessions)
-        ));*/
+        ((activitiesList.length === 0)? 
+        (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
+        :
+        (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false})))//saving seasonName
+        activitiesList.map(value => {
+                if(value.Sessions !== null){
+                    this.setState({ listofSessions: value.Sessions})
+                }
+            });
+        if(this.state.listofSessions === null){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
+        if(route.name === "Team Sessions"){
+            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
+        }
+        if (this.state.seasonName !== ""){
+            if(this.state.seasonName !== "Sessions"){
+                actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+            }else{
+                actions.changeTitle(this.state.seasonName)//shows the actual season name
+            }
+        }
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId) {
+        this.setState({listofSessions: null});
         const activities = this.state.activities.filter(
-            activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId; });
+            activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
+        activities.map(value => {
+            if(value.Sessions !== null){
+                this.setState({ listofSessions: value.Sessions})
+            }
+        });
+        if(this.state.listofSessions === null){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
     }
 
     async fetchActivities() {
@@ -101,7 +136,7 @@ class ActivitiesScreen extends Component {
         this._syncReduxActivities(activitiesList);
     }
 
-    selectActivity(teamSeasonId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId}) }
+    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
 
     toggleWelcomeModalOff() { 
         const { actions } = this.props;
@@ -132,6 +167,12 @@ class ActivitiesScreen extends Component {
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>
         );
+        const RenderItemImageNL = () => (
+            <Image
+              style={{ width: 45, height: 35,resizeMode: "contain"}}
+              source={require('../assets/Unassigned_Session.png')}
+            />
+          );
         const RenderItemImageSW = () => (
             <Image
               style={{ width: 45, height: 45,resizeMode: "contain"}}
@@ -140,7 +181,7 @@ class ActivitiesScreen extends Component {
           );
         const RenderItemImageS = () => (
                 <Image
-                style={{ width: 40, height: 40, resizeMode: "contain"}}
+                style={{ width: 45, height: 45, resizeMode: "contain"}}
                 source={require('../assets/Scores_Ball.png')}
                 />
             );
@@ -150,43 +191,77 @@ class ActivitiesScreen extends Component {
                 source={require('../assets/Scores_Pencil_Edit.png')}
                 />
         );
+        const RenderItemImageGD = () => (
+            <Image
+            style={{  width: 45, height: 45,resizeMode: "contain"}}
+            source={require('../assets/Scores_Game_Day.png')}
+            />
+    );
 
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
                 return; 
             }
             else {
-                let sessionTopic = "Unasigned"
-                if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-                if(sessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
-                    return <ListItem
-                        title={`${item.TeamSeasonName}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageSW}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }else if(sessionTopic.replace(/_/g,' ') === "Soccer"){
-                    return <ListItem
-                        title={`${item.TeamSeasonName}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageS}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }else if(sessionTopic.replace(/_/g,' ') === "Writing"){
-                    return <ListItem
-                        title={`${item.TeamSeasonName}`}
-                        style={{backgroundColor: "#C0E4F5"}}
-                        /*description={sessionTopic.replace(/_/g,' ')}*/
-                        accessoryRight={renderItemIcon}
-                        accessoryLeft={RenderItemImageW}
-                        onPress={() => this.selectActivity(item.TeamSeasonId)}
-                    />
-                }
-                }
+                //let sessionTopic = "Unasigned"
+                //if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
+                return item.Sessions.map(value => {
+                    if(value.SessionTopic === null){
+                        return <ListItem
+                            key={value.SessionId}
+                            title={`${item.Team_Name}`}
+                            style={{backgroundColor: "#C0E4F5"}}
+                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                            accessoryLeft={RenderItemImageNL}
+                            accessoryRight={renderItemIcon}
+                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                        />
+                    }else{
+                        if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageSW}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                            />
+                        }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageS}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                            />
+                        }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageW}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                            />
+                        }
+                        else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
+                            return <ListItem
+                                key={value.SessionId}
+                                title={`${item.Team_Name}`}
+                                style={{backgroundColor: "#C0E4F5"}}
+                                /*description={sessionTopic.replace(/_/g,' ')}*/
+                                accessoryRight={renderItemIcon}
+                                accessoryLeft={RenderItemImageGD}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                            />
+                        }
+                    }
+                })
+            }
         }
         const dateService = new MomentDateService();
         // var date = moment();
@@ -231,7 +306,7 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
-        /*const noMatch = (status) => (
+        const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -240,7 +315,7 @@ class ActivitiesScreen extends Component {
                     </Text>
                 </Card>
             )
-        );*/
+        );
 
         const addButton = () => {
             if (this.state.isUpdated){
@@ -254,14 +329,13 @@ class ActivitiesScreen extends Component {
         };
 
         return(
-            <View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+            /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 {searchBox()}
                 <Divider/>
                 {helloMessage("info")}
                 {/*{selectBox()}*/}
-                {/*noMatch("basic")*/}
-
+                {noMatch("basic")}
                     <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
                         <List
                             style={{opacity: 0.95}}
@@ -279,14 +353,14 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     {addButton()}
                 </Layout>      
-            </View>                      
+           /* </View>     */                 
         );
     };
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 

@@ -20,14 +20,12 @@ class TeamsScreen extends Component {
             selectedData: [],
             value: "",
             nomatchModalVisibility: false,
-            regions:[
-                'All',
-                'San Rafael',
-                'San Francisco',
-                'Oakland',
-            ],
             selectedIndex: "",
             displayedValue: "",
+            SFRegion: [],
+            SJRegion: [],
+            OARegion: [],
+            OtherRegion: [],
         }
     }
 
@@ -39,7 +37,7 @@ class TeamsScreen extends Component {
                     date: moment().format("YYYY-MM-DD")
                 }
             })
-            .then(response => this.setState({data: response.data, selectedData: response.data}))
+        .then(response => {this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
             .catch(e => console.log(e));
     }
 
@@ -47,29 +45,43 @@ class TeamsScreen extends Component {
     onSelect = (index) => { this.setSearchBarValue(this.state.selectedData[index].TeamSeasonName)};
     filter(item, query) { return item.TeamSeasonName.toLowerCase().includes(query.toLowerCase()) };
 
-    setData(data,query) { 
+    setData(data) {
         this.setState({selectedData: data})
-        this.state.data.filter(item => 
-            {if(this.filter(item, query)){
-                this.setState({nomatchModalVisibility: false})
-            }else{
-                this.setState({nomatchModalVisibility: true})
-            }})
+        this.setState({SFRegion:data.filter((value) =>(value.Region.match("IFC-SF")))})
+        this.setState({SJRegion:data.filter((value) =>(value.Region.match("San Jose")))})
+        this.setState({OARegion:data.filter((value) =>(value.Region.match("Oakland")))})
+        this.setState({OtherRegion:data.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))}) 
+        if(!data.length){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({nomatchModalVisibility: false})
+        }
     };
 
     onChangeText = (query) => {
         this.setSearchBarValue(query);
-        this.setData(this.state.data.filter(item => this.filter(item, query)),query)
+        this.setData(this.state.data.filter(item => this.filter(item, query)))
     };
 
     onPressTeam(teamSeasonId) {
         this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId});
     };
 
-    SelectIndex(index){
+    /*SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-    };
+    };*/
+
+    regionFiltering = (data) =>{
+        if(data.length === 0){
+            this.setState({nomatchModalVisibility: true})
+        }else{
+            this.setState({SFRegion:data.filter((value) =>(value.Region.match("IFC-SF")))})
+            this.setState({SJRegion:data.filter((value) =>(value.Region.match("San Jose")))})
+            this.setState({OARegion:data.filter((value) =>(value.Region.match("Oakland")))})
+            this.setState({OtherRegion:data.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})
+        }
+    }
 
     render() {
         const rightArrowIconRender = (props) => ( 
@@ -78,16 +90,102 @@ class TeamsScreen extends Component {
                 <Icon {...props} name='people-outline'/>
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
             </View>);
-        let teamItem = ({ item, index }) => (
-            <ListItem 
-                title={`${item.TeamSeasonName}`}
-                style={{backgroundColor: "#C0E4F5"}}
-                // description={`${item.description} ${index + 1}`}
-                accessoryRight={rightArrowIconRender}
-                onPress={() => this.onPressTeam(item.TeamSeasonId)}
-            />
+        /*let teamItem = ({ item, index }) => {
+            return(
+                <ListItem 
+                    title={`${item.TeamSeasonName}`}
+                    style={{backgroundColor: "#C0E4F5"}}
+                    // description={`${item.description} ${index + 1}`}
+                    accessoryRight={rightArrowIconRender}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                />
+            )
+        };*/
+        let teamItemSF = ({ item, index }) => {
+                return(
+                    <ListItem 
+                        title={`${item.TeamSeasonName}`}
+                        style={{backgroundColor: "#C0E4F5"}}
+                        // description={`${item.description} ${index + 1}`}
+                        accessoryRight={rightArrowIconRender}
+                        onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                    />
+            )
+        };
+        const regionSF = (status) => (
+            (
+                (this.state.SFRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            San Francisco
+                        </Text>
+                    </View>
+            )
         );
-        /*const noMatch = (status) => (
+        let teamItemSJ = ({ item, index }) => {
+            return(
+                <ListItem 
+                    title={`${item.TeamSeasonName}`}
+                    style={{backgroundColor: "#C0E4F5"}}
+                    // description={`${item.description} ${index + 1}`}
+                    accessoryRight={rightArrowIconRender}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                />
+            )
+        };
+        const regionSJ = (status) => (
+            (
+                (this.state.SJRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            San Jose
+                        </Text>
+                    </View>
+            )
+        );
+        const regionOA = (status) => (
+            (
+                (this.state.OARegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            Oakland
+                        </Text>
+                    </View>
+            )
+        );
+        let teamItemOA = ({ item, index }) => {
+            return(
+                <ListItem 
+                    title={`${item.TeamSeasonName}`}
+                    style={{backgroundColor: "#C0E4F5"}}
+                    // description={`${item.description} ${index + 1}`}
+                    accessoryRight={rightArrowIconRender}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                />
+            )
+        };
+        const regionOther = (status) => (
+            (
+                (this.state.OtherRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            Other
+                        </Text>
+                    </View>
+            )
+        )
+        let teamItemOther = ({ item, index }) => {
+            return(
+                <ListItem 
+                    title={`${item.TeamSeasonName}`}
+                    style={{backgroundColor: "#C0E4F5"}}
+                    // description={`${item.description} ${index + 1}`}
+                    accessoryRight={rightArrowIconRender}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                />
+            )
+        };
+        const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -96,20 +194,8 @@ class TeamsScreen extends Component {
                     </Text>
                 </Card>
             )
-        );*/
-        /*const selectBox = () => (
-            <Select
-                label="Select a Region"
-                placeholder={this.state.regions[0]}
-                selectedIndex={this.state.selectedIndex}
-                style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
-                value={this.state.displayedValue}
-                onSelect={index => this.SelectIndex(index)}>
-                {this.state.regions.map((title,i) =>
-                    <SelectItem key={title} title={title}/>
-                )}
-          </Select>
-                );*/
+        );
+        
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 <Autocomplete style={{margin:"2%"}}
@@ -117,20 +203,42 @@ class TeamsScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     value={this.state.value}
                     onSelect={this.onSelect}
+                    size="large"
                     onChangeText={this.onChangeText} >
                 </Autocomplete>
                 <Divider/>
                 {/*{selectBox()}*/}
-                {/*noMatch("basic")*/}
-                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>
+                {noMatch("basic")}
+                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99, flexWrap: 'wrap'}}>
+                    {regionSF("basic")}
                     <List
-                        style={{width:"100%", backgroundColor: "rgba(255,255,255,0.9)"}}
-                        data={this.state.selectedData}
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
+                        data={this.state.SFRegion}
                         ItemSeparatorComponent={Divider}
-                        renderItem={teamItem}
-                        />
+                        renderItem={teamItemSF}
+                    />
+                    {regionSJ("basic")}
+                    <List
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
+                        data={this.state.SJRegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={teamItemSJ}
+                    />
+                    {regionOA("basic")}
+                    <List
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
+                        data={this.state.OARegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={teamItemOA}
+                    />
+                    {regionOther("basic")}
+                    <List
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "20%"}}
+                        data={this.state.OtherRegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={teamItemOther}
+                    />
                 </ImageBackground>
-
             </Layout>
         );
     };
