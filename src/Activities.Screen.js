@@ -136,7 +136,7 @@ class ActivitiesScreen extends Component {
         this._syncReduxActivities(activitiesList);
     }
 
-    selectActivity(teamSeasonId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId}) }
+    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
 
     toggleWelcomeModalOff() { 
         const { actions } = this.props;
@@ -228,7 +228,7 @@ class ActivitiesScreen extends Component {
                                 renderItemIconRed)
                                 :
                                 renderItemIcon}
-                            onPress={() => this.selectActivity(item.TeamSeasonId)}
+                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                         />
                     }else{
                         if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
@@ -245,7 +245,7 @@ class ActivitiesScreen extends Component {
                                         :
                                         renderItemIcon}
                                 accessoryLeft={RenderItemImageSW}
-                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                             />
                         }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
                             return <ListItem
@@ -261,7 +261,7 @@ class ActivitiesScreen extends Component {
                                     :
                                     renderItemIcon}
                                 accessoryLeft={RenderItemImageS}
-                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                             />
                         }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
                             return <ListItem
@@ -277,7 +277,7 @@ class ActivitiesScreen extends Component {
                                     :
                                     renderItemIcon}
                                 accessoryLeft={RenderItemImageW}
-                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                             />
                         }
                         else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
@@ -294,7 +294,7 @@ class ActivitiesScreen extends Component {
                                     :
                                     renderItemIcon}
                                 accessoryLeft={RenderItemImageGD}
-                                onPress={() => this.selectActivity(item.TeamSeasonId)}
+                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                             />
                         }
                     }
