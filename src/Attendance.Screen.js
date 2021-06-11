@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView } from 'react-native';
+import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
 
 import { connect } from 'react-redux';
 import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
@@ -30,6 +30,8 @@ class AttendanceScreen extends Component {
             responseStatusModal: false,
             currentSession: undefined,
             updatingModalstate: false,
+            nomatchModalVisibility:false,
+            attendanceListRedux:[],
         }
     }
     
@@ -73,19 +75,20 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId)
         let currentDate = moment();
         let currentTopic = "";
         
         if (currentSession) {
             console.log("[Attendance.Screen.js] : FETCH SESSION") 
-            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSession.Sessions[0].SessionId}`)
+            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`)
             .then(async res => {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
             }).catch(error => error)            
             const newState = {
-                sessionId: currentSession.Sessions[0].SessionId,
+                sessionId: currentSessionData.SessionId,
                 enrollments: currentSession.Enrollments,
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
@@ -98,18 +101,49 @@ class AttendanceScreen extends Component {
             await this.setState(newState);
             await this._fetchGetEnrollments();
             await this._fetchSessionInfo();
-            console.log("enrollments", this.state.enrollments);
+            if(this.state.enrollments !== null){
+                this.setState({nomatchModalVisibility: false})
+            }else{
+                this.setState({nomatchModalVisibility: true})
+            }
         }
     }
     
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
+        const {route} = this.props;
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
-        this.setState({enrollments: newEnrollments, isUpdated: true}) //Set the new list
+        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        console.log(currentSession.Sessions[0].SessionId)
+        newEnrollments.map((value) =>{
+            if(value.Attended !== undefined){
+                if(value.Attended === true){
+                    if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
+                    }else{
+                        this.state.attendanceListRedux.push(value)
+                    }
+                }
+                else{
+                    if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
+                        const index = this.state.attendanceListRedux.indexOf(value);
+                        if (index > -1) {
+                            this.state.attendanceListRedux.splice(index, 1);//saving a new array with all students with value True for attendence
+                        }
+                    }
+                }
+            }
+        })
+        console.log(this.state.attendanceListRedux)
+        if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
+            this.setState({isUpdated: true})
+        }else{
+            this.setState({isUpdated: false})
+        }
+        this.setState({enrollments: newEnrollments}) //Set the new list
     }
 
     checkStudentById = enrollmentId => {
@@ -232,6 +266,26 @@ class AttendanceScreen extends Component {
                 <Text style={{fontSize: 14}} category="p1">{description}</Text>
             </View>
         );
+        const descriptionRowTextImage = (label, description) => (
+            <View style={styles.row}>
+                <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
+                {description === "" ?
+                    <Text style={{fontSize: 14}} category="p1">Unassigned</Text> 
+                    :
+                    <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                    }
+                {description ==="Soccer" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Ball.png')}/>: null}
+                {description ==="Soccer and Writing" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Soccer_and_writing.png')}/>: null}
+                {description ==="Writing" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Pencil_Edit.png')}/>: null}
+                {description ==="Game Day" ?
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Game_Day.png')}/>: null}
+                {description ==="" ?
+                <Image style={{ width: 40, height: 25, resizeMode: "contain"}} source={require('../assets/Unassigned_Session.png')}/>: null}
+            </View>
+        );
 
         const updateButton = () => {
             if (this.state.isUpdated){
@@ -275,7 +329,16 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
-        
+        const noMatch = (status) => (
+            (
+                (this.state.nomatchModalVisibility) &&
+                <Card style={{opacity: 0.9}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center'}}>
+                        This Session has not been set up with a roster of students.
+                    </Text>
+                </Card>
+            )
+        );
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -290,7 +353,7 @@ class AttendanceScreen extends Component {
                 <View style={styles.row}>
                     <View style={styles.column}>
                         {descriptionRowText("Team:",this.state.teamName)}
-                        {descriptionRowText("Session Type:",this.state.topic)}
+                        {descriptionRowTextImage("Session Type:",this.state.topic)}
                         {descriptionRowText("Date:", this.state.date)}
                         {descriptionRowText("Students:", this.state.numberOfStudents)}
                     </View>
@@ -319,6 +382,7 @@ class AttendanceScreen extends Component {
                 {updateModal()}
                 {updateButton()}
                 {updatingModal()}
+                {noMatch("basic")}
                 <Divider/>
                 <List
                     style={{width: "100%"}}
