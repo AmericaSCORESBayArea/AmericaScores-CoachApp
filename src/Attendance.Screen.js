@@ -3,7 +3,8 @@ import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Ca
 import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
 
 import { connect } from 'react-redux';
-import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
+import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
+import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
 import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
@@ -99,7 +100,23 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
+            if(this.props.sessionAttendance.sessionsAttendance !== undefined){
+                if(this.props.sessionAttendance.sessionsAttendance.SessionId === currentSession.Sessions[0].SessionId){
+                    console.log(this.props.sessionAttendance.sessionsAttendance.attendanceList)
+                    let i=0;
+                    this.state.enrollments.map((value) =>{
+                        if(i < this.props.sessionAttendance.sessionsAttendance.attendanceList.length){
+                            if(value.StudentId === this.props.sessionAttendance.sessionsAttendance.attendanceList[i].StudentId){
+                                value.Attended = this.props.sessionAttendance.sessionsAttendance.attendanceList[i].Attended
+                                i=i+1
+                            }
+                        }
+                    });
+                    this.setState({isUpdated: true})
+                }
+            }
             await this._fetchSessionInfo();
+            console.log(this.props.sessionAttendance.sessionsAttendance)
             if(this.state.enrollments !== null){
                 this.setState({nomatchModalVisibility: false})
             }else{
@@ -111,6 +128,7 @@ class AttendanceScreen extends Component {
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
+        const { actions } = this.props;
         const {route} = this.props;
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
@@ -119,6 +137,7 @@ class AttendanceScreen extends Component {
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
         console.log("session id",currentSession.Sessions[0].SessionId)
         newEnrollments.map((value) =>{
+            console.log(value.Attended)
             if(value.Attended !== undefined){
                 if(value.Attended === true){
                     if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
@@ -138,8 +157,14 @@ class AttendanceScreen extends Component {
         })
         console.log(this.state.attendanceListRedux)
         if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
+            let payloadd = {
+                SessionId: currentSession.Sessions[0].SessionId,
+                attendanceList: this.state.attendanceListRedux
+            }
+            actions.UnsavedAttendance(payloadd);
             this.setState({isUpdated: true})
         }else{
+            actions.UnsavedAttendance();
             this.setState({isUpdated: false})
         }
         this.setState({enrollments: newEnrollments}) //Set the new list
@@ -222,6 +247,7 @@ class AttendanceScreen extends Component {
 
     toogleUpdate(){
         this.updateAttendance();
+        actions.UnsavedAttendance();
         this.setState({updatingModalstate: true});
         
     }
@@ -396,9 +422,9 @@ class AttendanceScreen extends Component {
     }
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user  });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateSession } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateSession, UnsavedAttendance } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
