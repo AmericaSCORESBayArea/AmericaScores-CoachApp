@@ -76,19 +76,20 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         let currentDate = moment();
         let currentTopic = "";
         
         if (currentSession) {
             console.log("[Attendance.Screen.js] : FETCH SESSION") 
-            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSession.Sessions[0].SessionId}`)
+            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`)
             .then(async res => {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
             }).catch(error => error)            
             const newState = {
-                sessionId: currentSession.Sessions[0].SessionId,
+                sessionId: currentSessionData.SessionId,
                 enrollments: currentSession.Enrollments,
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
@@ -101,7 +102,7 @@ class AttendanceScreen extends Component {
             await this.setState(newState);
             await this._fetchGetEnrollments();
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
-                if(this.props.sessionAttendance.sessionsAttendance.SessionId === currentSession.Sessions[0].SessionId){
+                if(this.props.sessionAttendance.sessionsAttendance.SessionId === currentSessionData.SessionId){
                     console.log(this.props.sessionAttendance.sessionsAttendance.attendanceList)
                     let i=0;
                     this.state.enrollments.map((value) =>{
@@ -135,7 +136,7 @@ class AttendanceScreen extends Component {
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        console.log("session id",currentSession.Sessions[0].SessionId)
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         newEnrollments.map((value) =>{
             console.log(value.Attended)
             if(value.Attended !== undefined){
@@ -158,7 +159,7 @@ class AttendanceScreen extends Component {
         console.log(this.state.attendanceListRedux)
         if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
             let payloadd = {
-                SessionId: currentSession.Sessions[0].SessionId,
+                SessionId: currentSessionData.SessionId,
                 attendanceList: this.state.attendanceListRedux
             }
             actions.UnsavedAttendance(payloadd);
