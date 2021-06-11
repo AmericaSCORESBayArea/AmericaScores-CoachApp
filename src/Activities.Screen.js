@@ -162,9 +162,17 @@ class ActivitiesScreen extends Component {
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Text  style={{alignSelf:"baseline"}}></Text>
-                {/*<Icon {...props} name='people-outline'/>*/}
+                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
                 <Icon {...props} name='calendar-outline'/> 
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
+            </View>
+        );
+        const renderItemIconRed = (props) => (
+            <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
+                <Text  style={{alignSelf:"baseline"}}></Text>
+                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
+                <Icon {...props} fill="#D62E0A" name='calendar-outline'/> 
+                <Icon {...props} fill="#D62E0A" name='arrow-ios-forward-outline'/> 
             </View>
         );
         const RenderItemImageNL = () => (
@@ -213,7 +221,13 @@ class ActivitiesScreen extends Component {
                             style={{backgroundColor: "#C0E4F5"}}
                             /*description={sessionTopic.replace(/_/g,' ')}*/
                             accessoryLeft={RenderItemImageNL}
-                            accessoryRight={renderItemIcon}
+                            accessoryRight={(this.props.sessionAttendance.sessionsAttendance !== undefined)?
+                                ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance.SessionId)?
+                                renderItemIcon
+                                :
+                                renderItemIconRed)
+                                :
+                                renderItemIcon}
                             onPress={() => this.selectActivity(item.TeamSeasonId)}
                         />
                     }else{
@@ -223,7 +237,13 @@ class ActivitiesScreen extends Component {
                                 title={`${item.Team_Name}`}
                                 style={{backgroundColor: "#C0E4F5"}}
                                 /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
+                                accessoryRight={(this.props.sessionAttendance.sessionsAttendance !== undefined)?
+                                        ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance.SessionId)?
+                                        renderItemIcon
+                                        :
+                                        renderItemIconRed)
+                                        :
+                                        renderItemIcon}
                                 accessoryLeft={RenderItemImageSW}
                                 onPress={() => this.selectActivity(item.TeamSeasonId)}
                             />
@@ -233,7 +253,13 @@ class ActivitiesScreen extends Component {
                                 title={`${item.Team_Name}`}
                                 style={{backgroundColor: "#C0E4F5"}}
                                 /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
+                                accessoryRight={(this.props.sessionAttendance.sessionsAttendance !== undefined)?
+                                    ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance.SessionId)?
+                                    renderItemIcon
+                                    :
+                                    renderItemIconRed)
+                                    :
+                                    renderItemIcon}
                                 accessoryLeft={RenderItemImageS}
                                 onPress={() => this.selectActivity(item.TeamSeasonId)}
                             />
@@ -243,7 +269,13 @@ class ActivitiesScreen extends Component {
                                 title={`${item.Team_Name}`}
                                 style={{backgroundColor: "#C0E4F5"}}
                                 /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
+                                accessoryRight={(this.props.sessionAttendance.sessionsAttendance !== undefined)?
+                                    ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance.SessionId)?
+                                    renderItemIcon
+                                    :
+                                    renderItemIconRed)
+                                    :
+                                    renderItemIcon}
                                 accessoryLeft={RenderItemImageW}
                                 onPress={() => this.selectActivity(item.TeamSeasonId)}
                             />
@@ -254,7 +286,13 @@ class ActivitiesScreen extends Component {
                                 title={`${item.Team_Name}`}
                                 style={{backgroundColor: "#C0E4F5"}}
                                 /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
+                                accessoryRight={(this.props.sessionAttendance.sessionsAttendance !== undefined)?
+                                    ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance.SessionId)?
+                                    renderItemIcon
+                                    :
+                                    renderItemIconRed)
+                                    :
+                                    renderItemIcon}
                                 accessoryLeft={RenderItemImageGD}
                                 onPress={() => this.selectActivity(item.TeamSeasonId)}
                             />
@@ -358,7 +396,7 @@ class ActivitiesScreen extends Component {
     };
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
 const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
   
