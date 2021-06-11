@@ -75,19 +75,20 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId)
         let currentDate = moment();
         let currentTopic = "";
         
         if (currentSession) {
             console.log("[Attendance.Screen.js] : FETCH SESSION") 
-            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSession.Sessions[0].SessionId}`)
+            await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`)
             .then(async res => {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
             }).catch(error => error)            
             const newState = {
-                sessionId: currentSession.Sessions[0].SessionId,
+                sessionId: currentSessionData.SessionId,
                 enrollments: currentSession.Enrollments,
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
