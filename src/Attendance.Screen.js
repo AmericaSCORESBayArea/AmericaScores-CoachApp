@@ -33,11 +33,14 @@ class AttendanceScreen extends Component {
             updatingModalstate: false,
             nomatchModalVisibility:false,
             attendanceListRedux:[],
+            auxRedux: [],
+            nomatchattendance:false,
         }
     }
     
 
     componentDidMount() {
+        this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
     
@@ -87,7 +90,7 @@ class AttendanceScreen extends Component {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
-            }).catch(error => error)            
+            }).catch(error => error)
             const newState = {
                 sessionId: currentSessionData.SessionId,
                 enrollments: currentSession.Enrollments,
@@ -101,27 +104,66 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
-            if(this.props.sessionAttendance.sessionsAttendance !== undefined){
-                if(this.props.sessionAttendance.sessionsAttendance.SessionId === currentSessionData.SessionId){
-                    console.log(this.props.sessionAttendance.sessionsAttendance.attendanceList)
-                    let i=0;
-                    this.state.enrollments.map((value) =>{
-                        if(i < this.props.sessionAttendance.sessionsAttendance.attendanceList.length){
-                            if(value.StudentId === this.props.sessionAttendance.sessionsAttendance.attendanceList[i].StudentId){
-                                value.Attended = this.props.sessionAttendance.sessionsAttendance.attendanceList[i].Attended
-                                i=i+1
-                            }
+            console.log("redux",this.props.sessionAttendance.sessionsAttendance)
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                            this.setState({nomatchattendance:true})
+                            this.state.enrollments.map((value) =>{
+                                valueredux.attendanceList.map((redux) =>{
+                                    if(value.StudentId === redux.StudentId){
+                                        value.Attended = true
+                                    }
+                                });
+                            });
+                            this.setState({isUpdated: true})
                         }
                     });
-                    this.setState({isUpdated: true})
+                }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            if(valueredux.SessionId === currentSessionData.SessionId){
+                                this.setState({nomatchattendance:true})
+                                this.state.enrollments.map((value) =>{
+                                    value.Attended=false
+                                    valueredux.attendanceList.map((redux) =>{
+                                        if(value.StudentId === redux.StudentId){
+                                            value.Attended = true
+                                            }
+                                        });
+                                });
+                                this.setState({isUpdated: true})
+                            }
+                        })
+                    }
+                    if(this.state.nomatchattendance === false){
+                        if(this.state.enrollments !== null){
+                            this.state.enrollments.map((value) =>{
+                                if(value.Attended !== undefined){
+                                    value.Attended=false
+                                }
+                                { () => this.studentAttendanceItem(this.state.enrollments) }
+                            })
+                    }
                 }
-            }
-            await this._fetchSessionInfo();
-            console.log(this.props.sessionAttendance.sessionsAttendance)
-            if(this.state.enrollments !== null){
-                this.setState({nomatchModalVisibility: false})
+                await this._fetchSessionInfo();
+                if(this.state.enrollments !== null){
+                    this.setState({nomatchModalVisibility: false})
+                }else{
+                    this.setState({nomatchModalVisibility: true})
+                }
             }else{
-                this.setState({nomatchModalVisibility: true})
+                this.state.enrollments.map((value) =>{
+                    if(value.Attended !== undefined){
+                        value.Attended = false
+                    }
+                });
+                await this._fetchSessionInfo();
+                if(this.state.enrollments !== null){
+                    this.setState({nomatchModalVisibility: false})
+                }else{
+                    this.setState({nomatchModalVisibility: true})
+                }
             }
         }
     }
@@ -133,12 +175,12 @@ class AttendanceScreen extends Component {
         const {route} = this.props;
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
+        this.setState({auxRedux: []})
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
         const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         newEnrollments.map((value) =>{
-            console.log(value.Attended)
             if(value.Attended !== undefined){
                 if(value.Attended === true){
                     if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
@@ -155,18 +197,82 @@ class AttendanceScreen extends Component {
                     }
                 }
             }
-        })
-        console.log(this.state.attendanceListRedux)
+        });
         if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
-            let payloadd = {
-                SessionId: currentSessionData.SessionId,
-                attendanceList: this.state.attendanceListRedux
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux !== undefined){
+                            if(valueredux.SessionId === currentSessionData.SessionId){
+                                    const index =this.props.sessionAttendance.sessionsAttendance.indexOf(valueredux)
+                                    if (index > -1) {
+                                        this.props.sessionAttendance.sessionsAttendance.splice(index, 1);//saving a new array with all students with value True for attendence
+                                    }
+                                }
+                            }
+                        });
+                    }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            if(valueredux !== undefined){
+                                if(valueredux.SessionId === currentSessionData.SessionId){
+                                        const index =this.props.sessionAttendance.sessionsAttendance[0].indexOf(valueredux)
+                                        if (index > -1) {
+                                            this.props.sessionAttendance.sessionsAttendance[0].splice(index, 1);//saving a new array with all students with value True for attendence
+                                        }
+                                    }
+                                }
+                            })
+                    }
+                if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                    if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                        this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                            this.state.auxRedux.push(valueredux)
+                        });
+                    }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            this.state.auxRedux.push(valueredux)
+                        });
+                    }
+                    let payloadd = {
+                        SessionId: currentSessionData.SessionId,
+                        attendanceList: this.state.attendanceListRedux
+                    }
+                    this.state.auxRedux.push(payloadd)
+                    actions.UnsavedAttendance(this.state.auxRedux);
+                }else{
+                    let payloadd = {
+                        SessionId: currentSessionData.SessionId,
+                        attendanceList: this.state.attendanceListRedux
+                    }
+                    actions.UnsavedAttendance(payloadd);
+                }
+                this.setState({isUpdated: true})
+            }else{
+                let payloadd = {
+                    SessionId: currentSessionData.SessionId,
+                    attendanceList: this.state.attendanceListRedux
+                }
+                actions.UnsavedAttendance(payloadd);
+                this.setState({isUpdated: true})
             }
-            actions.UnsavedAttendance(payloadd);
-            this.setState({isUpdated: true})
         }else{
-            actions.UnsavedAttendance();
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }else{
+                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }
+            actions.UnsavedAttendance(this.state.auxRedux),
             this.setState({isUpdated: false})
+            }
         }
         this.setState({enrollments: newEnrollments}) //Set the new list
     }
@@ -178,7 +284,7 @@ class AttendanceScreen extends Component {
 
     updateAttendance() {
         const {enrollments, sessionId} = this.state;
-        let attendanceFetchData = this.formatEnrollmentsToRequest(enrollments, sessionId); 
+        let attendanceFetchData = this.formatEnrollmentsToRequest(enrollments, sessionId);
         this._fetchUpdateAttendance(attendanceFetchData)
             .then(() => this.updateEnrollmentsToRedux())
             .catch(error => {throw error})
@@ -238,7 +344,6 @@ class AttendanceScreen extends Component {
                 StudentId: enrollment.StudentId,
                 StudentName: enrollment.StudentName
             };
-            console.log(student.StudentName);
             parsedEnrollments.push(student);
         });
         parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
@@ -247,10 +352,59 @@ class AttendanceScreen extends Component {
     }
 
     toogleUpdate(){
+        const { actions } = this.props;
+        const {route} = this.props;
+        this.setState({auxRedux: []});
         this.updateAttendance();
-        actions.UnsavedAttendance();
-        this.setState({updatingModalstate: true});
-        
+        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+            if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                    if(valueredux !== undefined){
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                                const index =this.props.sessionAttendance.sessionsAttendance.indexOf(valueredux)
+                                if (index > -1) {
+                                    this.props.sessionAttendance.sessionsAttendance.splice(index, 1);//saving a new array with all students with value True for attendence
+                                }
+                            }
+                        }
+                });
+            }else{
+                this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                    if(valueredux !== undefined){
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                                const index =this.props.sessionAttendance.sessionsAttendance[0].indexOf(valueredux)
+                                if (index > -1) {
+                                    this.props.sessionAttendance.sessionsAttendance[0].splice(index, 1);//saving a new array with all students with value True for attendence
+                                }
+                            }
+                        }
+                });
+            }
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }else{
+                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }
+                actions.UnsavedAttendance(this.state.auxRedux),
+                this.state.enrollments.map((value) =>{
+                    if(value.Attended !== undefined){
+                        value.Attended = false
+                    }
+                });
+                this.setState({updatingModalstate: true});
+            }
+        }
     }
 
     editSession(modalScreen){
