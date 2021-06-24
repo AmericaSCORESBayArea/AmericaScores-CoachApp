@@ -35,6 +35,7 @@ class AttendanceScreen extends Component {
             attendanceListRedux:[],
             auxRedux: [],
             nomatchattendance:false,
+            loadingModalstate:true,
         }
     }
     
@@ -104,13 +105,16 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
-            console.log("redux",this.props.sessionAttendance.sessionsAttendance)
+            if(this.props.sessionAttendance.sessionsAttendance !== undefined){
+                console.log("redux",this.props.sessionAttendance.sessionsAttendance)
+            }
             if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                     this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
                         if(valueredux.SessionId === currentSessionData.SessionId){
                             this.setState({nomatchattendance:true})
                             this.state.enrollments.map((value) =>{
+                                value.Attended = false
                                 valueredux.attendanceList.map((redux) =>{
                                     if(value.StudentId === redux.StudentId){
                                         value.Attended = true
@@ -165,6 +169,8 @@ class AttendanceScreen extends Component {
                     this.setState({nomatchModalVisibility: true})
                 }
             }
+        this.setState({loadingModalstate:false});
+
         }
     }
     
@@ -509,6 +515,15 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
+        const loadingModal = () => (
+            console.log("loading"),
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.loadingModalstate}
+                backdropStyle={styles.backdrop}>
+                    {spinnerCard()}
+            </Modal>
+        )
         const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
@@ -560,6 +575,7 @@ class AttendanceScreen extends Component {
                 <Divider/>
                 {descriptionArea()}
                 {updateModal()}
+                {loadingModal()}
                 {updateButton()}
                 {updatingModal()}
                 {noMatch("basic")}
