@@ -133,7 +133,7 @@ export const EditSessionModal = ({route, navigation}) => {
         else if(title==="Game Day"){
             return(console.log(title),<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
-            source={require('../../assets/Scores_Game_Day.png')}
+            source={require('../../assets/Scores_goal.png')}
           />)
         }
     };
@@ -158,7 +158,7 @@ export const EditSessionModal = ({route, navigation}) => {
         else if(title==="Game Day"){
             return(console.log(title),<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
-            source={require('../../assets/Scores_Game_Day.png')}
+            source={require('../../assets/Scores_goal.png')}
           />)
         }
     };
@@ -339,7 +339,7 @@ export const AddSessionModal = ({route, navigation}) => {
         else if(title==="Game Day"){
             return(console.log(title),<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
-            source={require('../../assets/Scores_Game_Day.png')}
+            source={require('../../assets/Scores_goal.png')}
           />)
         }
     };
@@ -365,7 +365,7 @@ export const AddSessionModal = ({route, navigation}) => {
         else if(title==="Game Day"){
             return(console.log(title),<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
-            source={require('../../assets/Scores_Game_Day.png')}
+            source={require('../../assets/Scores_goal.png')}
           />)
         }
     };
