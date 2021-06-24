@@ -108,7 +108,7 @@ class AttendanceScreen extends Component {
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
                 console.log("redux",this.props.sessionAttendance.sessionsAttendance)
             }
-            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+            if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                     this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
                         if(valueredux.SessionId === currentSessionData.SessionId){
@@ -157,21 +157,22 @@ class AttendanceScreen extends Component {
                     this.setState({nomatchModalVisibility: true})
                 }
             }else{
-                this.state.enrollments.map((value) =>{
-                    if(value.Attended !== undefined){
-                        value.Attended = false
-                    }
-                });
-                await this._fetchSessionInfo();
                 if(this.state.enrollments !== null){
                     this.setState({nomatchModalVisibility: false})
+                    this.state.enrollments.map((value) =>{
+                        if(value.Attended !== undefined){
+                            value.Attended = false
+                        }
+                    });
                 }else{
                     this.setState({nomatchModalVisibility: true})
+                    this.setState({loadingModalstate:false});
                 }
+                await this._fetchSessionInfo();
             }
         this.setState({loadingModalstate:false});
-
         }
+        this.setState({loadingModalstate:false});
     }
     
 
@@ -364,7 +365,7 @@ class AttendanceScreen extends Component {
         this.updateAttendance();
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
         const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
-        if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+        if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                 this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
                     if(valueredux !== undefined){
@@ -388,7 +389,7 @@ class AttendanceScreen extends Component {
                         }
                 });
             }
-            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+            if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                     this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
                         if(valueredux.SessionId !== currentSessionData.SessionId){
@@ -467,7 +468,7 @@ class AttendanceScreen extends Component {
                 {description ==="Writing" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Pencil_Edit.png')}/>: null}
                 {description ==="Game Day" ?
-                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Game_Day.png')}/>: null}
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_goal.png')}/>: null}
                 {description ==="" ?
                 <Image style={{ width: 40, height: 25, resizeMode: "contain"}} source={require('../assets/Unassigned_Session.png')}/>: null}
             </View>
@@ -516,7 +517,6 @@ class AttendanceScreen extends Component {
             </Modal>
         )
         const loadingModal = () => (
-            console.log("loading"),
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
