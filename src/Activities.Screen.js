@@ -202,7 +202,7 @@ class ActivitiesScreen extends Component {
         const RenderItemImageGD = () => (
             <Image
             style={{  width: 45, height: 45,resizeMode: "contain"}}
-            source={require('../assets/Scores_Game_Day.png')}
+            source={require('../assets/Scores_goal.png')}
             />
     );
 
