@@ -162,9 +162,17 @@ class ActivitiesScreen extends Component {
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Text  style={{alignSelf:"baseline"}}></Text>
-                {/*<Icon {...props} name='people-outline'/>*/}
+                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
                 <Icon {...props} name='calendar-outline'/> 
                 <Icon {...props} name='arrow-ios-forward-outline'/> 
+            </View>
+        );
+        const renderItemIconRed = (props) => (
+            <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
+                <Text  style={{alignSelf:"baseline"}}></Text>
+                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
+                <Icon {...props} fill="#D62E0A" name='calendar-outline'/> 
+                <Icon {...props} fill="#D62E0A" name='arrow-ios-forward-outline'/> 
             </View>
         );
         const RenderItemImageNL = () => (
@@ -194,7 +202,7 @@ class ActivitiesScreen extends Component {
         const RenderItemImageGD = () => (
             <Image
             style={{  width: 45, height: 45,resizeMode: "contain"}}
-            source={require('../assets/Scores_Game_Day.png')}
+            source={require('../assets/Scores_goal.png')}
             />
     );
 
@@ -207,57 +215,302 @@ class ActivitiesScreen extends Component {
                 //if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
                 return item.Sessions.map(value => {
                     if(value.SessionTopic === null){
-                        return <ListItem
-                            key={value.SessionId}
-                            title={`${item.Team_Name}`}
-                            style={{backgroundColor: "#C0E4F5"}}
-                            /*description={sessionTopic.replace(/_/g,' ')}*/
-                            accessoryLeft={RenderItemImageNL}
-                            accessoryRight={renderItemIcon}
-                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                        />
+                        if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                            if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                                return <ListItem
+                                    key={value.SessionId}
+                                    title={`${item.Team_Name}`}
+                                    style={{backgroundColor: "#C0E4F5"}}
+                                    /*description={sessionTopic.replace(/_/g,' ')}*/
+                                    accessoryLeft={RenderItemImageNL}
+                                    accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                        ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                        renderItemIcon
+                                        :
+                                        renderItemIconRed)
+                                        :
+                                        renderItemIcon}
+                                    onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                />
+                                      
+                            }else{
+                                let found=null;
+                                this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                    if(value.SessionId === valueredux.SessionId){
+                                        found=true
+                                    }
+                                });
+                                if(found === true){
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageNL}
+                                        accessoryRight={renderItemIconRed}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                }else{
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageNL}
+                                        accessoryRight={renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                }
+                            }
+                        }else{
+                            return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageNL}
+                                        accessoryRight={renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                        }
                     }else{
                         if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
-                            return <ListItem
-                                key={value.SessionId}
-                                title={`${item.Team_Name}`}
-                                style={{backgroundColor: "#C0E4F5"}}
-                                /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
-                                accessoryLeft={RenderItemImageSW}
-                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                            />
+                            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageSW}
+                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon
+                                            :
+                                            renderItemIconRed)
+                                            :
+                                            renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                          
+                                }else{
+                                    let found=null;
+                                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                        if(value.SessionId === valueredux.SessionId){
+                                            found=true
+                                        }
+                                    });
+                                    if(found === true){
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageSW}
+                                            accessoryRight={renderItemIconRed}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }else{
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageSW}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }
+                                }
+                            }else{
+                                return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageSW}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                            }
                         }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
-                            return <ListItem
-                                key={value.SessionId}
-                                title={`${item.Team_Name}`}
-                                style={{backgroundColor: "#C0E4F5"}}
-                                /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
-                                accessoryLeft={RenderItemImageS}
-                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                            />
+                            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageS}
+                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon
+                                            :
+                                            renderItemIconRed)
+                                            :
+                                            renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                          
+                                }else{
+                                    let found=null;
+                                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                        if(value.SessionId === valueredux.SessionId){
+                                            found=true
+                                        }
+                                    });
+                                    if(found === true){
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageS}
+                                            accessoryRight={renderItemIconRed}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }else{
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageS}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }
+                                }
+                            }else{
+                                return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageS}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                            }
                         }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
-                            return <ListItem
-                                key={value.SessionId}
-                                title={`${item.Team_Name}`}
-                                style={{backgroundColor: "#C0E4F5"}}
-                                /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
-                                accessoryLeft={RenderItemImageW}
-                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                            />
+                            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageW}
+                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon
+                                            :
+                                            renderItemIconRed)
+                                            :
+                                            renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                        
+                                }else{
+                                    let found=null;
+                                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                        if(value.SessionId === valueredux.SessionId){
+                                            found=true
+                                        }
+                                    });
+                                    if(found === true){
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageW}
+                                            accessoryRight={renderItemIconRed}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }else{
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageW}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }
+                                }
+                            }else{
+                                return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageW}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                            }
                         }
                         else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
-                            return <ListItem
-                                key={value.SessionId}
-                                title={`${item.Team_Name}`}
-                                style={{backgroundColor: "#C0E4F5"}}
-                                /*description={sessionTopic.replace(/_/g,' ')}*/
-                                accessoryRight={renderItemIcon}
-                                accessoryLeft={RenderItemImageGD}
-                                onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                            />
+                            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                                    return <ListItem
+                                        key={value.SessionId}
+                                        title={`${item.Team_Name}`}
+                                        style={{backgroundColor: "#C0E4F5"}}
+                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        accessoryLeft={RenderItemImageGD}
+                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon
+                                            :
+                                            renderItemIconRed)
+                                            :
+                                            renderItemIcon}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                    />
+                                        
+                                }else{
+                                    let found=null;
+                                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                        if(value.SessionId === valueredux.SessionId){
+                                            found=true
+                                        }
+                                    });
+                                    if(found === true){
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageGD}
+                                            accessoryRight={renderItemIconRed}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }else{
+                                        return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageGD}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                                    }
+                                }
+                            }else{
+                                return <ListItem
+                                            key={value.SessionId}
+                                            title={`${item.Team_Name}`}
+                                            style={{backgroundColor: "#C0E4F5"}}
+                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            accessoryLeft={RenderItemImageGD}
+                                            accessoryRight={renderItemIcon}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        />
+                            }
                         }
                     }
                 })
@@ -358,7 +611,7 @@ class ActivitiesScreen extends Component {
     };
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
 const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
   
