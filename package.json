@@ -23,6 +23,7 @@
     "@ui-kitten/eva-icons": "^5.0.0",
     "@ui-kitten/moment": "^5.0.0",
     "axios": "^0.21.1",
+    "browserslist": "^4.16.6",
     "expo": "^38.0.10",
     "expo-app-auth": "~9.1.1",
     "expo-google-sign-in": "~8.2.1",
