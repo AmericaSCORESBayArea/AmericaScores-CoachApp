@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, RefreshControl, ScrollView, Image, Animated, Easing } from 'react-native';
 
 import { connect } from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
@@ -36,6 +36,7 @@ class AttendanceScreen extends Component {
             auxRedux: [],
             nomatchattendance:false,
             loadingModalstate:true,
+            opacity: new Animated.Value(1)
         }
     }
     
@@ -517,11 +518,29 @@ class AttendanceScreen extends Component {
             </Modal>
         )
         const loadingModal = () => (
+            Animated.loop(
+                Animated.sequence([
+                  Animated.timing(this.state.opacity, {
+                    toValue: 0,
+                    duration: 3500,
+                    ease: Easing.linear,
+                    useNativeDriver: true
+                  }),
+                ]),
+                Animated.timing(this.state.opacity, {
+                    toValue: 1,
+                    duration: 2500,
+                    ease: Easing.linear,
+                    useNativeDriver: true
+                  })
+              ).start(),
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
-                    {spinnerCard()}
+                <Animated.Image style={{opacity: this.state.opacity,  width: 200, height: 200,resizeMode: "contain",}}
+                    source={require('../assets/ASBA_Logo_Only_Removedbg.png')}
+                />
             </Modal>
         )
         const noMatch = (status) => (
