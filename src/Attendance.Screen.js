@@ -3,7 +3,8 @@ import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Ca
 import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
 
 import { connect } from 'react-redux';
-import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
+import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
+import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
 import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
@@ -32,11 +33,15 @@ class AttendanceScreen extends Component {
             updatingModalstate: false,
             nomatchModalVisibility:false,
             attendanceListRedux:[],
+            auxRedux: [],
+            nomatchattendance:false,
+            loadingModalstate:true,
         }
     }
     
 
     componentDidMount() {
+        this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
     
@@ -75,7 +80,7 @@ class AttendanceScreen extends Component {
     async _setCurrentSessionData() {
         const {route} = this.props;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId)
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         let currentDate = moment();
         let currentTopic = "";
         
@@ -86,7 +91,7 @@ class AttendanceScreen extends Component {
                 console.log(res.data.SessionTopic);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
-            }).catch(error => error)            
+            }).catch(error => error)
             const newState = {
                 sessionId: currentSessionData.SessionId,
                 enrollments: currentSession.Enrollments,
@@ -100,25 +105,88 @@ class AttendanceScreen extends Component {
 
             await this.setState(newState);
             await this._fetchGetEnrollments();
-            await this._fetchSessionInfo();
-            if(this.state.enrollments !== null){
-                this.setState({nomatchModalVisibility: false})
-            }else{
-                this.setState({nomatchModalVisibility: true})
+            if(this.props.sessionAttendance.sessionsAttendance !== undefined){
+                console.log("redux",this.props.sessionAttendance.sessionsAttendance)
             }
+            if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                            this.setState({nomatchattendance:true})
+                            this.state.enrollments.map((value) =>{
+                                value.Attended = false
+                                valueredux.attendanceList.map((redux) =>{
+                                    if(value.StudentId === redux.StudentId){
+                                        value.Attended = true
+                                    }
+                                });
+                            });
+                            this.setState({isUpdated: true})
+                        }
+                    });
+                }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            if(valueredux.SessionId === currentSessionData.SessionId){
+                                this.setState({nomatchattendance:true})
+                                this.state.enrollments.map((value) =>{
+                                    value.Attended=false
+                                    valueredux.attendanceList.map((redux) =>{
+                                        if(value.StudentId === redux.StudentId){
+                                            value.Attended = true
+                                            }
+                                        });
+                                });
+                                this.setState({isUpdated: true})
+                            }
+                        })
+                    }
+                    if(this.state.nomatchattendance === false){
+                        if(this.state.enrollments !== null){
+                            this.state.enrollments.map((value) =>{
+                                if(value.Attended !== undefined){
+                                    value.Attended=false
+                                }
+                                { () => this.studentAttendanceItem(this.state.enrollments) }
+                            })
+                    }
+                }
+                await this._fetchSessionInfo();
+                if(this.state.enrollments !== null){
+                    this.setState({nomatchModalVisibility: false})
+                }else{
+                    this.setState({nomatchModalVisibility: true})
+                }
+            }else{
+                if(this.state.enrollments !== null){
+                    this.setState({nomatchModalVisibility: false})
+                    this.state.enrollments.map((value) =>{
+                        if(value.Attended !== undefined){
+                            value.Attended = false
+                        }
+                    });
+                }else{
+                    this.setState({nomatchModalVisibility: true})
+                    this.setState({loadingModalstate:false});
+                }
+                await this._fetchSessionInfo();
+            }
+        this.setState({loadingModalstate:false});
         }
+        this.setState({loadingModalstate:false});
     }
     
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
+        const { actions } = this.props;
         const {route} = this.props;
         let newEnrollments = [...this.state.enrollments]; //Get the new list
         //Change the student attendance
+        this.setState({auxRedux: []})
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
         const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        console.log(currentSession.Sessions[0].SessionId)
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         newEnrollments.map((value) =>{
             if(value.Attended !== undefined){
                 if(value.Attended === true){
@@ -136,12 +204,82 @@ class AttendanceScreen extends Component {
                     }
                 }
             }
-        })
-        console.log(this.state.attendanceListRedux)
+        });
         if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
-            this.setState({isUpdated: true})
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux !== undefined){
+                            if(valueredux.SessionId === currentSessionData.SessionId){
+                                    const index =this.props.sessionAttendance.sessionsAttendance.indexOf(valueredux)
+                                    if (index > -1) {
+                                        this.props.sessionAttendance.sessionsAttendance.splice(index, 1);//saving a new array with all students with value True for attendence
+                                    }
+                                }
+                            }
+                        });
+                    }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            if(valueredux !== undefined){
+                                if(valueredux.SessionId === currentSessionData.SessionId){
+                                        const index =this.props.sessionAttendance.sessionsAttendance[0].indexOf(valueredux)
+                                        if (index > -1) {
+                                            this.props.sessionAttendance.sessionsAttendance[0].splice(index, 1);//saving a new array with all students with value True for attendence
+                                        }
+                                    }
+                                }
+                            })
+                    }
+                if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                    if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                        this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                            this.state.auxRedux.push(valueredux)
+                        });
+                    }else{
+                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                            this.state.auxRedux.push(valueredux)
+                        });
+                    }
+                    let payloadd = {
+                        SessionId: currentSessionData.SessionId,
+                        attendanceList: this.state.attendanceListRedux
+                    }
+                    this.state.auxRedux.push(payloadd)
+                    actions.UnsavedAttendance(this.state.auxRedux);
+                }else{
+                    let payloadd = {
+                        SessionId: currentSessionData.SessionId,
+                        attendanceList: this.state.attendanceListRedux
+                    }
+                    actions.UnsavedAttendance(payloadd);
+                }
+                this.setState({isUpdated: true})
+            }else{
+                let payloadd = {
+                    SessionId: currentSessionData.SessionId,
+                    attendanceList: this.state.attendanceListRedux
+                }
+                actions.UnsavedAttendance(payloadd);
+                this.setState({isUpdated: true})
+            }
         }else{
+            if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }else{
+                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }
+            actions.UnsavedAttendance(this.state.auxRedux),
             this.setState({isUpdated: false})
+            }
         }
         this.setState({enrollments: newEnrollments}) //Set the new list
     }
@@ -153,7 +291,7 @@ class AttendanceScreen extends Component {
 
     updateAttendance() {
         const {enrollments, sessionId} = this.state;
-        let attendanceFetchData = this.formatEnrollmentsToRequest(enrollments, sessionId); 
+        let attendanceFetchData = this.formatEnrollmentsToRequest(enrollments, sessionId);
         this._fetchUpdateAttendance(attendanceFetchData)
             .then(() => this.updateEnrollmentsToRedux())
             .catch(error => {throw error})
@@ -213,7 +351,6 @@ class AttendanceScreen extends Component {
                 StudentId: enrollment.StudentId,
                 StudentName: enrollment.StudentName
             };
-            console.log(student.StudentName);
             parsedEnrollments.push(student);
         });
         parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
@@ -222,9 +359,59 @@ class AttendanceScreen extends Component {
     }
 
     toogleUpdate(){
+        const { actions } = this.props;
+        const {route} = this.props;
+        this.setState({auxRedux: []});
         this.updateAttendance();
-        this.setState({updatingModalstate: true});
-        
+        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
+            if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                    if(valueredux !== undefined){
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                                const index =this.props.sessionAttendance.sessionsAttendance.indexOf(valueredux)
+                                if (index > -1) {
+                                    this.props.sessionAttendance.sessionsAttendance.splice(index, 1);//saving a new array with all students with value True for attendence
+                                }
+                            }
+                        }
+                });
+            }else{
+                this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                    if(valueredux !== undefined){
+                        if(valueredux.SessionId === currentSessionData.SessionId){
+                                const index =this.props.sessionAttendance.sessionsAttendance[0].indexOf(valueredux)
+                                if (index > -1) {
+                                    this.props.sessionAttendance.sessionsAttendance[0].splice(index, 1);//saving a new array with all students with value True for attendence
+                                }
+                            }
+                        }
+                });
+            }
+            if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
+                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }else{
+                    this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                        if(valueredux.SessionId !== currentSessionData.SessionId){
+                            this.state.auxRedux.push(valueredux)
+                        }
+                    });
+                }
+                actions.UnsavedAttendance(this.state.auxRedux),
+                this.state.enrollments.map((value) =>{
+                    if(value.Attended !== undefined){
+                        value.Attended = false
+                    }
+                });
+                this.setState({updatingModalstate: true});
+            }
+        }
     }
 
     editSession(modalScreen){
@@ -281,7 +468,7 @@ class AttendanceScreen extends Component {
                 {description ==="Writing" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Pencil_Edit.png')}/>: null}
                 {description ==="Game Day" ?
-                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Game_Day.png')}/>: null}
+                <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_goal.png')}/>: null}
                 {description ==="" ?
                 <Image style={{ width: 40, height: 25, resizeMode: "contain"}} source={require('../assets/Unassigned_Session.png')}/>: null}
             </View>
@@ -325,6 +512,14 @@ class AttendanceScreen extends Component {
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.updatingModalstate}
+                backdropStyle={styles.backdrop}>
+                    {spinnerCard()}
+            </Modal>
+        )
+        const loadingModal = () => (
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
                     {spinnerCard()}
             </Modal>
@@ -380,6 +575,7 @@ class AttendanceScreen extends Component {
                 <Divider/>
                 {descriptionArea()}
                 {updateModal()}
+                {loadingModal()}
                 {updateButton()}
                 {updatingModal()}
                 {noMatch("basic")}
@@ -397,9 +593,9 @@ class AttendanceScreen extends Component {
     }
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user  });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateSession } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateSession, UnsavedAttendance } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
