@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
 import { StyleSheet, View, RefreshControl, ScrollView, Image, Animated, Easing } from 'react-native';
 
@@ -36,12 +36,13 @@ class AttendanceScreen extends Component {
             auxRedux: [],
             nomatchattendance:false,
             loadingModalstate:true,
-            opacity: new Animated.Value(1)
+            opacity: new Animated.Value(0)
         }
     }
     
 
     componentDidMount() {
+        this.updateAnimation();
         this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
@@ -358,7 +359,30 @@ class AttendanceScreen extends Component {
 
         return parsedEnrollments;
     }
-
+    updateAnimation(){
+        if(this.state.loadingModalstate){
+                console.log("start")
+                this.state.opacity.setValue(0);
+                Animated.sequence([
+                    Animated.timing(this.state.opacity, {
+                    toValue: 1,
+                    duration: 800,
+                    easing: Easing.out(Easing.sin),
+                    useNativeDriver: true,
+                    delay: 0,
+                    }),
+                    Animated.timing(this.state.opacity, {
+                    toValue: 2,
+                    duration: 500,
+                    easing: Easing.in(Easing.sin),
+                    useNativeDriver: true,
+                    delay: 0,
+                    }),
+                ]).start(() => 
+                this.updateAnimation()
+              );
+        }
+    }
     toogleUpdate(){
         const { actions } = this.props;
         const {route} = this.props;
@@ -517,30 +541,16 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
+        const size = this.state.opacity.interpolate({
+            inputRange: [0, 1, 2],
+            outputRange: [0.8, 1, 0.8],
+          });
         const loadingModal = () => (
-            Animated.loop(
-                Animated.sequence([
-                  Animated.timing(this.state.opacity, {
-                    toValue: 0,
-                    duration: 3500,
-                    ease: Easing.linear,
-                    useNativeDriver: true
-                  }),
-                ]),
-                Animated.timing(this.state.opacity, {
-                    toValue: 1,
-                    duration: 2500,
-                    ease: Easing.linear,
-                    useNativeDriver: true
-                  })
-              ).start(),
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
-                <Animated.Image style={{opacity: this.state.opacity,  width: 200, height: 200,resizeMode: "contain",}}
-                    source={require('../assets/ASBA_Logo_Only_Removedbg.png')}
-                />
+                <Animated.Image source={require('../assets/ASBA_Logo_Only_Removedbg.png')} style={[{transform: [{ scale: size }]}]}/>
             </Modal>
         )
         const noMatch = (status) => (
