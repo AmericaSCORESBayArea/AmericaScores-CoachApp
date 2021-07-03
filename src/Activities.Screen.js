@@ -37,6 +37,10 @@ class ActivitiesScreen extends Component {
             teamSeasonId: "",
             listofSessions: null,
             seasonName: "",
+            /*SFRegion: [],
+            SJRegion: [],
+            OARegion: [],
+            OtherRegion: [],//setting the list of regions*/
         }
     }
 
@@ -73,7 +77,11 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
-        this.setState({activities: activitiesList});
+        this.setState({activities: activitiesList});//saving the activitiesList
+        /*this.setState({SFRegion:activitiesList.filter((value) =>(value.Region.match("IFC-SF")))})//saving sessions with region sf
+        this.setState({SJRegion:activitiesList.filter((value) =>(value.Region.match("San Jose")))})//saving sessions with region san jose
+        this.setState({OARegion:activitiesList.filter((value) =>(value.Region.match("Oakland")))})//saving sessions with region oakland
+        this.setState({OtherRegion:activitiesList.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})//saving sessions with other region*/
         ((activitiesList.length === 0)? 
         (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
         :
@@ -548,8 +556,46 @@ class ActivitiesScreen extends Component {
                 )}
           </Select>
         );*/
-
-
+        {/*const regionSF = (status) => (
+            (
+                (this.state.SFRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            San Francisco
+                        </Text>
+                    </View>
+            )
+        );
+        const regionSJ = (status) => (
+            (
+                (this.state.SJRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            San Jose
+                        </Text>
+                    </View>
+            )
+        );
+        const regionOA = (status) => (
+            (
+                (this.state.OARegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            Oakland
+                        </Text>
+                    </View>
+            )
+        );
+        const regionOther = (status) => (
+            (
+                (this.state.OtherRegion.length !==0) &&
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center"}} status={status} category='h6'>
+                            Other
+                        </Text>
+                    </View>
+            )
+        );*/}
         const helloMessage = (status) => (
             (
                 (this.state.welcomeModalVisibility) &&
@@ -603,7 +649,34 @@ class ActivitiesScreen extends Component {
                                 />
                               }
                         />
-                        
+                        {/*{regionSF("basic")}
+                    <List
+                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
+                        data={this.state.SFRegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={activityItem}
+                    />
+                    {regionSJ("basic")}
+                    <List
+                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
+                        data={this.state.SJRegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={activityItem}
+                    />
+                    {regionOA("basic")}
+                    <List
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
+                        data={this.state.OARegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={activityItem}
+                    />
+                    {regionOther("basic")}
+                    <List
+                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
+                        data={this.state.OtherRegion}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={activityItem}
+                    />*/}
                     </ImageBackground>
                     {addButton()}
                 </Layout>      
