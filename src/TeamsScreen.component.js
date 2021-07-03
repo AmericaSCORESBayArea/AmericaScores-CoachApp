@@ -3,13 +3,14 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, SafeAreaView } from "react-native";
+import { ImageBackground, View, SafeAreaView, Dimensions } from "react-native";
 
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem} from '@ui-kitten/components';
 import Axios from "axios";
 
 import moment from "moment";
 import { ApiConfig } from "./config/ApiConfig";
+import { ScrollView } from "react-native-gesture-handler";
 
 
 class TeamsScreen extends Component {
@@ -209,18 +210,18 @@ class TeamsScreen extends Component {
                 <Divider/>
                 {/*{selectBox()}*/}
                 {noMatch("basic")}
-                <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99, flexWrap: 'wrap'}}>
-                <SafeAreaView style={{flex: 1}}>
+                <SafeAreaView  style={{backgroundColor:'#00000000',flex:1}}>
+                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={{flex:1, resizeMode: 'contain',opacity: 0.99, flexWrap: 'wrap'}}>
                     {regionSF("basic")}
                     <List
-                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
+                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
                         data={this.state.SFRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSF}
                     />
                     {regionSJ("basic")}
                     <List
-                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
+                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
                         data={this.state.SJRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemSJ}
@@ -239,8 +240,8 @@ class TeamsScreen extends Component {
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItemOther}
                     />
-                    </SafeAreaView >
                 </ImageBackground>
+                </SafeAreaView >
             </Layout>
         );
     };
