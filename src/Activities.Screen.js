@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, SelectItem} from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image} from "react-native";
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, Modal, SelectItem} from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image, TouchableOpacity} from "react-native";
 
 import { MomentDateService } from '@ui-kitten/moment';
 
@@ -15,6 +15,7 @@ import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
+import { changeRegion } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
 
 class ActivitiesScreen extends Component {
@@ -23,30 +24,32 @@ class ActivitiesScreen extends Component {
         this.state = {
             date: moment(),
             activities: "",
+            activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:[
-                'All',
-                'San Rafael',
-                'San Francisco',
-                'Oakland',
-            ],
+            regions:['Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+            'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
+            'IFC-SF', 'Genesis'],
             selectedIndex: "",
             displayedValue: "",
             isUpdated: false,
             teamSeasonId: "",
             listofSessions: null,
             seasonName: "",
-            /*SFRegion: [],
-            SJRegion: [],
-            OARegion: [],
-            OtherRegion: [],//setting the list of regions*/
+            visible:false,
+            activitiesArray: [],
+            RegionSelected: "",//setting the region selected
         }
     }
 
     
 
     async componentDidMount() {
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
+        this.setState({RegionSelected:"ASBA"})
+        if(this.props.sessionScreen.region === null){
+            this.setState({visible: true})
+        }
         this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
@@ -78,14 +81,14 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
-        /*this.setState({SFRegion:activitiesList.filter((value) =>(value.Region.match("IFC-SF")))})//saving sessions with region sf
-        this.setState({SJRegion:activitiesList.filter((value) =>(value.Region.match("San Jose")))})//saving sessions with region san jose
-        this.setState({OARegion:activitiesList.filter((value) =>(value.Region.match("Oakland")))})//saving sessions with region oakland
-        this.setState({OtherRegion:activitiesList.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})//saving sessions with other region*/
-        ((activitiesList.length === 0)? 
-        (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
-        :
-        (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false})))//saving seasonName
+        this.setState({activitiesRegion:activitiesList.filter((value) =>(value.Region.match("Other")))})//saving sessions with region sf
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
+        this.setState({RegionSelected:"ASBA"})
+        if(activitiesList.length === 0){
+            (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
+        }else{
+            (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+        }
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -114,6 +117,7 @@ class ActivitiesScreen extends Component {
         const activities = this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
+        this.setState({activitiesRegion:activities.filter((value) =>(value.Region.match("Other")))})
         activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
@@ -141,7 +145,6 @@ class ActivitiesScreen extends Component {
     async selectDate(date) { 
         await this.setState({date: date})
         const activitiesList = await this.fetchActivities();
-        console.log(activitiesList);
         this._syncReduxActivities(activitiesList);
     }
 
@@ -155,7 +158,33 @@ class ActivitiesScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
+        console.log((this.state.regions[index.row]))
+        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        if(this.state.regions[index.row] === "Other"){
+            this.setState({RegionSelected:"ASBA"})
+        }else{
+            this.setState({RegionSelected:this.state.regions[index.row]})
+        }
     }
+    SelectRegion(region){
+        const { actions } = this.props;
+        this.setState({visible:false})
+        actions.changeRegion(region)
+    }
+    StatefulModalContent = () => {
+        return (
+            <View style={{flexDirection: "row",alignContent: "space-between"}}>
+                <Card onPress={() => {this.SelectRegion("Scores")}} style={{maxWidth:"60%"}}>
+                    <Image source={require('../assets/ASBA_Logo_Only_Removedbg.png')} style={{height:100, width:100}}/>
+                    <Text category="s2" style={{alignSelf: 'center'}}>America SCORES</Text>
+                </Card>
+                <Card onPress={() => {this.SelectRegion("IFC")}} style={{maxWidth:"60%"}}>
+                    <Image source={require('../assets/IFC-Logo.png')} style={{height:100, width:100}}/>
+                    <Text category="s2" style={{alignSelf: 'center'}}>Independent FC</Text>
+                </Card>
+            </View>
+        );
+      };
     render() {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
@@ -543,10 +572,9 @@ class ActivitiesScreen extends Component {
             />
         );
 
-        /*const selectBox = () => (
+        const selectBox = () => (
             <Select
                 label="Select a Region"
-                placeholder={this.state.regions[0]}
                 selectedIndex={this.state.selectedIndex}
                 style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
                 value={this.state.displayedValue}
@@ -555,47 +583,27 @@ class ActivitiesScreen extends Component {
                     <SelectItem key={title} title={title}/>
                 )}
           </Select>
-        );*/
-        {/*const regionSF = (status) => (
+        );
+        const regionName = (status) =>(
             (
-                (this.state.SFRegion.length !==0) &&
+                (this.state.activitiesRegion.length !== 0 && this.state.RegionSelected.length !== 0) &&
                     <View style={{backgroundColor:"#52a5cc"}}>
-                        <Text style={{textAlign:"center"}} status={status} category='h6'>
-                            San Francisco
-                        </Text>
+                            <Text style={{textAlign:"center"}} status={status} category='h6'>
+                                {this.state.RegionSelected}
+                            </Text>
                     </View>
             )
         );
-        const regionSJ = (status) => (
+        const noMatchRegion = (status) =>(
             (
-                (this.state.SJRegion.length !==0) &&
-                    <View style={{backgroundColor:"#52a5cc"}}>
-                        <Text style={{textAlign:"center"}} status={status} category='h6'>
-                            San Jose
-                        </Text>
-                    </View>
+                (this.state.activities.length !== 0 && this.state.activitiesRegion.length === 0 && this.state.RegionSelected.length !== 0) &&
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        There are no active Sessions for the selected Region.
+                    </Text>
+                </Card>
             )
         );
-        const regionOA = (status) => (
-            (
-                (this.state.OARegion.length !==0) &&
-                    <View style={{backgroundColor:"#52a5cc"}}>
-                        <Text style={{textAlign:"center"}} status={status} category='h6'>
-                            Oakland
-                        </Text>
-                    </View>
-            )
-        );
-        const regionOther = (status) => (
-            (
-                (this.state.OtherRegion.length !==0) &&
-                    <View style={{backgroundColor:"#52a5cc"}}>
-                        <Text style={{textAlign:"center"}} status={status} category='h6'>
-                            Other
-                        </Text>
-                    </View>
-            )
-        );*/}
         const helloMessage = (status) => (
             (
                 (this.state.welcomeModalVisibility) &&
@@ -605,6 +613,11 @@ class ActivitiesScreen extends Component {
                         </Text>
                     </Card>
             )
+        );
+        const regionModal = () =>(
+            <Modal visible={this.state.visible} style={styles.popOverContent} backdropStyle={styles.backdrop}>
+                {this.StatefulModalContent()}
+            </Modal>
         );
         const noMatch = (status) => (
             (
@@ -627,19 +640,28 @@ class ActivitiesScreen extends Component {
                 </View>
                 }
         };
-
+        const getImage = () =>{
+            if(this.props.sessionScreen.region === "IFC"){
+                return require('../assets/IFC-Logo.png');
+            }else{
+                return require('../assets/ASBA_Logo.png');
+            }
+        }
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                 {searchBox()}
+                {selectBox()}
                 <Divider/>
                 {helloMessage("info")}
-                {/*{selectBox()}*/}
+                {regionModal()}
                 {noMatch("basic")}
-                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
+                    <ImageBackground  source={getImage()} style={styles.image}>
+                        {noMatchRegion("basic")}
+                        {regionName("basic")}
                         <List
                             style={{opacity: 0.95}}
-                            data={this.state.activities}
+                            data={this.state.activitiesRegion}
                             renderItem={activityItem}
                             Divider={Divider}
                             refreshControl={
@@ -648,35 +670,7 @@ class ActivitiesScreen extends Component {
                                   onRefresh={onRefresh}
                                 />
                               }
-                        />
-                        {/*{regionSF("basic")}
-                    <List
-                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
-                        data={this.state.SFRegion}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={activityItem}
-                    />
-                    {regionSJ("basic")}
-                    <List
-                        style={{opacity: 0.95,minWidth: "100%", flex:1, minHeight: "28%"}}
-                        data={this.state.SJRegion}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={activityItem}
-                    />
-                    {regionOA("basic")}
-                    <List
-                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
-                        data={this.state.OARegion}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={activityItem}
-                    />
-                    {regionOther("basic")}
-                    <List
-                        style={{opacity: 0.95, minWidth: "100%", flex:1, minHeight: "28%"}}
-                        data={this.state.OtherRegion}
-                        ItemSeparatorComponent={Divider}
-                        renderItem={activityItem}
-                    />*/}
+                            />
                     </ImageBackground>
                     {addButton()}
                 </Layout>      
@@ -687,7 +681,7 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle, changeRegion } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
@@ -704,7 +698,10 @@ const styles = StyleSheet.create({
     },
     image: {
         flex:1, 
-        resizeMode: 'contain',
+        resizeMode: "contain",
         opacity: 0.99
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 });
