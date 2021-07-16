@@ -242,7 +242,7 @@ class ActivitiesScreen extends Component {
             style={{  width: 45, height: 45,resizeMode: "contain"}}
             source={require('../assets/Scores_goal.png')}
             />
-    );
+        );
 
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
