@@ -2,7 +2,7 @@ import React, { Component} from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
 import { StyleSheet, View, RefreshControl, ScrollView, Image, Animated, Easing } from 'react-native';
 
-import { connect } from 'react-redux';
+import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
 import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
 import { bindActionCreators } from 'redux';
@@ -36,13 +36,14 @@ class AttendanceScreen extends Component {
             auxRedux: [],
             nomatchattendance:false,
             loadingModalstate:true,
-            opacity: new Animated.Value(0)
+            regionCoach:this.props.sessionScreen.region,
+            //opacity: new Animated.Value(0) Setting initial value for animation
         }
     }
     
 
     componentDidMount() {
-        this.updateAnimation();
+        //this.updateAnimation(); Calling animation function
         this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
@@ -300,6 +301,7 @@ class AttendanceScreen extends Component {
     }
 
     _fetchUpdateAttendance = async (enrollments) => {
+        console.log(enrollments)
         const {user} = this.props.user;
         Axios.post(
                 `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
@@ -323,6 +325,7 @@ class AttendanceScreen extends Component {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
+                    console.log(res.data)
                     let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
                     this.setState({enrollments: parsedEnrollments});
                 }
@@ -359,9 +362,8 @@ class AttendanceScreen extends Component {
 
         return parsedEnrollments;
     }
-    updateAnimation(){
+    /*updateAnimation(){
         if(this.state.loadingModalstate){
-                console.log("start")
                 this.state.opacity.setValue(0);
                 Animated.sequence([
                     Animated.timing(this.state.opacity, {
@@ -382,7 +384,7 @@ class AttendanceScreen extends Component {
                 this.updateAnimation()
               );
         }
-    }
+    }*///Setting animation
     toogleUpdate(){
         const { actions } = this.props;
         const {route} = this.props;
@@ -541,16 +543,29 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
-        const size = this.state.opacity.interpolate({
+        /*const size = this.state.opacity.interpolate({
             inputRange: [0, 1, 2],
             outputRange: [0.8, 1, 0.8],
-          });
+          });*///Setting animation
         const loadingModal = () => (
+            console.log(this.state.regionCoach),
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
-                <Animated.Image source={require('../assets/ASBA_Logo_Only_Removedbg.png')} style={[{transform: [{ scale: size }]}]}/>
+                {/*<Animated.Image source={require('../assets/ASBA_Logo_Only_Removedbg.png')} style={[{transform: [{ scale: size }]}]}/> Rendering animation*/}
+                {this.state.regionCoach === "Scores"?
+                <Image 
+                source={require('../assets/Scores_Logo.gif')}//Scores logo gif
+                />:null}
+                {this.state.regionCoach === "IFC"?
+                 <Image 
+                 source={require('../assets/IFC_Logo_animated.gif')}//IFC logo gif
+                 />:null}
+                {this.state.regionCoach === null?
+                <Image 
+                source={require('../assets/Scores_Logo.gif')}//Scores logo gif
+                />:null}
             </Modal>
         )
         const noMatch = (status) => (
@@ -622,7 +637,7 @@ class AttendanceScreen extends Component {
     }
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance, sessionScreen: state.sessionScreen });
   
 const ActionCreators = Object.assign( {}, { syncSessions, updateSession, UnsavedAttendance } );
   
