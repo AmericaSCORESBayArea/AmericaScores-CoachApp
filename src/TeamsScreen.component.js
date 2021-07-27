@@ -6,6 +6,7 @@ import { bindActionCreators } from 'redux';
 import { ImageBackground, View, SafeAreaView, Dimensions } from "react-native";
 
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem} from '@ui-kitten/components';
+import BottomSheet from 'react-native-simple-bottom-sheet';
 import Axios from "axios";
 
 import moment from "moment";
@@ -49,8 +50,13 @@ class TeamsScreen extends Component {
     filter(item, query) { return item.TeamSeasonName.toLowerCase().includes(query.toLowerCase()) };
 
     setData(data) {
-        this.setState({selectedData: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
-        this.setState({teamsRegion: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
+        if(this.state.RegionSelected === "ASBA"){
+            this.setState({selectedData: data.filter((value) =>(value.Region.match("Other")))})
+            this.setState({teamsRegion: data.filter((value) =>(value.Region.match("Other")))})
+        }else{
+            this.setState({selectedData: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
+            this.setState({teamsRegion: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
+        }
         if(!data.length){
             this.setState({nomatchModalVisibility: true})
         }else{
@@ -70,7 +76,6 @@ class TeamsScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        console.log(this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row]))))
         this.setState({teamsRegion:this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
         if(this.state.regions[index.row] === "Other"){
             this.setState({RegionSelected:"ASBA"})
@@ -99,14 +104,21 @@ class TeamsScreen extends Component {
         const rightArrowIconRender = (props) => ( 
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
             <Text  style={{alignSelf:"baseline"}}></Text>
-                <Icon {...props} name='people-outline'/>
-                <Icon {...props} name='arrow-ios-forward-outline'/> 
+                <Icon {...props} fill="#4f5c63" name='people-outline'/>
+                <Icon {...props} fill="#4f5c63" name='arrow-ios-forward-outline'/> 
             </View>);
+        const colorList = () =>{
+            if(this.props.sessionScreen.region === "ASBA"){
+                return "#C0E4F5"
+            }else{
+                return "#86c0e3"
+            }
+        }
         let teamItem = ({ item, index }) => {
             return(
                 <ListItem 
                     title={`${item.TeamSeasonName}`}
-                    style={{backgroundColor: "#C0E4F5"}}
+                    style={{backgroundColor: colorList()}}
                     // description={`${item.description} ${index + 1}`}
                     accessoryRight={rightArrowIconRender}
                     onPress={() => this.onPressTeam(item.TeamSeasonId)}
@@ -117,7 +129,8 @@ class TeamsScreen extends Component {
             <Select
                 label="Select a Region"
                 selectedIndex={this.state.selectedIndex}
-                style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
+                size='large'
+                style={{margin: "2%",minWidth:"90%"}}
                 value={this.state.displayedValue}
                 onSelect={index => this.SelectIndex(index)}>
                 {this.state.regions.map((title,i) =>
@@ -128,52 +141,72 @@ class TeamsScreen extends Component {
         const regionName = (status) =>(
             (
                 (this.state.teamsRegion.length !== 0 && this.state.RegionSelected.length !== 0) &&
-                    <View style={{backgroundColor:"#52a5cc"}}>
-                            <Text style={{textAlign:"center"}} status={status} category='h6'>
+                    (this.props.sessionScreen.region === "ASBA"?
+                        <View style={{backgroundColor:"#52a5cc"}}>
+                            <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
                                 {this.state.RegionSelected}
                             </Text>
-                    </View>
+                        </View>:
+                        <View style={{backgroundColor:"#001541"}}>
+                                <Text style={{textAlign:"center",color:"white"}} status={status} category='h6'>
+                                    {this.state.RegionSelected}
+                                </Text>
+                        </View>
+                    )
             )
         );
         const noMatchRegion = (status) =>(
             (
                 (this.state.data.length !== 0 && this.state.teamsRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
                         There are no active Teams for the selected Region.
                     </Text>
+                </Card>:
+                <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
+                        There are no active Teams for the selected Region.
+                    </Text>
                 </Card>
-            )
+            ))
+        );
+        const message = (status) =>(
+            <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
+                    <Text category="h6" status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95}}>
+                        We love you, Coach!
+                    </Text>
+                </Card>
         );
         const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
+                (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
-                    <Text category="s2" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        No matches found.
+                    </Text>
+                </Card>:
+                <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
                         No matches found.
                     </Text>
                 </Card>
-            )
+            ))
         );
         const getImage = () =>{
             if(this.props.sessionScreen.region === "IFC"){
                 return require('../assets/IFC-Logo.png');
-            }else{
+            }else if(this.props.sessionScreen.region === "ASBA"){
                 return require('../assets/ASBA_Logo.png');
+            }else{
+                return require('../assets/Genesis_Logo.png');
             }
         }
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                <Autocomplete style={{margin:"2%"}}
-                    placeholder='Search by Team name'
-                    ItemSeparatorComponent={Divider}
-                    value={this.state.value}
-                    onSelect={this.onSelect}
-                    size="large"
-                    onChangeText={this.onChangeText} >
-                </Autocomplete>
-                {selectBox()}
-                <Divider/>
+                {message("warning")}
+                <Divider style={{marginTop:"15%"}}/>
                 {noMatch("basic")}
                     <ImageBackground source={getImage()} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
                     {noMatchRegion("basic")}
@@ -185,6 +218,18 @@ class TeamsScreen extends Component {
                         renderItem={teamItem}
                     />
                 </ImageBackground>
+                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
+                        <Autocomplete style={{margin:"2%"}}
+                            label="Search a Team"
+                            placeholder='Search by Team name'
+                            ItemSeparatorComponent={Divider}
+                            value={this.state.value}
+                            onSelect={this.onSelect}
+                            size="large"
+                            onChangeText={this.onChangeText} >
+                        </Autocomplete>
+                        {selectBox()}
+                    </BottomSheet>
             </Layout>
         );
     };
