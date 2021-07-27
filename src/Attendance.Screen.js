@@ -319,6 +319,7 @@ class AttendanceScreen extends Component {
         console.log("[Attendance.Screen.js] : FETCH ATTENDANCE") 
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
         .then(res => {
+            console.log(res);
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
