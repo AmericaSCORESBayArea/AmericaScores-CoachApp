@@ -1,0 +1,20 @@
+{
+"components": {
+    "ListItem": {
+    "meta": {
+      "parameters": {
+        "titleColor": {
+          "type": "string"
+        }
+      }
+    },
+    "appearances": {
+      "default": {
+        "mapping": {
+          "titleColor": "#ffffff"
+        }
+      }
+    }
+  }
+}
+}
