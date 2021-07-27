@@ -653,14 +653,14 @@ class ActivitiesScreen extends Component {
                 </Card>
         );
         const addButton = () => {
-            if (this.state.isUpdated){
+
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                 <ButtonGroup>
                 <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
                 {/* <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>           */}
                 </ButtonGroup>
                 </View>
-                }
+                
         };
         const getImage = () =>{
             if(this.props.sessionScreen.region === "IFC"){
