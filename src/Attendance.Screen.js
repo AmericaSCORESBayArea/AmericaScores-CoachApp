@@ -105,7 +105,6 @@ class AttendanceScreen extends Component {
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
-
             await this.setState(newState);
             await this._fetchGetEnrollments();
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
@@ -385,6 +384,13 @@ class AttendanceScreen extends Component {
               );
         }
     }*///Setting animation
+    LoadingGif = () =>{
+        if(this.props.sessionScreen.region === "ASBA"){
+            return require('../assets/Scores_Logo.gif');//Scores logo gif
+        }else{
+            return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }
+    }
     toogleUpdate(){
         const { actions } = this.props;
         const {route} = this.props;
@@ -488,7 +494,7 @@ class AttendanceScreen extends Component {
                     :
                     <Text style={{fontSize: 14}} category="p1">{description}</Text>
                     }
-                {description ==="Soccer" ?
+                {description === "Soccer" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Ball.png')}/>: null}
                 {description ==="Soccer and Writing" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Soccer_and_writing.png')}/>: null}
@@ -548,24 +554,11 @@ class AttendanceScreen extends Component {
             outputRange: [0.8, 1, 0.8],
           });*///Setting animation
         const loadingModal = () => (
-            console.log(this.state.regionCoach),
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
-                {/*<Animated.Image source={require('../assets/ASBA_Logo_Only_Removedbg.png')} style={[{transform: [{ scale: size }]}]}/> Rendering animation*/}
-                {this.state.regionCoach === "Scores"?
-                <Image 
-                source={require('../assets/Scores_Logo.gif')}//Scores logo gif
-                />:null}
-                {this.state.regionCoach === "IFC"?
-                 <Image 
-                 source={require('../assets/IFC_Logo_animated.gif')}//IFC logo gif
-                 />:null}
-                {this.state.regionCoach === null?
-                <Image 
-                source={require('../assets/Scores_Logo.gif')}//Scores logo gif
-                />:null}
+                <Image source={this.LoadingGif()}/>
             </Modal>
         )
         const noMatch = (status) => (
@@ -578,6 +571,13 @@ class AttendanceScreen extends Component {
                 </Card>
             )
         );
+        const buttonColor = () =>{
+            if(this.props.sessionScreen.region === "ASBA"){
+                return "#00467F"
+            }else{
+                return "#001541"
+            }
+        }
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -630,7 +630,7 @@ class AttendanceScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
-                    <Button style={{width:'100%'}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'100%', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
                     
             </Layout>
         )
