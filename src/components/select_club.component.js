@@ -31,7 +31,7 @@ const Headerr = (props) => (
        <ImageBackground
           resizeMode="contain"
           key={props}
-          style={{height:100, width:100, margin:"20%"}}
+          style={{height:100, width:100, margin:"20%", alignSelf:"center"}}
           source={props}
         />
     </View>
@@ -55,7 +55,7 @@ const Headerr = (props) => (
         <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
           <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
             <Card style={{flex: 1, backgroundColor:"#F4F2F2"}} status="primary" header={Header}>
-            <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"8%", backgroundColor:"#F4F2F2"}}>
+            <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"2%", backgroundColor:"#F4F2F2"}}>
             <FlatList
               data={Clubs}
               renderItem={renderItems}
