@@ -2,7 +2,8 @@ import React from 'react';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone } from './src/components/login.component';
+import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone} from './src/components/login.component';
+import { LogInScreen_Select_Club } from "./src/components/select_club.component";
 import { HomeScreen } from './home.component';
 import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
@@ -42,6 +43,7 @@ export const LoginStackScreen = () => {
       <LoginStack.Screen name="MainLogin" component={LogInScreen_Google}/>
       <LoginStack.Screen name="PhoneLogin_phone" component={LogInScreen_PhoneAuth_Phone}/>
       <LoginStack.Screen name="PhoneLogin_code" component={LogInScreen_PhoneAuth_Code}/>
+      <LoginStack.Screen name="Select_Club" component={LogInScreen_Select_Club}/>
     </LoginStack.Navigator>
   );
 }

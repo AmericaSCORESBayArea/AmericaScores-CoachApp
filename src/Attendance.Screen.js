@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import React, { Component} from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView, Image } from 'react-native';
+import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground } from 'react-native';
 
-import { connect } from 'react-redux';
+import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
 import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
 import { bindActionCreators } from 'redux';
@@ -36,11 +36,14 @@ class AttendanceScreen extends Component {
             auxRedux: [],
             nomatchattendance:false,
             loadingModalstate:true,
+            regionCoach:this.props.sessionScreen.region,
+            //opacity: new Animated.Value(0) Setting initial value for animation
         }
     }
     
 
     componentDidMount() {
+        //this.updateAnimation(); Calling animation function
         this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
@@ -54,12 +57,16 @@ class AttendanceScreen extends Component {
             
         enrollments.forEach(student => {
             let attendance = false;
+            let attendanceId = "";
+            console.log(student)
+            if (student.AttendanceId) attendanceId = student.AttendanceId;
             if (student.Attended) attendance = true; 
 
             studentsList.push({
-                SessionId: sessionId,
+                //SessionId: sessionId,
+                AttendanceId: attendanceId,
                 Attended: attendance,
-                StudentId: student.StudentId
+                //StudentId: student.StudentId
             })
         });
 
@@ -102,7 +109,6 @@ class AttendanceScreen extends Component {
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: Number(currentSession.TotalNoOfPlayers),
             }
-
             await this.setState(newState);
             await this._fetchGetEnrollments();
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
@@ -111,13 +117,14 @@ class AttendanceScreen extends Component {
             if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                     this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                        console.log(valueredux)
                         if(valueredux.SessionId === currentSessionData.SessionId){
                             this.setState({nomatchattendance:true})
                             this.state.enrollments.map((value) =>{
-                                value.Attended = false
+                                //value.Attended = false
                                 valueredux.attendanceList.map((redux) =>{
                                     if(value.StudentId === redux.StudentId){
-                                        value.Attended = true
+                                        value.Attended = redux.Attended
                                     }
                                 });
                             });
@@ -129,10 +136,10 @@ class AttendanceScreen extends Component {
                             if(valueredux.SessionId === currentSessionData.SessionId){
                                 this.setState({nomatchattendance:true})
                                 this.state.enrollments.map((value) =>{
-                                    value.Attended=false
+                                    //value.Attended=false
                                     valueredux.attendanceList.map((redux) =>{
                                         if(value.StudentId === redux.StudentId){
-                                            value.Attended = true
+                                            value.Attended = redux.Attended
                                             }
                                         });
                                 });
@@ -144,7 +151,7 @@ class AttendanceScreen extends Component {
                         if(this.state.enrollments !== null){
                             this.state.enrollments.map((value) =>{
                                 if(value.Attended !== undefined){
-                                    value.Attended=false
+                                    //value.Attended=false
                                 }
                                 { () => this.studentAttendanceItem(this.state.enrollments) }
                             })
@@ -161,7 +168,7 @@ class AttendanceScreen extends Component {
                     this.setState({nomatchModalVisibility: false})
                     this.state.enrollments.map((value) =>{
                         if(value.Attended !== undefined){
-                            value.Attended = false
+                            //value.Attended = false
                         }
                     });
                 }else{
@@ -189,20 +196,20 @@ class AttendanceScreen extends Component {
         const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         newEnrollments.map((value) =>{
             if(value.Attended !== undefined){
-                if(value.Attended === true){
+               /* if(value.Attended === true){*/
                     if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
                     }else{
                         this.state.attendanceListRedux.push(value)
                     }
-                }
-                else{
+               /* }*/
+                /*else{
                     if(this.state.attendanceListRedux.filter((attendance) =>(attendance.StudentId.match(value.StudentId))).length !== 0){
                         const index = this.state.attendanceListRedux.indexOf(value);
                         if (index > -1) {
                             this.state.attendanceListRedux.splice(index, 1);//saving a new array with all students with value True for attendence
                         }
                     }
-                }
+                }*/
             }
         });
         if(this.state.attendanceListRedux.length !== 0){//checking if there is any attendance to update
@@ -277,8 +284,8 @@ class AttendanceScreen extends Component {
                         }
                     });
                 }
-            actions.UnsavedAttendance(this.state.auxRedux),
-            this.setState({isUpdated: false})
+            actions.UnsavedAttendance(this.state.auxRedux)
+            //this.setState({isUpdated: false})
             }
         }
         this.setState({enrollments: newEnrollments}) //Set the new list
@@ -298,8 +305,9 @@ class AttendanceScreen extends Component {
     }
 
     _fetchUpdateAttendance = async (enrollments) => {
+        console.log(enrollments)
         const {user} = this.props.user;
-        Axios.post(
+        Axios.patch(
                 `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`,
                 enrollments
             ).then(res => {
@@ -316,14 +324,14 @@ class AttendanceScreen extends Component {
         console.log("[Attendance.Screen.js] : FETCH ATTENDANCE") 
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
         .then(res => {
-            console.log(res);
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
+                    console.log(res.data)
                     let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
-                    this.setState({enrollments: parsedEnrollments});
+                    this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
                 }
             }
             else console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");
@@ -350,7 +358,8 @@ class AttendanceScreen extends Component {
             let student = {
                 Attended: attendance,
                 StudentId: enrollment.StudentId,
-                StudentName: enrollment.StudentName
+                StudentName: enrollment.StudentName,
+                AttendanceId: enrollment.AttendanceId
             };
             parsedEnrollments.push(student);
         });
@@ -358,7 +367,36 @@ class AttendanceScreen extends Component {
 
         return parsedEnrollments;
     }
-
+    /*updateAnimation(){
+        if(this.state.loadingModalstate){
+                this.state.opacity.setValue(0);
+                Animated.sequence([
+                    Animated.timing(this.state.opacity, {
+                    toValue: 1,
+                    duration: 800,
+                    easing: Easing.out(Easing.sin),
+                    useNativeDriver: true,
+                    delay: 0,
+                    }),
+                    Animated.timing(this.state.opacity, {
+                    toValue: 2,
+                    duration: 500,
+                    easing: Easing.in(Easing.sin),
+                    useNativeDriver: true,
+                    delay: 0,
+                    }),
+                ]).start(() => 
+                this.updateAnimation()
+              );
+        }
+    }*///Setting animation
+    LoadingGif = () =>{
+        if(this.props.sessionScreen.region === "ASBA"){
+            return require('../assets/Scores_Logo.gif');//Scores logo gif
+        }else{
+            return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }
+    }
     toogleUpdate(){
         const { actions } = this.props;
         const {route} = this.props;
@@ -462,7 +500,7 @@ class AttendanceScreen extends Component {
                     :
                     <Text style={{fontSize: 14}} category="p1">{description}</Text>
                     }
-                {description ==="Soccer" ?
+                {description === "Soccer" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Ball.png')}/>: null}
                 {description ==="Soccer and Writing" ?
                 <Image style={{ width: 40, height: 40, resizeMode: "contain"}} source={require('../assets/Scores_Soccer_and_writing.png')}/>: null}
@@ -482,9 +520,17 @@ class AttendanceScreen extends Component {
                 </View>
                 }
         }
-
+        const SuccessHeader = (props) => (
+            <Layout {...props}>
+                 <ImageBackground
+                    resizeMode="contain"
+                    style={{height:100, width:100, alignSelf:"center"}}
+                    source={require('../assets/success_icon.png')}
+                />
+            </Layout>
+        );
         const updateSuccessCard = (status, text) => (
-            <Card disabled={true}>
+            <Card disabled={true} header={SuccessHeader}>
                 <Text style={styles.modalText} status={status}>{text}</Text> 
                 <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOff()} status={status}>
                     OK
@@ -517,12 +563,16 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
+        /*const size = this.state.opacity.interpolate({
+            inputRange: [0, 1, 2],
+            outputRange: [0.8, 1, 0.8],
+          });*///Setting animation
         const loadingModal = () => (
             <Modal
                 style={styles.popOverContent}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
-                    {spinnerCard()}
+                <Image source={this.LoadingGif()}/>
             </Modal>
         )
         const noMatch = (status) => (
@@ -535,6 +585,13 @@ class AttendanceScreen extends Component {
                 </Card>
             )
         );
+        const buttonColor = () =>{
+            if(this.props.sessionScreen.region === "ASBA"){
+                return "#00467F"
+            }else{
+                return "#001541"
+            }
+        }
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -587,14 +644,14 @@ class AttendanceScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
-                    <Button style={{width:'100%'}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'100%', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
                     
             </Layout>
         )
     }
 };
 
-const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance });
+const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionAttendance: state.sessionAttendance, sessionScreen: state.sessionScreen });
   
 const ActionCreators = Object.assign( {}, { syncSessions, updateSession, UnsavedAttendance } );
   
