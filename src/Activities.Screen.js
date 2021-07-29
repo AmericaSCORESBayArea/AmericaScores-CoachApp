@@ -1,11 +1,10 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, SelectItem} from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image} from "react-native";
-
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, Modal, SelectItem, Drawer, DrawerGroup, DrawerItem, OverflowMenu,MenuItem } from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image, TouchableOpacity} from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
-
 import Axios from "axios";
 import moment from "moment";
+import BottomSheet from 'react-native-simple-bottom-sheet';
 
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -23,26 +22,31 @@ class ActivitiesScreen extends Component {
         this.state = {
             date: moment(),
             activities: "",
+            activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:[
-                'All',
-                'San Rafael',
-                'San Francisco',
-                'Oakland',
-            ],
+            regions:['Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+            'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
+            'IFC-SF', 'Genesis'],
             selectedIndex: "",
             displayedValue: "",
             isUpdated: false,
             teamSeasonId: "",
             listofSessions: null,
             seasonName: "",
+            activitiesArray: [],
+            RegionSelected: "",//setting the region selected
+            selectedIndexDrawer: "",
+            OverflowMenuVisible:false,
         }
     }
 
     
 
     async componentDidMount() {
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
+        this.setState({RegionSelected:"ASBA"})
+        this.__syncCoachRegions();
         this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
@@ -66,18 +70,33 @@ class ActivitiesScreen extends Component {
             })
             .catch(error => console.log(error));
     }
-
+    async __syncCoachRegions(){
+        console.log(this.state.date.format("YYYY-MM-DD"))
+        const { user } = this.props;
+        return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/regions`, {
+           params: {
+                // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                date: this.state.date.format("YYYY-MM-DD")
+            }
+          })
+          .then(res => console.log(res.data))
+          .catch(e => console.log(e));
+    }
     //Syncs activitiesToRedux and state
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
-        this.setState({activities: activitiesList});
-        ((activitiesList.length === 0)? 
-        (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
-        :
-        (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false})))//saving seasonName
+        this.setState({activities: activitiesList});//saving the activitiesList
+        this.setState({activitiesRegion:activitiesList.filter((value) =>(value.Region.match("Other")))})//saving sessions with region sf
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
+        this.setState({RegionSelected:"ASBA"})
+        if(activitiesList.length === 0){
+            (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
+        }else{
+            (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+        }
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -106,6 +125,7 @@ class ActivitiesScreen extends Component {
         const activities = this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
+        this.setState({activitiesRegion:activities.filter((value) =>(value.Region.match("Other")))})
         activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
@@ -133,7 +153,6 @@ class ActivitiesScreen extends Component {
     async selectDate(date) { 
         await this.setState({date: date})
         const activitiesList = await this.fetchActivities();
-        console.log(activitiesList);
         this._syncReduxActivities(activitiesList);
     }
 
@@ -147,6 +166,16 @@ class ActivitiesScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
+        console.log((this.state.regions[index.row]))
+        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        if(this.state.regions[index.row] === "Other"){
+            this.setState({RegionSelected:"ASBA"})
+        }else{
+            this.setState({RegionSelected:this.state.regions[index.row]})
+        }
+    }
+    SelectIndexDrawer(index){
+        this.setState({selectedIndexDrawer: index})
     }
     render() {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
@@ -160,12 +189,13 @@ class ActivitiesScreen extends Component {
         };
         
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
+        const ArrowIcon = (props) => ( <Icon {...props} size='medium' name='menu-2-outline'/> );
         const renderItemIcon = (props) => (
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
                 <Text  style={{alignSelf:"baseline"}}></Text>
                 {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
-                <Icon {...props} name='calendar-outline'/> 
-                <Icon {...props} name='arrow-ios-forward-outline'/> 
+                <Icon {...props} fill="#4f5c63" name='calendar-outline'/> 
+                <Icon {...props} fill="#4f5c63" name='arrow-ios-forward-outline'/> 
             </View>
         );
         const renderItemIconRed = (props) => (
@@ -205,8 +235,14 @@ class ActivitiesScreen extends Component {
             style={{  width: 45, height: 45,resizeMode: "contain"}}
             source={require('../assets/Scores_goal.png')}
             />
-    );
-
+        );
+        const colorList = () =>{
+            if(this.props.sessionScreen.region === "ASBA"){
+                return "#C0E4F5"
+            }else{
+                return "#86c0e3"
+            }
+        }
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
                 return; 
@@ -221,7 +257,7 @@ class ActivitiesScreen extends Component {
                                 return <ListItem
                                     key={value.SessionId}
                                     title={`${item.Team_Name}`}
-                                    style={{backgroundColor: "#C0E4F5"}}
+                                    style={{backgroundColor: colorList()}}
                                     /*description={sessionTopic.replace(/_/g,' ')}*/
                                     accessoryLeft={RenderItemImageNL}
                                     accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -232,8 +268,7 @@ class ActivitiesScreen extends Component {
                                         :
                                         renderItemIcon}
                                     onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
-                                />
-                                      
+                                />                                      
                             }else{
                                 let found=null;
                                 this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
@@ -245,7 +280,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIconRed}
@@ -255,7 +290,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -267,7 +302,7 @@ class ActivitiesScreen extends Component {
                             return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -281,7 +316,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageSW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -305,7 +340,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIconRed}
@@ -315,7 +350,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -327,7 +362,7 @@ class ActivitiesScreen extends Component {
                                 return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -340,7 +375,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageS}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -364,7 +399,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIconRed}
@@ -374,7 +409,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -386,7 +421,7 @@ class ActivitiesScreen extends Component {
                                 return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -399,7 +434,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -423,7 +458,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIconRed}
@@ -433,7 +468,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -445,7 +480,7 @@ class ActivitiesScreen extends Component {
                                 return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -459,7 +494,7 @@ class ActivitiesScreen extends Component {
                                     return <ListItem
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
-                                        style={{backgroundColor: "#C0E4F5"}}
+                                        style={{backgroundColor: colorList()}}
                                         /*description={sessionTopic.replace(/_/g,' ')}*/
                                         accessoryLeft={RenderItemImageGD}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -483,7 +518,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIconRed}
@@ -493,7 +528,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
@@ -505,7 +540,7 @@ class ActivitiesScreen extends Component {
                                 return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: "#C0E4F5"}}
+                                            style={{backgroundColor: colorList()}}
                                             /*description={sessionTopic.replace(/_/g,' ')}*/
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
@@ -524,32 +559,65 @@ class ActivitiesScreen extends Component {
 
         const searchBox = () => (
             <Datepicker
+                label="Select a Date"
                 placeholder='Pick Date'
                 date={this.state.date}
                 size='large'
+                placement="bottom"
                 // min={minDatePickerDate}
-                style={{margin: "2%"}}
+                style={{margin: "2%",minWidth:"90%"}}
                 dateService={dateService}
                 onSelect={nextDate => this.selectDate(nextDate)}
                 accessoryRight={CalendarIcon}
             />
         );
 
-        /*const selectBox = () => (
+        const selectBox = () => (
             <Select
                 label="Select a Region"
-                placeholder={this.state.regions[0]}
                 selectedIndex={this.state.selectedIndex}
-                style={{marginBottom:"2%", marginTop:"1%", marginLeft:"2%", marginRight:"2%"}}
+                size='large'
+                style={{margin: "2%",minWidth:"90%"}}
                 value={this.state.displayedValue}
                 onSelect={index => this.SelectIndex(index)}>
                 {this.state.regions.map((title,i) =>
                     <SelectItem key={title} title={title}/>
                 )}
           </Select>
-        );*/
-
-
+        );
+        const regionName = (status) =>(
+            (
+                (this.state.activitiesRegion.length !== 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                 (this.props.sessionScreen.region === "ASBA"?
+                    <View style={{backgroundColor:"#52a5cc"}}>
+                        <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
+                            {this.state.RegionSelected}
+                        </Text>
+                    </View>:
+                    <View style={{backgroundColor:"#001541"}}>
+                            <Text style={{textAlign:"center",color:"white"}} status={status} category='h6'>
+                                {this.state.RegionSelected}
+                            </Text>
+                    </View>
+                 )
+            )
+        );
+        const noMatchRegion = (status) =>(
+            (
+                (this.state.activities.length !== 0 && this.state.activitiesRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                (this.props.sessionScreen.region === "ASBA"?
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        There are no active Sessions for the selected Region.
+                    </Text>
+                </Card>:
+                <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
+                        There are no active Sessions for the selected Region.
+                    </Text>
+                </Card>
+            ))
+        );
         const helloMessage = (status) => (
             (
                 (this.state.welcomeModalVisibility) &&
@@ -560,20 +628,33 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
+
         const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility) &&
+                (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
                         There are no active Sessions for the selected date.
                     </Text>
+                </Card>:
+                <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
+                        There are no active Sessions for the selected date.
+                    </Text>
                 </Card>
-            )
+            ))
         );
-
+        const message = (status) =>(
+            <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
+                    <Text category="h6" status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95}}>
+                        Don't forget to take attendance!
+                    </Text>
+                </Card>
+        );
         const addButton = () => {
-            
-                 return <View style={{justifyContent: 'center', alignItems: 'center'}}>
+
+                 return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                 <ButtonGroup>
                 <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
                 {/* <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>           */}
@@ -581,31 +662,46 @@ class ActivitiesScreen extends Component {
                 </View>
                 
         };
-
+        const getImage = () =>{
+            if(this.props.sessionScreen.region === "IFC"){
+                return require('../assets/IFC-Logo.png');
+            }else if(this.props.sessionScreen.region === "ASBA"){
+                return require('../assets/ASBA_Logo.png');
+            }else{
+                return require('../assets/Genesis_Logo.png');
+            }
+        }
+        const OptionButtons = () => (
+            <Button style={{position:"absolute",top:"1.2%", left:"5%"}} appearance='ghost' accessoryRight={ArrowIcon} onPress={() => this.setState({OverflowMenuVisible:true})}/>
+        );
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                {searchBox()}
-                <Divider/>
-                {helloMessage("info")}
-                {/*{selectBox()}*/}
-                {noMatch("basic")}
-                    <ImageBackground source={require('../assets/ASBA_Logo.png')} style={styles.image}>
-                        <List
-                            style={{opacity: 0.95}}
-                            data={this.state.activities}
-                            renderItem={activityItem}
-                            Divider={Divider}
-                            refreshControl={
-                                <RefreshControl
-                                  refreshing={refreshing}
-                                  onRefresh={onRefresh}
-                                />
-                              }
-                        />
-                        
+                    {message("warning")}
+                    <Divider style={{marginTop:"15%"}}/>
+                    <ImageBackground source={getImage()} style={styles.image}>
+                        {helloMessage("info")}
+                        {noMatch("basic")}
+                        {noMatchRegion("basic")}
+                        {regionName("basic")}
+                            <List
+                                style={{opacity: 0.95}}
+                                data={this.state.activitiesRegion}
+                                renderItem={activityItem}
+                                Divider={Divider}
+                                refreshControl={
+                                    <RefreshControl
+                                    refreshing={refreshing}
+                                    onRefresh={onRefresh}
+                                    />
+                                }
+                            />
                     </ImageBackground>
                     {addButton()}
+                    <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
+                        {searchBox()}
+                        {selectBox()}
+                    </BottomSheet>
                 </Layout>      
            /* </View>     */                 
         );
@@ -614,7 +710,7 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle } );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle} );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
@@ -631,7 +727,10 @@ const styles = StyleSheet.create({
     },
     image: {
         flex:1, 
-        resizeMode: 'contain',
-        opacity: 0.99
+        resizeMode: "contain",
+        opacity: 0.99,
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
 });

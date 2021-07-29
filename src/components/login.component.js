@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { SafeAreaView, Alert, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { SafeAreaView, Alert, Keyboard, TouchableWithoutFeedback, ImageBackground} from 'react-native';
 import { Button, Layout, Icon, Input, Text, Card } from '@ui-kitten/components';
 import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
@@ -94,7 +94,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
             .then(userSessions => {
               dispatch(loginUser(userProfile));
               dispatch(syncSessions(userSessions));
-              navigation.navigate("HomeRoot");
+              navigation.navigate("Select_Club");
             }).catch(error => {console.log(error); _rollbackSetupUser()});
         } else {
           Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");
@@ -166,13 +166,3 @@ const _syncUserSessions = async (user) => {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
-
-//style={styles.card} header={Header} footer={Footer}
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: '#fff',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-// });
