@@ -134,3 +134,9 @@ Issue 'B':
 - [x] Verify the file is present in the project and build target selected. Re-Add it to the Project. Also add it to the Build Phases: Compile Sources list.
 Check and remove any incorrect references ``example../src/config/..``
 - [x] Select an appropriate build target and build again
+
+- [x] Error: Folly/folly/synchronization/DistributedMutex-inl.h:1051:5: 'atomic_notify_one<unsigned long>' is unavailable
+- [x] To fix this, first go to ProjectFolder/Pods/Headers/Private/Flipper-Folly/folly/synchronization/DistributedMutex-inl.h
+- [x] Change the following lines in the DistributedMutex-inl.h file
+Around line 1043 - change `atomic_notify_one(state);` to `folly::atomic_notify_one(state);`
+Around line 1668 - change `auto result= atomic_wait_until(&state, previous | data, deadline);` to `auto result= folly::atomic_wait_until(&state, previous | data, deadline);`
