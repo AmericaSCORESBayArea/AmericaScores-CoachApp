@@ -59,7 +59,14 @@ const Stack_Teams_Navigation = ({navigation}) => (
     (useSelector(state => state.sessionScreen.region) === "ASBA")?
     <Stack_Teams.Navigator>
         <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
-        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} options={headerOptions} navigation={navigation}/>
+        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} options={{
+          title: useSelector(state => state.sessionScreen.teamname),
+          headerStyle: {
+          backgroundColor: "#00467F",
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: 'bold'},
+        headerRight: () => <OptionOverflowMenu {...navigation}/>}} navigation={navigation}/>
         <Stack_Teams.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
@@ -67,7 +74,15 @@ const Stack_Teams_Navigation = ({navigation}) => (
     :
     <Stack_Teams.Navigator>
         <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptionsIFC}  initialParams={{ teamSeasonId: null }} />
-        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} options={headerOptionsIFC} navigation={navigation}/>
+        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} 
+        options={{
+          title: useSelector(state => state.sessionScreen.teamname),
+          headerStyle: {
+          backgroundColor: "#001541",
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: { fontWeight: 'bold'},
+        headerRight: () => <OptionOverflowMenu {...navigation}/>}} navigation={navigation}/>
         <Stack_Teams.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptionsIFC}/>
         <Stack_Teams.Screen name="Attendance" component={AttendanceScreen} options={headerOptionsIFC} />
         <Stack_Teams.Screen name="Scan students QR" component={QRScanScreen} options={headerOptionsIFC}/>
@@ -88,7 +103,7 @@ const TabNavigator = () => (
     <Navigator tabBar={props => <BottomTabBar {...props} /> } >
         <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
         <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
-        {/* <Screen name='StudentsScreen' component={Stack_Students_Navigation}/> */}
+        <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
     </Navigator>
   );
 
@@ -117,6 +132,7 @@ export default OptionOverflowMenu = (navigation) => {
     const logoutIcon = (props) => (<Icon {...props} name='log-out-outline'/>);
     const changeaffiliateicon = (props) => (<Icon {...props} name='swap-outline'/>);
     const profileicon = (props) => (<Icon {...props} name='person-outline' />);
+    const reporticon= (props) => (<Icon {...props}  name='info-outline'/>);
 
     const OptionButtons = () => (
         <Button style={{flex:1, backgroundColor: coloroverflow}} appearance='ghost' accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
@@ -156,6 +172,7 @@ export default OptionOverflowMenu = (navigation) => {
                 <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>*/}
                 <MenuItem title="My Profile" accessoryLeft={profileicon}/>
                 <MenuItem title="Change affiliation" onPress={() => (changeAfflitiation())} accessoryLeft={changeaffiliateicon}/>
+                <MenuItem title="Help"  onPress={() => menuItemOnPress("CreateReportModal")} accessoryLeft={reporticon}/>
                 <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
         </OverflowMenu>
     );  
@@ -186,7 +203,7 @@ const headerOptionsParams = ({navigation}) => ({
         headerTintColor: '#fff',
         headerTitleStyle: { fontWeight: 'bold' },
         headerRight: () => <OptionOverflowMenu {...navigation}/>
-    })
+})
 const headerOptionsParamsIFC = ({navigation}) => ({
         title: useSelector(state => state.sessionScreen.title),
         headerStyle: {
