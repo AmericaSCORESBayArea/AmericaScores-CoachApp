@@ -6,6 +6,7 @@ import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone} from './src/co
 import { LogInScreen_Select_Club } from "./src/components/select_club.component";
 import { HomeScreen } from './home.component';
 import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
+import { CreateReportModal } from './src/components/ReportModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 import { EditSessionModal, AddSessionModal } from './src/components/SessionModal.component';
 
@@ -32,6 +33,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name="AddStudentToTeamModal" component={AddStudentToTeamModal}/>
       <HomeRootStack.Screen name="EditSessionModal" component={EditSessionModal}/>
       <HomeRootStack.Screen name="AddSessionModal" component={AddSessionModal}/>
+      <HomeRootStack.Screen name="CreateReportModal" component={CreateReportModal}/>
     </HomeRootStack.Navigator>
   );
 }
