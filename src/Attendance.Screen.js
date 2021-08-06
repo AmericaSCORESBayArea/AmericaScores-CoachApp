@@ -97,13 +97,13 @@ class AttendanceScreen extends Component {
             }).catch(error => error)
             const newState = {
                 sessionId: currentSessionData.SessionId,
-                enrollments: currentSession.Enrollments,
+                enrollments: [],
                 teamName: currentSession.TeamSeasonName,
                 teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
                 completeTeamSeasonId: currentSession.TeamSeasonId,
                 topic: currentTopic,
                 date: moment(currentDate).format("MMM-DD-YYYY"),
-                numberOfStudents: Number(currentSession.TotalNoOfPlayers),
+                numberOfStudents: 0,
             }
             await this.setState(newState);
             await this._fetchGetEnrollments();
