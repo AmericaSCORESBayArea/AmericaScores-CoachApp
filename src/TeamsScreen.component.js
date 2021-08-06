@@ -11,7 +11,7 @@ import Axios from "axios";
 
 import moment from "moment";
 import { ApiConfig } from "./config/ApiConfig";
-import { ScrollView } from "react-native-gesture-handler";
+import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 
 
 class TeamsScreen extends Component {
@@ -25,7 +25,7 @@ class TeamsScreen extends Component {
             nomatchModalVisibility: false,
             selectedIndex: "",
             displayedValue: "",
-            regions:['Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+            regions: ['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
             'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
             'IFC-SF', 'Genesis'],
             RegionSelected: "",//setting the region selected
@@ -41,8 +41,8 @@ class TeamsScreen extends Component {
             })
         .then(response => {this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
             .catch(e => console.log(e));
-        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
-        this.setState({RegionSelected:"ASBA"})
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
+        this.setState({RegionSelected:"All"})
     }
 
     setSearchBarValue(value) { this.setState({value: value}); }
@@ -53,7 +53,10 @@ class TeamsScreen extends Component {
         if(this.state.RegionSelected === "ASBA"){
             this.setState({selectedData: data.filter((value) =>(value.Region.match("Other")))})
             this.setState({teamsRegion: data.filter((value) =>(value.Region.match("Other")))})
-        }else{
+        }else if(this.state.RegionSelected === "All"){
+            this.setState({selectedData: data, teamsRegion: data})
+        }
+        else{
             this.setState({selectedData: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
             this.setState({teamsRegion: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
         }
@@ -69,14 +72,20 @@ class TeamsScreen extends Component {
         this.setData(this.state.data.filter(item => this.filter(item, query)))
     };
 
-    onPressTeam(teamSeasonId) {
-        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId});
+    onPressTeam(teamSeasonId, TeamName, Region, SeasonName) {
+        const { actions } = this.props;
+        actions.changeTitleTeam(SeasonName);
+        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName});
     };
 
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        this.setState({teamsRegion:this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        if(this.state.regions[index.row] === 'All'){
+            this.setState({teamsRegion:this.state.data})
+        }else{
+            this.setState({teamsRegion:this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        }
         if(this.state.regions[index.row] === "Other"){
             this.setState({RegionSelected:"ASBA"})
         }else{
@@ -88,15 +97,9 @@ class TeamsScreen extends Component {
         if(data.length === 0){
             this.setState({nomatchModalVisibility: true})
         }else{
-            this.setState({teamsRegion:data.filter((value) =>(value.Region.match("Other")))})//saving sessions with region sf
+            this.setState({teamsRegion:data})//saving sessions with region sf
             this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
-            this.setState({RegionSelected:"ASBA"})
-            /*
-            this.setState({SFRegion:data.filter((value) =>(value.Region.match("IFC-SF")))})
-            this.setState({SJRegion:data.filter((value) =>(value.Region.match("San Jose")))})
-            this.setState({OARegion:data.filter((value) =>(value.Region.match("Oakland")))})
-            this.setState({OtherRegion:data.filter((value) =>(!value.Region.match("San Jose") && !value.Region.match("IFC-SF") && !value.Region.match("Oakland")))})
-        */
+            this.setState({RegionSelected:"All"})
         }
     }
 
@@ -121,7 +124,7 @@ class TeamsScreen extends Component {
                     style={{backgroundColor: colorList()}}
                     // description={`${item.description} ${index + 1}`}
                     accessoryRight={rightArrowIconRender}
-                    onPress={() => this.onPressTeam(item.TeamSeasonId)}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName)}
                 />
             )
         };
@@ -237,7 +240,7 @@ class TeamsScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionScreen: state.sessionScreen});
   
-const ActionCreators = Object.assign( {}, { syncSessions } );
+const ActionCreators = Object.assign( {}, { syncSessions, changeTitleTeam } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
