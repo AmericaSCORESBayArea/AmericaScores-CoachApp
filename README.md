@@ -24,7 +24,7 @@ Check if everything was installed propertly.
 ### Install the project.
 
 Clone the project from github into your local machine.
-`cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
+- `cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
 
 - If running in IOS `cd ios && pod install && cd ..` and then `react-native run-ios`
 - If running on Android
