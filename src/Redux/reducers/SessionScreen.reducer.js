@@ -1,8 +1,10 @@
 import { SEASONTITLE_CHANGE } from '../constants';
 import { COACHREGION_CHANGE } from '../constants';
+import { TEAMNAMETITLE_CHANGE } from '../constants';
 const initialState = {
     title:"Sessions",
     region:null,
+    teamname:"Team Sessions",
 };
 const sessionscreenReducer = (state = initialState, action) => {
     switch(action.type) {
@@ -10,6 +12,8 @@ const sessionscreenReducer = (state = initialState, action) => {
             return {...state, title:action.payload};
         case COACHREGION_CHANGE:
             return {...state, region:action.payload};
+        case TEAMNAMETITLE_CHANGE:
+            return {...state, teamname:action.payload};    
         default:
             return state;
     }

@@ -1,6 +1,6 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, IndexPath, Select, Modal, SelectItem, Drawer, DrawerGroup, DrawerItem, OverflowMenu,MenuItem } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, ScrollView , Image, TouchableOpacity} from "react-native";
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem } from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
@@ -25,7 +25,7 @@ class ActivitiesScreen extends Component {
             activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:['Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+            regions:['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
             'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
             'IFC-SF', 'Genesis'],
             selectedIndex: "",
@@ -38,14 +38,16 @@ class ActivitiesScreen extends Component {
             RegionSelected: "",//setting the region selected
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
+            disabledbox:false,
+            displayMessage:"Don't forget to take attendance!",
         }
     }
 
     
 
     async componentDidMount() {
-        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
-        this.setState({RegionSelected:"ASBA"})
+        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
+        this.setState({RegionSelected:"All"})
         this.__syncCoachRegions();
         this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
@@ -63,9 +65,9 @@ class ActivitiesScreen extends Component {
             .then(activitiesList => this._syncReduxActivities(activitiesList))    
             .then(() =>{
                 //Check if we are in the team activities name
-                if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId){
-                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
-                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
+                if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId && route.params.region && route.params.teamName){
+                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName});
                 }
             })
             .catch(error => console.log(error));
@@ -89,14 +91,7 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
-        this.setState({activitiesRegion:activitiesList.filter((value) =>(value.Region.match("Other")))})//saving sessions with region sf
-        this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
-        this.setState({RegionSelected:"ASBA"})
-        if(activitiesList.length === 0){
-            (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
-        }else{
-            (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
-        }
+        this.setState({activitiesRegion:activitiesList,displayedValue:this.state.regions[0],RegionSelected:"All"})//saving all sessions without filtering by region//setting "basic" region filter with All
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -108,24 +103,35 @@ class ActivitiesScreen extends Component {
             this.setState({nomatchModalVisibility: false})
         }
         if(route.name === "Team Sessions"){
-            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId); // filter the activities for a specific team
-            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId});
-        }
-        if (this.state.seasonName !== ""){
-            if(this.state.seasonName !== "Sessions"){
-                actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName); // filter the activities for a specific team
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName});
+        }else{
+            if(activitiesList.length === 0){
+                (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
             }else{
-                actions.changeTitle(this.state.seasonName)//shows the actual season name
+                (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+            }
+            if (this.state.seasonName !== ""){
+                if(this.state.seasonName !== "Sessions"){
+                    actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+                }else{
+                    actions.changeTitle(this.state.seasonName)//shows the actual season name
+                }
             }
         }
     }
 
-    filterActivitiesByTeamSeasonId(teamSeasonId) {
+    filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
+        if(region === 'Other'){
+            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:'ASBA', selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
+        }else{
+            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
+        }
         this.setState({listofSessions: null});
         const activities = this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
-        this.setState({activitiesRegion:activities.filter((value) =>(value.Region.match("Other")))})
+        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(region)))})
         activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
@@ -166,8 +172,11 @@ class ActivitiesScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        console.log((this.state.regions[index.row]))
-        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        if(this.state.regions[index.row] === "All"){
+            this.setState({activitiesRegion:this.state.activities})
+        }else{
+            this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+        }
         if(this.state.regions[index.row] === "Other"){
             this.setState({RegionSelected:"ASBA"})
         }else{
@@ -574,6 +583,7 @@ class ActivitiesScreen extends Component {
 
         const selectBox = () => (
             <Select
+                disabled={this.state.disabledbox}
                 label="Select a Region"
                 selectedIndex={this.state.selectedIndex}
                 size='large'
@@ -648,12 +658,11 @@ class ActivitiesScreen extends Component {
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
                     <Text category="h6" status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95}}>
-                        Don't forget to take attendance!
+                        {this.state.displayMessage}
                     </Text>
                 </Card>
         );
         const addButton = () => {
-
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                 <ButtonGroup>
                 <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
