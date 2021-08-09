@@ -75,7 +75,7 @@ class LogInScreen_Google extends Component {
               console.log(userSessions);
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
-              navigation.navigate("HomeRoot");
+              navigation.navigate("Select_Club");
             }).catch(error => {console.log(error); this._rollbackSetupUser()});
         } else {
           Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");

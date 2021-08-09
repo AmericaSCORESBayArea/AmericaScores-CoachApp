@@ -37,13 +37,11 @@ class AttendanceScreen extends Component {
             nomatchattendance:false,
             loadingModalstate:true,
             regionCoach:this.props.sessionScreen.region,
-            //opacity: new Animated.Value(0) Setting initial value for animation
         }
     }
     
 
     componentDidMount() {
-        //this.updateAnimation(); Calling animation function
         this.setState({auxRedux: []});
         this._setCurrentSessionData();
     }
@@ -52,7 +50,7 @@ class AttendanceScreen extends Component {
     //     this._setCurrentSessionData();
     // }
 
-    formatEnrollmentsToRequest(enrollments, sessionId) {
+    formatEnrollmentsToRequest(enrollments) {
         let studentsList = [];
             
         enrollments.forEach(student => {
@@ -63,10 +61,8 @@ class AttendanceScreen extends Component {
             if (student.Attended) attendance = true; 
 
             studentsList.push({
-                //SessionId: sessionId,
                 AttendanceId: attendanceId,
                 Attended: attendance,
-                //StudentId: student.StudentId
             })
         });
 
@@ -367,29 +363,6 @@ class AttendanceScreen extends Component {
 
         return parsedEnrollments;
     }
-    /*updateAnimation(){
-        if(this.state.loadingModalstate){
-                this.state.opacity.setValue(0);
-                Animated.sequence([
-                    Animated.timing(this.state.opacity, {
-                    toValue: 1,
-                    duration: 800,
-                    easing: Easing.out(Easing.sin),
-                    useNativeDriver: true,
-                    delay: 0,
-                    }),
-                    Animated.timing(this.state.opacity, {
-                    toValue: 2,
-                    duration: 500,
-                    easing: Easing.in(Easing.sin),
-                    useNativeDriver: true,
-                    delay: 0,
-                    }),
-                ]).start(() => 
-                this.updateAnimation()
-              );
-        }
-    }*///Setting animation
     LoadingGif = () =>{
         if(this.props.sessionScreen.region === "ASBA"){
             return require('../assets/Scores_Logo.gif');//Scores logo gif
@@ -563,10 +536,6 @@ class AttendanceScreen extends Component {
                     {spinnerCard()}
             </Modal>
         )
-        /*const size = this.state.opacity.interpolate({
-            inputRange: [0, 1, 2],
-            outputRange: [0.8, 1, 0.8],
-          });*///Setting animation
         const loadingModal = () => (
             <Modal
                 style={styles.popOverContent}
