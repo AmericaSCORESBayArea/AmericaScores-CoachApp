@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Card, Text, Button, Layout, Datepicker,Icon, IndexPath, Select, SelectItem, Spinner } from '@ui-kitten/components';
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from 'axios';
@@ -6,10 +6,10 @@ import { ApiConfig } from '../config/ApiConfig';
 import { StyleSheet, View, Alert, Image } from 'react-native';
 import { AttendanceScreen } from '../Attendance.Screen';
 import moment from 'moment';
+import { useSelector } from 'react-redux';
 
 export const EditSessionModal = ({route, navigation}) => {
     const [visible, setVisible] = React.useState(true);
-    
     const {session, oldDate, oldTopic} = route.params;
     const [date, setDate] = React.useState(moment(oldDate));
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
@@ -114,24 +114,24 @@ export const EditSessionModal = ({route, navigation}) => {
       ];
     const renderImage = (title) => { 
         if(title==="Soccer"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40, resizeMode: "contain"}}
             source={require('../../assets/Scores_Ball.png')}
             />)
         }else if(title==="Soccer and Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Soccer_and_writing.png')}
           />)
         }
         else if(title==="Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Pencil_Edit.png')}
           />)
         }
         else if(title==="Game Day"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_goal.png')}
           />)
@@ -139,24 +139,24 @@ export const EditSessionModal = ({route, navigation}) => {
     };
     const renderImageDisplay = (title) => { 
         if(title==="Soccer"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40, resizeMode: "contain"}}
             source={require('../../assets/Scores_Ball.png')}
             />)
         }else if(title==="Soccer and Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 30, height: 30,resizeMode: "contain"}}
             source={require('../../assets/Scores_Soccer_and_writing.png')}
           />)
         }
         else if(title==="Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Pencil_Edit.png')}
           />)
         }
         else if(title==="Game Day"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_goal.png')}
           />)
@@ -211,9 +211,21 @@ export const EditSessionModal = ({route, navigation}) => {
 
 
 export const AddSessionModal = ({route, navigation}) => {
+    const { user } = useSelector(state => state.user);
+    const  [ teams ]  = React.useState([]);
+    const [ teamsId ] = React.useState([]);
+    const [showTeams, setShowTeams] = React.useState(false); 
+    useEffect(
+        () => {
+                if(route.params.teamSeasonId === ''){
+                    fetchTeams()
+                }
+            },
+        []
+      );
     const [visible, setVisible] = React.useState(true);
-    
     const {teamSeasonId, oldDate, oldTopic} = route.params;
+    const [selectedTeamIndex, setSelectedTeamIndex] = React.useState(new IndexPath(0));
     const [date, setDate] = React.useState(moment(oldDate));
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
     const [updatingModalstate, setupdatingModalstate] = React.useState(false);
@@ -224,15 +236,41 @@ export const AddSessionModal = ({route, navigation}) => {
         navigation.goBack();
     }
 
+    async function fetchTeams(){
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
+            params: {
+                date: moment().format("YYYY-MM-DD")
+            }
+        })
+        .then(response => {
+            response.data.map(value => {
+                teams.push(value.TeamSeasonName),
+                teamsId.push(value.TeamSeasonId)
+            })
+            setShowTeams(true);
+        })
+        .catch(e => console.log(e));
+    }
     async function editSession() {
-        let changes =
+        if(showTeams === true){
+            let changes =
             {
                 "SessionDate": date.format("YYYY-MM-DD"),
                 "SessionTopic": displayValue.replace(/\s/g, '_'),
-                "TeamSeasonId": teamSeasonId,
+                "TeamSeasonId": teamsId[selectedTeamIndex.row],
             };
-        console.log(changes);
-        await pushChanges(changes);
+            console.log(changes);
+            await pushChanges(changes);
+        }else{
+            let changes =
+                {
+                    "SessionDate": date.format("YYYY-MM-DD"),
+                    "SessionTopic": displayValue.replace(/\s/g, '_'),
+                    "TeamSeasonId": teamSeasonId,
+                };
+            console.log(changes);
+            await pushChanges(changes);
+        }
         
     }
 
@@ -320,24 +358,24 @@ export const AddSessionModal = ({route, navigation}) => {
 
       const renderImageAddSession = (title) => { 
         if(title==="Soccer"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40, resizeMode: "contain"}}
             source={require('../../assets/Scores_Ball.png')}
             />)
         }else if(title==="Soccer and Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Soccer_and_writing.png')}
           />)
         }
         else if(title==="Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Pencil_Edit.png')}
           />)
         }
         else if(title==="Game Day"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_goal.png')}
           />)
@@ -346,34 +384,54 @@ export const AddSessionModal = ({route, navigation}) => {
 
     const renderImageDisplayAddSession = (title) => { 
         if(title==="Soccer"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40, resizeMode: "contain"}}
             source={require('../../assets/Scores_Ball.png')}
             />)
         }else if(title==="Soccer and Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 30, height: 30,resizeMode: "contain"}}
             source={require('../../assets/Scores_Soccer_and_writing.png')}
           />)
         }
         else if(title==="Writing"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_Pencil_Edit.png')}
           />)
         }
         else if(title==="Game Day"){
-            return(console.log(title),<Image
+            return(<Image
             style={{ width: 40, height: 40,resizeMode: "contain"}}
             source={require('../../assets/Scores_goal.png')}
           />)
         }
     };
     const renderOption = (title) => (
-        <SelectItem key={title} title={title} accessoryLeft={() => renderImageAddSession(title)}/>
+        <SelectItem key={title} title={title} accessoryLeft={() => renderImageAddSession(title)} />
     );
+    const renderTeamsOption = (title) => (
+        <SelectItem key={title} title={title} />
+    );
+    const displayedTeamValue = teams[selectedTeamIndex.row];
+    const selectTeam = () =>(
+        (
+            (showTeams && 
+            <View>
+                <Text style={{margin: "2%"}}>Select a Team:</Text>
+                <Select
+                    selectedIndex={selectedTeamIndex}
+                    size='medium'
+                    value={displayedTeamValue}
+                    placeholder='Select a team'
+                    onSelect={index => setSelectedTeamIndex(index)}>
+                    {teams.map(renderTeamsOption)}
+            </Select>
+           </View>
+           )
+        )
+    )
     
-
     const displayValue = data[selectedIndex.row];
 
     const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
@@ -384,7 +442,7 @@ export const AddSessionModal = ({route, navigation}) => {
             date={date}
             placement="bottom"
             // min={minDatePickerDate}
-            style={{margin: "2%", }}
+            style={{margin: "2%" }}
             dateService={dateService}
             onSelect={nextDate => selectDate(nextDate)}
             accessoryRight={CalendarIcon}
@@ -411,6 +469,7 @@ export const AddSessionModal = ({route, navigation}) => {
                     onSelect={index => setSelectedIndex(index)}>
                     {data.map(renderOption)}
                 </Select>
+                {selectTeam()}
             </Card>
         </Modal>
     );
