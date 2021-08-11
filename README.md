@@ -24,7 +24,7 @@ Check if everything was installed propertly.
 ### Install the project.
 
 Clone the project from github into your local machine.
-`cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
+- `cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
 
 - If running in IOS `cd ios && pod install && cd ..` and then `react-native run-ios`
 - If running on Android
@@ -46,6 +46,7 @@ Here are a list of errors that may occur when installing the project and how to 
 - [UI Kitten](https://akveo.github.io/react-native-ui-kitten/) Built in UI components used over the app frontend development
 - [React Navigation](https://reactnavigation.org/) This library is used for navigating between screens over the app.
 - [QR-Scanner](https://www.npmjs.com/package/react-native-qrcode-scanner) Library used for QR Camera scan function
+- also see below for edits that need to be made to Pod dependencies
 
 **Miscellaneous**
 
@@ -134,9 +135,9 @@ Issue 'B':
 - [x] Verify the file is present in the project and build target selected. Re-Add it to the Project. Also add it to the Build Phases: Compile Sources list.
 Check and remove any incorrect references ``example../src/config/..``
 - [x] Select an appropriate build target and build again
-
+### Currently This Change is Required for the ios/XCode Build to Succeed
 - [x] Error: Folly/folly/synchronization/DistributedMutex-inl.h:1051:5: 'atomic_notify_one<unsigned long>' is unavailable
 - [x] To fix this, first go to ProjectFolder/Pods/Headers/Private/Flipper-Folly/folly/synchronization/DistributedMutex-inl.h
 - [x] Change the following lines in the DistributedMutex-inl.h file
-Around line 1043 - change `atomic_notify_one(state);` to `folly::atomic_notify_one(state);`
+Around line 1051 - change `atomic_notify_one(state);` to `folly::atomic_notify_one(state);`
 Around line 1668 - change `auto result= atomic_wait_until(&state, previous | data, deadline);` to `auto result= folly::atomic_wait_until(&state, previous | data, deadline);`
