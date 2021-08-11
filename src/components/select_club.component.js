@@ -2,7 +2,7 @@ import React from 'react';
 import { SafeAreaView, ImageBackground, FlatList} from 'react-native';
 import { Layout, Text, Card } from '@ui-kitten/components';
 import { View} from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { changeRegion } from "../Redux/actions/SessionScreen.actions";
 const Clubs = [
   {
