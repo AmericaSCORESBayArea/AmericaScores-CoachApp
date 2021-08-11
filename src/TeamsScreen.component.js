@@ -72,10 +72,10 @@ class TeamsScreen extends Component {
         this.setData(this.state.data.filter(item => this.filter(item, query)))
     };
 
-    onPressTeam(teamSeasonId, TeamName, Region, SeasonName) {
+    onPressTeam(teamSeasonId, TeamName, Region, SeasonName, SeasonStartDate, SeasonEndDate) {
         const { actions } = this.props;
         actions.changeTitleTeam(SeasonName);
-        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName});
+        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName, seasonStart: SeasonStartDate, seasonEnd: SeasonEndDate});
     };
 
     SelectIndex(index){
@@ -124,7 +124,7 @@ class TeamsScreen extends Component {
                     style={{backgroundColor: colorList()}}
                     // description={`${item.description} ${index + 1}`}
                     accessoryRight={rightArrowIconRender}
-                    onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName)}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
             )
         };
