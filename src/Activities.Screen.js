@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem, RangeDatepicker } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
@@ -40,15 +40,23 @@ class ActivitiesScreen extends Component {
             OverflowMenuVisible:false,
             disabledbox:false,
             displayMessage:"Don't forget to take attendance!",
+            //range: {startDate: moment(), endDate: moment().add(10, 'days')},
+            range:{
+                startDate: new Date(moment()),
+                endDate: new Date(moment().add(10, 'days')),
+            },
+            StartSeason: '',
+            EndSeason: '',
         }
     }
 
     
 
     async componentDidMount() {
+        console.log(moment(this.state.range.startDate).format("YYYY-MM-DD"))
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         this.setState({RegionSelected:"All"})
-        this.__syncCoachRegions();
+        //this.__syncCoachRegions(); call a function that returns coach regions
         this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
@@ -72,7 +80,7 @@ class ActivitiesScreen extends Component {
             })
             .catch(error => console.log(error));
     }
-    async __syncCoachRegions(){
+    /*async __syncCoachRegions(){
         console.log(this.state.date.format("YYYY-MM-DD"))
         const { user } = this.props;
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/regions`, {
@@ -83,7 +91,7 @@ class ActivitiesScreen extends Component {
           })
           .then(res => console.log(res.data))
           .catch(e => console.log(e));
-    }
+    }*/ //returns coach regions
     //Syncs activitiesToRedux and state
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
@@ -103,13 +111,21 @@ class ActivitiesScreen extends Component {
             this.setState({nomatchModalVisibility: false})
         }
         if(route.name === "Team Sessions"){
-            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName); // filter the activities for a specific team
-            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName});
+            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
+            if(this.state.isUpdated !== true){
+                this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+            }
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason: new Date(route.params.seasonEnd)});
         }else{
             if(activitiesList.length === 0){
                 (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
             }else{
-                (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+                if(this.state.listofSessions === null){//if there are teams with null sessions, we set nomatchModal True
+                    (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: true}))//saving seasonName
+                }else{
+                    (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+
+                }
             }
             if (this.state.seasonName !== ""){
                 if(this.state.seasonName !== "Sessions"){
@@ -146,20 +162,41 @@ class ActivitiesScreen extends Component {
 
     async fetchActivities() {
         const { user } = this.props;
-        return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
-            params: {
-                // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                date: this.state.date.format("YYYY-MM-DD")
-            }
-          })
-          .then(res => res.data)
-          .catch(e => console.log(e));
+        console.log(this.state.range.endDate)
+        if(this.state.range.endDate !== null){
+            return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
+                params: {
+                    // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                    firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
+                    secondDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
+    
+                }
+              })
+              .then(res => res.data)
+              .catch(e => console.log(e));
+        }
+            /*return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
+                params: {
+                    // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                    firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),    
+                }
+              })
+              .then(res => res.data)
+              .catch(e => console.log(e));
+        //}*/
     }
 
     async selectDate(date) { 
         await this.setState({date: date})
         const activitiesList = await this.fetchActivities();
         this._syncReduxActivities(activitiesList);
+    }
+    async selectRange(dates) {
+        await this.setState({range: dates})
+        if(this.state.range.endDate !== null){
+            const activitiesList = await this.fetchActivities();
+            this._syncReduxActivities(activitiesList);
+        }
     }
 
     selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
@@ -252,6 +289,12 @@ class ActivitiesScreen extends Component {
                 return "#86c0e3"
             }
         }
+        const description = (date) =>(
+            <Text style={{color:"black", fontSize: 12}}>
+                Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+                {moment(date).format("dddd")}
+            </Text>
+        )
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
                 return; 
@@ -267,7 +310,7 @@ class ActivitiesScreen extends Component {
                                     key={value.SessionId}
                                     title={`${item.Team_Name}`}
                                     style={{backgroundColor: colorList()}}
-                                    /*description={sessionTopic.replace(/_/g,' ')}*/
+                                    description={description(value.SessionDate)}
                                     accessoryLeft={RenderItemImageNL}
                                     accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                         ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
@@ -290,7 +333,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIconRed}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -300,7 +343,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={`${value.SessionDate}`}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -312,7 +355,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -326,7 +369,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageSW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
@@ -350,7 +393,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIconRed}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -360,7 +403,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -372,7 +415,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -385,7 +428,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageS}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
@@ -409,7 +452,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIconRed}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -419,7 +462,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -431,7 +474,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -444,7 +487,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
@@ -468,7 +511,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIconRed}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -478,7 +521,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -490,7 +533,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -504,7 +547,7 @@ class ActivitiesScreen extends Component {
                                         key={value.SessionId}
                                         title={`${item.Team_Name}`}
                                         style={{backgroundColor: colorList()}}
-                                        /*description={sessionTopic.replace(/_/g,' ')}*/
+                                        description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageGD}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
@@ -528,7 +571,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIconRed}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -538,7 +581,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -550,7 +593,7 @@ class ActivitiesScreen extends Component {
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList()}}
-                                            /*description={sessionTopic.replace(/_/g,' ')}*/
+                                            description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
@@ -577,6 +620,21 @@ class ActivitiesScreen extends Component {
                 style={{margin: "2%",minWidth:"90%"}}
                 dateService={dateService}
                 onSelect={nextDate => this.selectDate(nextDate)}
+                accessoryRight={CalendarIcon}
+            />
+        );
+        const searchBoxRanges = () => (
+            <RangeDatepicker
+                label="Select a Date"
+                placeholder='Pick Date'
+                size='large'
+                placement="bottom"
+                range={this.state.range}
+                min={this.state.StartSeason}
+                max={this.state.EndSeason}
+                onSelect={range => this.selectRange(range)}
+                style={{margin: "2%",minWidth:"90%"}}
+                //dateService={dateService}
                 accessoryRight={CalendarIcon}
             />
         );
@@ -656,8 +714,8 @@ class ActivitiesScreen extends Component {
             ))
         );
         const message = (status) =>(
-            <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
-                    <Text category="h6" status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95}}>
+            <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center'}}>
+                    <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
                         {this.state.displayMessage}
                     </Text>
                 </Card>
@@ -708,7 +766,8 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     {addButton()}
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
-                        {searchBox()}
+                        {searchBoxRanges()}
+                        {/*searchBox()*/}
                         {selectBox()}
                     </BottomSheet>
                 </Layout>      
