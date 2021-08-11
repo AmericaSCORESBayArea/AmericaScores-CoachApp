@@ -160,7 +160,8 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
 const _syncUserSessions = async (user) => {
   Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
       params: {
-        date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
+        firstDate: moment("20210416", "YYYYMMDD").format("YYYY-MM-DD"),
+        secondDate: moment("20210426", "YYYYMMDD").format("YYYY-MM-DD"),
       }
     })
     .then(res => res.data)
