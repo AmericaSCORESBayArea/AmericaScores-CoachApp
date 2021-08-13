@@ -2,8 +2,8 @@ import React from 'react';
 import { SafeAreaView, ImageBackground, FlatList} from 'react-native';
 import { Layout, Text, Card } from '@ui-kitten/components';
 import { View} from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
-import { changeRegion } from "../Redux/actions/SessionScreen.actions";
+import { useDispatch } from 'react-redux';
+import { changeRegion, changeRegionList } from "../Redux/actions/SessionScreen.actions";
 const Clubs = [
   {
       id:0,
@@ -40,7 +40,14 @@ const Headerr = (props) => (
     const dispatch = useDispatch();
     async function clubSelected(region) {
         dispatch(changeRegion(region));
-        //navigation.navigate("HomeRoot");
+        if(region === 'ASBA'){
+          dispatch(changeRegionList(['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+          'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted']));
+        }else if(region === 'IFC'){
+          dispatch(changeRegionList(['All', 'IFC-SF']));
+        }else if(region === 'OGSC'){
+          dispatch(changeRegionList(['All', 'Genesis']));
+        }
     }
     const renderItems = ({ item }) => (
       <Card style={{margin:"2%", width:"47%"}} status="primary" key={item.title} header={() => Headerr(item.image)} onPress={() => clubSelected(item.title)}>

@@ -25,9 +25,7 @@ class ActivitiesScreen extends Component {
             activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
-            'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
-            'IFC-SF', 'Genesis'],
+            regions:this.props.sessionScreen.listofregions,
             selectedIndex: "",
             displayedValue: "",
             isUpdated: false,
@@ -91,7 +89,13 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
-        this.setState({activitiesRegion:activitiesList,displayedValue:this.state.regions[0],RegionSelected:"All"})//saving all sessions without filtering by region//setting "basic" region filter with All
+        if (this.props.sessionScreen.region === 'IFC'){
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }else if (this.props.sessionScreen.region === 'OGSC'){
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }else{
+            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -173,7 +177,13 @@ class ActivitiesScreen extends Component {
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
         if(this.state.regions[index.row] === "All"){
-            this.setState({activitiesRegion:this.state.activities})
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+            }else{
+                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+            }
         }else{
             this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
         }
