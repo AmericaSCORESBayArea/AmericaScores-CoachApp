@@ -154,13 +154,14 @@ class AttendanceScreen extends Component {
                     }
                 }
                 await this._fetchSessionInfo();
-                if(this.state.enrollments !== null){
+                if(this.state.enrollments.length !== 0){
                     this.setState({nomatchModalVisibility: false})
                 }else{
+                    console.log(true)
                     this.setState({nomatchModalVisibility: true})
                 }
             }else{
-                if(this.state.enrollments !== null){
+                if(this.state.enrollments.length !== 0){
                     this.setState({nomatchModalVisibility: false})
                     this.state.enrollments.map((value) =>{
                         if(value.Attended !== undefined){
@@ -330,7 +331,7 @@ class AttendanceScreen extends Component {
                     this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
                 }
             }
-            else console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");
+            else {console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");}
         }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ATTENDANCE |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`) })
     }
 
@@ -366,8 +367,10 @@ class AttendanceScreen extends Component {
     LoadingGif = () =>{
         if(this.props.sessionScreen.region === "ASBA"){
             return require('../assets/Scores_Logo.gif');//Scores logo gif
-        }else{
+        }else if(this.props.sessionScreen.region === "IFC"){
             return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }else if(this.props.sessionScreen.region === "OGSC"){
+            return require('../assets/OGSC_logo_spinner.gif');//Genesis logo gif
         }
     }
     toogleUpdate(){
