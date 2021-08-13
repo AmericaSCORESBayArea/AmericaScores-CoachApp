@@ -165,7 +165,12 @@ class ActivitiesScreen extends Component {
 
     async fetchActivities() {
         const { user } = this.props;
-        console.log(this.state.range.endDate)
+        const { route } = this.props;
+        if(route.name === "Team Sessions"){
+            if(this.state.isUpdated !== true){
+                await this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+            }
+        }
         if(this.state.range.endDate !== null){
             return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
                 params: {
