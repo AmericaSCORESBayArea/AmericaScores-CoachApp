@@ -1,13 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem,  TopNavigationAction} from "@ui-kitten/components";
+import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem,  TopNavigationAction, TabBar, Tab, Layout, Text} from "@ui-kitten/components";
 import TeamsScreen from "./src/TeamsScreen.component";
+import TeamScreen from './src/Team.Screen';
 import ActivitiesScreen from "./src/Activities.Screen";
 import AttendanceScreen from "./src/Attendance.Screen";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
 import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
@@ -28,6 +30,42 @@ const colorList = () =>{
         return "#001541"
     }
 }
+
+const { Navigator, Screen } = createMaterialTopTabNavigator();
+
+const Stack_Sessions = createStackNavigator();
+const Stack_Sessions_Navigation = ({navigation}) => (
+    <Stack_Sessions.Navigator>
+        <Stack_Sessions.Screen name="Sessions" component={ActivitiesScreen} options={headerOptions}/>
+        <Stack_Sessions.Screen name="Attendance" component={AttendanceScreen} options={headerOptions} />
+        <Stack_Sessions.Screen name="Scan students QR" component={QRScanScreen} options={headerOptions}/>
+    </Stack_Sessions.Navigator>
+);
+  
+const Stack_Students = createStackNavigator();
+const Stack_Students_Navigation = ({navigation}) => (
+    <Stack_Students.Navigator>
+        <Stack_Students.Screen name="Students" component={StudentsScreen} options={headerOptions}/>
+         <Stack_Students.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
+    </Stack_Students.Navigator>
+);
+  
+  const TopTabBar = ({ navigation, state }) => (
+    <TabBar
+      selectedIndex={state.index}
+      onSelect={index => navigation.navigate(state.routeNames[index])}>
+      <Tab title='TEAM SESSIONS'/>
+      <Tab title='STUDENTS'/>
+    </TabBar>
+  );
+  
+  const TopTabNavigator = () => (
+    <Navigator tabBar={props => <TopTabBar {...props} />}>
+      <Screen name='Sessions' component={Stack_Sessions_Navigation}/>
+      <Screen name='Students' component={Stack_Students_Navigation}/>
+    </Navigator>
+  );
+  
 const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation
     indicatorStyle={{backgroundColor: colorList(), height: 4}} 
@@ -59,7 +97,7 @@ const Stack_Teams_Navigation = ({navigation}) => (
     (useSelector(state => state.sessionScreen.region) === "ASBA")?
     <Stack_Teams.Navigator>
         <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptions}   initialParams={{ teamSeasonId: null }} />
-        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} options={{
+        <Stack_Teams.Screen name='Team Sessions' component={TopTabNavigator} options={{
           title: useSelector(state => state.sessionScreen.teamname),
           headerStyle: {
           backgroundColor: "#00467F",
@@ -74,7 +112,7 @@ const Stack_Teams_Navigation = ({navigation}) => (
     :
     <Stack_Teams.Navigator>
         <Stack_Teams.Screen name="Teams" component={TeamsScreen} options={headerOptionsIFC}  initialParams={{ teamSeasonId: null }} />
-        <Stack_Teams.Screen name='Team Sessions' component={ActivitiesScreen} 
+        <Stack_Teams.Screen name='Team Sessions' component={TopTabNavigator} 
         options={{
           title: useSelector(state => state.sessionScreen.teamname),
           headerStyle: {
@@ -90,22 +128,16 @@ const Stack_Teams_Navigation = ({navigation}) => (
 
 );
 const Stack_Affiliation = createStackNavigator();
-const Stack_Students = createStackNavigator();
-const Stack_Students_Navigation = ({navigation}) => (
-    <Stack_Students.Navigator>
-        <Stack_Students.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
-        <Stack_Students.Screen name="Students" component={StudentsScreen} options={headerOptions}/>
-    </Stack_Students.Navigator>
-);
 
 const { Navigator, Screen } = createBottomTabNavigator();
 const TabNavigator = () => (
     <Navigator tabBar={props => <BottomTabBar {...props} /> } >
         <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
         <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
-        <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
     </Navigator>
   );
+
+
 
 export const HomeScreen = ({navigation}) => {
     return(
