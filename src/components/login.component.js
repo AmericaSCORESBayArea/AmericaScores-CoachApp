@@ -90,6 +90,8 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
         const userProfile = res.data;
         await setLoginLocal(userProfile.ContactId);
         if (userProfile.ContactId) {
+          //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+          //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;        
           _syncUserSessions(userProfile)
             .then(userSessions => {
               dispatch(loginUser(userProfile));

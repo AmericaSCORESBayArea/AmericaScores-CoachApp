@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem, RangeDatepicker } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem, RangeDatepicker, NativeDateService } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
@@ -25,9 +25,7 @@ class ActivitiesScreen extends Component {
             activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
-            'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
-            'IFC-SF', 'Genesis'],
+            regions:this.props.sessionScreen.listofregions,
             selectedIndex: "",
             displayedValue: "",
             isUpdated: false,
@@ -53,7 +51,6 @@ class ActivitiesScreen extends Component {
     
 
     async componentDidMount() {
-        console.log(moment(this.state.range.startDate).format("YYYY-MM-DD"))
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         this.setState({RegionSelected:"All"})
         //this.__syncCoachRegions(); call a function that returns coach regions
@@ -99,7 +96,13 @@ class ActivitiesScreen extends Component {
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
-        this.setState({activitiesRegion:activitiesList,displayedValue:this.state.regions[0],RegionSelected:"All"})//saving all sessions without filtering by region//setting "basic" region filter with All
+        if (this.props.sessionScreen.region === 'IFC'){
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }else if (this.props.sessionScreen.region === 'OGSC'){
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }else{
+            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+        }
         activitiesList.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
@@ -175,15 +178,16 @@ class ActivitiesScreen extends Component {
               .then(res => res.data)
               .catch(e => console.log(e));
         }
-            /*return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
+        else{
+            return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
                 params: {
                     // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
                     firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),    
                 }
-              })
+            })
               .then(res => res.data)
               .catch(e => console.log(e));
-        //}*/
+        }
     }
 
     async selectDate(date) { 
@@ -193,10 +197,8 @@ class ActivitiesScreen extends Component {
     }
     async selectRange(dates) {
         await this.setState({range: dates})
-        if(this.state.range.endDate !== null){
             const activitiesList = await this.fetchActivities();
             this._syncReduxActivities(activitiesList);
-        }
     }
 
     selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
@@ -210,7 +212,13 @@ class ActivitiesScreen extends Component {
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
         if(this.state.regions[index.row] === "All"){
-            this.setState({activitiesRegion:this.state.activities})
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+            }else{
+                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+            }
         }else{
             this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
         }
@@ -605,6 +613,8 @@ class ActivitiesScreen extends Component {
             }
         }
         const dateService = new MomentDateService();
+        const formatDateService = new NativeDateService('en', { format: 'MM/DD/YYYY' });
+
         // var date = moment();
 
         // const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
@@ -633,8 +643,8 @@ class ActivitiesScreen extends Component {
                 min={this.state.StartSeason}
                 max={this.state.EndSeason}
                 onSelect={range => this.selectRange(range)}
+                dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
-                //dateService={dateService}
                 accessoryRight={CalendarIcon}
             />
         );
