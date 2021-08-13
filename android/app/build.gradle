@@ -135,8 +135,8 @@ android {
         applicationId "com.americaScoresAttendance.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 15
-        versionName '1.81a'
+        versionCode 17
+        versionName '1.83a'
 
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [appAuthRedirectScheme: 'com.redirectScheme.comm']
@@ -204,6 +204,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.google.android.play:core:1.10.0'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
