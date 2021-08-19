@@ -25,9 +25,7 @@ class TeamsScreen extends Component {
             nomatchModalVisibility: false,
             selectedIndex: "",
             displayedValue: "",
-            regions: ['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
-            'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted',
-            'IFC-SF', 'Genesis'],
+            regions: this.props.sessionScreen.listofregions,
             RegionSelected: "",//setting the region selected
         }
     }
@@ -54,7 +52,13 @@ class TeamsScreen extends Component {
             this.setState({selectedData: data.filter((value) =>(value.Region.match("Other")))})
             this.setState({teamsRegion: data.filter((value) =>(value.Region.match("Other")))})
         }else if(this.state.RegionSelected === "All"){
-            this.setState({selectedData: data, teamsRegion: data})
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('IFC-SF'))),selectedData: data})//saving sessions without filtering
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('Genesis'))),selectedData: data})//saving sessions without filtering
+            }else{
+                this.setState({teamsRegion:this.state.data.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),selectedData: data})//saving sessions without filtering
+            }
         }
         else{
             this.setState({selectedData: data.filter((value) =>(value.Region.match(this.state.RegionSelected)))})
@@ -72,17 +76,23 @@ class TeamsScreen extends Component {
         this.setData(this.state.data.filter(item => this.filter(item, query)))
     };
 
-    onPressTeam(teamSeasonId, TeamName, Region, SeasonName) {
+    onPressTeam(teamSeasonId, TeamName, Region, SeasonName, SeasonStartDate, SeasonEndDate) {
         const { actions } = this.props;
         actions.changeTitleTeam(SeasonName);
-        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName});
+        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName, seasonStart: SeasonStartDate, seasonEnd: SeasonEndDate});
     };
 
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
         if(this.state.regions[index.row] === 'All'){
-            this.setState({teamsRegion:this.state.data})
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+            }else{
+                this.setState({teamsRegion:this.state.data.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+            }
         }else{
             this.setState({teamsRegion:this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
         }
@@ -97,7 +107,13 @@ class TeamsScreen extends Component {
         if(data.length === 0){
             this.setState({nomatchModalVisibility: true})
         }else{
-            this.setState({teamsRegion:data})//saving sessions with region sf
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({teamsRegion:data.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({teamsRegion:data.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+            }else{
+                this.setState({teamsRegion:data.filter((value) => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))})
+            }
             this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
             this.setState({RegionSelected:"All"})
         }
@@ -124,7 +140,7 @@ class TeamsScreen extends Component {
                     style={{backgroundColor: colorList()}}
                     // description={`${item.description} ${index + 1}`}
                     accessoryRight={rightArrowIconRender}
-                    onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName)}
+                    onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
             )
         };
