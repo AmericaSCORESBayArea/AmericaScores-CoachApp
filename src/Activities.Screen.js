@@ -37,7 +37,7 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"Don't forget to take attendance!",
+            displayMessage:"",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
                 startDate: new Date(moment()),
@@ -52,7 +52,13 @@ class ActivitiesScreen extends Component {
 
     async componentDidMount() {
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
-        this.setState({RegionSelected:"All"})
+        if (this.props.sessionScreen.region === 'IFC'){
+            this.setState({RegionSelected:"All IFC"})
+        }else if (this.props.sessionScreen.region === 'ASBA'){
+            this.setState({RegionSelected:"All ASBA"})
+        }else if (this.props.sessionScreen.region === 'OGSC'){
+            this.setState({RegionSelected:"All OGSC"})
+        }
         //this.__syncCoachRegions(); call a function that returns coach regions
         this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
@@ -97,13 +103,16 @@ class ActivitiesScreen extends Component {
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
         if (this.props.sessionScreen.region === 'IFC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All IFC"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value) => (value.Region.match('IFC-SF')));
         }else if (this.props.sessionScreen.region === 'OGSC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All OGSC"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value) => (value.Region.match('Genesis')));
         }else{
-            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))
         }
-        activitiesList.map(value => {
+        activitiesregion.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
                 }
@@ -127,7 +136,6 @@ class ActivitiesScreen extends Component {
                     (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: true}))//saving seasonName
                 }else{
                     (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
-
                 }
             }
             if (this.state.seasonName !== ""){
@@ -141,16 +149,12 @@ class ActivitiesScreen extends Component {
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
-        if(region === 'Other'){
-            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:'ASBA', selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
-        }else{
-            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
-        }
+        this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
         this.setState({listofSessions: null});
         const activities = this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
-        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(region)))})
+        this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
         activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
@@ -206,7 +210,7 @@ class ActivitiesScreen extends Component {
             this._syncReduxActivities(activitiesList);
     }
 
-    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
+    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
 
     toggleWelcomeModalOff() { 
         const { actions } = this.props;
@@ -216,21 +220,30 @@ class ActivitiesScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        if(this.state.regions[index.row] === "All"){
+        if(this.state.regions[index.row] === "All IFC" || this.state.regions[index.row] === "All ASBA" || this.state.regions[index.row] === "All OGSC"){
             if (this.props.sessionScreen.region === 'IFC'){
                 this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('IFC-SF')));
             }else if (this.props.sessionScreen.region === 'OGSC'){
                 this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('Genesis')));
             }else{
                 this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))));
             }
         }else{
-            this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+            this.setState({activitiesRegion:this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)))})
+            var activitiesregion = this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)));
         }
-        if(this.state.regions[index.row] === "Other"){
-            this.setState({RegionSelected:"ASBA"})
-        }else{
-            this.setState({RegionSelected:this.state.regions[index.row]})
+        this.setState({RegionSelected:this.state.regions[index.row]})
+        var cont=0
+        activitiesregion.map(value => {
+            if (value.Sessions === null){
+                cont=cont+1
+            }
+        })
+        if(activitiesregion.length === cont){
+            this.setState({activitiesRegion: ''})
         }
     }
     SelectIndexDrawer(index){
@@ -770,6 +783,7 @@ class ActivitiesScreen extends Component {
                                 style={{opacity: 0.95}}
                                 data={this.state.activitiesRegion}
                                 renderItem={activityItem}
+                                initialNumToRender={50}
                                 Divider={Divider}
                                 refreshControl={
                                     <RefreshControl
