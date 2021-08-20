@@ -41,12 +41,12 @@ const Headerr = (props) => (
     async function clubSelected(region) {
         dispatch(changeRegion(region));
         if(region === 'ASBA'){
-          dispatch(changeRegionList(['All','Other','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
+          dispatch(changeRegionList(['All ASBA','San Francisco','San Jose','San Rafael','Oakland','Daly City','Hayward','Redwood City',
           'San Francisco Civic Center','San Francisco Crocker','Alameda','Marin','San Mateo','Unrestricted']));
         }else if(region === 'IFC'){
-          dispatch(changeRegionList(['All', 'IFC-SF']));
+          dispatch(changeRegionList(['All IFC', 'IFC-SF']));
         }else if(region === 'OGSC'){
-          dispatch(changeRegionList(['All', 'Genesis']));
+          dispatch(changeRegionList(['All OGSC', 'Genesis']));
         }
     }
     const renderItems = ({ item }) => (
