@@ -64,6 +64,15 @@ export const CreateStudentModal = ({navigation}) => {
 }
 
 export const AddStudentToTeamModal = ({navigation}) => {
+    const movies = [
+        { title: 'Star Wars' },
+        { title: 'Back to the Future' },
+        { title: 'The Matrix' },
+        { title: 'Inception' },
+        { title: 'Interstellar' },
+      ];
+      
+      const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
     const [visible, setVisible] = React.useState(true);
     const [nameValue, setNameValue] = React.useState();
     const [surenameValue, setSureNameValue] = React.useState();
@@ -77,6 +86,24 @@ export const AddStudentToTeamModal = ({navigation}) => {
         console.log(nameValue, surenameValue);
         closeModal();
     }
+
+        const [value, setValue] = React.useState(null);
+    const [data, setData] = React.useState(movies);
+
+    const onSelect = (index) => {
+        setValue(movies[index].title);
+    };
+
+    const onChangeText = (query) => {
+        setValue(query);
+        setData(movies.filter(item => filter(item, query)));
+    };
+    const renderOption = (item, index) => (
+        <AutocompleteItem
+          key={index}
+          title={item.title}
+        />
+      );
 
     const Footer = (props) => (
         <Layout {...props}>
@@ -102,18 +129,13 @@ export const AddStudentToTeamModal = ({navigation}) => {
             onBackdropPress={() => closeModal()}
             style={{width:'80%'}}>
             <Card disabled={true} header={Header} footer={Footer}>
-                <Text>Student name or surename</Text>
-                <Input
-                    placeholder='Name'
-                    value={nameValue}
-                    onChangeText={enteredValue => setNameValue(enteredValue)}
-                />
-                <Text>Team</Text>
-                <Input
-                    placeholder='Team'
-                    value={surenameValue}
-                    onChangeText={enteredSureNameValue => setSureNameValue(enteredSureNameValue)}
-                />
+                <Autocomplete
+                placeholder='Student Name'
+                value={value}
+                onSelect={onSelect}
+                onChangeText={onChangeText}>
+                {data.map(renderOption)}
+                </Autocomplete>
             </Card>
         </Modal>
     );
