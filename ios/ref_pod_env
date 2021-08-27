@@ -1,0 +1,88 @@
+## Reference Output from pod env for ios build environment consistency
+
+### Stack
+```
+  CocoaPods : 1.10.1
+    Ruby : ruby 2.6.3p62 (2019-04-16 revision 67580) [universal.x86_64-darwin20]
+  RubyGems : 3.0.3
+    Host : macOS 11.5.2 (20G95)
+    Xcode : 12.5.1 (12E507)
+     Git : git version 2.31.1
+Ruby lib dir : /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib
+Repositories : trunk - CDN - https://cdn.cocoapods.org/
+```
+### Installation Source
+```
+Executable Path: /usr/local/bin/pod
+```
+### Plugins
+```
+cocoapods-deintegrate : 1.0.4
+cocoapods-plugins   : 1.0.0
+cocoapods-search   : 1.0.0
+cocoapods-trunk    : 1.5.0
+cocoapods-try     : 1.2.0
+```
+### Podfile
+```ruby
+platform :ios, '14.1'
+require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+require_relative '../node_modules/react-native/scripts/react_native_pods'
+def add_flipper_pods!(versions = {})
+ versions['Flipper'] ||= '~> 0.33.1'
+ versions['DoubleConversion'] ||= '1.1.7'
+ versions['Flipper-Folly'] ||= '~> 2.1'
+ versions['Flipper-Glog'] ||= '0.3.6'
+ versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
+ versions['Flipper-RSocket'] ||= '~> 1.0'
+ pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
+ # List all transitive dependencies for FlipperKit pods
+ # to avoid them being linked in Release builds
+ pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
+ pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
+ pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
+ pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
+ pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
+ pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
+ pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
+ pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
+end
+# Post Install processing for Flipper
+def flipper_post_install(installer)
+ installer.pods_project.targets.each do |target|
+  if target.name == 'YogaKit'
+   target.build_configurations.each do |config|
+    config.build_settings['SWIFT_VERSION'] = '4.1'
+   end
+  end
+ end
+end
+target 'AmericanScoresApp' do
+ # Pods for AmericanScoresApp
+ config = use_native_modules!
+ use_unimodules!
+ use_react_native!(:path => config["reactNativePath"])
+ # Enables Flipper.
+ #
+ # Note that if you have use_frameworks! enabled, Flipper will not work and
+ # you should disable these next few lines.
+ add_flipper_pods!
+ pod 'react-native-camera', :path => '../node_modules/react-native-camera'
+ permissions_path = '../node_modules/react-native-permissions/ios'
+ pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
+ post_install do |installer|
+  flipper_post_install(installer)
+ end
+end
+```
