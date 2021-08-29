@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, ImageBackground, FlatList} from 'react-native';
+import { SafeAreaView, ImageBackground, FlatList, ScrollView} from 'react-native';
 import { Layout, Text, Card } from '@ui-kitten/components';
 import { View} from 'react-native';
 import { useDispatch } from 'react-redux';
@@ -58,22 +58,24 @@ const Headerr = (props) => (
     );
     return(
     <Layout style={{flex: 1}} level="4">
-      <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
-        <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
-          <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
-            <Card style={{flex: 1, backgroundColor:"#F4F2F2"}} status="primary" header={Header}>
-            <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"2%", backgroundColor:"#F4F2F2"}}>
-            <FlatList
-              data={Clubs}
-              renderItem={renderItems}
-              keyExtractor={item => item.id}
-              numColumns={2}
-            />   
+      <ScrollView>
+        <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
+          <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
+            <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
+              <Card style={{flex: 1, backgroundColor:"#F4F2F2", minHeight:760}} status="primary" header={Header}>
+              <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"2%", backgroundColor:"#F4F2F2"}}>
+              <FlatList
+                data={Clubs}
+                renderItem={renderItems}
+                keyExtractor={item => item.id}
+                numColumns={2}
+              />   
+              </Layout>
+              </Card>                   
             </Layout>   
-            </Card>                   
-          </Layout>   
-        </Layout>
-      </SafeAreaView>
+          </Layout>
+        </SafeAreaView>
+      </ScrollView>   
     </Layout>
     );
   };
