@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem, RangeDatepicker, NativeDateService } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
@@ -14,6 +14,7 @@ import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
+import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
 
 class ActivitiesScreen extends Component {
@@ -45,12 +46,21 @@ class ActivitiesScreen extends Component {
             },
             StartSeason: '',
             EndSeason: '',
+            dateCont: 0,
+            loadingModalstate:true
         }
     }
 
     
 
     async componentDidMount() {
+        const { route } = this.props;
+        const { actions } = this.props;
+        if (route.name !== "Team Sessions"){
+            this.setState({loadingModalstate:false});
+        }else{
+            actions.changeTitleTeam(route.params.SeasonName);
+        }
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         if (this.props.sessionScreen.region === 'IFC'){
             this.setState({RegionSelected:"All IFC"})
@@ -64,7 +74,7 @@ class ActivitiesScreen extends Component {
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
-            setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
+            setTimeout(() => {this.setState({welcomeModalVisibility: false,loadingModalstate:false})}, 3500);
         }
         console.log(this.props.user);
     }
@@ -109,8 +119,8 @@ class ActivitiesScreen extends Component {
             this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All OGSC"})//saving sessions without filtering
             var activitiesregion = activitiesList.filter((value) => (value.Region.match('Genesis')));
         }else{
-            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
-            var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))
+            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))
         }
         activitiesregion.map(value => {
                 if(value.Sessions !== null){
@@ -118,9 +128,9 @@ class ActivitiesScreen extends Component {
                 }
             });
         if(this.state.listofSessions === null){
-            this.setState({nomatchModalVisibility: true})
+            this.setState({nomatchModalVisibility: true});
         }else{
-            this.setState({nomatchModalVisibility: false})
+            this.setState({nomatchModalVisibility: false});
         }
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
@@ -205,9 +215,17 @@ class ActivitiesScreen extends Component {
         this._syncReduxActivities(activitiesList);
     }
     async selectRange(dates) {
-        await this.setState({range: dates})
+        console.log(this.state.dateCont, dates.endDate)
+        if(dates.endDate === null && this.state.dateCont < 1){
+            this.setState({dateCont: this.state.dateCont+1})
+            this.setState({range: dates})
+        }else{
+            this.setState({loadingModalstate:true});
+            await this.setState({range: dates, dateCont: 0})
             const activitiesList = await this.fetchActivities();
             this._syncReduxActivities(activitiesList);
+            this.setState({loadingModalstate:false});
+        }
     }
 
     selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
@@ -228,8 +246,8 @@ class ActivitiesScreen extends Component {
                 this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
                 var activitiesregion = this.state.activities.filter((value) => (value.Region.match('Genesis')));
             }else{
-                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
-                var activitiesregion = this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))));
+                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
             }
         }else{
             this.setState({activitiesRegion:this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)))})
@@ -248,6 +266,15 @@ class ActivitiesScreen extends Component {
     }
     SelectIndexDrawer(index){
         this.setState({selectedIndexDrawer: index})
+    }
+    LoadingGif = () =>{
+        if(this.props.sessionScreen.region === "ASBA"){
+            return require('../assets/Scores_Logo.gif');//Scores logo gif
+        }else if(this.props.sessionScreen.region === "IFC"){
+            return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }else if(this.props.sessionScreen.region === "OGSC"){
+            return require('../assets/OGSC_logo_spinner.gif');//Genesis logo gif
+        }
     }
     render() {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
@@ -757,6 +784,14 @@ class ActivitiesScreen extends Component {
                 </View>
                 
         };
+        const loadingModal = () => (
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.loadingModalstate}
+                backdropStyle={styles.backdrop}>
+                <Image source={this.LoadingGif()}/>
+            </Modal>
+        )
         const getImage = () =>{
             if(this.props.sessionScreen.region === "IFC"){
                 return require('../assets/IFC-Logo.png');
@@ -775,6 +810,7 @@ class ActivitiesScreen extends Component {
                     {message("warning")}
                     <Divider style={{marginTop:"15%"}}/>
                     <ImageBackground source={getImage()} style={styles.image}>
+                        {loadingModal()}
                         {helloMessage("info")}
                         {noMatch("basic")}
                         {noMatchRegion("basic")}
@@ -807,7 +843,7 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle} );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle, changeTitleTeam } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
