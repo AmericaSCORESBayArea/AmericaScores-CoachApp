@@ -697,7 +697,7 @@ class AttendanceScreen extends Component {
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center'}}>
-                        This Session has not been set up with a roster of students.
+                        Please ensure that the enrollments and the attendance records have been created for this Team/Session.
                     </Text>
                 </Card>
             )
