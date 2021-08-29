@@ -245,7 +245,7 @@ export const AddSessionModal = ({route, navigation}) => {
         })
         .then(response => {
             if(actualRegion === 'ASBA'){
-                var list=response.data.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))));
+                var list=response.data.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
             }else if(actualRegion === 'IFC'){
                 var list=response.data.filter((value => (value.Region.match('IFC-SF'))));
             }else if(actualRegion === 'OGSC'){
