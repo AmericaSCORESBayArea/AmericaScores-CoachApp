@@ -3,16 +3,14 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, SafeAreaView, Dimensions } from "react-native";
+import { ImageBackground, View, StyleSheet, Image } from "react-native";
 
-import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem} from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem, Modal } from '@ui-kitten/components';
 import BottomSheet from 'react-native-simple-bottom-sheet';
 import Axios from "axios";
 
 import moment from "moment";
 import { ApiConfig } from "./config/ApiConfig";
-import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
-
 
 class TeamsScreen extends Component {
     constructor(props) {
@@ -27,6 +25,7 @@ class TeamsScreen extends Component {
             displayedValue: "",
             regions: this.props.sessionScreen.listofregions,
             RegionSelected: "",//setting the region selected
+            loadingModalstate:true,
         }
     }
 
@@ -40,24 +39,26 @@ class TeamsScreen extends Component {
         .then(response => {this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
             .catch(e => console.log(e));
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
-        this.setState({RegionSelected:"All"})
+        if (this.props.sessionScreen.region === 'IFC'){
+            this.setState({RegionSelected:"All IFC"})
+        }else if (this.props.sessionScreen.region === 'ASBA'){
+            this.setState({RegionSelected:"All ASBA"})
+        }else if (this.props.sessionScreen.region === 'OGSC'){
+            this.setState({RegionSelected:"All OGSC"})
+        }
     }
-
     setSearchBarValue(value) { this.setState({value: value}); }
     onSelect = (index) => { this.setSearchBarValue(this.state.selectedData[index].TeamSeasonName)};
     filter(item, query) { return item.TeamSeasonName.toLowerCase().includes(query.toLowerCase()) };
 
     setData(data) {
-        if(this.state.RegionSelected === "ASBA"){
-            this.setState({selectedData: data.filter((value) =>(value.Region.match("Other")))})
-            this.setState({teamsRegion: data.filter((value) =>(value.Region.match("Other")))})
-        }else if(this.state.RegionSelected === "All"){
+        if(this.state.RegionSelected === "All IFC" || this.state.RegionSelected === "All ASBA" || this.state.RegionSelected === "All OGSC"){
             if (this.props.sessionScreen.region === 'IFC'){
-                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('IFC-SF'))),selectedData: data})//saving sessions without filtering
+                this.setState({teamsRegion:data.filter((value) => (value.Region.match('IFC-SF'))),selectedData: data})//saving sessions without filtering
             }else if (this.props.sessionScreen.region === 'OGSC'){
-                this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('Genesis'))),selectedData: data})//saving sessions without filtering
+                this.setState({teamsRegion:data.filter((value) => (value.Region.match('Genesis'))),selectedData: data})//saving sessions without filtering
             }else{
-                this.setState({teamsRegion:this.state.data.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),selectedData: data})//saving sessions without filtering
+                this.setState({teamsRegion:data.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))),selectedData: data})//saving sessions without filtering
             }
         }
         else{
@@ -77,30 +78,25 @@ class TeamsScreen extends Component {
     };
 
     onPressTeam(teamSeasonId, TeamName, Region, SeasonName, SeasonStartDate, SeasonEndDate) {
-        const { actions } = this.props;
-        actions.changeTitleTeam(SeasonName);
-        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName, seasonStart: SeasonStartDate, seasonEnd: SeasonEndDate});
+        console.log('Press')
+        this.props.navigation.navigate("Team Sessions", {teamSeasonId: teamSeasonId, region: Region, teamName: TeamName, seasonStart: SeasonStartDate, seasonEnd: SeasonEndDate, SeasonName: SeasonName});
     };
 
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        if(this.state.regions[index.row] === 'All'){
+        if(this.state.regions[index.row] === "All IFC" || this.state.regions[index.row] === "All ASBA" || this.state.regions[index.row] === "All OGSC"){
             if (this.props.sessionScreen.region === 'IFC'){
                 this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
             }else if (this.props.sessionScreen.region === 'OGSC'){
                 this.setState({teamsRegion:this.state.data.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
             }else{
-                this.setState({teamsRegion:this.state.data.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+                this.setState({teamsRegion:this.state.data.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))})//saving sessions without filtering
             }
         }else{
-            this.setState({teamsRegion:this.state.data.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+            this.setState({teamsRegion:this.state.data.filter((value) =>((this.state.regions[index.row]).match(value.Region)))})
         }
-        if(this.state.regions[index.row] === "Other"){
-            this.setState({RegionSelected:"ASBA"})
-        }else{
             this.setState({RegionSelected:this.state.regions[index.row]})
-        }
     }
 
     regionFiltering = (data) =>{
@@ -112,13 +108,28 @@ class TeamsScreen extends Component {
             }else if (this.props.sessionScreen.region === 'OGSC'){
                 this.setState({teamsRegion:data.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
             }else{
-                this.setState({teamsRegion:data.filter((value) => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))})
+                this.setState({teamsRegion:data.filter((value) => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))})
             }
             this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with Other
-            this.setState({RegionSelected:"All"})
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({RegionSelected:"All IFC"})
+            }else if (this.props.sessionScreen.region === 'ASBA'){
+                this.setState({RegionSelected:"All ASBA"})
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({RegionSelected:"All OGSC"})
+            }
+        }
+        this.setState({loadingModalstate:false});
+    }
+    LoadingGif = () =>{
+        if(this.props.sessionScreen.region === "ASBA"){
+            return require('../assets/Scores_Logo.gif');//Scores logo gif
+        }else if(this.props.sessionScreen.region === "IFC"){
+            return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }else if(this.props.sessionScreen.region === "OGSC"){
+            return require('../assets/OGSC_logo_spinner.gif');//Genesis logo gif
         }
     }
-
     render() {
         const rightArrowIconRender = (props) => ( 
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
@@ -144,6 +155,9 @@ class TeamsScreen extends Component {
                 />
             )
         };
+        const getItemLayout = (data, index) => (
+            {length: 20, offset: 20 * index, index}
+          );
         const selectBox = () => (
             <Select
                 label="Select a Region"
@@ -192,8 +206,8 @@ class TeamsScreen extends Component {
         );
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
-                    <Text category="h6" status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95}}>
-                        We love you, Coach!
+                    <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
+                        
                     </Text>
                 </Card>
         );
@@ -213,6 +227,14 @@ class TeamsScreen extends Component {
                 </Card>
             ))
         );
+        const loadingModal = () => (
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.loadingModalstate}
+                backdropStyle={styles.backdrop}>
+                <Image source={this.LoadingGif()}/>
+            </Modal>
+        );
         const getImage = () =>{
             if(this.props.sessionScreen.region === "IFC"){
                 return require('../assets/IFC-Logo.png');
@@ -230,11 +252,17 @@ class TeamsScreen extends Component {
                     <ImageBackground source={getImage()} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
                     {noMatchRegion("basic")}
                     {regionName("basic")}
+                    {loadingModal()}
                     <List
+                        maxToRenderPerBatch={10}
+                        updateCellsBatchingPeriod={3}
+                        initialNumToRender={5}
+                        windowSize={4}
                         style={{opacity: 0.95}}
                         data={this.state.teamsRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
+                        getItemLayout={getItemLayout}
                     />
                 </ImageBackground>
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
@@ -256,8 +284,22 @@ class TeamsScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user, sessionScreen: state.sessionScreen});
   
-const ActionCreators = Object.assign( {}, { syncSessions, changeTitleTeam } );
+const ActionCreators = Object.assign( {}, { syncSessions } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamsScreen);
+
+const styles = StyleSheet.create({
+    popOverContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+});

@@ -1,7 +1,6 @@
 import React, { Component} from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground } from 'react-native';
-
+import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground, Alert } from 'react-native';
 import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
 import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
@@ -37,6 +36,7 @@ class AttendanceScreen extends Component {
             nomatchattendance:false,
             loadingModalstate:true,
             regionCoach:this.props.sessionScreen.region,
+            arrowSession: undefined,
         }
     }
     
@@ -49,6 +49,138 @@ class AttendanceScreen extends Component {
     // componentWillMount() {
     //     this._setCurrentSessionData();
     // }
+    backArrow() {
+        const {route} = this.props;
+        (route.params.activitiesRegion).map(value =>{
+            if(value.Sessions !== null){
+                value.Sessions.map(val =>{
+                    if(val.SessionId === this.state.sessionId){
+                        var posAc=(route.params.activitiesRegion).indexOf(value)
+                        if((route.params.activitiesRegion[posAc].Sessions).length >= 1){
+                            var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
+                            if(pos === 0){
+                                if(posAc === 0){
+                                    Alert.alert('','No previous sessions found')
+                                }else{
+                                    var ACPos=posAc-1
+                                    while(route.params.activitiesRegion[ACPos].Sessions === null){
+                                        ACPos=ACPos-1;
+                                        if(ACPos < 0){
+                                            break;
+                                        }
+                                    }
+                                    if(ACPos < 0){
+                                        Alert.alert('','No previous sessions found')
+                                    }else{
+                                        this.setState({auxRedux: []});
+                                        var cont=posAc-1;
+                                        while(route.params.activitiesRegion[cont].Sessions === null){
+                                            cont=cont-1
+                                        }
+                                        if(cont !== posAc-1 ){
+                                            var backlong=route.params.activitiesRegion[cont].Sessions.length;
+                                            this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[backlong-1] });
+                                        }else{
+                                            var backlong=route.params.activitiesRegion[posAc-1].Sessions.length;
+                                            this.setState({ arrowSession: route.params.activitiesRegion[posAc-1].Sessions[backlong-1] });
+                                        }
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }
+                            }else{
+                                this.setState({auxRedux: []});
+                                this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos-1] });
+                                this.setState({loadingModalstate:true});
+                                this._setCurrentSessionData();
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    };
+
+    ForwardArrow() {
+        const {route} = this.props;
+        (route.params.activitiesRegion).map(value =>{
+            if(value.Sessions !== null){
+                value.Sessions.map(val =>{
+                    if(val.SessionId === this.state.sessionId){
+                        var posAc=(route.params.activitiesRegion).indexOf(value);
+                        if((route.params.activitiesRegion[posAc].Sessions).length >= 1){
+                            var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val));
+                            var long=route.params.activitiesRegion[posAc].Sessions.length;
+                            var aclong=route.params.activitiesRegion.length;
+                            if(aclong === 1){
+                                if(posAc === aclong-1){
+                                    if(pos === long-1){
+                                        Alert.alert('','No following sessions found')
+                                    }else{
+                                        this.setState({auxRedux: []});
+                                        this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }else{
+                                    this.setState({auxRedux: []});
+                                    var cont=posAc+1;
+                                    while(route.params.activitiesRegion[cont].Sessions[0] === null){
+                                        cont=cont+1
+                                        if(cont > aclong-1){
+                                            break;
+                                        }
+                                    }
+                                    if(cont > aclong){
+                                        Alert.alert('','No following sessions found')
+                                    }else{
+                                        if(cont!==posAc+1){
+                                            this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
+                                        }else{
+                                            this.setState({ arrowSession: route.params.activitiesRegion[posAc+1].Sessions[0] });
+                                        }
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }
+                            }else{
+                                if(pos === long-1){
+                                    if(posAc === aclong-1){
+                                        Alert.alert('','No following sessions found')
+                                    }else{
+                                        var cont=posAc+1;
+                                        while(route.params.activitiesRegion[cont].Sessions === null){
+                                            cont=cont+1
+                                            if(cont > aclong-1){
+                                                break;
+                                            }
+                                        }
+                                        if(cont > aclong-1){
+                                            Alert.alert('','No following sessions found')
+                                        }else{
+                                            if(cont!==posAc+1){
+                                                this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
+                                            }else{
+                                                this.setState({ arrowSession: route.params.activitiesRegion[posAc+1].Sessions[0] });
+                                            }
+                                            this.setState({auxRedux: []});
+                                            this.setState({loadingModalstate:true});
+                                            this._setCurrentSessionData();
+                                        }
+                                    }
+                                }else{
+                                    this.setState({auxRedux: []});
+                                    this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
+                                    this.setState({loadingModalstate:true});
+                                    this._setCurrentSessionData();
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    };
 
     formatEnrollmentsToRequest(enrollments) {
         let studentsList = [];
@@ -82,8 +214,12 @@ class AttendanceScreen extends Component {
     //Filters the current session and sets the student list for attendance 
     async _setCurrentSessionData() {
         const {route} = this.props;
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = await this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = await currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession = await this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = await currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         let currentDate = moment();
         let currentTopic = "";
         
@@ -157,7 +293,6 @@ class AttendanceScreen extends Component {
                 if(this.state.enrollments.length !== 0){
                     this.setState({nomatchModalVisibility: false})
                 }else{
-                    console.log(true)
                     this.setState({nomatchModalVisibility: true})
                 }
             }else{
@@ -189,8 +324,12 @@ class AttendanceScreen extends Component {
         this.setState({auxRedux: []})
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         newEnrollments.map((value) =>{
             if(value.Attended !== undefined){
                /* if(value.Attended === true){*/
@@ -318,7 +457,7 @@ class AttendanceScreen extends Component {
 
     async _fetchGetEnrollments() {
         const {user} = this.props.user;
-        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE") 
+        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE")
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
         .then(res => {
             if (res.status === 200) {
@@ -378,8 +517,12 @@ class AttendanceScreen extends Component {
         const {route} = this.props;
         this.setState({auxRedux: []});
         this.updateAttendance();
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession =  this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                 this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
@@ -441,6 +584,8 @@ class AttendanceScreen extends Component {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
         const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
+        const forwardIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline' />);
+        const backIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline' />);
         let refreshing = false;
 
         const onRefresh = () => {
@@ -552,7 +697,7 @@ class AttendanceScreen extends Component {
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center'}}>
-                        This Session has not been set up with a roster of students.
+                        Please ensure that the enrollments and the attendance records have been created for this Team/Session.
                     </Text>
                 </Card>
             )
@@ -575,14 +720,14 @@ class AttendanceScreen extends Component {
                     />
                     }
                 >
-                <View style={styles.row}>
-                    <View style={styles.column}>
-                        {descriptionRowText("Team:",this.state.teamName)}
-                        {descriptionRowTextImage("Session Type:",this.state.topic)}
-                        {descriptionRowText("Date:", this.state.date)}
-                        {descriptionRowText("Students:", this.state.numberOfStudents)}
+                    <View style={styles.row}>
+                        <View style={styles.column}>
+                            {descriptionRowText("Team:",this.state.teamName)}
+                            {descriptionRowTextImage("Session Type:",this.state.topic)}
+                            {descriptionRowText("Date:", this.state.date)}
+                            {descriptionRowText("Students:", this.state.numberOfStudents)}
+                        </View>
                     </View>
-                </View>
                 </ScrollView>
                 <Divider/>
             </Layout>
@@ -616,8 +761,11 @@ class AttendanceScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
-                    <Button style={{width:'100%', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
-                    
+                <View style={styles.row}>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                </View>
             </Layout>
         )
     }
