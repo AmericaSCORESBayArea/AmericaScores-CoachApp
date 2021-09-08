@@ -5,12 +5,13 @@ React native based mobile app for Americas scores attendance controll.
 ## Set up
 
 The following steps are needed in order to run the project.
+### Create the working directory you will clone the project to first: /AmericaScores-CoachApp/
 
-### Pre-installed tools
+### Pre-install required tools
 
 The project requires the following apps running over the project. You can follow the steps in the [Official React-Native guide](https://reactnative.dev/docs/environment-setup). Or install them by yourself.
 
-- [Node](https://nodejs.org/en/) or if using mac `brew install node && brew install watchman`
+- [Node](https://nodejs.org/en/) or if using mac `brew install node @12 && brew install watchman`
 - React-native-cli by running `npm install -g expo-cli` and `npm install -g react-native-cli`
 - [For IOS][cocoa pods](https://cocoapods.org/) || If any errors while installing cocoa pods please follow this link (https://stackoverflow.com/questions/20939568/error-error-installing-cocoapods-error-failed-to-build-gem-native-extension)
 - **Physical device** connected to your computer with USB debugging enabled or an **Emulator** `(**IOS** download XCode from your appstore | **Android** Download android studio)`
@@ -18,13 +19,14 @@ The project requires the following apps running over the project. You can follow
 
 Check if everything was installed propertly.
 
-- Check if **node** is installed: `node --version` it should return something like `Vxx.x.x`
-- Check if **npm** is installed: `npm --version` it should return something like `x.xx.x`
+- Check if **node** is installed: `node --version` it should return something like `Vxx.x.x` (currently verified 12.22.4)
+- Check if **npm** is installed: `npm --version` it should return something like `x.xx.x` (currently verified 
+
 
 ### Install the project.
 
 Clone the project from github into your local machine.
-- `cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
+- `cd AmericaScores-CoachApp && npm install` -> Installs the dependencies for the project
 
 - If running in IOS `cd ios && pod install && cd ..` and then `react-native run-ios`
 - If running on Android
