@@ -41,6 +41,7 @@
     "react-dom": "~16.11.0",
     "react-native": "0.63.3",
     "react-native-camera": "^3.40.0",
+    "react-native-document-picker": "^6.0.4",
     "react-native-gesture-handler": "^1.8.0",
     "react-native-permissions": "^2.2.2",
     "react-native-qrcode-scanner": "^1.4.1",
