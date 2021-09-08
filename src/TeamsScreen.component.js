@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, StyleSheet, Image } from "react-native";
+import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView } from "react-native";
 
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem, Modal } from '@ui-kitten/components';
 import BottomSheet from 'react-native-simple-bottom-sheet';
@@ -36,7 +36,7 @@ class TeamsScreen extends Component {
                     date: moment().format("YYYY-MM-DD")
                 }
             })
-        .then(response => {this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
+        .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
             .catch(e => console.log(e));
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         if (this.props.sessionScreen.region === 'IFC'){
@@ -266,6 +266,9 @@ class TeamsScreen extends Component {
                     />
                 </ImageBackground>
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
+                    <KeyboardAvoidingView
+                        behavior="padding"
+                    >
                         <Autocomplete style={{margin:"2%"}}
                             label="Search a Team"
                             placeholder='Search by Team name'
@@ -276,7 +279,8 @@ class TeamsScreen extends Component {
                             onChangeText={this.onChangeText} >
                         </Autocomplete>
                         {selectBox()}
-                    </BottomSheet>
+                    </KeyboardAvoidingView>
+                </BottomSheet>
             </Layout>
         );
     };
