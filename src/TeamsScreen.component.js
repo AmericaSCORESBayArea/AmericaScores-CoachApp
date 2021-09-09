@@ -36,7 +36,11 @@ class TeamsScreen extends Component {
                     date: moment().format("YYYY-MM-DD")
                 }
             })
-        .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));this.setState({data: response.data, selectedData: response.data}),this.regionFiltering(response.data)})
+        .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
+            this.setState({data: response.data, selectedData: response.data}),
+            this.regionFiltering(response.data),
+            console.log(response);
+        })
             .catch(e => console.log(e));
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         if (this.props.sessionScreen.region === 'IFC'){
