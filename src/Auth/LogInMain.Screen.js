@@ -181,12 +181,13 @@ class LogInScreen_Google extends Component {
 
     async _syncUserSessions(user) {
       Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
-          params: {
-            date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
-          }
-        })
-        .then(res => res.data)
-        .catch(e => console.log(e));
+        params: {
+          firstDate: moment("20210416", "YYYYMMDD").format("YYYY-MM-DD"),
+          secondDate: moment("20210426", "YYYYMMDD").format("YYYY-MM-DD"),
+        }
+      })
+      .then(res => res.data)
+      .catch(e => console.log(e));
     }   
 
     render() {

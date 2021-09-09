@@ -650,6 +650,15 @@ class AttendanceScreen extends Component {
                 />
             </Layout>
         );
+        const UnsuccessHeader = (props) => (
+            <Layout {...props}>
+                 <ImageBackground
+                    resizeMode="contain"
+                    style={{height:100, width:100, alignSelf:"center"}}
+                    source={require('../assets/error_icon.png')}
+                />
+            </Layout>
+        );
         const updateSuccessCard = (status, text) => (
             <Card disabled={true} header={SuccessHeader}>
                 <Text style={styles.modalText} status={status}>{text}</Text> 
@@ -657,7 +666,15 @@ class AttendanceScreen extends Component {
                     OK
                 </Button>
             </Card>
-        )
+        );
+        const updateUnSuccessCard = (status, text) => (
+            <Card disabled={true} header={UnsuccessHeader}>
+                <Text style={styles.modalText} status={status}>{text}</Text> 
+                <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOff()} status={status}>
+                    OK
+                </Button>
+            </Card>
+        );
 
         const updateModal = () => (
             <Modal
@@ -666,7 +683,7 @@ class AttendanceScreen extends Component {
                 onBackdropPress={() => this.toggleNotificationOff()}>
                 { (this.state.responseSuccess) ?
                     updateSuccessCard("success", "Attendance updated successfuly") :
-                    updateSuccessCard("danger", "Something went wrong. Please, try again.")
+                    updateUnSuccessCard("danger", "Something went wrong. Please, try again.")
                 }
             </Modal>)
 
