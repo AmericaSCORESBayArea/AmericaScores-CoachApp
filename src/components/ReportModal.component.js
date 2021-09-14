@@ -223,7 +223,7 @@ export const CreateReportModal = ({navigation}) => {
     const Header = (props) => (
         <Layout {...props}>
           <Text category='h6'>Need help?</Text>
-          <Text category='s1' appearance='hint'>Please help us filling out this form. This could help our developers to find a solution.</Text>
+          <Text category='s1' appearance='hint'>Issues or suggestions? Please describe it here so our developers can find a solution.</Text>
         </Layout>
     );
 
