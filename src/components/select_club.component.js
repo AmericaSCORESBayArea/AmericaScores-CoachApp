@@ -58,7 +58,7 @@ const Headerr = (props) => (
     );
     return(
     <Layout style={{flex: 1}} level="4">
-      <ScrollView>
+      <ScrollView bounces={false}>
         <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
           <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
             <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
