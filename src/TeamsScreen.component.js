@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView } from "react-native";
+import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView, Platform } from "react-native";
 
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem, Modal } from '@ui-kitten/components';
 import BottomSheet from 'react-native-simple-bottom-sheet';
@@ -271,7 +271,8 @@ class TeamsScreen extends Component {
                 </ImageBackground>
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                     <KeyboardAvoidingView
-                        behavior="padding"
+                         behavior={Platform.OS === "ios" ? "padding" : "height"}
+                         style={{flex: 1}}
                     >
                         <Autocomplete style={{margin:"2%"}}
                             label="Search a Team"
