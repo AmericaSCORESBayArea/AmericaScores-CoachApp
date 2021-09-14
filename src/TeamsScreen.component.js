@@ -152,8 +152,7 @@ class TeamsScreen extends Component {
             return(
                 <ListItem 
                     title={`${item.TeamSeasonName}`}
-                    style={{backgroundColor: colorList()}}
-                    // description={`${item.description} ${index + 1}`}
+                    style={{backgroundColor: colorList(), minHeight:68}}
                     accessoryRight={rightArrowIconRender}
                     onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
@@ -211,7 +210,7 @@ class TeamsScreen extends Component {
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
                     <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
-                        
+                        Version: 
                     </Text>
                 </Card>
         );
@@ -250,7 +249,7 @@ class TeamsScreen extends Component {
         }
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                {message("warning")}
+                {message("basic")}
                 <Divider style={{marginTop:"15%"}}/>
                 {noMatch("basic")}
                     <ImageBackground source={getImage()} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
@@ -258,16 +257,17 @@ class TeamsScreen extends Component {
                     {regionName("basic")}
                     {loadingModal()}
                     <List
-                        maxToRenderPerBatch={10}
-                        updateCellsBatchingPeriod={3}
-                        initialNumToRender={5}
-                        windowSize={4}
+                        maxToRenderPerBatch={20}
+                        updateCellsBatchingPeriod={1}
+                        initialNumToRender={10}
+                        windowSize={7}
                         style={{opacity: 0.95}}
                         data={this.state.teamsRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
                         getItemLayout={getItemLayout}
                     />
+                    <View style={{marginTop: '6%'}}/>
                 </ImageBackground>
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                     <KeyboardAvoidingView
