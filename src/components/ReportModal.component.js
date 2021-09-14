@@ -276,7 +276,7 @@ export const CreateReportModal = ({navigation}) => {
                 onBackdropPress={() => cancellReport()}
                 style={{maxWidth:'90%',height:windowHeight,marginBottom: keyboardSize}}>
                 <ScrollView>
-                <Card disabled={true} style={{marginBottom: keyboardSize}} header={Header} footer={Footer}>
+                <Card disabled={true} style={{marginBottom: keyboardSize, marginTop:'6%'}} header={Header} footer={Footer}>
                     <ScrollView>
                         <Select
                             label='Select an option'
