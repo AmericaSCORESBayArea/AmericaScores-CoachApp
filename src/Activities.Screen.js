@@ -38,7 +38,7 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"",
+            displayMessage:"Version: ",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
                 startDate: new Date(moment()),
@@ -807,7 +807,7 @@ class ActivitiesScreen extends Component {
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                    {message("warning")}
+                    {message("basic")}
                     <Divider style={{marginTop:"15%"}}/>
                     <ImageBackground source={getImage()} style={styles.image}>
                         {loadingModal()}
