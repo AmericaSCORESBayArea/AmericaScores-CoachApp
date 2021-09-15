@@ -110,6 +110,7 @@ class LogInScreen_Google extends Component {
       if(this.state.logged === "true" && this.state.email !== null){
         this._setupUser(this.state.email,"email");
       } else{
+        console.log(this.state.email, this.state.logged)
       Alert.alert(
         "Alert Title",
         "An America Scores account is not found linked to this Apple ID. Choose [Continue] to proceed and link or create your America Scores account. Your Apple ID will remain anonymous",
