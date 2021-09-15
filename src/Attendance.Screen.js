@@ -211,6 +211,8 @@ class AttendanceScreen extends Component {
         actions.updateSession(payload);
     }
 
+    
+
     //Filters the current session and sets the student list for attendance 
     async _setCurrentSessionData() {
         const {route} = this.props;
@@ -240,9 +242,12 @@ class AttendanceScreen extends Component {
                 topic: currentTopic,
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: 0,
+                missingEnrollments: [],
             }
             await this.setState(newState);
             await this._fetchGetEnrollments();
+            await this.verifyAttendance();
+
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
                 console.log("redux",this.props.sessionAttendance.sessionsAttendance)
             }
@@ -314,7 +319,55 @@ class AttendanceScreen extends Component {
         this.setState({loadingModalstate:false});
     }
     
+    async verifyAttendance() {
+        const {user} = this.props.user;
+        console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`)
+        .then(res => {
+            if (res.status === 200) {
+                if (res.data.length <= 0) {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> No students found");
+                } else {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state");
+                    console.log(res.data);
+                    const parsedEnrollments = this.parseFetchedAttendanceToObject(res.data);
+                    this.setState({missingEnrollments: parsedEnrollments});
+                    console.log(parsedEnrollments)
+                    if(parsedEnrollments.length !== this.state.numberOfStudents){
+                        Alert.alert("Attendance records missing",`The following attendance records are missing ${parsedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`);
+                    }
+                    
+                }
+            }
+            else {console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 400 ] No enrollments found");}
+        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`) })
+    }
 
+    parseFetchedAttendanceToObject(enrollmentData) {
+        let parsedEnrollments = [];
+        enrollmentData.forEach(enrollment => {
+            let student = {
+                StudentId: enrollment.StudentId,
+                EnrollmentId: enrollment.EnrollmentId,
+                StudentName: enrollment.StudentName
+            };
+            if(enrollmentData.length === this.state.numberOfStudents){
+         
+                this.state.enrollments.forEach(attendance => {
+                    if(attendance.StudentId === enrollment.StudentId){
+                        parsedEnrollments.push(student);
+                    }
+         
+                })
+        
+            }
+            
+            
+        });
+        // parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
+
+        return parsedEnrollments;
+    }
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
         const { actions } = this.props;
@@ -457,7 +510,7 @@ class AttendanceScreen extends Component {
 
     async _fetchGetEnrollments() {
         const {user} = this.props.user;
-        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE")
+        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE");
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
         .then(res => {
             if (res.status === 200) {
