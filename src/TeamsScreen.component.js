@@ -152,7 +152,7 @@ class TeamsScreen extends Component {
             return(
                 <ListItem 
                     title={`${item.TeamSeasonName}`}
-                    style={{backgroundColor: colorList(), minHeight:68}}
+                    style={{backgroundColor: colorList(), minHeight:70}}
                     accessoryRight={rightArrowIconRender}
                     onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
@@ -257,10 +257,14 @@ class TeamsScreen extends Component {
                     {regionName("basic")}
                     {loadingModal()}
                     <List
-                        maxToRenderPerBatch={20}
-                        updateCellsBatchingPeriod={1}
-                        initialNumToRender={10}
-                        windowSize={7}
+                        maxToRenderPerBatch={17}
+                        updateCellsBatchingPeriod={3}
+                        initialNumToRender={5}
+                        windowSize={4}
+                        //maxToRenderPerBatch={20}
+                        //updateCellsBatchingPeriod={1}
+                        //initialNumToRender={10}
+                        //windowSize={10}
                         style={{opacity: 0.95}}
                         data={this.state.teamsRegion}
                         ItemSeparatorComponent={Divider}
@@ -271,8 +275,8 @@ class TeamsScreen extends Component {
                 </ImageBackground>
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                     <KeyboardAvoidingView
-                         behavior={Platform.OS === "ios" ? "padding" : "height"}
-                         style={{flex: 1}}
+                        behavior='position'
+                        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                     >
                         <Autocomplete style={{margin:"2%"}}
                             label="Search a Team"
