@@ -45,14 +45,14 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
 
   return(
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-                            behavior='position'
-                            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-      >
         <Layout style={{flex: 1}} level="4">
           <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
             <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
               <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
+              <KeyboardAvoidingView
+                            behavior='position'
+                            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+              >
                 <Card style={{flex: 1}} status="primary" header={Header} onPress={Keyboard.dismiss}>
                   <Text style={{paddingBottom: "5%"}}>We will send verification SMS code to the following phone number.</Text>
                   <Input
@@ -67,12 +67,12 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
                 <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button style={{width:'100%'}} accessoryLeft={BackArrrowIcon} appearance="ghost" status="basic" onPress={() => navigation.goBack()}>GO BACK</Button>
                 <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} status="primary" onPress={() => loginWithPhoneNumber(navigation)}>SIGN IN WITH PHONE</Button>
-                </Layout>            
-              </Layout>   
+                </Layout>    
+                </KeyboardAvoidingView>           
+              </Layout>
             </Layout>
           </SafeAreaView>
         </Layout>
-        </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
@@ -134,14 +134,14 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
 
   return(
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <KeyboardAvoidingView
-                              behavior='position'
-                              keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-        >
       <Layout style={{flex: 1}} level="4">
         <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1} } >
           <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
             <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
+            <KeyboardAvoidingView
+                            behavior='position'
+                            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+              >
               <Card style={{flex: 1}} status="primary" header={Header} onPress={Keyboard.dismiss}>
                 <Text style={{paddingBottom: "5%"}}>Insert the received code</Text>
                 <Input
@@ -156,12 +156,12 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
               <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button style={{width:'100%'}} accessoryLeft={BackArrrowIcon} appearance="ghost" status="basic" onPress={() => navigation.goBack()}>GO BACK</Button>
                 <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} status="primary" onPress={() => confirmCode()}>CONTINUE</Button>
-              </Layout>            
+              </Layout>
+              </KeyboardAvoidingView>            
             </Layout>   
           </Layout>
         </SafeAreaView>
       </Layout>
-      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 };
