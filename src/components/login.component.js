@@ -61,7 +61,7 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
                   />
                 </Card>
                 <KeyboardAvoidingView
-                behavior='position'
+                behavior={Platform.OS === "ios" ? 'position' : null}
                 keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                 >                  
                 <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
@@ -150,7 +150,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
                   />
               </Card>
               <KeyboardAvoidingView
-                behavior='position'
+                behavior={Platform.OS === "ios" ? 'position' : null}
                 keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
               >                
               <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
