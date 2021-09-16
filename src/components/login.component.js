@@ -44,10 +44,6 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   }
 
   return(
-    <KeyboardAvoidingView
-      behavior='position'
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-     >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={{flex: 1}} level="4">
           <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
@@ -63,17 +59,21 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
                     placeholder='646 660 0404' //America scores phone
                     {...loginPhoneNumber}
                   />
-                </Card>                
+                </Card>
+                <KeyboardAvoidingView
+                behavior='position'
+                keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+                >                  
                 <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button style={{width:'100%'}} accessoryLeft={BackArrrowIcon} appearance="ghost" status="basic" onPress={() => navigation.goBack()}>GO BACK</Button>
                 <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} status="primary" onPress={() => loginWithPhoneNumber(navigation)}>SIGN IN WITH PHONE</Button>
-                </Layout>    
+                </Layout>
+                </KeyboardAvoidingView>    
               </Layout>
             </Layout>
           </SafeAreaView>
         </Layout>
     </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
   );
 };
 
@@ -133,10 +133,6 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   }
 
   return(
-    <KeyboardAvoidingView
-      behavior='position'
-      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-     >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <Layout style={{flex: 1}} level="4">
         <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1} } >
@@ -152,17 +148,21 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
                   placeholder='123456' //America scores phone
                   {...loginCode}              
                   />
-              </Card>                
+              </Card>
+              <KeyboardAvoidingView
+                behavior='position'
+                keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+              >                
               <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button style={{width:'100%'}} accessoryLeft={BackArrrowIcon} appearance="ghost" status="basic" onPress={() => navigation.goBack()}>GO BACK</Button>
                 <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} status="primary" onPress={() => confirmCode()}>CONTINUE</Button>
               </Layout>
+              </KeyboardAvoidingView>
             </Layout>   
           </Layout>
         </SafeAreaView>
       </Layout>
     </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
   );
 };
 
