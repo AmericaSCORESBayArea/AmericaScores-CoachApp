@@ -323,50 +323,44 @@ class AttendanceScreen extends Component {
         const {user} = this.props.user;
         console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`)
-        .then(res => {
+        .then(async res => {
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> No students found");
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state");
                     console.log(res.data);
-                    const parsedEnrollments = this.parseFetchedAttendanceToObject(res.data);
-                    this.setState({missingEnrollments: parsedEnrollments});
-                    console.log(parsedEnrollments)
-                    if(parsedEnrollments.length !== this.state.numberOfStudents){
-                        Alert.alert("Attendance records missing",`The following attendance records are missing ${parsedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`);
+                    const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
+                    console.log(verifiedEnrollments);
+                    // this.setState({missingEnrollments: verifiedEnrollments});
+                    if(verifiedEnrollments === false){
+                        Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`);
                     }
-                    
                 }
             }
             else {console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 400 ] No enrollments found");}
-        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`) })
+        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`,error) })
     }
 
     parseFetchedAttendanceToObject(enrollmentData) {
         let parsedEnrollments = [];
+        let parsedAttendance = [];
         enrollmentData.forEach(enrollment => {
-            let student = {
+            let enrollmentStudent = {
                 StudentId: enrollment.StudentId,
-                EnrollmentId: enrollment.EnrollmentId,
-                StudentName: enrollment.StudentName
             };
-            if(enrollmentData.length === this.state.numberOfStudents){
-         
-                this.state.enrollments.forEach(attendance => {
-                    if(attendance.StudentId === enrollment.StudentId){
-                        parsedEnrollments.push(student);
-                    }
-         
-                })
-        
-            }
-            
-            
+            parsedEnrollments.push(enrollmentStudent);
         });
+        this.state.enrollments.forEach(attendance => {
+            let attendanceStudent = {
+                StudentId: attendance.StudentId
+            }
+            parsedAttendance.push(attendanceStudent);
+        })
         // parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
 
-        return parsedEnrollments;
+        console.log(parsedAttendance, parsedEnrollments)
+        return _.isEqual(parsedAttendance, parsedEnrollments)
     }
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
