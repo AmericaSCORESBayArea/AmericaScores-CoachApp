@@ -44,12 +44,12 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   }
 
   return(
+    <KeyboardAvoidingView
+      behavior='position'
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+     >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <Layout style={{flex: 1}} level="4">
-            <KeyboardAvoidingView
-                            behavior='position'
-                            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-              >
           <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
             <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
               <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
@@ -71,9 +71,9 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
               </Layout>
             </Layout>
           </SafeAreaView>
-          </KeyboardAvoidingView>           
         </Layout>
     </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -133,12 +133,12 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
   }
 
   return(
+    <KeyboardAvoidingView
+      behavior='position'
+      keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
+     >
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <Layout style={{flex: 1}} level="4">
-      <KeyboardAvoidingView
-                            behavior='position'
-                            keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
-              >
         <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1} } >
           <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
             <Layout style={{padding: '5%', width:'100%', height:'100%'}} level="4">
@@ -160,9 +160,9 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
             </Layout>   
           </Layout>
         </SafeAreaView>
-        </KeyboardAvoidingView>            
       </Layout>
     </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
