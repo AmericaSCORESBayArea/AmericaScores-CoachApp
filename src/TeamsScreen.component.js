@@ -273,11 +273,11 @@ class TeamsScreen extends Component {
                     />
                     <View style={{marginTop: '6%'}}/>
                 </ImageBackground>
-                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
-                    <KeyboardAvoidingView
+                <KeyboardAvoidingView
                         behavior='position'
                         keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                     >
+                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         <Autocomplete style={{margin:"2%"}}
                             label="Search a Team"
                             placeholder='Search by Team name'
@@ -288,8 +288,8 @@ class TeamsScreen extends Component {
                             onChangeText={this.onChangeText} >
                         </Autocomplete>
                         {selectBox()}
-                    </KeyboardAvoidingView>
                 </BottomSheet>
+                </KeyboardAvoidingView>
             </Layout>
         );
     };
