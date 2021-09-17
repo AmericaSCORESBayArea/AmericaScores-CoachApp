@@ -16,6 +16,7 @@ import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
+import { ScrollView } from "react-native-gesture-handler";
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -38,7 +39,7 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"Version: ",
+            displayMessage:"",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
                 startDate: new Date(moment().subtract(10, "days")),
@@ -775,10 +776,10 @@ class ActivitiesScreen extends Component {
         );
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center'}}>
-                    <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
+                <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 15}}>
                         {this.state.displayMessage}
-                    </Text>
-                </Card>
+                </Text>
+            </Card>
         );
         const addButton = () => {
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
