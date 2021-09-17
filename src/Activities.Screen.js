@@ -776,8 +776,8 @@ class ActivitiesScreen extends Component {
         );
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center'}}>
-                <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 15}}>
-                        {this.state.displayMessage}
+                <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 16}}>
+                    {this.state.displayMessage}
                 </Text>
             </Card>
         );
