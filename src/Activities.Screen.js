@@ -48,7 +48,7 @@ class ActivitiesScreen extends Component {
             StartSeason: '',
             EndSeason: '',
             dateCont: 0,
-            loadingModalstate:true
+            loadingModalstate:true,
         }
     }
 
@@ -222,11 +222,13 @@ class ActivitiesScreen extends Component {
             this.setState({range: dates})
         }else{
             this.setState({loadingModalstate:true});
+            RangeDatepicker.current.blur();
             await this.setState({range: dates, dateCont: 0})
             const activitiesList = await this.fetchActivities();
             this._syncReduxActivities(activitiesList);
             this.setState({loadingModalstate:false});
         }
+        console.log(this.state.RangeDatepickerVisibility)
     }
 
     selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
@@ -281,10 +283,10 @@ class ActivitiesScreen extends Component {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
         const onRefresh = () => {
+            this.setState({loadingModalstate: true});
             refreshing = true;
-
             this._syncActivities().then(() => refreshing = false);
-
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
         };
         
@@ -697,6 +699,7 @@ class ActivitiesScreen extends Component {
                 dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
                 accessoryRight={CalendarIcon}
+                ref={RangeDatepicker}
             />
         );
 
