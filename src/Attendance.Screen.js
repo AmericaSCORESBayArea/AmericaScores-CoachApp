@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
+import {isEqual} from 'lodash';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -333,7 +334,7 @@ class AttendanceScreen extends Component {
                     const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
                     console.log(verifiedEnrollments);
                     // this.setState({missingEnrollments: verifiedEnrollments});
-                    if(verifiedEnrollments === false){
+                    if(verifiedEnrollments){
                         Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`);
                     }
                 }
@@ -342,26 +343,38 @@ class AttendanceScreen extends Component {
         }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`,error) })
     }
 
-    parseFetchedAttendanceToObject(enrollmentData) {
+    async parseFetchedAttendanceToObject(enrollmentData) {
         let parsedEnrollments = [];
         let parsedAttendance = [];
-        enrollmentData.forEach(enrollment => {
-            let enrollmentStudent = {
-                StudentId: enrollment.StudentId,
+        const attendance = await this.state.enrollments;
+        await attendance.forEach(attendance => {
+            let attendancetStudent = {
+                StudentId: attendance.StudentId,
             };
-            parsedEnrollments.push(enrollmentStudent);
-        });
-        this.state.enrollments.forEach(attendance => {
-            let attendanceStudent = {
-                StudentId: attendance.StudentId
-            }
-            parsedAttendance.push(attendanceStudent);
+            parsedAttendance.push(attendancetStudent);
         })
+        await enrollmentData.forEach(enrollment => {
+            let enrollmentCmp = {
+                StudentId: enrollment.StudentId
+            };
+            console.log(parsedAttendance.includes(enrollmentCmp));
+            if(!(parsedAttendance.includes(enrollment.StudentId))){
+                let enrollmentStudent = {
+                    StudentId: enrollment.StudentId,
+                    StudentName: enrollment.StudentName
+                };
+                parsedEnrollments.push(enrollmentStudent);
+            }
+        });
+        
         // parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
-
-        console.log(parsedAttendance, parsedEnrollments)
-        return _.isEqual(parsedAttendance, parsedEnrollments)
+        // isEqual(parsedAttendance, parsedEnrollments)
+       console.log(parsedAttendance, parsedEnrollments)
+        // JSON.stringify
+        // let response = parsedAttendance.every(v => parsedEnrollments.includes(v));
+        return parsedEnrollments;
     }
+
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
         const { actions } = this.props;
@@ -505,16 +518,17 @@ class AttendanceScreen extends Component {
     async _fetchGetEnrollments() {
         const {user} = this.props.user;
         console.log("[Attendance.Screen.js] : FETCH ATTENDANCE");
+        console.log(this.state.sessionId)
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
-        .then(res => {
+        .then(async res => {
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
                     console.log(res.data)
-                    let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
-                    this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
+                    let parsedEnrollments = await this.parseFetchedEnrollmentToObject(res.data);
+                    await this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
                 }
             }
             else {console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");}
@@ -533,7 +547,7 @@ class AttendanceScreen extends Component {
         }).catch(error => error)
     }
 
-    parseFetchedEnrollmentToObject(enrollmentData) {
+    async parseFetchedEnrollmentToObject(enrollmentData) {
         let parsedEnrollments = [];
         enrollmentData.forEach(enrollment => {
             let attendance = false;
