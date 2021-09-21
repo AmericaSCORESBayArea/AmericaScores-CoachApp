@@ -110,6 +110,7 @@ class ActivitiesScreen extends Component {
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
+        console.log(activitiesList)
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
@@ -192,7 +193,6 @@ class ActivitiesScreen extends Component {
                     // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
                     firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
                     secondDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-    
                 }
               })
               .then(res => res.data)
