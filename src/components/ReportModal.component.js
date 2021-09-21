@@ -1,5 +1,5 @@
 import React, {useEffect,useCallback} from 'react';
-import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon } from '@ui-kitten/components';
+import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon, Spinner  } from '@ui-kitten/components';
 import { ImageBackground,Keyboard, ScrollView, Alert, Dimensions, Image } from 'react-native';
 import DocumentPicker from "react-native-document-picker";
 import {launchImageLibrary} from 'react-native-image-picker'; // Migration from 2.x.x to 3.x.x => showImagePicker API is removed.
@@ -25,6 +25,7 @@ export const CreateReportModal = ({navigation}) => {
     const [keyboardSize, setKeyboardSize] = React.useState(0);
     const [uploadUrl, setUploadUrl] = React.useState(null);
     const [url,setUrl] = React.useState('');
+    const [submit, setSubmit] = React.useState(false);
 
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", (e) => {
@@ -43,6 +44,7 @@ export const CreateReportModal = ({navigation}) => {
     useEffect(() => {
         console.log(url)
         if(url !== undefined && url.length !== 0){
+            setSubmit(true);
             postMessageToChannelWithImage();
         }
     }, [url]);
@@ -147,6 +149,7 @@ export const CreateReportModal = ({navigation}) => {
         .then(function (response) {
             console.log(response)
             closeModal();
+            setSubmit(false);
           })
           .catch(function (error) {
             console.log(error);
@@ -224,7 +227,7 @@ export const CreateReportModal = ({navigation}) => {
                     Cancel
                 </Button>
                 <Button onPress={() => createReport()}>
-                    Send
+                    {submit?  <Spinner size='small'  status='basic'/>: "Send"}
                 </Button>
         </Layout>
     );
