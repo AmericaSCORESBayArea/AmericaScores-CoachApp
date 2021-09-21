@@ -347,31 +347,21 @@ class AttendanceScreen extends Component {
         let parsedEnrollments = [];
         let parsedAttendance = [];
         const attendance = await this.state.enrollments;
-        await attendance.forEach(attendance => {
+        await attendance.map(async attendance =>{
             let attendancetStudent = {
                 StudentId: attendance.StudentId,
             };
             parsedAttendance.push(attendancetStudent);
         })
-        await enrollmentData.forEach(enrollment => {
-            let enrollmentCmp = {
-                StudentId: enrollment.StudentId
-            };
-            console.log(parsedAttendance.includes(enrollmentCmp));
-            if(!(parsedAttendance.includes(enrollment.StudentId))){
+        await enrollmentData.map(async enrollment =>{
+            if(parsedAttendance.find(element => element.StudentId === enrollment.StudentId) === undefined){
                 let enrollmentStudent = {
                     StudentId: enrollment.StudentId,
                     StudentName: enrollment.StudentName
                 };
                 parsedEnrollments.push(enrollmentStudent);
             }
-        });
-        
-        // parsedEnrollments.sort((a, b) => a.StudentName.localeCompare(b.StudentName));
-        // isEqual(parsedAttendance, parsedEnrollments)
-       console.log(parsedAttendance, parsedEnrollments)
-        // JSON.stringify
-        // let response = parsedAttendance.every(v => parsedEnrollments.includes(v));
+        })
         return parsedEnrollments;
     }
 
