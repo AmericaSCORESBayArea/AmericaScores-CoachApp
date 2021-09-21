@@ -38,11 +38,11 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"",
+            displayMessage:"Version: ",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
-                startDate: new Date(moment()),
-                endDate: new Date(moment().add(10, 'days')),
+                startDate: new Date(moment().subtract(10, "days")),
+                endDate: new Date(moment()),
             },
             StartSeason: '',
             EndSeason: '',
@@ -135,7 +135,7 @@ class ActivitiesScreen extends Component {
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
             if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+                this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(15, 'days'))}})
             }
             this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason: new Date(route.params.seasonEnd)});
         }else{
@@ -182,7 +182,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
-                await this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+                await this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(15, 'days'))}})
             }
         }
         if(this.state.range.endDate !== null){
@@ -345,7 +345,12 @@ class ActivitiesScreen extends Component {
         const description = (date) =>(
             <Text style={{color:"black", fontSize: 12}}>
                 Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
-                {moment(date).format("dddd")}
+                {(moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
+                    <Text style={{color:"black", fontSize: 12}}>Today, {moment(date).format("dddd")}</Text>:
+                    <Text style={{color:"black", fontSize: 12}}>{moment(date).format("dddd")}</Text>
+                }
+                
+                {/*moment(date).format("dddd")*/}
             </Text>
         )
         let activityItem = ({ item, index }) => {
@@ -807,7 +812,7 @@ class ActivitiesScreen extends Component {
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                    {message("warning")}
+                    {message("basic")}
                     <Divider style={{marginTop:"15%"}}/>
                     <ImageBackground source={getImage()} style={styles.image}>
                         {loadingModal()}
