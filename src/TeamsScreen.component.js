@@ -3,7 +3,7 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView } from "react-native";
+import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView, Platform } from "react-native";
 
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem, Modal } from '@ui-kitten/components';
 import BottomSheet from 'react-native-simple-bottom-sheet';
@@ -152,8 +152,7 @@ class TeamsScreen extends Component {
             return(
                 <ListItem 
                     title={`${item.TeamSeasonName}`}
-                    style={{backgroundColor: colorList()}}
-                    // description={`${item.description} ${index + 1}`}
+                    style={{backgroundColor: colorList(), minHeight:70}}
                     accessoryRight={rightArrowIconRender}
                     onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
@@ -211,7 +210,7 @@ class TeamsScreen extends Component {
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center', }}>
                     <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
-                        
+                        Version: 
                     </Text>
                 </Card>
         );
@@ -250,7 +249,7 @@ class TeamsScreen extends Component {
         }
         return(
             <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                {message("warning")}
+                {message("basic")}
                 <Divider style={{marginTop:"15%"}}/>
                 {noMatch("basic")}
                     <ImageBackground source={getImage()} style={{flex:1, resizeMode: 'contain',opacity: 0.99}}>
@@ -258,21 +257,27 @@ class TeamsScreen extends Component {
                     {regionName("basic")}
                     {loadingModal()}
                     <List
-                        maxToRenderPerBatch={10}
+                        maxToRenderPerBatch={17}
                         updateCellsBatchingPeriod={3}
                         initialNumToRender={5}
                         windowSize={4}
+                        //maxToRenderPerBatch={20}
+                        //updateCellsBatchingPeriod={1}
+                        //initialNumToRender={10}
+                        //windowSize={10}
                         style={{opacity: 0.95}}
                         data={this.state.teamsRegion}
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
                         getItemLayout={getItemLayout}
                     />
+                    <View style={{marginTop: '6%'}}/>
                 </ImageBackground>
-                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
-                    <KeyboardAvoidingView
-                        behavior="padding"
+                {Platform.OS === "ios" ? <KeyboardAvoidingView
+                        behavior={Platform.OS === "ios" ? 'position' : null}
+                        keyboardVerticalOffset={Platform.OS === "ios" ? 64 : 0}
                     >
+                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         <Autocomplete style={{margin:"2%"}}
                             label="Search a Team"
                             placeholder='Search by Team name'
@@ -283,8 +288,20 @@ class TeamsScreen extends Component {
                             onChangeText={this.onChangeText} >
                         </Autocomplete>
                         {selectBox()}
-                    </KeyboardAvoidingView>
                 </BottomSheet>
+                </KeyboardAvoidingView>: 
+                <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
+                    <Autocomplete style={{margin:"2%"}}
+                        label="Search a Team"
+                        placeholder='Search by Team name'
+                        ItemSeparatorComponent={Divider}
+                        value={this.state.value}
+                        onSelect={this.onSelect}
+                        size="large"
+                        onChangeText={this.onChangeText} >
+                    </Autocomplete>
+                    {selectBox()}
+                </BottomSheet>}
             </Layout>
         );
     };
