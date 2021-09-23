@@ -50,7 +50,7 @@ class AttendanceScreen extends Component {
     // componentWillMount() {
     //     this._setCurrentSessionData();
     // }
-    backArrow() {
+    ForwardArrow() {
         const {route} = this.props;
         (route.params.activitiesRegion).map(value =>{
             if(value.Sessions !== null){
@@ -61,7 +61,7 @@ class AttendanceScreen extends Component {
                             var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
                             if(pos === 0){
                                 if(posAc === 0){
-                                    Alert.alert('','No previous sessions found')
+                                    Alert.alert('','No following sessions found')
                                 }else{
                                     var ACPos=posAc-1
                                     while(route.params.activitiesRegion[ACPos].Sessions === null){
@@ -71,7 +71,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(ACPos < 0){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No following sessions found')
                                     }else{
                                         this.setState({auxRedux: []});
                                         var cont=posAc-1;
@@ -102,7 +102,7 @@ class AttendanceScreen extends Component {
         })
     };
 
-    ForwardArrow() {
+    backArrow() {
         const {route} = this.props;
         (route.params.activitiesRegion).map(value =>{
             if(value.Sessions !== null){
@@ -116,7 +116,7 @@ class AttendanceScreen extends Component {
                             if(aclong === 1){
                                 if(posAc === aclong-1){
                                     if(pos === long-1){
-                                        Alert.alert('','No following sessions found')
+                                        Alert.alert('','No previous sessions found')
                                     }else{
                                         this.setState({auxRedux: []});
                                         this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
@@ -133,7 +133,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(cont > aclong){
-                                        Alert.alert('','No following sessions found')
+                                        Alert.alert('','No previous sessions found')
                                     }else{
                                         if(cont!==posAc+1){
                                             this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
