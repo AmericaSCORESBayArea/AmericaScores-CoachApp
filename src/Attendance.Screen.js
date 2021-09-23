@@ -8,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
+import {isEqual} from 'lodash';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -211,6 +212,8 @@ class AttendanceScreen extends Component {
         actions.updateSession(payload);
     }
 
+    
+
     //Filters the current session and sets the student list for attendance 
     async _setCurrentSessionData() {
         const {route} = this.props;
@@ -240,9 +243,12 @@ class AttendanceScreen extends Component {
                 topic: currentTopic,
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: 0,
+                missingEnrollments: [],
             }
             await this.setState(newState);
             await this._fetchGetEnrollments();
+            await this.verifyAttendance();
+
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
                 console.log("redux",this.props.sessionAttendance.sessionsAttendance)
             }
@@ -313,7 +319,74 @@ class AttendanceScreen extends Component {
         }
         this.setState({loadingModalstate:false});
     }
+
+    async createMissingAttendance(attendanceRecords) {
+        await Axios.post(
+            `${ApiConfig.dataApi}/attendances`,
+            attendanceRecords
+        ).then(res => {
+            if (res.status === 200){ 
+                Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
+                _setCurrentSessionData();
+        }
+        }).catch(error => {
+            throw error;
+        })
+    }
     
+    async verifyAttendance() {
+        const {user} = this.props.user;
+        console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`)
+        .then(async res => {
+            if (res.status === 200) {
+                if (res.data.length <= 0) {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> No students found");
+                } else {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state");
+                    console.log(res.data);
+                    const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
+                    console.log(verifiedEnrollments);
+                    // this.setState({missingEnrollments: verifiedEnrollments});
+                    if(verifiedEnrollments.length > 0){
+                        let missingEnrollments = [];
+                        await verifiedEnrollments.map(async enrollment => {
+                            let studentRecord = {
+                                SessionId: this.state.sessionId,
+                                StudentId: enrollment.StudentId,
+                                Attended: false
+                            }
+                            missingEnrollments.push(studentRecord);
+                        })
+                        Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                    }
+                }
+            }
+            else {console.log("[Attendance.Screen.js | CREATE MISSING RECORDS | GET status = 400 ] Something went wrong");}
+        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`,error) })
+    }
+
+    async parseFetchedAttendanceToObject(enrollmentData) {
+        let parsedEnrollments = [];
+        let parsedAttendance = [];
+        const attendance = await this.state.enrollments;
+        await attendance.map(async attendance =>{
+            let attendancetStudent = {
+                StudentId: attendance.StudentId,
+            };
+            parsedAttendance.push(attendancetStudent);
+        })
+        await enrollmentData.map(async enrollment =>{
+            if(parsedAttendance.find(element => element.StudentId === enrollment.StudentId) === undefined){
+                let enrollmentStudent = {
+                    StudentId: enrollment.StudentId,
+                    StudentName: enrollment.StudentName
+                };
+                parsedEnrollments.push(enrollmentStudent);
+            }
+        })
+        return parsedEnrollments;
+    }
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
@@ -457,17 +530,18 @@ class AttendanceScreen extends Component {
 
     async _fetchGetEnrollments() {
         const {user} = this.props.user;
-        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE")
+        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE");
+        console.log(this.state.sessionId)
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
-        .then(res => {
+        .then(async res => {
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
                     console.log(res.data)
-                    let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
-                    this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
+                    let parsedEnrollments = await this.parseFetchedEnrollmentToObject(res.data);
+                    await this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
                 }
             }
             else {console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");}
@@ -486,7 +560,7 @@ class AttendanceScreen extends Component {
         }).catch(error => error)
     }
 
-    parseFetchedEnrollmentToObject(enrollmentData) {
+    async parseFetchedEnrollmentToObject(enrollmentData) {
         let parsedEnrollments = [];
         enrollmentData.forEach(enrollment => {
             let attendance = false;
