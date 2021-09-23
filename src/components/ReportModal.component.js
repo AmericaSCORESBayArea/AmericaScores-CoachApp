@@ -1,7 +1,8 @@
 import React, {useEffect,useCallback} from 'react';
-import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon } from '@ui-kitten/components';
+import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon, Spinner  } from '@ui-kitten/components';
 import { ImageBackground,Keyboard, ScrollView, Alert, Dimensions, Image } from 'react-native';
 import DocumentPicker from "react-native-document-picker";
+import {launchImageLibrary} from 'react-native-image-picker'; // Migration from 2.x.x to 3.x.x => showImagePicker API is removed.
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ApiConfig } from '../config/ApiConfig';
@@ -24,6 +25,7 @@ export const CreateReportModal = ({navigation}) => {
     const [keyboardSize, setKeyboardSize] = React.useState(0);
     const [uploadUrl, setUploadUrl] = React.useState(null);
     const [url,setUrl] = React.useState('');
+    const [submit, setSubmit] = React.useState(false);
 
     useEffect(() => {
         Keyboard.addListener("keyboardDidShow", (e) => {
@@ -42,6 +44,7 @@ export const CreateReportModal = ({navigation}) => {
     useEffect(() => {
         console.log(url)
         if(url !== undefined && url.length !== 0){
+            setSubmit(true);
             postMessageToChannelWithImage();
         }
     }, [url]);
@@ -146,6 +149,7 @@ export const CreateReportModal = ({navigation}) => {
         .then(function (response) {
             console.log(response)
             closeModal();
+            setSubmit(false);
           })
           .catch(function (error) {
             console.log(error);
@@ -171,7 +175,15 @@ export const CreateReportModal = ({navigation}) => {
     }
     async function asyncCall() {
         const data = new FormData()
-        data.append('file', uploadUrl[0])
+        const uri =  uploadUrl.assets[0].uri;
+        const type = uploadUrl.assets[0].type;
+        const name = uploadUrl.assets[0].fileName;
+        const source = {
+          uri,
+          type,
+          name,
+        }
+        data.append('file', source)
         data.append('upload_preset', ApiConfig.cloudName)
         data.append("cloud_name", ApiConfig.cloudName)
         fetch(ApiConfig.cloudinaryURL, {
@@ -215,7 +227,7 @@ export const CreateReportModal = ({navigation}) => {
                     Cancel
                 </Button>
                 <Button onPress={() => createReport()}>
-                    Send
+                    {submit?  <Spinner size='small'  status='basic'/>: "Send"}
                 </Button>
         </Layout>
     );
@@ -246,7 +258,7 @@ export const CreateReportModal = ({navigation}) => {
         </Layout>
     );
     const pickFile = useCallback(async () => {
-        try {
+        /*try {
           const res = await DocumentPicker.pick({
             type: [DocumentPicker.types.images],
           });
@@ -259,7 +271,27 @@ export const CreateReportModal = ({navigation}) => {
             throw err;
           }
         }
-      }, []);
+      }*/
+      let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+        },
+    };
+    launchImageLibrary(options, (res) => {
+            if (res.didCancel) {
+                console.log('User cancelled image picker');
+            } else if (res.error) {
+                console.log('ImagePicker Error: ', res.error);
+            } else if (res.customButton) {
+                console.log('User tapped custom button: ', res.customButton);
+                alert(res.customButton);
+            } else {
+                console.log(res.assets)
+                setUploadUrl(res)
+            }
+        })
+    },[]);
     const problemIcon = (props) => (<Icon {...props} name='alert-triangle-outline'/>)
     const improvementIcon = (props) => (<Icon {...props} name='message-square-outline'/>)
     const questionIcon = (props) => (<Icon {...props} name='question-mark-circle-outline'/>) 
@@ -300,7 +332,7 @@ export const CreateReportModal = ({navigation}) => {
                             <Button appearance='ghost' onPress={pickFile}>
                                 Choose File
                             </Button>
-                            {uploadUrl && <Image source={{uri: uploadUrl[0].uri}} style={{height:80, width:80}}/>}
+                            {uploadUrl && <Image source={{uri: uploadUrl.assets[0].uri}} style={{height:80, width:80}}/>}
                     </ScrollView>
                 </Card>
                 </ScrollView>
