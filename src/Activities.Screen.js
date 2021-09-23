@@ -16,6 +16,7 @@ import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
+import { ScrollView } from "react-native-gesture-handler";
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -38,7 +39,7 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"Version: ",
+            displayMessage:"",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
                 startDate: new Date(moment().subtract(10, "days")),
@@ -47,7 +48,7 @@ class ActivitiesScreen extends Component {
             StartSeason: '',
             EndSeason: '',
             dateCont: 0,
-            loadingModalstate:true
+            loadingModalstate:true,
         }
     }
 
@@ -109,6 +110,7 @@ class ActivitiesScreen extends Component {
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
+        console.log(activitiesList)
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
@@ -135,9 +137,9 @@ class ActivitiesScreen extends Component {
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
             if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(15, 'days'))}})
+                this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
             }
-            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason: new Date(route.params.seasonEnd)});
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
         }else{
             if(activitiesList.length === 0){
                 (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
@@ -182,7 +184,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
-                await this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(15, 'days'))}})
+                await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
             }
         }
         if(this.state.range.endDate !== null){
@@ -191,7 +193,6 @@ class ActivitiesScreen extends Component {
                     // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
                     firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
                     secondDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-    
                 }
               })
               .then(res => res.data)
@@ -221,11 +222,13 @@ class ActivitiesScreen extends Component {
             this.setState({range: dates})
         }else{
             this.setState({loadingModalstate:true});
+            RangeDatepicker.current.blur();
             await this.setState({range: dates, dateCont: 0})
             const activitiesList = await this.fetchActivities();
             this._syncReduxActivities(activitiesList);
             this.setState({loadingModalstate:false});
         }
+        console.log(this.state.RangeDatepickerVisibility)
     }
 
     selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
@@ -280,10 +283,10 @@ class ActivitiesScreen extends Component {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
         const onRefresh = () => {
+            this.setState({loadingModalstate: true});
             refreshing = true;
-
             this._syncActivities().then(() => refreshing = false);
-
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
         };
         
@@ -696,6 +699,7 @@ class ActivitiesScreen extends Component {
                 dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
                 accessoryRight={CalendarIcon}
+                ref={RangeDatepicker}
             />
         );
 
@@ -775,10 +779,10 @@ class ActivitiesScreen extends Component {
         );
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center'}}>
-                    <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
-                        {this.state.displayMessage}
-                    </Text>
-                </Card>
+                <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 16}}>
+                    {this.state.displayMessage}
+                </Text>
+            </Card>
         );
         const addButton = () => {
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>

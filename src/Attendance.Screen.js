@@ -589,10 +589,10 @@ class AttendanceScreen extends Component {
         let refreshing = false;
 
         const onRefresh = () => {
+            this.setState({loadingModalstate: true});
             refreshing = true;
-
             this._setCurrentSessionData().then(() => refreshing = false);
-
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
         };
 
