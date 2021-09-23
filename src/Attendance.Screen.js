@@ -319,6 +319,20 @@ class AttendanceScreen extends Component {
         }
         this.setState({loadingModalstate:false});
     }
+
+    async createMissingAttendance(attendanceRecords) {
+        await Axios.post(
+            `${ApiConfig.dataApi}/attendances`,
+            attendanceRecords
+        ).then(res => {
+            if (res.status === 200){ 
+                Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
+                _setCurrentSessionData();
+        }
+        }).catch(error => {
+            throw error;
+        })
+    }
     
     async verifyAttendance() {
         const {user} = this.props.user;
@@ -334,12 +348,21 @@ class AttendanceScreen extends Component {
                     const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
                     console.log(verifiedEnrollments);
                     // this.setState({missingEnrollments: verifiedEnrollments});
-                    if(verifiedEnrollments){
-                        Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`);
+                    if(verifiedEnrollments.length > 0){
+                        let missingEnrollments = [];
+                        await verifiedEnrollments.map(async enrollment => {
+                            let studentRecord = {
+                                SessionId: this.state.sessionId,
+                                StudentId: enrollment.StudentId,
+                                Attended: false
+                            }
+                            missingEnrollments.push(studentRecord);
+                        })
+                        Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
                     }
                 }
             }
-            else {console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 400 ] No enrollments found");}
+            else {console.log("[Attendance.Screen.js | CREATE MISSING RECORDS | GET status = 400 ] Something went wrong");}
         }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`,error) })
     }
 
