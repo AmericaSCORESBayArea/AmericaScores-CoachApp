@@ -50,7 +50,7 @@ class AttendanceScreen extends Component {
     // componentWillMount() {
     //     this._setCurrentSessionData();
     // }
-    ForwardArrow() {
+    backArrow() {
         const {route} = this.props;
         (route.params.activitiesRegion).map(value =>{
             if(value.Sessions !== null){
@@ -61,7 +61,7 @@ class AttendanceScreen extends Component {
                             var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
                             if(pos === 0){
                                 if(posAc === 0){
-                                    Alert.alert('','No following sessions found')
+                                    Alert.alert('','No previous sessions found')
                                 }else{
                                     var ACPos=posAc-1
                                     while(route.params.activitiesRegion[ACPos].Sessions === null){
@@ -71,7 +71,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(ACPos < 0){
-                                        Alert.alert('','No following sessions found')
+                                        Alert.alert('','No previous sessions found')
                                     }else{
                                         this.setState({auxRedux: []});
                                         var cont=posAc-1;
@@ -102,7 +102,7 @@ class AttendanceScreen extends Component {
         })
     };
 
-    backArrow() {
+    ForwardArrow() {
         const {route} = this.props;
         (route.params.activitiesRegion).map(value =>{
             if(value.Sessions !== null){
@@ -116,7 +116,7 @@ class AttendanceScreen extends Component {
                             if(aclong === 1){
                                 if(posAc === aclong-1){
                                     if(pos === long-1){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No following sessions found')
                                     }else{
                                         this.setState({auxRedux: []});
                                         this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
@@ -133,7 +133,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(cont > aclong){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No following sessions found')
                                     }else{
                                         if(cont!==posAc+1){
                                             this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
@@ -687,6 +687,15 @@ class AttendanceScreen extends Component {
                 <Text style={{fontSize: 14}} category="p1">{description}</Text>
             </View>
         );
+        const descriptionRowTextDate = (label, description) => (
+            <View style={styles.row}>
+                <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
+                {(moment().format("MM-DD-YYYY") === moment(description).format("MM-DD-YYYY"))?
+                    <Text style={{fontSize: 14}} category="p1">Today, {description}</Text>:
+                    <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                }
+            </View>
+        );
         const descriptionRowTextImage = (label, description) => (
             <View style={styles.row}>
                 <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
@@ -777,10 +786,17 @@ class AttendanceScreen extends Component {
         )
         const loadingModal = () => (
             <Modal
-                style={styles.popOverContent}
+                style={styles.popOverContentModal}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
                 <Image source={this.LoadingGif()}/>
+                <View style={{backgroundColor: "rgba(0, 0, 0, 0.3)",  alignItems: 'center',alignSelf:'center', borderRadius:10, padding:'10%'}}>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>{this.state.teamName}</Text>
+                    {(moment().format("MM-DD-YYYY") === moment(this.state.date).format("MM-DD-YYYY"))?
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>Today, {this.state.date}</Text>:
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>{this.state.date}</Text>
+                }
+                </View>
             </Modal>
         )
         const noMatch = (status) => (
@@ -815,7 +831,7 @@ class AttendanceScreen extends Component {
                         <View style={styles.column}>
                             {descriptionRowText("Team:",this.state.teamName)}
                             {descriptionRowTextImage("Session Type:",this.state.topic)}
-                            {descriptionRowText("Date:", this.state.date)}
+                            {descriptionRowTextDate("Date:", this.state.date)}
                             {descriptionRowText("Students:", this.state.numberOfStudents)}
                         </View>
                     </View>
@@ -890,11 +906,22 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.12,
         shadowColor: "#000"
     },
+    popOverContentModal: {
+       // flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
     modalText: {
         margin: 15
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    backdropModal:{
+        backgroundColor: 'rgba(0, 0, 0, 0.0)',
     },
     scrollView: {
         // flex: 1,
