@@ -338,23 +338,31 @@ class ActivitiesScreen extends Component {
             source={require('../assets/Scores_goal.png')}
             />
         );
-        const colorList = () =>{
-            if(this.props.sessionScreen.region === "ASBA"){
-                return "#C0E4F5"
+        const colorList = (date) =>{
+            if(moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY")){
+                if(this.props.sessionScreen.region === "ASBA"){
+                    return "#3D7C99"
+                }else{
+                    return "#2179ad"
+                }
             }else{
-                return "#86c0e3"
+                if(this.props.sessionScreen.region === "ASBA"){
+                    return "#C0E4F5"
+                }else{
+                    return "#86c0e3"
+                }
             }
         }
         const description = (date) =>(
-            <Text style={{color:"black", fontSize: 12}}>
-                Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
-                {(moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
-                    <Text style={{color:"black", fontSize: 12}}>Today, {moment(date).format("dddd")}</Text>:
-                    <Text style={{color:"black", fontSize: 12}}>{moment(date).format("dddd")}</Text>
-                }
-                
-                {/*moment(date).format("dddd")*/}
-            </Text>
+                (moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
+                    <Text style={{color:"white", fontSize: 15}}>
+                        Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+                        Today, {moment(date).format("dddd")}
+                    </Text>:
+                     <Text style={{color:"black", fontSize: 15}}>
+                        Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+                        {moment(date).format("dddd")}
+                    </Text>
         )
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
@@ -369,8 +377,8 @@ class ActivitiesScreen extends Component {
                             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                 return <ListItem
                                     key={value.SessionId}
-                                    title={`${item.Team_Name}`}
-                                    style={{backgroundColor: colorList()}}
+                                    title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white",fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                    style={{backgroundColor: colorList(value.SessionDate)}}
                                     description={description(value.SessionDate)}
                                     accessoryLeft={RenderItemImageNL}
                                     accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -392,8 +400,8 @@ class ActivitiesScreen extends Component {
                                 if(found === true){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIconRed}
@@ -402,8 +410,8 @@ class ActivitiesScreen extends Component {
                                 }else{
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={`${value.SessionDate}`}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -414,8 +422,8 @@ class ActivitiesScreen extends Component {
                         }else{
                             return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -428,8 +436,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageSW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -452,8 +460,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIconRed}
@@ -462,8 +470,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -474,8 +482,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -487,8 +495,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageS}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -511,8 +519,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIconRed}
@@ -521,8 +529,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -533,8 +541,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -546,8 +554,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -570,8 +578,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIconRed}
@@ -580,8 +588,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -592,8 +600,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -606,8 +614,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageGD}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -630,8 +638,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIconRed}
@@ -641,7 +649,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
@@ -652,8 +660,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}

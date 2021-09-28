@@ -38,6 +38,7 @@ class AttendanceScreen extends Component {
             loadingModalstate:true,
             regionCoach:this.props.sessionScreen.region,
             arrowSession: undefined,
+            loadingModalRecords:false
         }
     }
     
@@ -147,7 +148,7 @@ class AttendanceScreen extends Component {
                             }else{
                                 if(pos === long-1){
                                     if(posAc === aclong-1){
-                                        Alert.alert('','No following sessions found')
+                                        Alert.alert('','No previous sessions found')
                                     }else{
                                         var cont=posAc+1;
                                         while(route.params.activitiesRegion[cont].Sessions === null){
@@ -157,7 +158,7 @@ class AttendanceScreen extends Component {
                                             }
                                         }
                                         if(cont > aclong-1){
-                                            Alert.alert('','No following sessions found')
+                                            Alert.alert('','No previous sessions found')
                                         }else{
                                             if(cont!==posAc+1){
                                                 this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
@@ -321,15 +322,18 @@ class AttendanceScreen extends Component {
     }
 
     async createMissingAttendance(attendanceRecords) {
+        //this.setState({loadingModalstate:true});
         await Axios.post(
             `${ApiConfig.dataApi}/attendances`,
             attendanceRecords
         ).then(res => {
             if (res.status === 200){ 
-                Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
-                _setCurrentSessionData();
+               // Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
+                this._setCurrentSessionData();
+                setTimeout(() => {this.setState({loadingModalRecords:false})}, 3500);
         }
         }).catch(error => {
+            this.setState({loadingModalRecords:false});
             throw error;
         })
     }
@@ -358,7 +362,9 @@ class AttendanceScreen extends Component {
                             }
                             missingEnrollments.push(studentRecord);
                         })
-                        Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                        this.setState({loadingModalRecords:true});
+                        this.createMissingAttendance(missingEnrollments)
+                        //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
                     }
                 }
             }
@@ -687,6 +693,15 @@ class AttendanceScreen extends Component {
                 <Text style={{fontSize: 14}} category="p1">{description}</Text>
             </View>
         );
+        const descriptionRowTextDate = (label, description) => (
+            <View style={styles.row}>
+                <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
+                {(moment().format("MM-DD-YYYY") === moment(description).format("MM-DD-YYYY"))?
+                    <Text style={{fontSize: 14}} category="p1">Today, {description}</Text>:
+                    <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                }
+            </View>
+        );
         const descriptionRowTextImage = (label, description) => (
             <View style={styles.row}>
                 <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
@@ -777,10 +792,37 @@ class AttendanceScreen extends Component {
         )
         const loadingModal = () => (
             <Modal
-                style={styles.popOverContent}
+                style={styles.popOverContentModal}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
                 <Image source={this.LoadingGif()}/>
+                {this.state.date === undefined ?
+                null:
+                <View style={{backgroundColor: "rgba(0, 0, 0, 0.3)",  alignItems: 'center',alignSelf:'center', borderRadius:10, padding:'10%'}}>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>{this.state.teamName}</Text>
+                    {(moment().format("MM-DD-YYYY") === moment(this.state.date).format("MM-DD-YYYY"))?
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>Today, {this.state.date}</Text>:
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>{this.state.date}</Text>
+                }
+                </View>}
+            </Modal>
+        )
+        const loadingModalRecords = () => (
+            <Modal
+                style={styles.popOverContentModal}
+                visible={this.state.loadingModalRecords}
+                backdropStyle={styles.backdrop}>
+                <Image source={this.LoadingGif()}/>
+                {this.state.date === undefined ?
+                null:
+                <View style={{backgroundColor: "rgba(0, 0, 0, 0.3)",  alignItems: 'center',alignSelf:'center', borderRadius:10, padding:'10%'}}>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>Updating Attendance Records...</Text>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>{this.state.teamName}</Text>
+                    {(moment().format("MM-DD-YYYY") === moment(this.state.date).format("MM-DD-YYYY"))?
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>Today, {this.state.date}</Text>:
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>{this.state.date}</Text>
+                }
+                </View>}
             </Modal>
         )
         const noMatch = (status) => (
@@ -815,7 +857,7 @@ class AttendanceScreen extends Component {
                         <View style={styles.column}>
                             {descriptionRowText("Team:",this.state.teamName)}
                             {descriptionRowTextImage("Session Type:",this.state.topic)}
-                            {descriptionRowText("Date:", this.state.date)}
+                            {descriptionRowTextDate("Date:", this.state.date)}
                             {descriptionRowText("Students:", this.state.numberOfStudents)}
                         </View>
                     </View>
@@ -842,6 +884,7 @@ class AttendanceScreen extends Component {
                 {descriptionArea()}
                 {updateModal()}
                 {loadingModal()}
+                {loadingModalRecords()}
                 {updateButton()}
                 {updatingModal()}
                 {noMatch("basic")}
@@ -890,11 +933,22 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.12,
         shadowColor: "#000"
     },
+    popOverContentModal: {
+       // flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
     modalText: {
         margin: 15
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    backdropModal:{
+        backgroundColor: 'rgba(0, 0, 0, 0.0)',
     },
     scrollView: {
         // flex: 1,
