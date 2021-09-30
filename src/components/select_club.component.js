@@ -62,7 +62,7 @@ const Headerr = (props) => (
         <SafeAreaView forceInset={{ top: 'always', bottom: 'never' }} style={{ flex: 1 }} >
           <Layout style={{flex: 1, justifyContent: "center", alignItems: 'center'}} level="4">
             <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
-              <Card style={{flex: 1, backgroundColor:"#F4F2F2", minHeight:760}} status="primary" header={Header}>
+              <Card style={{flex: 1, backgroundColor:"#F4F2F2", minHeight:'110%'}} status="primary" header={Header}>
               <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"2%", backgroundColor:"#F4F2F2"}}>
               <FlatList
                 data={Clubs}
