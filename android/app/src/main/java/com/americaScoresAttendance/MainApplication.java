@@ -7,6 +7,8 @@ import androidx.multidex.MultiDex;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.imagepicker.ImagePickerPackage;
+import com.reactnativedocumentpicker.DocumentPickerPackage;
 
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 

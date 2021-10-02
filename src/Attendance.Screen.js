@@ -1,7 +1,6 @@
 import React, { Component} from 'react';
 import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
-import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground } from 'react-native';
-
+import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground, Alert } from 'react-native';
 import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
 import {UnsavedAttendance} from "./Redux/actions/UnsavedAttendance.actions";
@@ -9,6 +8,7 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
+import {isEqual} from 'lodash';
 
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -37,6 +37,8 @@ class AttendanceScreen extends Component {
             nomatchattendance:false,
             loadingModalstate:true,
             regionCoach:this.props.sessionScreen.region,
+            arrowSession: undefined,
+            loadingModalRecords:false
         }
     }
     
@@ -49,6 +51,138 @@ class AttendanceScreen extends Component {
     // componentWillMount() {
     //     this._setCurrentSessionData();
     // }
+    ForwardArrow() {
+        const {route} = this.props;
+        (route.params.activitiesRegion).map(value =>{
+            if(value.Sessions !== null){
+                value.Sessions.map(val =>{
+                    if(val.SessionId === this.state.sessionId){
+                        var posAc=(route.params.activitiesRegion).indexOf(value)
+                        if((route.params.activitiesRegion[posAc].Sessions).length >= 1){
+                            var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
+                            if(pos === 0){
+                                if(posAc === 0){
+                                    Alert.alert('','No following sessions found')
+                                }else{
+                                    var ACPos=posAc-1
+                                    while(route.params.activitiesRegion[ACPos].Sessions === null){
+                                        ACPos=ACPos-1;
+                                        if(ACPos < 0){
+                                            break;
+                                        }
+                                    }
+                                    if(ACPos < 0){
+                                        Alert.alert('','No following sessions found')
+                                    }else{
+                                        this.setState({auxRedux: []});
+                                        var cont=posAc-1;
+                                        while(route.params.activitiesRegion[cont].Sessions === null){
+                                            cont=cont-1
+                                        }
+                                        if(cont !== posAc-1 ){
+                                            var backlong=route.params.activitiesRegion[cont].Sessions.length;
+                                            this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[backlong-1] });
+                                        }else{
+                                            var backlong=route.params.activitiesRegion[posAc-1].Sessions.length;
+                                            this.setState({ arrowSession: route.params.activitiesRegion[posAc-1].Sessions[backlong-1] });
+                                        }
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }
+                            }else{
+                                this.setState({auxRedux: []});
+                                this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos-1] });
+                                this.setState({loadingModalstate:true});
+                                this._setCurrentSessionData();
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    };
+
+    backArrow() {
+        const {route} = this.props;
+        (route.params.activitiesRegion).map(value =>{
+            if(value.Sessions !== null){
+                value.Sessions.map(val =>{
+                    if(val.SessionId === this.state.sessionId){
+                        var posAc=(route.params.activitiesRegion).indexOf(value);
+                        if((route.params.activitiesRegion[posAc].Sessions).length >= 1){
+                            var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val));
+                            var long=route.params.activitiesRegion[posAc].Sessions.length;
+                            var aclong=route.params.activitiesRegion.length;
+                            if(aclong === 1){
+                                if(posAc === aclong-1){
+                                    if(pos === long-1){
+                                        Alert.alert('','No previous sessions found')
+                                    }else{
+                                        this.setState({auxRedux: []});
+                                        this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }else{
+                                    this.setState({auxRedux: []});
+                                    var cont=posAc+1;
+                                    while(route.params.activitiesRegion[cont].Sessions[0] === null){
+                                        cont=cont+1
+                                        if(cont > aclong-1){
+                                            break;
+                                        }
+                                    }
+                                    if(cont > aclong){
+                                        Alert.alert('','No previous sessions found')
+                                    }else{
+                                        if(cont!==posAc+1){
+                                            this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
+                                        }else{
+                                            this.setState({ arrowSession: route.params.activitiesRegion[posAc+1].Sessions[0] });
+                                        }
+                                        this.setState({loadingModalstate:true});
+                                        this._setCurrentSessionData();
+                                    }
+                                }
+                            }else{
+                                if(pos === long-1){
+                                    if(posAc === aclong-1){
+                                        Alert.alert('','No previous sessions found')
+                                    }else{
+                                        var cont=posAc+1;
+                                        while(route.params.activitiesRegion[cont].Sessions === null){
+                                            cont=cont+1
+                                            if(cont > aclong-1){
+                                                break;
+                                            }
+                                        }
+                                        if(cont > aclong-1){
+                                            Alert.alert('','No previous sessions found')
+                                        }else{
+                                            if(cont!==posAc+1){
+                                                this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
+                                            }else{
+                                                this.setState({ arrowSession: route.params.activitiesRegion[posAc+1].Sessions[0] });
+                                            }
+                                            this.setState({auxRedux: []});
+                                            this.setState({loadingModalstate:true});
+                                            this._setCurrentSessionData();
+                                        }
+                                    }
+                                }else{
+                                    this.setState({auxRedux: []});
+                                    this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
+                                    this.setState({loadingModalstate:true});
+                                    this._setCurrentSessionData();
+                                }
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    };
 
     formatEnrollmentsToRequest(enrollments) {
         let studentsList = [];
@@ -79,11 +213,17 @@ class AttendanceScreen extends Component {
         actions.updateSession(payload);
     }
 
+    
+
     //Filters the current session and sets the student list for attendance 
     async _setCurrentSessionData() {
         const {route} = this.props;
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = await this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = await currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession = await this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = await currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         let currentDate = moment();
         let currentTopic = "";
         
@@ -104,9 +244,12 @@ class AttendanceScreen extends Component {
                 topic: currentTopic,
                 date: moment(currentDate).format("MMM-DD-YYYY"),
                 numberOfStudents: 0,
+                missingEnrollments: [],
             }
             await this.setState(newState);
             await this._fetchGetEnrollments();
+            await this.verifyAttendance();
+
             if(this.props.sessionAttendance.sessionsAttendance !== undefined){
                 console.log("redux",this.props.sessionAttendance.sessionsAttendance)
             }
@@ -157,7 +300,6 @@ class AttendanceScreen extends Component {
                 if(this.state.enrollments.length !== 0){
                     this.setState({nomatchModalVisibility: false})
                 }else{
-                    console.log(true)
                     this.setState({nomatchModalVisibility: true})
                 }
             }else{
@@ -178,7 +320,79 @@ class AttendanceScreen extends Component {
         }
         this.setState({loadingModalstate:false});
     }
+
+    async createMissingAttendance(attendanceRecords) {
+        //this.setState({loadingModalstate:true});
+        await Axios.post(
+            `${ApiConfig.dataApi}/attendances`,
+            attendanceRecords
+        ).then(res => {
+            if (res.status === 200){ 
+               // Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
+                this._setCurrentSessionData();
+                setTimeout(() => {this.setState({loadingModalRecords:false})}, 3500);
+        }
+        }).catch(error => {
+            this.setState({loadingModalRecords:false});
+            throw error;
+        })
+    }
     
+    async verifyAttendance() {
+        const {user} = this.props.user;
+        console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`)
+        .then(async res => {
+            if (res.status === 200) {
+                if (res.data.length <= 0) {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> No students found");
+                } else {
+                    console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state");
+                    console.log(res.data);
+                    const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
+                    console.log(verifiedEnrollments);
+                    // this.setState({missingEnrollments: verifiedEnrollments});
+                    if(verifiedEnrollments.length > 0){
+                        let missingEnrollments = [];
+                        await verifiedEnrollments.map(async enrollment => {
+                            let studentRecord = {
+                                SessionId: this.state.sessionId,
+                                StudentId: enrollment.StudentId,
+                                Attended: false
+                            }
+                            missingEnrollments.push(studentRecord);
+                        })
+                        this.setState({loadingModalRecords:true});
+                        this.createMissingAttendance(missingEnrollments)
+                        //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                    }
+                }
+            }
+            else {console.log("[Attendance.Screen.js | CREATE MISSING RECORDS | GET status = 400 ] Something went wrong");}
+        }).catch(error => { console.log("[Attendance.Screen.js |  FETCH ENROLLMENTS |GET request issue]:" +`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`,error) })
+    }
+
+    async parseFetchedAttendanceToObject(enrollmentData) {
+        let parsedEnrollments = [];
+        let parsedAttendance = [];
+        const attendance = await this.state.enrollments;
+        await attendance.map(async attendance =>{
+            let attendancetStudent = {
+                StudentId: attendance.StudentId,
+            };
+            parsedAttendance.push(attendancetStudent);
+        })
+        await enrollmentData.map(async enrollment =>{
+            if(parsedAttendance.find(element => element.StudentId === enrollment.StudentId) === undefined){
+                let enrollmentStudent = {
+                    StudentId: enrollment.StudentId,
+                    StudentName: enrollment.StudentName
+                };
+                parsedEnrollments.push(enrollmentStudent);
+            }
+        })
+        return parsedEnrollments;
+    }
 
     //In order to apply changes to the state list we need to clone it, modify and put it back into state (Is not effective but thats how react works)
     checkStudent(index, value) {
@@ -189,8 +403,12 @@ class AttendanceScreen extends Component {
         this.setState({auxRedux: []})
         if (value) newEnrollments[index].Attended = true;
         else newEnrollments[index].Attended = false;
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         newEnrollments.map((value) =>{
             if(value.Attended !== undefined){
                /* if(value.Attended === true){*/
@@ -318,17 +536,18 @@ class AttendanceScreen extends Component {
 
     async _fetchGetEnrollments() {
         const {user} = this.props.user;
-        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE") 
+        console.log("[Attendance.Screen.js] : FETCH ATTENDANCE");
+        console.log(this.state.sessionId)
         await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`)
-        .then(res => {
+        .then(async res => {
             if (res.status === 200) {
                 if (res.data.length <= 0) {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> No students found")
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 200 ] -> Students found, updated state")
                     console.log(res.data)
-                    let parsedEnrollments = this.parseFetchedEnrollmentToObject(res.data);
-                    this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
+                    let parsedEnrollments = await this.parseFetchedEnrollmentToObject(res.data);
+                    await this.setState({enrollments: parsedEnrollments, numberOfStudents: res.data.length});
                 }
             }
             else {console.log("[Attendance.Screen.js | FETCH ATTENDANCE | GET status = 400 ] No enrollments found");}
@@ -347,7 +566,7 @@ class AttendanceScreen extends Component {
         }).catch(error => error)
     }
 
-    parseFetchedEnrollmentToObject(enrollmentData) {
+    async parseFetchedEnrollmentToObject(enrollmentData) {
         let parsedEnrollments = [];
         enrollmentData.forEach(enrollment => {
             let attendance = false;
@@ -378,8 +597,12 @@ class AttendanceScreen extends Component {
         const {route} = this.props;
         this.setState({auxRedux: []});
         this.updateAttendance();
-        const currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
-        const currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+        var currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+        if( this.state.arrowSession !== undefined){
+            var currentSession =  this.props.sessions.sessions.find(session => session.TeamSeasonId === this.state.arrowSession.TeamSeasonId);
+            var currentSessionData = currentSession.Sessions.find(session => session.SessionId === this.state.arrowSession.SessionId);
+        }
         if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                 this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
@@ -441,13 +664,15 @@ class AttendanceScreen extends Component {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
         const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
+        const forwardIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline' />);
+        const backIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline' />);
         let refreshing = false;
 
         const onRefresh = () => {
+            this.setState({loadingModalstate: true});
             refreshing = true;
-
             this._setCurrentSessionData().then(() => refreshing = false);
-
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
         };
 
@@ -466,6 +691,15 @@ class AttendanceScreen extends Component {
             <View style={styles.row}>
                 <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
                 <Text style={{fontSize: 14}} category="p1">{description}</Text>
+            </View>
+        );
+        const descriptionRowTextDate = (label, description) => (
+            <View style={styles.row}>
+                <Text style={styles.attendanceDescriptionText_Label} category='s1'>{label} </Text>
+                {(moment().format("MM-DD-YYYY") === moment(description).format("MM-DD-YYYY"))?
+                    <Text style={{fontSize: 14}} category="p1">Today, {description}</Text>:
+                    <Text style={{fontSize: 14}} category="p1">{description}</Text>
+                }
             </View>
         );
         const descriptionRowTextImage = (label, description) => (
@@ -505,6 +739,15 @@ class AttendanceScreen extends Component {
                 />
             </Layout>
         );
+        const UnsuccessHeader = (props) => (
+            <Layout {...props}>
+                 <ImageBackground
+                    resizeMode="contain"
+                    style={{height:100, width:100, alignSelf:"center"}}
+                    source={require('../assets/error_icon.png')}
+                />
+            </Layout>
+        );
         const updateSuccessCard = (status, text) => (
             <Card disabled={true} header={SuccessHeader}>
                 <Text style={styles.modalText} status={status}>{text}</Text> 
@@ -512,7 +755,15 @@ class AttendanceScreen extends Component {
                     OK
                 </Button>
             </Card>
-        )
+        );
+        const updateUnSuccessCard = (status, text) => (
+            <Card disabled={true} header={UnsuccessHeader}>
+                <Text style={styles.modalText} status={status}>{text}</Text> 
+                <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOff()} status={status}>
+                    OK
+                </Button>
+            </Card>
+        );
 
         const updateModal = () => (
             <Modal
@@ -521,7 +772,7 @@ class AttendanceScreen extends Component {
                 onBackdropPress={() => this.toggleNotificationOff()}>
                 { (this.state.responseSuccess) ?
                     updateSuccessCard("success", "Attendance updated successfuly") :
-                    updateSuccessCard("danger", "Something went wrong. Please, try again.")
+                    updateUnSuccessCard("danger", "Something went wrong. Please, try again.")
                 }
             </Modal>)
 
@@ -541,10 +792,37 @@ class AttendanceScreen extends Component {
         )
         const loadingModal = () => (
             <Modal
-                style={styles.popOverContent}
+                style={styles.popOverContentModal}
                 visible={this.state.loadingModalstate}
                 backdropStyle={styles.backdrop}>
                 <Image source={this.LoadingGif()}/>
+                {this.state.date === undefined ?
+                null:
+                <View style={{backgroundColor: "rgba(0, 0, 0, 0.3)",  alignItems: 'center',alignSelf:'center', borderRadius:10, padding:'10%'}}>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>{this.state.teamName}</Text>
+                    {(moment().format("MM-DD-YYYY") === moment(this.state.date).format("MM-DD-YYYY"))?
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>Today, {this.state.date}</Text>:
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>{this.state.date}</Text>
+                }
+                </View>}
+            </Modal>
+        )
+        const loadingModalRecords = () => (
+            <Modal
+                style={styles.popOverContentModal}
+                visible={this.state.loadingModalRecords}
+                backdropStyle={styles.backdrop}>
+                <Image source={this.LoadingGif()}/>
+                {this.state.date === undefined ?
+                null:
+                <View style={{backgroundColor: "rgba(0, 0, 0, 0.3)",  alignItems: 'center',alignSelf:'center', borderRadius:10, padding:'10%'}}>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>Updating Attendance Records...</Text>
+                    <Text status='control' category='h6' style={{textAlign:'center'}}>{this.state.teamName}</Text>
+                    {(moment().format("MM-DD-YYYY") === moment(this.state.date).format("MM-DD-YYYY"))?
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>Today, {this.state.date}</Text>:
+                    <Text status='control' category='h6' style={{marginTop:'5%'}}>{this.state.date}</Text>
+                }
+                </View>}
             </Modal>
         )
         const noMatch = (status) => (
@@ -552,7 +830,7 @@ class AttendanceScreen extends Component {
                 (this.state.nomatchModalVisibility) &&
                 <Card style={{opacity: 0.9}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center'}}>
-                        This Session has not been set up with a roster of students.
+                        Please ensure that the enrollments and the attendance records have been created for this Team/Session.
                     </Text>
                 </Card>
             )
@@ -575,14 +853,14 @@ class AttendanceScreen extends Component {
                     />
                     }
                 >
-                <View style={styles.row}>
-                    <View style={styles.column}>
-                        {descriptionRowText("Team:",this.state.teamName)}
-                        {descriptionRowTextImage("Session Type:",this.state.topic)}
-                        {descriptionRowText("Date:", this.state.date)}
-                        {descriptionRowText("Students:", this.state.numberOfStudents)}
+                    <View style={styles.row}>
+                        <View style={styles.column}>
+                            {descriptionRowText("Team:",this.state.teamName)}
+                            {descriptionRowTextImage("Session Type:",this.state.topic)}
+                            {descriptionRowTextDate("Date:", this.state.date)}
+                            {descriptionRowText("Students:", this.state.numberOfStudents)}
+                        </View>
                     </View>
-                </View>
                 </ScrollView>
                 <Divider/>
             </Layout>
@@ -606,6 +884,7 @@ class AttendanceScreen extends Component {
                 {descriptionArea()}
                 {updateModal()}
                 {loadingModal()}
+                {loadingModalRecords()}
                 {updateButton()}
                 {updatingModal()}
                 {noMatch("basic")}
@@ -616,8 +895,11 @@ class AttendanceScreen extends Component {
                     ItemSeparatorComponent={Divider}
                     renderItem={studentAttendanceItem}
                     />
-                    <Button style={{width:'100%', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
-                    
+                <View style={styles.row}>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                </View>
             </Layout>
         )
     }
@@ -651,11 +933,22 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.12,
         shadowColor: "#000"
     },
+    popOverContentModal: {
+       // flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
     modalText: {
         margin: 15
     },
     backdrop: {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    backdropModal:{
+        backgroundColor: 'rgba(0, 0, 0, 0.0)',
     },
     scrollView: {
         // flex: 1,

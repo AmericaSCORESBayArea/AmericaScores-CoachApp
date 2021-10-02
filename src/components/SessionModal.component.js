@@ -230,6 +230,7 @@ export const AddSessionModal = ({route, navigation}) => {
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
     const [updatingModalstate, setupdatingModalstate] = React.useState(false);
     const [responseSuccess, setResponseSuccess] = React.useState(false);
+    const actualRegion = useSelector(state => state.sessionScreen.region);
 
     function closeModal() {
         setVisible(false); 
@@ -243,11 +244,28 @@ export const AddSessionModal = ({route, navigation}) => {
             }
         })
         .then(response => {
-            response.data.map(value => {
-                teams.push(value.TeamSeasonName),
-                teamsId.push(value.TeamSeasonId)
-            })
-            setShowTeams(true);
+            if(actualRegion === 'ASBA'){
+                var list=response.data.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
+            }else if(actualRegion === 'IFC'){
+                var list=response.data.filter((value => (value.Region.match('IFC-SF'))));
+            }else if(actualRegion === 'OGSC'){
+                var list=response.data.filter((value => (value.Region.match('Genesis'))));
+            }
+            if (list.length !== 0){
+                list.map(value => {
+                    teams.push(value.TeamSeasonName),
+                    teamsId.push(value.TeamSeasonId)
+                })
+                setShowTeams(true);
+            }else{
+                Alert.alert(
+                    "Oops",
+                    "Adding a new session is not possible. There are no active Teams for the selected affilitation.",
+                    [
+                      { text: "OK", onPress: () => navigation.goBack()}
+                    ]
+                  );
+            }
         })
         .catch(e => console.log(e));
     }

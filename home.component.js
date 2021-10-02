@@ -8,6 +8,7 @@ import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
+import { ApiConfig } from './src/config/ApiConfig';
 
 import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
@@ -125,7 +126,8 @@ export default OptionOverflowMenu = (navigation) => {
     const logoutIcon = (props) => (<Icon {...props} name='log-out-outline'/>);
     const changeaffiliateicon = (props) => (<Icon {...props} name='swap-outline'/>);
     const profileicon = (props) => (<Icon {...props} name='person-outline' />);
-    const reporticon= (props) => (<Icon {...props}  name='info-outline'/>);
+    const reporticon= (props) => (<Icon {...props}  name='question-mark-circle-outline'/>);
+    const versionicon= (props) => (<Icon {...props}  name='info-outline'/>);
 
     const OptionButtons = () => (
         <Button style={{flex:1, backgroundColor: coloroverflow}} appearance='ghost' accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
@@ -167,6 +169,7 @@ export default OptionOverflowMenu = (navigation) => {
                 <MenuItem title="Change affiliation" onPress={() => (changeAfflitiation())} accessoryLeft={changeaffiliateicon}/>
                 <MenuItem title="Help"  onPress={() => menuItemOnPress("CreateReportModal")} accessoryLeft={reporticon}/>
                 <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
+                <MenuItem title={ApiConfig.appVersion}  disabled={true} accessoryLeft={versionicon} />
         </OverflowMenu>
     );  
     
