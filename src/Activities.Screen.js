@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
@@ -14,7 +14,9 @@ import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
+import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
+import { ScrollView } from "react-native-gesture-handler";
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -37,31 +39,46 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
-            displayMessage:"Don't forget to take attendance!",
             selectedTabIndex: 0,
             studentList: "",
             isTeamSessions: false,
+            displayMessage:"",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
-                startDate: new Date(moment()),
-                endDate: new Date(moment().add(10, 'days')),
+                startDate: new Date(moment().subtract(10, "days")),
+                endDate: new Date(moment()),
             },
             StartSeason: '',
             EndSeason: '',
+            dateCont: 0,
+            loadingModalstate:true,
         }
     }
 
     
 
     async componentDidMount() {
+        const { route } = this.props;
+        const { actions } = this.props;
+        if (route.name !== "Team Sessions"){
+            this.setState({loadingModalstate:false});
+        }else{
+            actions.changeTitleTeam(route.params.SeasonName);
+        }
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
-        this.setState({RegionSelected:"All"})
+        if (this.props.sessionScreen.region === 'IFC'){
+            this.setState({RegionSelected:"All IFC"})
+        }else if (this.props.sessionScreen.region === 'ASBA'){
+            this.setState({RegionSelected:"All ASBA"})
+        }else if (this.props.sessionScreen.region === 'OGSC'){
+            this.setState({RegionSelected:"All OGSC"})
+        }
         //this.__syncCoachRegions(); call a function that returns coach regions
         await this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
-            setTimeout(() => {this.setState({welcomeModalVisibility: false})}, 3500);
+            setTimeout(() => {this.setState({welcomeModalVisibility: false,loadingModalstate:false})}, 3500);
         }
         console.log(this.props.user);
     }
@@ -105,32 +122,36 @@ class ActivitiesScreen extends Component {
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
+        console.log(activitiesList)
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
         if (this.props.sessionScreen.region === 'IFC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All IFC"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value) => (value.Region.match('IFC-SF')));
         }else if (this.props.sessionScreen.region === 'OGSC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All OGSC"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value) => (value.Region.match('Genesis')));
         }else{
-            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All"})//saving sessions without filtering
+            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
+            var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))
         }
-        activitiesList.map(value => {
+        activitiesregion.map(value => {
                 if(value.Sessions !== null){
                     this.setState({ listofSessions: value.Sessions})
                 }
             });
         if(this.state.listofSessions === null){
-            this.setState({nomatchModalVisibility: true})
+            this.setState({nomatchModalVisibility: true});
         }else{
-            this.setState({nomatchModalVisibility: false})
+            this.setState({nomatchModalVisibility: false});
         }
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
             if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+                this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
             }
-            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason: new Date(route.params.seasonEnd)});
+            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
         }else{
             if(activitiesList.length === 0){
                 (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
@@ -139,7 +160,6 @@ class ActivitiesScreen extends Component {
                     (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: true}))//saving seasonName
                 }else{
                     (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
-
                 }
             }
             if (this.state.seasonName !== ""){
@@ -153,16 +173,12 @@ class ActivitiesScreen extends Component {
     }
 
     filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
-        if(region === 'Other'){
-            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:'ASBA', selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
-        }else{
-            this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
-        }
+        this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
         this.setState({listofSessions: null});
         const activities = this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
-        this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(region)))})
+        this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
         activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
@@ -180,7 +196,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
-                await this.setState({range:{startDate: new Date(route.params.seasonStart),endDate: new Date(moment(route.params.seasonStart).add(10, 'days'))}})
+                await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
             }
         }
         if(this.state.range.endDate !== null){
@@ -189,7 +205,6 @@ class ActivitiesScreen extends Component {
                     // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
                     firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
                     secondDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-    
                 }
               })
               .then(res => res.data)
@@ -213,12 +228,22 @@ class ActivitiesScreen extends Component {
         this._syncReduxActivities(activitiesList);
     }
     async selectRange(dates) {
-        await this.setState({range: dates})
+        console.log(this.state.dateCont, dates.endDate)
+        if(dates.endDate === null && this.state.dateCont < 1){
+            this.setState({dateCont: this.state.dateCont+1})
+            this.setState({range: dates})
+        }else{
+            this.setState({loadingModalstate:true});
+            RangeDatepicker.current.blur();
+            await this.setState({range: dates, dateCont: 0})
             const activitiesList = await this.fetchActivities();
             this._syncReduxActivities(activitiesList);
+            this.setState({loadingModalstate:false});
+        }
+        console.log(this.state.RangeDatepickerVisibility)
     }
 
-    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId}) }
+    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
 
     toggleWelcomeModalOff() { 
         const { actions } = this.props;
@@ -228,25 +253,43 @@ class ActivitiesScreen extends Component {
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
-        if(this.state.regions[index.row] === "All"){
+        if(this.state.regions[index.row] === "All IFC" || this.state.regions[index.row] === "All ASBA" || this.state.regions[index.row] === "All OGSC"){
             if (this.props.sessionScreen.region === 'IFC'){
                 this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('IFC-SF')));
             }else if (this.props.sessionScreen.region === 'OGSC'){
                 this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('Genesis')));
             }else{
-                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis'),!value.Region.match('IFC-SF'))))})//saving sessions without filtering
+                this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))})//saving sessions without filtering
+                var activitiesregion = this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
             }
         }else{
-            this.setState({activitiesRegion:this.state.activities.filter((value) =>(value.Region.match(this.state.regions[index.row])))})
+            this.setState({activitiesRegion:this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)))})
+            var activitiesregion = this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)));
         }
-        if(this.state.regions[index.row] === "Other"){
-            this.setState({RegionSelected:"ASBA"})
-        }else{
-            this.setState({RegionSelected:this.state.regions[index.row]})
+        this.setState({RegionSelected:this.state.regions[index.row]})
+        var cont=0
+        activitiesregion.map(value => {
+            if (value.Sessions === null){
+                cont=cont+1
+            }
+        })
+        if(activitiesregion.length === cont){
+            this.setState({activitiesRegion: ''})
         }
     }
     SelectIndexDrawer(index){
         this.setState({selectedIndexDrawer: index})
+    }
+    LoadingGif = () =>{
+        if(this.props.sessionScreen.region === "ASBA"){
+            return require('../assets/Scores_Logo.gif');//Scores logo gif
+        }else if(this.props.sessionScreen.region === "IFC"){
+            return require('../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }else if(this.props.sessionScreen.region === "OGSC"){
+            return require('../assets/OGSC_logo_spinner.gif');//Genesis logo gif
+        }
     }
     render() {
         const TopTabBar = () => (
@@ -264,10 +307,10 @@ class ActivitiesScreen extends Component {
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
         const onRefresh = () => {
+            this.setState({loadingModalstate: true});
             refreshing = true;
-
             this._syncActivities().then(() => refreshing = false);
-
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
         };
         
@@ -320,18 +363,31 @@ class ActivitiesScreen extends Component {
             source={require('../assets/Scores_goal.png')}
             />
         );
-        const colorList = () =>{
-            if(this.props.sessionScreen.region === "ASBA"){
-                return "#C0E4F5"
+        const colorList = (date) =>{
+            if(moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY")){
+                if(this.props.sessionScreen.region === "ASBA"){
+                    return "#3D7C99"
+                }else{
+                    return "#2179ad"
+                }
             }else{
-                return "#86c0e3"
+                if(this.props.sessionScreen.region === "ASBA"){
+                    return "#C0E4F5"
+                }else{
+                    return "#86c0e3"
+                }
             }
         }
         const description = (date) =>(
-            <Text style={{color:"black", fontSize: 12}}>
-                Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
-                {moment(date).format("dddd")}
-            </Text>
+        (moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
+        <Text style={{color:"white", fontSize: 15}}>
+            Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+            Today, {moment(date).format("dddd")}
+        </Text>:
+        <Text style={{color:"black", fontSize: 15}}>
+            Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+            {moment(date).format("dddd")}
+        </Text>
         );
         const studentDescription = (date) => {
             <Text style={{color:"black", fontSize: 12}}>
@@ -370,8 +426,8 @@ class ActivitiesScreen extends Component {
                             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                 return <ListItem
                                     key={value.SessionId}
-                                    title={`${item.Team_Name}`}
-                                    style={{backgroundColor: colorList()}}
+                                    title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white",fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                    style={{backgroundColor: colorList(value.SessionDate)}}
                                     description={description(value.SessionDate)}
                                     accessoryLeft={RenderItemImageNL}
                                     accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -393,8 +449,8 @@ class ActivitiesScreen extends Component {
                                 if(found === true){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIconRed}
@@ -403,8 +459,8 @@ class ActivitiesScreen extends Component {
                                 }else{
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={`${value.SessionDate}`}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -415,8 +471,8 @@ class ActivitiesScreen extends Component {
                         }else{
                             return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageNL}
                                         accessoryRight={renderItemIcon}
@@ -429,8 +485,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageSW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -453,8 +509,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIconRed}
@@ -463,8 +519,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -475,8 +531,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageSW}
                                             accessoryRight={renderItemIcon}
@@ -488,8 +544,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageS}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -512,8 +568,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIconRed}
@@ -522,8 +578,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -534,8 +590,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
                                             accessoryRight={renderItemIcon}
@@ -547,8 +603,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageW}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -571,8 +627,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIconRed}
@@ -581,8 +637,8 @@ class ActivitiesScreen extends Component {
                                     }else{
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -593,8 +649,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageW}
                                             accessoryRight={renderItemIcon}
@@ -607,8 +663,8 @@ class ActivitiesScreen extends Component {
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
                                         key={value.SessionId}
-                                        title={`${item.Team_Name}`}
-                                        style={{backgroundColor: colorList()}}
+                                        title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                        style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={description(value.SessionDate)}
                                         accessoryLeft={RenderItemImageGD}
                                         accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
@@ -631,8 +687,8 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIconRed}
@@ -642,7 +698,7 @@ class ActivitiesScreen extends Component {
                                         return <ListItem
                                             key={value.SessionId}
                                             title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
@@ -653,8 +709,8 @@ class ActivitiesScreen extends Component {
                             }else{
                                 return <ListItem
                                             key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList()}}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color:"white", fontSize: 15}}>{item.Team_Name}</Text>:<Text style={{color:"black", fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageGD}
                                             accessoryRight={renderItemIcon}
@@ -700,6 +756,7 @@ class ActivitiesScreen extends Component {
                 dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
                 accessoryRight={CalendarIcon}
+                ref={RangeDatepicker}
             />
         );
 
@@ -779,10 +836,10 @@ class ActivitiesScreen extends Component {
         );
         const message = (status) =>(
             <Card appearance="filled" style={{opacity: 0.95, position:"absolute",top:0,alignSelf: 'center',justifyContent: 'center'}}>
-                    <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 17}}>
-                        {this.state.displayMessage}
-                    </Text>
-                </Card>
+                <Text status={status} style={{alignSelf: 'center',justifyContent: 'center', opacity: 0.95, fontSize: 16}}>
+                    {this.state.displayMessage}
+                </Text>
+            </Card>
         );
         const addButton = () => {
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
@@ -793,6 +850,14 @@ class ActivitiesScreen extends Component {
                 </View>
                 
         };
+        const loadingModal = () => (
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.loadingModalstate}
+                backdropStyle={styles.backdrop}>
+                <Image source={this.LoadingGif()}/>
+            </Modal>
+        )
         const getImage = () =>{
             if(this.props.sessionScreen.region === "IFC"){
                 return require('../assets/IFC-Logo.png');
@@ -808,11 +873,12 @@ class ActivitiesScreen extends Component {
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
-                    {message("warning")}
+                    {message("basic")}
                     <Divider style={{marginTop:"15%"}}/>
 
                     <ImageBackground source={getImage()} style={styles.image}>
                         {TopTabBar()}
+                        {loadingModal()}
                         {helloMessage("info")}
                         {noMatch("basic")}
                         {noMatchRegion("basic")}
@@ -870,7 +936,7 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle} );
+const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle, changeTitleTeam } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 

@@ -110,6 +110,7 @@ class LogInScreen_Google extends Component {
       if(this.state.logged === "true" && this.state.email !== null){
         this._setupUser(this.state.email,"email");
       } else{
+        console.log(this.state.email, this.state.logged)
       Alert.alert(
         "Alert Title",
         "An America Scores account is not found linked to this Apple ID. Choose [Continue] to proceed and link or create your America Scores account. Your Apple ID will remain anonymous",
@@ -181,12 +182,13 @@ class LogInScreen_Google extends Component {
 
     async _syncUserSessions(user) {
       Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
-          params: {
-            date: moment("20190821", "YYYYMMDD").format("YYYY-MM-DD")
-          }
-        })
-        .then(res => res.data)
-        .catch(e => console.log(e));
+        params: {
+          firstDate: moment("20210416", "YYYYMMDD").format("YYYY-MM-DD"),
+          secondDate: moment("20210426", "YYYYMMDD").format("YYYY-MM-DD"),
+        }
+      })
+      .then(res => res.data)
+      .catch(e => console.log(e));
     }   
 
     render() {
