@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { LogInScreen_PhoneAuth_Code, LogInScreen_PhoneAuth_Phone} from './src/components/login.component';
 import { LogInScreen_Select_Club } from "./src/components/select_club.component";
 import { HomeScreen } from './home.component';
-import { CreateStudentModal, AddStudentToTeamModal } from './src/components/StudentModal.component';
+import { CreateStudentModal, AddStudentToTeamModal, StudentInfoModal } from './src/components/StudentModal.component';
 import { CreateReportModal } from './src/components/ReportModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 import { EditSessionModal, AddSessionModal } from './src/components/SessionModal.component';
@@ -34,6 +34,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name="EditSessionModal" component={EditSessionModal}/>
       <HomeRootStack.Screen name="AddSessionModal" component={AddSessionModal}/>
       <HomeRootStack.Screen name="CreateReportModal" component={CreateReportModal}/>
+      <HomeRootStack.Screen name="StudentInfoModal" component={StudentInfoModal}/>
     </HomeRootStack.Navigator>
   );
 }

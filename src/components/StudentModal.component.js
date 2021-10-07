@@ -1,5 +1,7 @@
 import React from 'react';
 import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon } from '@ui-kitten/components';
+import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView } from 'react-native';
+import moment from "moment";
 
 export const CreateStudentModal = ({navigation}) => {
     const [visible, setVisible] = React.useState(true);
@@ -141,6 +143,83 @@ export const AddStudentToTeamModal = ({navigation}) => {
     );
 }
 
+export const StudentInfoModal = ({navigation, route}) => {
+    const [visible, setVisible] = React.useState(true);
+    const {StudentName,
+        Birthdate,
+        Allergies, 
+        ParentName, 
+        ParentPhone, 
+        EmergencyContactName, 
+        EmergencyContactRelationToChild, 
+        EmergencyContactPhone, 
+        SecondEmergencyContactName, 
+        SecondEmergencyContactRelationToChild,
+        SecondEmergencyContactPhone,
+        LastModifiedDate} = route.params;
 
+    function closeModal() {
+        setVisible(false); 
+        navigation.goBack();
+    }
+
+    
+    function openNumber(phone){
+
+        let phoneNumber = '';
+    
+        if (Platform.OS === 'android') {
+          phoneNumber = `tel:${phone}`;
+        } else {
+          phoneNumber = `telprompt:${phone}`;
+        }
+    
+        Linking.openURL(phoneNumber);
+      };
+
+    const Footer = (props) => (
+        <Layout {...props}>
+            <Button onPress={() => closeModal()}>
+                CLOSE
+            </Button>
+        </Layout>
+    );
+
+    const Header = (props) => (
+        <Layout {...props}>
+          <Text category='h6'>{StudentName}</Text>
+          <Text category='s1'>Date of Birth: {Birthdate}</Text>
+          <Text category='s1' appearance='hint'>Last Modified Date: {moment(LastModifiedDate).format("MMMM Do YYYY, h:mm:ss a")}</Text>
+        </Layout>
+    );
+
+    return(
+        <Modal
+            visible={visible}
+            onBackdropPress={() => closeModal()}
+            style={{width:'80%'}}>
+            <Card disabled={true} header={Header} footer={Footer}>
+                <Text >Allergies: {Allergies}</Text>
+                <Text >Parent Info:</Text>
+                <Text >   {'\n'}   {ParentName}</Text>
+                <TouchableOpacity onPress={() => openNumber(ParentPhone)} style={{height: "6%", width: "50%"}}>
+                    <Text style={{color: '#add8e6'}}>   {ParentPhone}</Text>
+                </TouchableOpacity>
+                <Text >Emergency Contact:</Text>
+                <Text >   {'\n'}   {EmergencyContactName}</Text>
+                <Text >   Relationship To Child:{'\n'}   {EmergencyContactRelationToChild}</Text>
+                <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
+                    <Text style={{color: '#add8e6'}}>   {EmergencyContactPhone}</Text>
+                </TouchableOpacity>
+                <Text >Second Emergency Contact:</Text>
+                <Text >  {'\n'}   {SecondEmergencyContactName}</Text>
+                <Text >   Relationship To Child:{'\n'}   {SecondEmergencyContactRelationToChild}</Text>
+                <TouchableOpacity onPress={() => openNumber(SecondEmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
+                    <Text style={{color: '#add8e6'}}>   {SecondEmergencyContactPhone}</Text>
+                </TouchableOpacity>
+            </Card>
+        </Modal>
+    );
+}
   
   

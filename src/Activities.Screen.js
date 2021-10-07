@@ -61,7 +61,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         const { actions } = this.props;
         if (route.name !== "Team Sessions"){
-            this.setState({loadingModalstate:false});
+            // this.setState({loadingModalstate:false});
         }else{
             actions.changeTitleTeam(route.params.SeasonName);
         }
@@ -86,13 +86,13 @@ class ActivitiesScreen extends Component {
     async _syncActivities() {
         const { route } = this.props;
         //Syncs activities from endpoint
-        this.fetchActivities()
+        await this.fetchActivities()
             .then(activitiesList => this._syncReduxActivities(activitiesList))    
-            .then(async () =>{
+            .then(async () => {
                 //Check if we are in the team activities name
                 if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId && route.params.region && route.params.teamName){
                     await this.fetchStudents();
-                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
+                    await this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
                     this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, isTeamSessions: true});
                 }
             })
@@ -100,10 +100,12 @@ class ActivitiesScreen extends Component {
     }
 
     async fetchStudents(){
+        this.setState({loadingModalstate: true});
         const { user } = this.props;
         const { route } = this.props;
+        console.log(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
-              .then(res => this.setState({studentList: res.data}))
+              .then(res => this.setState({studentList: res.data, loadingModalstate: false}))
               .catch(e => console.log(e));
     }
     /*async __syncCoachRegions(){
@@ -172,14 +174,14 @@ class ActivitiesScreen extends Component {
         }
     }
 
-    filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
+    async filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
         this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
         this.setState({listofSessions: null});
-        const activities = this.state.activities.filter(
+        const activities = await this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
         this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
-        activities.map(value => {
+        await activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
             }
@@ -404,11 +406,24 @@ class ActivitiesScreen extends Component {
                 return (<ListItem
                             key={item.StudentId}
                             title={`${item.LastName}, ${item.FirstName}`}
-                            style={{backgroundColor: colorList()}}
+                            style={{backgroundColor: '#C0E4F5'}}
                             description={studentDescription(item.Birthdate)}
                             accessoryLeft={studentIcon}
                             accessoryRight={ArrowIcon}
-                            onPress={() => console.log("works")}
+                            onPress={() => this.props.navigation.navigate('StudentInfoModal', {
+                                StudentName: item.StudentName,
+                                Birthdate: item.Birthdate,
+                                Allergies: item.Allergies,
+                                ParentName: `${item.ParentInfoFirstName.FirstName} ${item.ParentInfoFirstName.LastName}`,
+                                ParentPhone: item.ParentInfoFirstName.FirstPhone,
+                                EmergencyContactName: item.EmergencyContactInfo.Name,
+                                EmergencyContactRelationToChild: item.EmergencyContactInfo.RelationshipToChild,
+                                EmergencyContactPhone: item.EmergencyContactInfo.FirstPhone,
+                                SecondEmergencyContactName: item.SecondEmergencyContactInfo.Name,
+                                SecondEmergencyContactRelationToChild: item.SecondEmergencyContactInfo.RelationshipToChild,
+                                SecondEmergencyContactPhone: item.SecondEmergencyContactInfo.FirstPhone,
+                                LastModifiedDate: item.LastModifiedDate
+                            })}
                         /> )
             }
         }
@@ -914,7 +929,7 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                     {(this.state.selectedTabIndex === 1 ?
-                        <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
+                         <></> // <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
                         :
                         <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
 
