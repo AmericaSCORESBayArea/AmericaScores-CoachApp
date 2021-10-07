@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem,  TopNavigationAction} from "@ui-kitten/components";
+import { BottomNavigationTab, BottomNavigation, Icon, Button, OverflowMenu, MenuItem,  TopNavigationAction, TabBar, Tab, Layout, Text} from "@ui-kitten/components";
 import TeamsScreen from "./src/TeamsScreen.component";
 import ActivitiesScreen from "./src/Activities.Screen";
 import AttendanceScreen from "./src/Attendance.Screen";
@@ -29,6 +29,7 @@ const colorList = () =>{
         return "#001541"
     }
 }
+  
 const BottomTabBar = ({ navigation, state }) => (
     <BottomNavigation
     indicatorStyle={{backgroundColor: colorList(), height: 4}} 
@@ -91,22 +92,14 @@ const Stack_Teams_Navigation = ({navigation}) => (
 
 );
 const Stack_Affiliation = createStackNavigator();
-const Stack_Students = createStackNavigator();
-const Stack_Students_Navigation = ({navigation}) => (
-    <Stack_Students.Navigator>
-        <Stack_Students.Screen name="StudentSearch" component={StudentSearchScreen} options={headerOptions}/>
-        <Stack_Students.Screen name="Students" component={StudentsScreen} options={headerOptions}/>
-    </Stack_Students.Navigator>
-);
 
 const { Navigator, Screen } = createBottomTabNavigator();
 const TabNavigator = () => (
     <Navigator tabBar={props => <BottomTabBar {...props} /> } >
         <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
         <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
-        <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
     </Navigator>
-  );
+);
 
 export const HomeScreen = ({navigation}) => {
     return(

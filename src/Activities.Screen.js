@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService } from '@ui-kitten/components';
+import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
@@ -39,6 +39,9 @@ class ActivitiesScreen extends Component {
             selectedIndexDrawer: "",
             OverflowMenuVisible:false,
             disabledbox:false,
+            selectedTabIndex: 0,
+            studentList: "",
+            isTeamSessions: false,
             displayMessage:"",
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
@@ -58,7 +61,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         const { actions } = this.props;
         if (route.name !== "Team Sessions"){
-            this.setState({loadingModalstate:false});
+            // this.setState({loadingModalstate:false});
         }else{
             actions.changeTitleTeam(route.params.SeasonName);
         }
@@ -71,7 +74,7 @@ class ActivitiesScreen extends Component {
             this.setState({RegionSelected:"All OGSC"})
         }
         //this.__syncCoachRegions(); call a function that returns coach regions
-        this._syncActivities();
+        await this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
         if (this.props.user.firstTimeLoggedIn) {
             setTimeout(() => (this.setState({welcomeModalVisibility: true})), 500);
@@ -83,16 +86,27 @@ class ActivitiesScreen extends Component {
     async _syncActivities() {
         const { route } = this.props;
         //Syncs activities from endpoint
-        this.fetchActivities()
+        await this.fetchActivities()
             .then(activitiesList => this._syncReduxActivities(activitiesList))    
-            .then(() =>{
+            .then(async () => {
                 //Check if we are in the team activities name
                 if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId && route.params.region && route.params.teamName){
-                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
-                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName});
+                    await this.fetchStudents();
+                    await this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, isTeamSessions: true});
                 }
             })
             .catch(error => console.log(error));
+    }
+
+    async fetchStudents(){
+        this.setState({loadingModalstate: true});
+        const { user } = this.props;
+        const { route } = this.props;
+        console.log(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
+        return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
+              .then(res => this.setState({studentList: res.data, loadingModalstate: false}))
+              .catch(e => console.log(e));
     }
     /*async __syncCoachRegions(){
         console.log(this.state.date.format("YYYY-MM-DD"))
@@ -160,14 +174,14 @@ class ActivitiesScreen extends Component {
         }
     }
 
-    filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
+    async filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
         this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
         this.setState({listofSessions: null});
-        const activities = this.state.activities.filter(
+        const activities = await this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
         this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
-        activities.map(value => {
+        await activities.map(value => {
             if(value.Sessions !== null){
                 this.setState({ listofSessions: value.Sessions})
             }
@@ -280,6 +294,18 @@ class ActivitiesScreen extends Component {
         }
     }
     render() {
+        const TopTabBar = () => (
+            (this.state.isTeamSessions === true ?
+                <TabBar
+                selectedIndex={this.state.selectedTabIndex}
+                onSelect={index => this.setState({selectedTabIndex: index})}>
+                <Tab title='Team Sessions'/>
+                <Tab title='Students'/>
+              </TabBar>
+              :
+              null
+        ));
+
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
         let refreshing = false;
         const onRefresh = () => {
@@ -290,6 +316,7 @@ class ActivitiesScreen extends Component {
             // wait(2000).then(() => refreshing = false);
         };
         
+        const studentIcon = (props) => ( <Icon {...props} name='person'/> );
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
         const ArrowIcon = (props) => ( <Icon {...props} size='medium' name='menu-2-outline'/> );
         const renderItemIcon = (props) => (
@@ -354,16 +381,53 @@ class ActivitiesScreen extends Component {
             }
         }
         const description = (date) =>(
-                (moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
-                    <Text style={{color:"white", fontSize: 15}}>
-                        Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
-                        Today, {moment(date).format("dddd")}
-                    </Text>:
-                     <Text style={{color:"black", fontSize: 15}}>
-                        Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
-                        {moment(date).format("dddd")}
-                    </Text>
-        )
+        (moment().format("MM-DD-YYYY") === moment(date).format("MM-DD-YYYY"))?
+        <Text style={{color:"white", fontSize: 15}}>
+            Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+            Today, {moment(date).format("dddd")}
+        </Text>:
+        <Text style={{color:"black", fontSize: 15}}>
+            Date: {moment(date).format("MM-DD-YYYY")} {'\n'}
+            {moment(date).format("dddd")}
+        </Text>
+        );
+        const studentDescription = (date) => {
+            <Text style={{color:"black", fontSize: 12}}>
+                Date: {moment(date).format("MM-DD-YYYY")}
+            </Text>
+        }
+        
+        let studentItem = ({item, index}) => {
+            if (item === null){
+                return; 
+            }
+            else{
+                console.log(item);
+                return (<ListItem
+                            key={item.StudentId}
+                            title={`${item.LastName}, ${item.FirstName}`}
+                            style={{backgroundColor: '#C0E4F5'}}
+                            description={studentDescription(item.Birthdate)}
+                            accessoryLeft={studentIcon}
+                            accessoryRight={ArrowIcon}
+                            onPress={() => this.props.navigation.navigate('StudentInfoModal', {
+                                StudentName: item.StudentName,
+                                Birthdate: item.Birthdate,
+                                Allergies: item.Allergies,
+                                ParentName: `${item.ParentInfoFirstName.FirstName} ${item.ParentInfoFirstName.LastName}`,
+                                ParentPhone: item.ParentInfoFirstName.FirstPhone,
+                                EmergencyContactName: item.EmergencyContactInfo.Name,
+                                EmergencyContactRelationToChild: item.EmergencyContactInfo.RelationshipToChild,
+                                EmergencyContactPhone: item.EmergencyContactInfo.FirstPhone,
+                                SecondEmergencyContactName: item.SecondEmergencyContactInfo.Name,
+                                SecondEmergencyContactRelationToChild: item.SecondEmergencyContactInfo.RelationshipToChild,
+                                SecondEmergencyContactPhone: item.SecondEmergencyContactInfo.FirstPhone,
+                                LastModifiedDate: item.LastModifiedDate
+                            })}
+                        /> )
+            }
+        }
+    
         let activityItem = ({ item, index }) => {
             if (item.Sessions === null){
                 return; 
@@ -795,7 +859,7 @@ class ActivitiesScreen extends Component {
         const addButton = () => {
                  return <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                 <ButtonGroup>
-                <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
+                
                 {/* <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>           */}
                 </ButtonGroup>
                 </View>
@@ -826,32 +890,59 @@ class ActivitiesScreen extends Component {
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                     {message("basic")}
                     <Divider style={{marginTop:"15%"}}/>
+
                     <ImageBackground source={getImage()} style={styles.image}>
+                        {TopTabBar()}
                         {loadingModal()}
                         {helloMessage("info")}
                         {noMatch("basic")}
                         {noMatchRegion("basic")}
                         {regionName("basic")}
+                        {(this.state.selectedTabIndex === 1 ?
                             <List
-                                style={{opacity: 0.95}}
-                                data={this.state.activitiesRegion}
-                                renderItem={activityItem}
-                                initialNumToRender={50}
-                                Divider={Divider}
-                                refreshControl={
-                                    <RefreshControl
-                                    refreshing={refreshing}
-                                    onRefresh={onRefresh}
-                                    />
-                                }
+                            style={{opacity: 0.95}}
+                            data={this.state.studentList}
+                            renderItem={studentItem}
+                            Divider={Divider}
+                            refreshControl={
+                                <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={onRefresh}
+                                />
+                            }
                             />
+                             :
+                             <List
+                             style={{opacity: 0.95}}
+                             data={this.state.activitiesRegion}
+                             initialNumToRender={50}
+                             renderItem={activityItem}
+                             Divider={Divider}
+                             refreshControl={
+                                 <RefreshControl
+                                 refreshing={refreshing}
+                                 onRefresh={onRefresh}
+                                 />
+                             }
+                            />
+                        )}
                     </ImageBackground>
-                    {addButton()}
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
+                    {(this.state.selectedTabIndex === 1 ?
+                         <></> // <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
+                        :
+                        <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
+
+                    )}
+                    </View>
+                    
+                    {(this.state.selectedTabIndex === 0 ?
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         {searchBoxRanges()}
                         {/*searchBox()*/}
                         {selectBox()}
-                    </BottomSheet>
+                    </BottomSheet> :
+                    null)}
                 </Layout>      
            /* </View>     */                 
         );
