@@ -306,7 +306,7 @@ export const CreateReportModal = ({navigation}) => {
             <Modal
                 visible={visible}
                 onBackdropPress={() => cancellReport()}
-                style={{maxWidth:'90%',height:windowHeight,marginBottom: keyboardSize}}>
+                style={{maxWidth:'98%',height:windowHeight,marginBottom: keyboardSize}}>
                 <ScrollView>
                 <Card disabled={true} style={{marginBottom: keyboardSize, marginTop:'6%'}} header={Header} footer={Footer}>
                     <ScrollView>
