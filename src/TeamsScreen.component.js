@@ -3,12 +3,11 @@ import React, {Component} from "react";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { bindActionCreators } from 'redux';
-import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView, Platform } from "react-native";
-
+import { ImageBackground, View, StyleSheet, Image, KeyboardAvoidingView, Platform, RefreshControl } from "react-native";
 import { Layout, Divider, List, ListItem, Icon, AutocompleteItem, Autocomplete, Card, Text,  IndexPath, Select, SelectItem, Modal } from '@ui-kitten/components';
 import BottomSheet from 'react-native-simple-bottom-sheet';
 import Axios from "axios";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from "moment";
 import { ApiConfig } from "./config/ApiConfig";
 
@@ -25,11 +24,14 @@ class TeamsScreen extends Component {
             displayedValue: "",
             regions: this.props.sessionScreen.listofregions,
             RegionSelected: "",//setting the region selected
-            loadingModalstate:true,
+            loadingModalstate: true,
+            selected: null
         }
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        let aux= await AsyncStorage.getItem('customTheme');
+        this.setState({selected: JSON.parse(aux)})
         const {user} = this.props.user;
         Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
                 params: {
@@ -135,24 +137,47 @@ class TeamsScreen extends Component {
         }
     }
     render() {
+        let refreshing = false;
+        const onRefresh = async () => {
+            let aux= await AsyncStorage.getItem('customTheme');
+            this.setState({selected: JSON.parse(aux)})
+            this.setState({loadingModalstate: true});
+            refreshing = true;
+            const {user} = this.props.user;
+            Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
+                    params: {
+                        date: moment().format("YYYY-MM-DD")
+                    }
+                })
+            .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
+                this.setState({data: response.data, selectedData: response.data}),
+                this.regionFiltering(response.data),
+                console.log(response);
+            })
+                .catch(e => console.log(e));
+            this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({RegionSelected:"All IFC"})
+            }else if (this.props.sessionScreen.region === 'ASBA'){
+                this.setState({RegionSelected:"All ASBA"})
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({RegionSelected:"All OGSC"})
+            }
+            refreshing = false;
+            setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
+        };
         const rightArrowIconRender = (props) => ( 
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
-            <Text  style={{alignSelf:"baseline"}}></Text>
+            <Text  style={{alignSelf:"center"}}></Text>
                 <Icon {...props} fill="#4f5c63" name='people-outline'/>
                 <Icon {...props} fill="#4f5c63" name='arrow-ios-forward-outline'/> 
             </View>);
-        const colorList = () =>{
-            if(this.props.sessionScreen.region === "ASBA"){
-                return "#C0E4F5"
-            }else{
-                return "#86c0e3"
-            }
-        }
+
         let teamItem = ({ item, index }) => {
             return(
                 <ListItem 
-                    title={`${item.TeamSeasonName}`}
-                    style={{backgroundColor: colorList(), minHeight:70}}
+                    title={<Text style={{color: this.state.selected.textColor,fontSize: 13}}>{item.TeamSeasonName}</Text>}
+                    style={{backgroundColor: this.state.selected.color3, minHeight:70}}
                     accessoryRight={rightArrowIconRender}
                     onPress={() => this.onPressTeam(item.TeamSeasonId,item.TeamName, item.Region, item.SeasonName, item.SeasonStartDate, item.SeasonEndDate)}
                 />
@@ -177,7 +202,12 @@ class TeamsScreen extends Component {
         const regionName = (status) =>(
             (
                 (this.state.teamsRegion.length !== 0 && this.state.RegionSelected.length !== 0) &&
-                    (this.props.sessionScreen.region === "ASBA"?
+                    <View style={{backgroundColor:this.state.selected.color1}}>
+                        <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
+                            {this.state.RegionSelected}
+                        </Text>
+                    </View>
+                    /*(this.props.sessionScreen.region === "ASBA"?
                         <View style={{backgroundColor:"#52a5cc"}}>
                             <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
                                 {this.state.RegionSelected}
@@ -188,7 +218,7 @@ class TeamsScreen extends Component {
                                     {this.state.RegionSelected}
                                 </Text>
                         </View>
-                    )
+                    )*/
             )
         );
         const noMatchRegion = (status) =>(
@@ -270,6 +300,12 @@ class TeamsScreen extends Component {
                         ItemSeparatorComponent={Divider}
                         renderItem={teamItem}
                         getItemLayout={getItemLayout}
+                        refreshControl={
+                            <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            />
+                        }
                     />
                     <View style={{marginTop: '6%'}}/>
                 </ImageBackground>
