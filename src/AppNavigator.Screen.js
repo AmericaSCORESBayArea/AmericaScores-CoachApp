@@ -2,6 +2,9 @@ import React, { Component } from "react";
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-community/async-storage';
+import Axios from 'axios';
 
 import { LoginStackScreen, HomeRootStackScreen } from "../navigation.component";
 
@@ -15,7 +18,7 @@ class AppNavigator extends Component {
     }
 
     componentDidMount() {
-
+        
     }
     
     render () {

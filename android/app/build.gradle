@@ -135,8 +135,8 @@ android {
         applicationId "com.americaScoresAttendance.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 27
-        versionName '1.94'
+        versionCode 31
+        versionName '2.1'
 
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [appAuthRedirectScheme: 'com.redirectScheme.comm']
