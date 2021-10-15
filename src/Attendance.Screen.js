@@ -62,7 +62,7 @@ class AttendanceScreen extends Component {
                             var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
                             if(pos === 0){
                                 if(posAc === 0){
-                                    Alert.alert('','No following sessions found')
+                                    Alert.alert('','No following sessions found. Try adjusting the date range.')
                                 }else{
                                     var ACPos=posAc-1
                                     while(route.params.activitiesRegion[ACPos].Sessions === null){
@@ -72,7 +72,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(ACPos < 0){
-                                        Alert.alert('','No following sessions found')
+                                        Alert.alert('','No following sessions found. Try adjusting the date range.')
                                     }else{
                                         this.setState({auxRedux: []});
                                         var cont=posAc-1;
@@ -117,7 +117,7 @@ class AttendanceScreen extends Component {
                             if(aclong === 1){
                                 if(posAc === aclong-1){
                                     if(pos === long-1){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
                                     }else{
                                         this.setState({auxRedux: []});
                                         this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
@@ -134,7 +134,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(cont > aclong){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
                                     }else{
                                         if(cont!==posAc+1){
                                             this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
@@ -148,7 +148,7 @@ class AttendanceScreen extends Component {
                             }else{
                                 if(pos === long-1){
                                     if(posAc === aclong-1){
-                                        Alert.alert('','No previous sessions found')
+                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
                                     }else{
                                         var cont=posAc+1;
                                         while(route.params.activitiesRegion[cont].Sessions === null){
@@ -158,7 +158,7 @@ class AttendanceScreen extends Component {
                                             }
                                         }
                                         if(cont > aclong-1){
-                                            Alert.alert('','No previous sessions found')
+                                            Alert.alert('','No previous sessions found. Try adjusting the date range.')
                                         }else{
                                             if(cont!==posAc+1){
                                                 this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
@@ -362,6 +362,7 @@ class AttendanceScreen extends Component {
                             }
                             missingEnrollments.push(studentRecord);
                         })
+                        this.setState({loadingModalstate:false});
                         this.setState({loadingModalRecords:true});
                         this.createMissingAttendance(missingEnrollments)
                         //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
