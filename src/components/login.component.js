@@ -10,7 +10,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { loginUser, logOutUser, setPhoneAuthConfirmation } from "../Redux/actions/user.actions";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const useInputState = (initialValue = '') => {
