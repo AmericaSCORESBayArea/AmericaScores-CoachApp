@@ -65,22 +65,7 @@ export default class StudentsScreen extends Component {
         const {navigation} = this.props;
 
         const studentIcon = (props) => ( <Icon {...props} name='person'/> );
-        const rightArrowIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline'/> );
-        const userItem = ({ item, index }) => (
-            <ListItem
-                title={`${item.title} ${index + 1}`}
-                onPress={() => {}}
-                accessoryLeft={studentIcon}
-            //   accessoryRight={rightArrowIcon}
-            />
-        );
-
-        const renderStudent = (item, index) => (
-            <AutocompleteItem
-                key={index}
-                title={item.title}
-            />
-        );
+       
 
         let studentItem = ({ item, index }) => {
             if (item.Enrollments === null) return ;
