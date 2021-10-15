@@ -5,7 +5,9 @@ import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
 import BottomSheet from 'react-native-simple-bottom-sheet';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from '@react-native-community/async-storage';
+
 import {ApiConfig} from "./config/ApiConfig";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
@@ -77,6 +79,8 @@ class ActivitiesScreen extends Component {
         }else if (this.props.sessionScreen.region === 'OGSC'){
             this.setState({RegionSelected:"All OGSC"})
         }
+
+        
         //this.__syncCoachRegions(); call a function that returns coach regions
         await this._syncActivities();
         await AsyncStorage.setItem('loggedStatus', "true");
@@ -937,7 +941,7 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                     {(this.state.selectedTabIndex === 1 ?
-                         <></> // <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
+                        <></> // <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
                         :
                         <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
 
