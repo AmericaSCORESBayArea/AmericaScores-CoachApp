@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Alert, Image, ImageBackground, SafeAreaView } from 'react-native';
-import { Button, Layout, Text, Icon } from '@ui-kitten/components';
+import { Button, Layout, Text, Icon, Modal } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 import Axios from "axios";
 import {ApiConfig} from "../config/ApiConfig";
@@ -18,6 +18,7 @@ import appleAuth, {
 
 import { connect } from 'react-redux';
 import { loginUser, logOutUser } from '../Redux/actions/user.actions';
+import { useDispatch } from 'react-redux';
 import { syncSessions } from '../Redux/actions/Session.actions';
 import { bindActionCreators } from 'redux';
 
@@ -27,11 +28,56 @@ class LogInScreen_Google extends Component {
         this.state = {
           logged: "false",
           email: "",
+          loadingModalstate:false,
         };
     }
 
-    componentDidMount() {
-      this.initAsync();
+
+    async componentDidMount() {
+      this.setState({loadingModalstate: true});
+      const {actions, navigation} = this.props;
+      const user = await auth().currentUser;
+      console.log(user);
+      if(user){
+        const number = user.phoneNumber.replace('+1', '');
+        await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
+          params: {
+            useridentifier: number,
+            serviceprovider: "Phone"
+          }
+          }).then(async res => {
+            if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
+            const userProfile = res.data;
+            await this.setLoginLocal(userProfile.ContactId);
+            if (userProfile.ContactId) {
+              //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+              //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;        
+                  // dispatch(loginUser(userProfile));
+                await actions.loginUser(userProfile);
+                this.setState({logged: "true"});
+                navigation.navigate("Select_Club");
+                this.setState({loadingModalstate: false})
+              }
+            })
+          } else {
+            this.setState({loadingModalstate: false});
+            this.initAsync();
+
+          }
+    }
+
+
+
+    setLoginLocal = async(loginData) => {
+      try {
+        await AsyncStorage.setItem('loginData', loginData);
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    dispatchUser = async (userProfile) => {
+      await loginUser(userProfile);
     }
 
     initAsync = async () => {
@@ -191,8 +237,20 @@ class LogInScreen_Google extends Component {
       .catch(e => console.log(e));
     }   
 
+    LoadingGif = () =>{
+          return require('../../assets/Scores_Logo.gif');//Scores logo gif
+  }
+
     render() {
         const {navigation} = this.props;
+        const loadingModal = () => (
+          <Modal
+              style={styles.popOverContent}
+              visible={this.state.loadingModalstate}
+              backdropStyle={styles.backdrop}>
+              <Image source={this.LoadingGif()}/>
+          </Modal>
+      )
         const Header = (props) => (
             <View {...props} style={{margin: "3%"}}>
               <Text category='h6'>Log in</Text>
@@ -207,6 +265,7 @@ class LogInScreen_Google extends Component {
         return(
             <Layout style={{flex: 1}} level="4">
               <ImageBackground source={require('../../assets/LogInBackground.jpeg')} style={{flex: 1}}>
+              {loadingModal()}
                 <SafeAreaView style={{ flex: 1,backgroundColor:"rgba(0,0,0,0.5)" }}>
                   <View style={{flex: 1, justifyContent: "center", alignItems: 'center'}} >
                     <Layout style={{width:'100%', height:'100%', backgroundColor:"rgba(0,0,0,0)"}} level="4">
@@ -274,5 +333,8 @@ class LogInScreen_Google extends Component {
     },
     loginTittle: {
       margin: '5%',
-    }
+    },
+    backdrop: {
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  }
 });

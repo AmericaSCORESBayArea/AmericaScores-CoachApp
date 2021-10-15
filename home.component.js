@@ -169,9 +169,9 @@ export default OptionOverflowMenu = (navigation) => {
         try {
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
+            await auth().signOut();
             await dispatch(logOutUser());
-            auth().signOut();
-            // logged = false;
+            await dispatch(changeRegion(null));
             navigation.navigate("Login");
         } catch (error) {console.log(error)}
     }
