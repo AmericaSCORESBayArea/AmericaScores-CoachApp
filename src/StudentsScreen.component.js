@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { bindActionCreators } from 'redux';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default class StudentsScreen extends Component {
     constructor(props) {
