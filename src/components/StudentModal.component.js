@@ -2,6 +2,8 @@ import React from 'react';
 import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon } from '@ui-kitten/components';
 import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView } from 'react-native';
 import moment from "moment";
+import Axios from 'axios';
+import {ApiConfig} from "../config/ApiConfig";
 
 export const CreateStudentModal = ({navigation}) => {
     const [visible, setVisible] = React.useState(true);
@@ -66,15 +68,8 @@ export const CreateStudentModal = ({navigation}) => {
 }
 
 export const AddStudentToTeamModal = ({navigation}) => {
-    const movies = [
-        { title: 'Star Wars' },
-        { title: 'Back to the Future' },
-        { title: 'The Matrix' },
-        { title: 'Inception' },
-        { title: 'Interstellar' },
-      ];
-      
-      const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
+    const [students, setStudents] = React.useState([]);
+    const filter = async (item, query) => await item.Name.toLowerCase().includes(query.toLowerCase());
     const [visible, setVisible] = React.useState(true);
     const [nameValue, setNameValue] = React.useState();
     const [surenameValue, setSureNameValue] = React.useState();
@@ -89,21 +84,35 @@ export const AddStudentToTeamModal = ({navigation}) => {
         closeModal();
     }
 
-        const [value, setValue] = React.useState(null);
-    const [data, setData] = React.useState(movies);
+    const [value, setValue] = React.useState(null);
+    const [data, setData] = React.useState(students);
 
     const onSelect = (index) => {
-        setValue(movies[index].title);
+        setValue(students[index].Name);
     };
 
-    const onChangeText = (query) => {
+    async function fetchStudents() {
+        await Axios.get(`${ApiConfig.dataApi}/contacts/search`, {
+            params: {
+                // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                searchString: value,    
+            }
+        })
+              .then(res => setStudents(res.data))
+              .catch(e => console.log(e));
+    }
+
+    const onChangeText = async (query) => {
         setValue(query);
-        setData(movies.filter(item => filter(item, query)));
+        await fetchStudents();
+        console.log(students);
+        const filteredData = students.filter(async item => await filter(item, query));
+        setData(filteredData);
     };
     const renderOption = (item, index) => (
         <AutocompleteItem
           key={index}
-          title={item.title}
+          title={item.Name}
         />
       );
 
@@ -199,23 +208,26 @@ export const StudentInfoModal = ({navigation, route}) => {
             onBackdropPress={() => closeModal()}
             style={{width:'80%'}}>
             <Card disabled={true} header={Header} footer={Footer}>
-                <Text >Allergies: {Allergies}</Text>
-                <Text >Parent Info:</Text>
-                <Text >   {'\n'}   {ParentName}</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
+                <Text>    {Allergies}</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Parent Info:</Text>
+                <Text >   {ParentName}</Text>
                 <TouchableOpacity onPress={() => openNumber(ParentPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6'}}>   {ParentPhone}</Text>
+                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{ParentPhone}</Text>
                 </TouchableOpacity>
-                <Text >Emergency Contact:</Text>
-                <Text >   {'\n'}   {EmergencyContactName}</Text>
-                <Text >   Relationship To Child:{'\n'}   {EmergencyContactRelationToChild}</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
+                <Text >   {EmergencyContactName}</Text>
+                <Text style={{fontWeight: 'bold'}}>   Relationship To Child:</Text>
+                <Text>   {EmergencyContactRelationToChild}</Text>
                 <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6'}}>   {EmergencyContactPhone}</Text>
+                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{EmergencyContactPhone}</Text>
                 </TouchableOpacity>
-                <Text >Second Emergency Contact:</Text>
-                <Text >  {'\n'}   {SecondEmergencyContactName}</Text>
-                <Text >   Relationship To Child:{'\n'}   {SecondEmergencyContactRelationToChild}</Text>
+                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
+                <Text >   {SecondEmergencyContactName}</Text>
+                <Text style={{fontWeight: 'bold'}}>   Relationship To Child:</Text>
+                <Text>   {SecondEmergencyContactRelationToChild}</Text>
                 <TouchableOpacity onPress={() => openNumber(SecondEmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6'}}>   {SecondEmergencyContactPhone}</Text>
+                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{SecondEmergencyContactPhone}</Text>
                 </TouchableOpacity>
             </Card>
         </Modal>

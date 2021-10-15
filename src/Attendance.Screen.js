@@ -334,6 +334,7 @@ class AttendanceScreen extends Component {
         }
         }).catch(error => {
             this.setState({loadingModalRecords:false});
+            console.log("SOMETHING HAPPENED")
             throw error;
         })
     }
@@ -348,9 +349,9 @@ class AttendanceScreen extends Component {
                     console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> No students found");
                 } else {
                     console.log("[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state");
-                    console.log(res.data);
+                    // console.log(res.data);
                     const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
-                    console.log(verifiedEnrollments);
+                    // console.log(verifiedEnrollments);
                     // this.setState({missingEnrollments: verifiedEnrollments});
                     if(verifiedEnrollments.length > 0){
                         let missingEnrollments = [];
@@ -391,6 +392,7 @@ class AttendanceScreen extends Component {
                 parsedEnrollments.push(enrollmentStudent);
             }
         })
+        console.log(parsedAttendance, parsedEnrollments)
         return parsedEnrollments;
     }
 
