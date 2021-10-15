@@ -15,6 +15,7 @@ import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
+import { paletteColors } from './components/paletteColors';
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -58,7 +59,11 @@ class ActivitiesScreen extends Component {
 
     async componentDidMount() {
         let aux= await AsyncStorage.getItem('customTheme');
-        this.setState({selected: JSON.parse(aux)})
+        if(aux === null){
+            this.setState({selected: paletteColors[0]})
+        }else{
+            this.setState({selected: JSON.parse(aux)})
+        }
         const { route } = this.props;
         const { actions } = this.props;
         if (route.name !== "Team Sessions"){
