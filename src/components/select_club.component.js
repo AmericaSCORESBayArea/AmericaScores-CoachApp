@@ -4,6 +4,8 @@ import { Layout, Text, Card } from '@ui-kitten/components';
 import { View} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { changeRegion, changeRegionList } from "../Redux/actions/SessionScreen.actions";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { paletteColors } from './paletteColors';
 const Clubs = [
   {
       id:0,
@@ -47,6 +49,10 @@ const Headerr = (props) => (
           dispatch(changeRegionList(['All IFC', 'IFC-SF']));
         }else if(region === 'OGSC'){
           dispatch(changeRegionList(['All OGSC', 'Genesis']));
+        }
+        const aux = await AsyncStorage.getItem('customTheme')
+        if(aux === null){
+            await AsyncStorage.setItem('customTheme',JSON.stringify(paletteColors[0]));
         }
     }
     const renderItems = ({ item }) => (
