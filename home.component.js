@@ -8,6 +8,7 @@ import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from '@react-navigation/stack';
 import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
+import Profile from "./src/Profile.Screen";
 import { ApiConfig } from './src/config/ApiConfig';
 
 import auth from '@react-native-firebase/auth';
@@ -52,7 +53,18 @@ const Stack_Activities_Navigation = () => (
         <Stack_Activities.Screen options={headerOptionsParamsIFC} name="Sessions" component={ActivitiesScreen}/>
         <Stack_Activities.Screen options={headerOptionsIFC} name="Attendance" component={AttendanceScreen} />
         <Stack_Activities.Screen options={headerOptionsIFC} name="Scan students QR" component={QRScanScreen}/>
-</Stack_Activities.Navigator>
+    </Stack_Activities.Navigator>
+);
+
+const Stack_Profile = createStackNavigator();
+const Stack_Profile_Navigation = () => (
+    (useSelector(state => state.sessionScreen.region) === "ASBA")?
+    <Stack_Profile.Navigator>
+        <Stack_Profile.Screen options={headerOptions} name="My Profile" component={Profile}/>
+    </Stack_Profile.Navigator>:
+    <Stack_Profile.Navigator>
+        <Stack_Profile.Screen options={headerOptionsIFC} name="My Profile" component={Profile}/>
+    </Stack_Profile.Navigator>
 );
 
 const Stack_Teams = createStackNavigator();
@@ -104,6 +116,7 @@ const TabNavigator = () => (
     <Navigator tabBar={props => <BottomTabBar {...props} /> } >
         <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
         <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
+        <Screen name='profile' component={Stack_Profile_Navigation}/>
         <Screen name='StudentsScreen' component={Stack_Students_Navigation}/>
     </Navigator>
   );
@@ -152,6 +165,12 @@ export default OptionOverflowMenu = (navigation) => {
             navigation.navigate('Login', { screen: 'Select_Club' });
         } catch (error) {console.log(error)}
     }
+    async function profileScreen(){
+        try{
+            setOverflowMenuVisible(false);
+            navigation.navigate('profile');
+        } catch (error) {console.log(error)}
+    }
     async function logOutOnPress(){
         try {
             setOverflowMenuVisible(false);
@@ -172,7 +191,7 @@ export default OptionOverflowMenu = (navigation) => {
             onBackdropPress={() => setOverflowMenuVisible(false)}>
                 {/*<MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
                 <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>*/}
-                <MenuItem title="My Profile" accessoryLeft={profileicon}/>
+                <MenuItem title="My Profile" onPress={() => (profileScreen())}  accessoryLeft={profileicon}/>
                 <MenuItem title="Change affiliation" onPress={() => (changeAfflitiation())} accessoryLeft={changeaffiliateicon}/>
                 <MenuItem title="Help"  onPress={() => menuItemOnPress("CreateReportModal")} accessoryLeft={reporticon}/>
                 <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
