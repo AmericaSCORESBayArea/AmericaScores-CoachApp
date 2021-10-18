@@ -42,6 +42,8 @@ class AttendanceScreen extends Component {
         }
     }
     
+    /*import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+    <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> Assesments icon*/ 
 
     componentDidMount() {
         this.setState({auxRedux: []});
@@ -62,7 +64,7 @@ class AttendanceScreen extends Component {
                             var pos=(route.params.activitiesRegion[posAc].Sessions.indexOf(val))
                             if(pos === 0){
                                 if(posAc === 0){
-                                    Alert.alert('','No following sessions found. Try adjusting the date range.')
+                                    Alert.alert('','No following sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                 }else{
                                     var ACPos=posAc-1
                                     while(route.params.activitiesRegion[ACPos].Sessions === null){
@@ -72,7 +74,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(ACPos < 0){
-                                        Alert.alert('','No following sessions found. Try adjusting the date range.')
+                                        Alert.alert('','No following sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                     }else{
                                         this.setState({auxRedux: []});
                                         var cont=posAc-1;
@@ -117,7 +119,7 @@ class AttendanceScreen extends Component {
                             if(aclong === 1){
                                 if(posAc === aclong-1){
                                     if(pos === long-1){
-                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
+                                        Alert.alert('','No previous sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                     }else{
                                         this.setState({auxRedux: []});
                                         this.setState({ arrowSession: route.params.activitiesRegion[posAc].Sessions[pos+1] });
@@ -134,7 +136,7 @@ class AttendanceScreen extends Component {
                                         }
                                     }
                                     if(cont > aclong){
-                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
+                                        Alert.alert('','No previous sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                     }else{
                                         if(cont!==posAc+1){
                                             this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
@@ -148,7 +150,7 @@ class AttendanceScreen extends Component {
                             }else{
                                 if(pos === long-1){
                                     if(posAc === aclong-1){
-                                        Alert.alert('','No previous sessions found. Try adjusting the date range.')
+                                        Alert.alert('','No previous sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                     }else{
                                         var cont=posAc+1;
                                         while(route.params.activitiesRegion[cont].Sessions === null){
@@ -158,7 +160,7 @@ class AttendanceScreen extends Component {
                                             }
                                         }
                                         if(cont > aclong-1){
-                                            Alert.alert('','No previous sessions found. Try adjusting the date range.')
+                                            Alert.alert('','No previous sessions found.\nTry adjusting the date range in the Sessions Calendar.')
                                         }else{
                                             if(cont!==posAc+1){
                                                 this.setState({ arrowSession: route.params.activitiesRegion[cont].Sessions[0] });
