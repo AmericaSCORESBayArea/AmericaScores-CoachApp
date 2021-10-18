@@ -43,7 +43,7 @@ class AttendanceScreen extends Component {
     }
     
     /*import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-    <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> Assesments icon*/ 
+    <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> Assessment icon*/ 
 
     componentDidMount() {
         this.setState({auxRedux: []});
