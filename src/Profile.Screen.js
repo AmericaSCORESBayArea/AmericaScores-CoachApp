@@ -114,11 +114,11 @@ class ProfileScreen extends Component {
         }else if(this.state.selected === 1){
             return '#2179ad'
         }else if(this.state.selected === 2){
-            return '#d66394'
+            return '#1F0318'
         }else if(this.state.selected === 3){
             return '#172B52'
         }else if(this.state.selected === 4){
-            return '#3c7580'
+            return '#482728'
         }else{
             return "#3D7C99"
         }   
