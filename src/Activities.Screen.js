@@ -55,8 +55,6 @@ class ActivitiesScreen extends Component {
         }
     }
 
-    
-
     async componentDidMount() {
         let aux= await AsyncStorage.getItem('customTheme');
         if(aux === null){
@@ -418,7 +416,7 @@ class ActivitiesScreen extends Component {
                 return (<ListItem
                             key={item.StudentId}
                             title={<Text style={{color: this.state.selected.textColor}}>{item.LastName}, {item.FirstName}</Text>}
-                            style={{backgroundColor: this.state.selected.color3}}
+                            style={{backgroundColor: this.state.selected.color2}}
                             description={studentDescription(item.Birthdate)}
                             accessoryLeft={studentIcon}
                             accessoryRight={ArrowIcon}

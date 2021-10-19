@@ -50,7 +50,7 @@ class ProfileScreen extends Component {
            <React.Fragment>
                <ScrollView style={{flex:1}}>
                     <View style={{flexDirection:'row'}} >
-                        <Text style={{alignSelf:'center',textAlign:'center',marginLeft:'26%', marginRight:'17%'}} category='h6'>Select a Theme</Text>
+                        <Text style={{alignSelf:'center',textAlign:'center',marginLeft:'30%', marginRight:'16%'}} category='h6'>Select a Theme</Text>
                         <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%'}} onPress={() => this.setState({coloroverlayvisibility: false, activeSlide:0})}>
                             <EvilIcons name={'close'} size={30} color={'#5D738B'} />
                         </TouchableOpacity>
@@ -114,11 +114,11 @@ class ProfileScreen extends Component {
         }else if(this.state.selected === 1){
             return '#2179ad'
         }else if(this.state.selected === 2){
-            return '#d66394'
+            return '#1F0318'
         }else if(this.state.selected === 3){
             return '#172B52'
         }else if(this.state.selected === 4){
-            return '#3c7580'
+            return '#482728'
         }else{
             return "#3D7C99"
         }   
