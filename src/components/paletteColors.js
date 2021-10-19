@@ -18,8 +18,8 @@ export const paletteColors = [
     {
         id:2,
         color1:'#1C5D99',
-        color2:'#d66394',
-        color3:'#e0a4be',
+        color2:'#1F0318',
+        color3:'#38A3A5',
         todayTextColor:'white',
         textColor:'white'
     },
@@ -34,8 +34,8 @@ export const paletteColors = [
     {
         id:4,
         color1:'#1C5D99',
-        color2:'#3c7580',
-        color3:'#C1666B',
+        color2:'#482728',
+        color3:'#3c7580',
         todayTextColor:'white',
         textColor:'white'
     },

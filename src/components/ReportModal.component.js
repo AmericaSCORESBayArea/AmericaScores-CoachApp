@@ -1,7 +1,7 @@
 import React, {useEffect,useCallback} from 'react';
 import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon, Spinner  } from '@ui-kitten/components';
 import { ImageBackground,Keyboard, ScrollView, Alert, Dimensions, Image } from 'react-native';
-import DocumentPicker from "react-native-document-picker";
+//import DocumentPicker from "react-native-document-picker";
 import {launchImageLibrary} from 'react-native-image-picker'; // Migration from 2.x.x to 3.x.x => showImagePicker API is removed.
 import { useSelector } from 'react-redux';
 import axios from 'axios';
@@ -306,7 +306,7 @@ export const CreateReportModal = ({navigation}) => {
             <Modal
                 visible={visible}
                 onBackdropPress={() => cancellReport()}
-                style={{maxWidth:'98%',height:windowHeight,marginBottom: keyboardSize}}>
+                style={{width:'95%',height:windowHeight,marginBottom: keyboardSize, marginTop:'7%'}}>
                 <ScrollView>
                 <Card disabled={true} style={{marginBottom: keyboardSize, marginTop:'6%'}} header={Header} footer={Footer}>
                     <ScrollView>
