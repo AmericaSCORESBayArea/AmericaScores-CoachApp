@@ -142,6 +142,7 @@ export default OptionOverflowMenu = (navigation) => {
     const profileicon = (props) => (<Icon {...props} name='person-outline' />);
     const reporticon= (props) => (<Icon {...props}  name='question-mark-circle-outline'/>);
     const versionicon= (props) => (<Icon {...props}  name='info-outline'/>);
+    const howtouseicon = (props) => (<Icon {...props}  name='play-circle-outline'/>);
 
     const OptionButtons = () => (
         <Button style={{flex:1, backgroundColor: coloroverflow}} appearance='ghost' accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
@@ -185,9 +186,10 @@ export default OptionOverflowMenu = (navigation) => {
             onBackdropPress={() => setOverflowMenuVisible(false)}>
                 {/*<MenuItem title='Create Student' onPress={() => menuItemOnPress("CreateStudentModal")} accessoryLeft={addStudentIcon}/>
                 <MenuItem title='Add student to team' onPress={() => menuItemOnPress("AddStudentToTeamModal")} accessoryLeft={addStudentToSchoolIcon}/>*/}
-                <MenuItem title="My Profile" onPress={() => (profileScreen())}  accessoryLeft={profileicon}/>
+                <MenuItem title="My profile" onPress={() => (profileScreen())}  accessoryLeft={profileicon}/>
                 <MenuItem title="Change affiliation" onPress={() => (changeAfflitiation())} accessoryLeft={changeaffiliateicon}/>
-                <MenuItem title="Help"  onPress={() => menuItemOnPress("CreateReportModal")} accessoryLeft={reporticon}/>
+                <MenuItem title="User guide" onPress={() => menuItemOnPress("userGuideModal")} accessoryLeft={howtouseicon} />
+                <MenuItem title="Help" onPress={() => menuItemOnPress("CreateReportModal")} accessoryLeft={reporticon}/>
                 <MenuItem title="Log out" onPress={() => (logOutOnPress())} accessoryLeft={logoutIcon}/>
                 <MenuItem title={ApiConfig.appVersion}  disabled={true} accessoryLeft={versionicon} />
         </OverflowMenu>
