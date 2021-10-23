@@ -9,7 +9,7 @@ import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
 import {isEqual} from 'lodash';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
   }
@@ -669,8 +669,9 @@ class AttendanceScreen extends Component {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
         const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
-        const forwardIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline' />);
-        const backIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline' />);
+        const forwardIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline' /> );
+        const backIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline' /> );
+        const assessmentIcon = () => ( <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> );
         let refreshing = false;
 
         const onRefresh = () => {
@@ -689,6 +690,7 @@ class AttendanceScreen extends Component {
                 if (this.state.enrollments[index].Attended) return <CheckBox checked={true} onChange={() => this.checkStudent(index, false)} />
                 else return <CheckBox checked={false} onChange={() => this.checkStudent(index,true)} />
               }}
+              accessoryRight={assessmentIcon}
             />
         );
 
