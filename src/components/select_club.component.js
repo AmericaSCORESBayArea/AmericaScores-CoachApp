@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView, ImageBackground, FlatList, ScrollView} from 'react-native';
 import { Layout, Text, Card } from '@ui-kitten/components';
 import { View} from 'react-native';
@@ -39,6 +39,15 @@ const Headerr = (props) => (
     </View>
   );
   export const LogInScreen_Select_Club = ({navigation}) => {
+    useEffect(() => {
+      async function fetchMyAsyncStorage() {
+        let aux = await AsyncStorage.getItem('userFirstTime')
+        if(aux === null){
+          navigation.navigate("userGuideModalLogin");
+        }
+      }
+      fetchMyAsyncStorage()
+    }, [])
     const dispatch = useDispatch();
     async function clubSelected(region) {
         dispatch(changeRegion(region));

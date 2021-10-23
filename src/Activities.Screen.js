@@ -593,7 +593,7 @@ class ActivitiesScreen extends Component {
                                     if(found === true){
                                         return <ListItem
                                             key={value.SessionId}
-                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: his.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
+                                            title={(moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={description(value.SessionDate)}
                                             accessoryLeft={RenderItemImageS}
