@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import { Layout, Icon, Text, Button } from '@ui-kitten/components';
 import {  TouchableOpacity, View, StyleSheet, Image, ScrollView, Platform, PermissionsAndroid } from "react-native";
 import { Avatar,  Overlay } from "react-native-elements";
@@ -16,6 +16,7 @@ class ProfileScreen extends Component {
     constructor(props) {
         super(props);
         console.log(props.user)
+        this._carousel = createRef();
         this.state = {
             firstName: this.props.user.user.FirstName,
             lastName: this.props.user.user.LastName,
@@ -25,6 +26,7 @@ class ProfileScreen extends Component {
             selected: null,
             activeItem: '',
             activeSlide: 0,
+            slider1Ref: '',
             changedColor:false,
         }
     }
@@ -51,7 +53,7 @@ class ProfileScreen extends Component {
                <ScrollView style={{flex:1}}>
                     <View style={{flexDirection:'row'}} >
                         <Text style={{alignSelf:'center',textAlign:'center',marginLeft:'30%', marginRight:'16%'}} category='h6'>Select a Theme</Text>
-                        <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%'}} onPress={() => this.setState({coloroverlayvisibility: false, activeSlide:0})}>
+                        <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%', marginLeft:'5%'}} onPress={() => this.setState({coloroverlayvisibility: false, activeSlide:0})}>
                             <EvilIcons name={'close'} size={30} color={'#5D738B'} />
                         </TouchableOpacity>
                     </View>
@@ -78,20 +80,22 @@ class ProfileScreen extends Component {
         const { activeSlide } = this.state;
         return (
             <Pagination
-              dotsLength={paletteColors.length}
-              activeDotIndex={activeSlide}
-              dotStyle={{
-                  width: 10,
-                  height: 10,
-                  borderRadius: 5,
-                  marginHorizontal: 8,
-                  backgroundColor: 'rgba(0, 0, 0, 0.75)'
-              }}
-              inactiveDotStyle={{
-                  // Define styles for inactive dots here
-              }}
-              inactiveDotOpacity={0.4}
-              inactiveDotScale={0.6}
+                dotsLength={paletteColors.length}
+                activeDotIndex={activeSlide}
+                carouselRef={this._carousel}
+                tappableDots={!!this._carousel}
+                dotStyle={{
+                    width: 10,
+                    height: 10,
+                    borderRadius: 5,
+                    marginHorizontal: 8,
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                }}
+                inactiveDotStyle={{
+                    backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                }}
+                inactiveDotOpacity={0.4}
+                inactiveDotScale={0.6}
             />
         );
     }
@@ -274,8 +278,7 @@ class ProfileScreen extends Component {
                     <Overlay isVisible={this.state.coloroverlayvisibility} overlayStyle={styles.overlayColors} onBackdropPress={() => this.setState({coloroverlayvisibility: false})}>
                         <View style={{alignSelf:'center'}}>
                             <Carousel
-                                //activeSlideAlignment='center'
-                                ref={(c) => { this._carousel = c; }}
+                                ref={this._carousel}
                                 data={paletteColors}
                                 renderItem={this._renderItem}
                                 sliderWidth={300}
