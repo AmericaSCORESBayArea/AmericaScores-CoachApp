@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, {Component, createRef} from "react";
 import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar } from '@ui-kitten/components';
 import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
@@ -20,6 +20,7 @@ import { paletteColors } from './components/paletteColors';
 class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
+        this.RangeDatepicker = createRef();
         this.state = {
             date: moment(),
             activities: "",
@@ -242,18 +243,18 @@ class ActivitiesScreen extends Component {
             this.setState({range: dates})
         }else{
             this.setState({loadingModalstate:true});
-            if (route.name !== "Team Sessions"){
+            /*if (route.name !== "Team Sessions"){
                 await this.setState({range: dates, dateCont: 0})
                 const activitiesList = await this.fetchActivities();
                 this._syncReduxActivities(activitiesList);
                 this.setState({loadingModalstate:false});
-            }else{
-                RangeDatepicker.current.blur();
+            }else{*/
+                this.RangeDatepicker.current.blur();
                 await this.setState({range: dates, dateCont: 0})
                 const activitiesList = await this.fetchActivities();
                 this._syncReduxActivities(activitiesList);
                 this.setState({loadingModalstate:false});
-            }
+            //}
         }
         console.log(this.state.RangeDatepickerVisibility)
     }
@@ -788,7 +789,7 @@ class ActivitiesScreen extends Component {
                 dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
                 accessoryRight={CalendarIcon}
-                ref={RangeDatepicker}
+                ref={this.RangeDatepicker}
             />
         );
 
