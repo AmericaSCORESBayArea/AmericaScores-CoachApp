@@ -26,7 +26,7 @@ class ActivitiesScreen extends Component {
             activitiesRegion: "",
             welcomeModalVisibility: false,
             nomatchModalVisibility: false,
-            regions:this.props.sessionScreen.listofregions,
+            regions: this.props.sessionScreen.listofregions,
             selectedIndex: "",
             displayedValue: "",
             isUpdated: false,
@@ -130,7 +130,6 @@ class ActivitiesScreen extends Component {
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
-        console.log(activitiesList)
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
         this.setState({activities: activitiesList});//saving the activitiesList
@@ -236,17 +235,25 @@ class ActivitiesScreen extends Component {
         this._syncReduxActivities(activitiesList);
     }
     async selectRange(dates) {
+        const { route } = this.props;
         console.log(this.state.dateCont, dates.endDate)
         if(dates.endDate === null && this.state.dateCont < 1){
             this.setState({dateCont: this.state.dateCont+1})
             this.setState({range: dates})
         }else{
             this.setState({loadingModalstate:true});
-            RangeDatepicker.current.blur();
-            await this.setState({range: dates, dateCont: 0})
-            const activitiesList = await this.fetchActivities();
-            this._syncReduxActivities(activitiesList);
-            this.setState({loadingModalstate:false});
+            if (route.name !== "Team Sessions"){
+                await this.setState({range: dates, dateCont: 0})
+                const activitiesList = await this.fetchActivities();
+                this._syncReduxActivities(activitiesList);
+                this.setState({loadingModalstate:false});
+            }else{
+                RangeDatepicker.current.blur();
+                await this.setState({range: dates, dateCont: 0})
+                const activitiesList = await this.fetchActivities();
+                this._syncReduxActivities(activitiesList);
+                this.setState({loadingModalstate:false});
+            }
         }
         console.log(this.state.RangeDatepickerVisibility)
     }
