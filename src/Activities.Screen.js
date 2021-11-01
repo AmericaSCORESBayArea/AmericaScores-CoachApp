@@ -6,8 +6,7 @@ import Axios from "axios";
 import moment from "moment";
 import BottomSheet from 'react-native-simple-bottom-sheet';
 import auth from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-community/async-storage';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ApiConfig} from "./config/ApiConfig";
 import { connect } from 'react-redux';
 import { syncSessions } from "./Redux/actions/Session.actions";
