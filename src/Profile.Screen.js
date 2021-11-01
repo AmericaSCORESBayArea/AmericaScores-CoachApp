@@ -37,15 +37,15 @@ class ProfileScreen extends Component {
     _renderItem = ({item, index}) => {
         const getImage = () =>{
             if(item.id === 0){
-                return require('../assets/Sessions/Color0.png');
+                return require('../assets/Sessions/Color0.jpeg');
             }else if (item.id === 1){
-                return require('../assets/Sessions/Color1.png');
+                return require('../assets/Sessions/Color1.jpeg');
             }else if (item.id === 2){
-                return require('../assets/Sessions/Color2.png');
+                return require('../assets/Sessions/Color2.jpeg');
             }else if (item.id === 3){
-                return require('../assets/Sessions/Color3.png');
+                return require('../assets/Sessions/Color3.jpeg');
             }else{
-                return require('../assets/Sessions/Color4.png');
+                return require('../assets/Sessions/Color4.jpeg');
             }
         }
         return (
