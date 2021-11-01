@@ -379,13 +379,18 @@ class AttendanceScreen extends Component {
     async parseFetchedAttendanceToObject(enrollmentData) {
         let parsedEnrollments = [];
         let parsedAttendance = [];
-        const attendance = await this.state.enrollments;
-        await attendance.map(async attendance =>{
+        const attendanceList = await this.state.enrollments;
+        await attendanceList.map(async attendance =>{
             let attendancetStudent = {
                 StudentId: attendance.StudentId,
             };
+            if(enrollmentData.find(element => element.StudentId === attendance.StudentId) === undefined){
+                const index = await attendanceList.findIndex(value => value.StudentId === attendance.StudentId);
+                attendanceList.splice(index, 1);
+            }
             parsedAttendance.push(attendancetStudent);
         })
+        this.setState({enrollments: attendanceList, numberOfStudents: attendanceList.length});
         await enrollmentData.map(async enrollment =>{
             if(parsedAttendance.find(element => element.StudentId === enrollment.StudentId) === undefined){
                 let enrollmentStudent = {
@@ -395,6 +400,7 @@ class AttendanceScreen extends Component {
                 parsedEnrollments.push(enrollmentStudent);
             }
         })
+        
         console.log(parsedAttendance, parsedEnrollments)
         return parsedEnrollments;
     }
