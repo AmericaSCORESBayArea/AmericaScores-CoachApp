@@ -42,7 +42,7 @@ const Headerr = (props) => (
     useEffect(() => {
       async function fetchMyAsyncStorage() {
         let aux = await AsyncStorage.getItem('userFirstTime')
-        if(aux === null){
+        if(!aux){
           navigation.navigate("userGuideModalLogin");
         }
       }
