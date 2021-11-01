@@ -275,14 +275,14 @@ export const StudentInfoModal = ({navigation, route}) => {
                 </TouchableOpacity>
                 <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
                 <Text >   {EmergencyContactName}</Text>
-                <Text style={{fontWeight: 'bold'}}>   Relationship To Child:</Text>
+                <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
                 <Text>   {EmergencyContactRelationToChild}</Text>
                 <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
                     <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{EmergencyContactPhone}</Text>
                 </TouchableOpacity>
                 <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
                 <Text >   {SecondEmergencyContactName}</Text>
-                <Text style={{fontWeight: 'bold'}}>   Relationship To Child:</Text>
+                <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
                 <Text>   {SecondEmergencyContactRelationToChild}</Text>
                 <TouchableOpacity onPress={() => openNumber(SecondEmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
                     <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{SecondEmergencyContactPhone}</Text>
