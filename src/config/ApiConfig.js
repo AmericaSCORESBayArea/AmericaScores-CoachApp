@@ -9,5 +9,5 @@ export const ApiConfig = {
     cloudName: '',//cloud name on cloudinary
     cloudinaryURL: '',//url for cloudinary
     appVersion: 'Version: ' + DeviceInfo.getVersion(),//add the app version
-    youtubeUrl: 'https://www.youtube.com/embed/0ehQT8mnhnI'//added how to url
+    youtubeUrl: ['https://www.youtube.com/embed/0ehQT8mnhnI', 'https://www.youtube.com/embed/b78QI21s6Do']//added how to url
 }
