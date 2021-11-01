@@ -390,7 +390,7 @@ class AttendanceScreen extends Component {
             }
             parsedAttendance.push(attendancetStudent);
         })
-        this.setState({enrollments: attendanceList});
+        this.setState({enrollments: attendanceList, numberOfStudents: attendanceList.length});
         await enrollmentData.map(async enrollment =>{
             if(parsedAttendance.find(element => element.StudentId === enrollment.StudentId) === undefined){
                 let enrollmentStudent = {
