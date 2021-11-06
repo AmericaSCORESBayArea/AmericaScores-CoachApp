@@ -946,7 +946,7 @@ class ActivitiesScreen extends Component {
                     </ImageBackground>
                     <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
                     {(this.state.selectedTabIndex === 1 ?
-                        <></> // <Button style={{width:"54%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId})}>ENROLL STUDENT</Button>
+                        <Button style={{width:"80%", marginTop: "2%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}>ENROLL STUDENT</Button>
                         :
                         <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
 
@@ -956,7 +956,7 @@ class ActivitiesScreen extends Component {
                     {(this.state.selectedTabIndex === 0 ?
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         {searchBoxRanges()}
-                        {/*searchBox()*/}
+                        {searchBox()}
                         {selectBox()}
                     </BottomSheet> :
                     null)}
