@@ -168,7 +168,7 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     async function filterData() {
         const unfiltered = await fetchStudents(value);
         if(unfiltered.length > 0) {
-            setData([...unfiltered, ...unfiltered]);
+            setData(unfiltered);
         } else {
             Alert.alert("", "No students found");
         }
