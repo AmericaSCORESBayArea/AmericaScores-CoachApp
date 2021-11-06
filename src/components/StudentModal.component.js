@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon, List, Divider, ListItem } from '@ui-kitten/components';
-import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView, Alert, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView, Alert, TouchableWithoutFeedback, Image } from 'react-native';
 import moment from "moment";
 import Axios from 'axios';
 import {ApiConfig} from "../config/ApiConfig";
@@ -67,16 +67,17 @@ export const CreateStudentModal = ({navigation}) => {
     );
 }
 
-const filter = async (item, value) => await item.Name.toLowerCase().includes(value.toLowerCase());
+// const filter = async (item, value) => await item.Name.toLowerCase().includes(value.toLowerCase());
 
 export const AddStudentToTeamModal = ({navigation, route}) => {
     const [students, setStudents] = React.useState([]);
     const [finished, setFinished] = React.useState(false);
     const [started, setStarted] = React.useState(false);
-    const {teamSeasonId} = route.params;
+    const {teamSeasonId, region, enrolled} = route.params;
     const [visible, setVisible] = React.useState(true);
     const [selectedStudent, setSelectedStudent] = React.useState();
     const [suggestions, setSuggestions] = React.useState();
+    const [loadingModalstate, setLoadingModalstate] = React.useState(false);
     
 
       const renderSearchIcon = (props) => (
@@ -86,8 +87,29 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
       );
 
     function closeModal() {
-        setVisible(false); 
+        setVisible(false);
         navigation.goBack();
+    }
+
+    const LoadingGif = () => {
+        if(region === "ASBA"){
+            return require('../../assets/Scores_Logo.gif');//Scores logo gif
+        }else if(region === "IFC"){
+            return require('../../assets/IFC_Logo_animated.gif');//IFC logo gif
+        }else if(region === "OGSC"){
+            return require('../../assets/OGSC_logo_spinner.gif');//Genesis logo gif
+        }
+    }
+
+    async function canCreateStudent() {
+        setLoadingModalstate(true);
+        const exists = enrolled.find(student => student.StudentId === selectedStudent.Id);
+        if(!exists) {
+            createStudent()
+        } else {
+            setLoadingModalstate(false);
+            Alert.alert("Error", "This student is already enrolled in this team");
+        }
     }
 
     async function createStudent() {
@@ -95,31 +117,40 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
             "TeamSeasonId": teamSeasonId,
             "StudentId": selectedStudent.Id,
         }
-        console.log(student)
         await Axios.post(`${ApiConfig.dataApi}/enrollments`,
             student)
               .then(res => {
-                  console.log(res)
-                  if(res.data){ 
-                      Alert.alert("Success",res)
-                }
+                  if(res.data){
+                      setLoadingModalstate(false); 
+                      Alert.alert("Success", "Student was enrolled succesfully")
+                    }
+                    setLoadingModalstate(false); 
                 })
               .catch(e => console.log(e));
     }
 
-    const [value, setValue] = React.useState(null);
-    const [data, setData] = React.useState(students);
+    const [value, setValue] = React.useState("");
+    const [data, setData] = React.useState([]);
 
     const onSelect = (index) => {
-        setValue(students[index].Name);
-        setSelectedStudent(students[index])
+        setValue(data[index].Name);
+        setSelectedStudent(data[index])
     };
 
-    async function fetchStudents() {
+    const loadingModal = () => (
+        <Modal
+            style={styles.popOverContent}
+            visible={loadingModalstate}
+            backdropStyle={styles.backdrop}>
+            <Image source={LoadingGif()}/>
+        </Modal>
+    )
+
+    async function fetchStudents(query) {
         return await Axios.get(`${ApiConfig.dataApi}/contacts/search`, {
             params: {
                 // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                searchString: value,    
+                searchString: query,    
             }
         })
               .then(res =>
@@ -129,37 +160,53 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     };
 
     // async function startTimer() {
-    //     setTimeout(filterData, 1000);
+    //     setTimeout(filterData, 3000);
     //     // console.log()
     // };
 
 
     async function filterData() {
-        const unfiltered = await fetchStudents();
-        // console.log(students);
-        const filteredData = unfiltered.filter(async item => await filter(item, value));
-        setData(filteredData);
+        const unfiltered = await fetchStudents(value);
+        if(unfiltered.length > 0) {
+            setData([...unfiltered, ...unfiltered]);
+        } else {
+            Alert.alert("", "No students found");
+        }
         // setStarted(false);
-
-        console.log("filtered data", filteredData);
+        // setFinished(true);
+        // console.log("filtered data", filteredData);
     };
 
-    const onChangeText = (query) => {
-        setValue(query);
-    };
+    // const onChangeText = (query) => {
+    //     setValue(query);
+    //     if(started === false){
+    //         setStarted(true);
+    //         setFinished(false);
+    //         startTimer();
+    //     }
+    // };
+
     const renderOption = ({item, index}) => ( 
         <ListItem
-        title={item.name}
+        title={item.Name}
+        onPress={() => onSelect(index)}
         // description={`${item.description} ${index + 1}`}
         />
     );
+
+    // const renderOption = ({item, index}) => ( 
+    //     <AutocompleteItem
+    //         key={index}
+    //         title={item.Name}
+    //     />
+    // );
 
     const Footer = (props) => (
         <Layout {...props}>
             <Button appearance='ghost' status='danger' onPress={() => closeModal()}>
                 Cancel
             </Button>
-            <Button onPress={() => createStudent()}>
+            <Button onPress={() => canCreateStudent()}>
                 ADD STUDENT
             </Button>
         </Layout>
@@ -178,7 +225,7 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     //         value={value}
     //         onSelect={onSelect}
     //         accessoryRight={renderSearchIcon}
-    //         onChangeText={onChangeText}>
+    //         onChangeText={string => onChangeText(string)}>
     //         {data.map(renderOption)}
     //     </Autocomplete>
     // );
@@ -193,20 +240,27 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     )
 
     return(
+        <React.Fragment>
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{width:'80%'}}>
-            <Card disabled={true} header={Header} footer={Footer}>
+            style={{ width: '80%', height: '100%'}}>
+            <ScrollView>    
+            <Card disabled={true} style={{ marginTop: '6%', height: '100%', width: '100%', marginBottom: '10%' }} header={Header} footer={Footer}>
                 {SearchBar()}
-                <List
-                    style={{opacity: 0.95}}
-                    data={data}
-                    ItemSeparatorComponent={Divider}
-                    renderItem={renderOption}
-                />
+                {loadingModal()}
+                {/* <View> */}
+                    <List
+                        style={{opacity: 0.95, overflow: "scroll"}}
+                        data={data}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={renderOption}
+                    />
+                {/* </View> */}
             </Card>
+            </ScrollView>
         </Modal>
+        </React.Fragment>
     );
 }
 
@@ -292,4 +346,21 @@ export const StudentInfoModal = ({navigation, route}) => {
     );
 }
   
-  
+const styles = StyleSheet.create({
+    popOverContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf:'center',
+        shadowRadius: 10,
+        shadowOpacity: 0.12,
+        shadowColor: "#000"
+    },
+    image: {
+        flex:1, 
+        resizeMode: "contain",
+        opacity: 0.99,
+    },
+    backdrop: {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+});
