@@ -956,7 +956,7 @@ class ActivitiesScreen extends Component {
                     {(this.state.selectedTabIndex === 0 ?
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         {searchBoxRanges()}
-                        {searchBox()}
+                        {/* {searchBox()} */}
                         {selectBox()}
                     </BottomSheet> :
                     null)}
