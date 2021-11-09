@@ -106,11 +106,11 @@ export const assessmentModal = (props) => {
         <Modal
             visible={responseStatusModal}
             style={{
-            width:'82%',
+            width:'90%',
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf:'center',
-            marginLeft:'2%',
+            padding: '10%',
             shadowRadius: 10,
             shadowOpacity: 0.12,
             shadowColor: "#000"}}
