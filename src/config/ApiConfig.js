@@ -1,5 +1,4 @@
 import DeviceInfo from 'react-native-device-info';
-
 export const ApiConfig = {
     baseUrl: 'https://salesforce-auth-api-prod.us-e2.cloudhub.io/api',
     dataApi: 'https://salesforce-data-api-proxy-prod.us-e2.cloudhub.io/api',
@@ -9,5 +8,6 @@ export const ApiConfig = {
     cloudName: '',//cloud name on cloudinary
     cloudinaryURL: '',//url for cloudinary
     appVersion: 'Version: ' + DeviceInfo.getVersion(),//add the app version
-    youtubeUrl: ['https://www.youtube.com/embed/0ehQT8mnhnI', 'https://www.youtube.com/embed/b78QI21s6Do']//added how to url
+    youtubeApi: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PLKLW4r_wa4rzyKrXbXGkv7J5dLY6q-guC',//youtube api url with the playlistID
+    youtubeSecretKey: ''//token for youtube integration
 }
