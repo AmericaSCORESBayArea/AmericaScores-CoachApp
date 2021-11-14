@@ -10,6 +10,7 @@ import { CreateReportModal } from './src/components/ReportModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 import { EditSessionModal, AddSessionModal } from './src/components/SessionModal.component';
 import { userGuideModal, userGuideModalLogin} from './src/components/userGuideModal.component';
+import { assessmentModal } from './src/components/assessmentModal.component';
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -37,6 +38,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name="CreateReportModal" component={CreateReportModal}/>
       <HomeRootStack.Screen name="StudentInfoModal" component={StudentInfoModal}/>
       <HomeRootStack.Screen name="userGuideModal" component={userGuideModal} />
+      <HomeRootStack.Screen name="assessmentModal" component={assessmentModal} />
     </HomeRootStack.Navigator>
   );
 }
