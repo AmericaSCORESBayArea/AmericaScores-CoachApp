@@ -1,15 +1,24 @@
-import React, {useRef} from 'react';
+import React, {useRef, useEffect} from 'react';
 import { Modal, Card, Text, Button, Layout } from '@ui-kitten/components';
 import { ScrollView, View, Dimensions, Image } from 'react-native';
 import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiConfig } from '../config/ApiConfig';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
+import { data } from 'browserslist';
 export const userGuideModal = ({ navigation }) => {
-
+    useEffect(() => {
+        getYoutubeVideos();
+    }, []);
     const [visible, setVisible] = React.useState(true);
     const [slider1ActiveSlide, setSlider1ActiveSlide] = React.useState(0);
-    const carouselRef = useRef(null);    
+    const carouselRef = useRef(null);
+    const [videoData, setVideoData] = React.useState([]);
+    async function getYoutubeVideos() {
+        const res = await fetch(`${ApiConfig.youtubeApi}&key=${ApiConfig.youtubeSecretKey}`);
+        const data = await res.json();
+        setVideoData(data);
+    }    
     function closeModal() {
         fetchMyAsyncStorage()
         setVisible(false);
@@ -32,24 +41,24 @@ export const userGuideModal = ({ navigation }) => {
     const Header = (props) => (
         <Layout {...props}>
             <View style={{ flexDirection: 'row' }}>
-                <Text category='s1'>Welcome to</Text><Text category='s1' style={{ color: '#C1666B' }}> America</Text><Text category='s1' style={{ color: '#1C5D99' }}> SCORES Bay Area</Text><Text category='s1'> app.</Text>
+                <Text category='p2'>Welcome to</Text><Text category='p2' style={{ color: '#C1666B' }}> America</Text><Text category='p2' style={{ color: '#1C5D99' }}> SCORES Bay Area</Text><Text category='p2'> app.</Text>
             </View>
         </Layout>
     );
-
     const renderItems = ({ item }) => (
-        <View >
+        <View>
            <WebView
-            style={{ height: 350, flex: 1,  marginTop: 20}}
-            allowsFullscreenVideo={true}
-            source={{ uri: item }}
-            javaScriptEnabled={true}
-            domStorageEnabled={true}
-            userAgent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36"
+                style={{ height: 350, flex: 1,  marginTop: 10, width: Dimensions.get('window').width -55}}
+                allowsFullscreenVideo={true}
+                source={{ uri:  `https://youtube.com/embed/${item.snippet.resourceId.videoId}` }}
+                javaScriptEnabled={true}
+                domStorageEnabled={true}
+                userAgent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36"
             />
             <View style={{flexDirection:'row'}}>
-                <Image source={require('./../../assets/SwipeLeft.png')} style={{height:80, width: 80, resizeMode:'contain',}}/>
-                <Image source={require('./../../assets/SwipeRight.png')} style={{height:80, width: 80, resizeMode:'contain', marginLeft:'50%', marginRight:'auto'}}/>
+                <Image source={require('./../../assets/SwipeLeft.png')} style={{height:70, width: 42, resizeMode:'contain',}}/>
+                <Text style={{width:'60%', alignSelf:'center', textAlign:'justify', marginLeft:'1%', marginTop: '3%'}}>{item.snippet.description}</Text>
+                <Image source={require('./../../assets/SwipeRight.png')} style={{height:70, width: 42, resizeMode:'contain', marginRight:'auto'}}/>
             </View>
         </View>
     );
@@ -62,40 +71,48 @@ export const userGuideModal = ({ navigation }) => {
                 style={{ width: '95%', height: '100%', marginTop: '7%'}}>
                 <ScrollView>
                     <Card disabled={true} style={{ marginTop: '6%', height: '100%', width: '100%', marginBottom: '10%' }} header={Header} footer={Footer}>
-                        <ScrollView>
-                            <Carousel
-                                activeSlideAlignment='center'
-                                ref={carouselRef}//nuevo
-                                inactiveSlideOpacity={0.3}
-                                inactiveSlideScale={1}
-                                sliderWidth={Dimensions.get('window').width - 55}
-                                itemWidth={Dimensions.get('window').width - 55}
-                                data={ApiConfig.youtubeUrl}
-                                renderItem={renderItems}
-                                containerCustomStyle={{ overflow: 'visible' }}
-                                contentContainerCustomStyle={{ overflow: 'visible' }}
-                                layout={'default'}
-                                //loopClonesPerSide={5}
-                                onSnapToItem={(index) => setSlider1ActiveSlide(index)}
-                            />
-                            <Pagination
-                                dotsLength={(ApiConfig.youtubeUrl).length}
-                                activeDotIndex={slider1ActiveSlide}
-                                carouselRef={carouselRef}
-                                tappableDots={!!carouselRef}
-                                dotStyle={{
-                                    width: 10,
-                                    height: 10,
-                                    borderRadius: 5,
-                                    marginHorizontal: 8,
-                                    backgroundColor: 'rgba(0, 0, 0, 0.75)'
-                                }}
-                                inactiveDotStyle={{
-                                    backgroundColor: 'rgba(0, 0, 0, 0.75)'
-                                }}
-                                inactiveDotOpacity={0.4}
-                                inactiveDotScale={0.6}
-                            />
+                        <ScrollView >
+                            {videoData.length !== 0?
+                            <React.Fragment>
+                                <Carousel
+                                    activeSlideAlignment='center'
+                                    ref={carouselRef}//nuevo
+                                    inactiveSlideScale={0.94}
+                                    inactiveSlideOpacity={0.6}
+                                    showsHorizontalScrollIndicator={false}
+                                    snapOnAndroid={true}
+                                    removeClippedSubviews={false}
+                                    sliderWidth={Dimensions.get('window').width}
+                                    itemWidth={Dimensions.get('window').width}
+                                    data={videoData.items}
+                                    renderItem={renderItems}
+                                    containerCustomStyle={{ overflow: 'visible'}}
+                                    contentContainerCustomStyle={{ overflow: 'visible'}}
+                                    layout={'default'}
+                                    //loopClonesPerSide={5}
+                                    onSnapToItem={(index) => setSlider1ActiveSlide(index)}
+                                />  
+                                <Pagination
+                                    dotsLength={videoData.items.length}
+                                    activeDotIndex={slider1ActiveSlide}
+                                    carouselRef={carouselRef}
+                                    tappableDots={!!carouselRef}
+                                    dotStyle={{
+                                        width: 10,
+                                        height: 10,
+                                        borderRadius: 5,
+                                        marginHorizontal: 8,
+                                        backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                                    }}
+                                    inactiveDotStyle={{
+                                        backgroundColor: 'rgba(0, 0, 0, 0.75)'
+                                    }}
+                                    inactiveDotOpacity={0.4}
+                                    inactiveDotScale={0.6}
+                                />
+                            </React.Fragment>
+                            :
+                            <></>}
                         </ScrollView>
                     </Card>
                 </ScrollView>
@@ -105,7 +122,16 @@ export const userGuideModal = ({ navigation }) => {
 }
 export const userGuideModalLogin = ({ navigation }) => {
 
+    useEffect(() => {
+        getYoutubeVideos();
+    }, []);
     const [visible, setVisible] = React.useState(true);
+    const [videoData, setVideoData] = React.useState([]);
+    async function getYoutubeVideos() {
+        const res = await fetch(`${ApiConfig.youtubeApi}&key=${ApiConfig.youtubeSecretKey}`);
+        const data = await res.json();
+        setVideoData(data.items[0].snippet.resourceId.videoId)
+    }
 
     function closeModal() {
         fetchMyAsyncStorage()
@@ -128,11 +154,11 @@ export const userGuideModalLogin = ({ navigation }) => {
 
     const Header = (props) => (
         <Layout {...props}>
-            <View style={{ flexDirection: 'row' }}>
-                <Text category='s1'>Welcome to</Text>
-                <Text category='s1' style={{ color: '#C1666B' }}> America</Text>
-                <Text category='s1' style={{ color: '#1C5D99' }}> SCORES Bay Area</Text>
-                <Text category='s1'> app.</Text>
+            <View style={{ flexDirection: 'row',width:'90%'}}>
+                <Text category='p2'>Welcome to</Text>
+                <Text category='p2' style={{ color: '#C1666B' }}> America</Text>
+                <Text category='p2' style={{ color: '#1C5D99' }}> SCORES Bay Area</Text>
+                <Text category='p2'> app.</Text>
             </View>
         </Layout>
     );
@@ -148,7 +174,7 @@ export const userGuideModalLogin = ({ navigation }) => {
                             <WebView
                                 style={{ height: 400, flex: 1,  marginTop: 20}}
                                 allowsFullscreenVideo={true}
-                                source={{ uri: ApiConfig.youtubeUrl[0]}}
+                                source={{ uri: `https://youtube.com/embed/${videoData}`}}
                                 javaScriptEnabled={true}
                                 domStorageEnabled={true}
                                 userAgent="Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.71 Safari/537.36"

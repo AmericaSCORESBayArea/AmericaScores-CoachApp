@@ -677,7 +677,7 @@ class AttendanceScreen extends Component {
         const editIcon = (props) => ( <Icon {...props} name='edit-2-outline'/> );
         const forwardIcon = (props) => ( <Icon {...props} name='arrow-ios-forward-outline' /> );
         const backIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline' /> );
-        const assessmentIcon = () => ( <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> );
+        //const assessmentIcon = () => ( <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} /> );
         let refreshing = false;
 
         const onRefresh = () => {
@@ -691,12 +691,18 @@ class AttendanceScreen extends Component {
         const studentAttendanceItem = ({ item, index }) => (
             <ListItem
               title={`${item.StudentName}`}
-              onPress={() => this.checkStudent(index, !this.state.enrollments[index].Attended)}
+              //onPress={() => this.checkStudent(index, !this.state.enrollments[index].Attended)}
               accessoryLeft={() => {
                 if (this.state.enrollments[index].Attended) return <CheckBox checked={true} onChange={() => this.checkStudent(index, false)} />
                 else return <CheckBox checked={false} onChange={() => this.checkStudent(index,true)} />
               }}
-              accessoryRight={assessmentIcon}
+              accessoryRight={() => {
+                const {route} = this.props;
+                const {user} = this.props.user;
+                var currentSession = this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
+                var currentSessionData = currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
+                return <MaterialCommunityIcons name={'clipboard-pulse-outline'} size={25} color={'#4f5c63'} onPress={() => this.props.navigation.navigate('assessmentModal', {
+                Student: item, User: user, Session: currentSessionData})}/>}}
             />
         );
 
@@ -764,7 +770,7 @@ class AttendanceScreen extends Component {
         const updateSuccessCard = (status, text) => (
             <Card disabled={true} header={SuccessHeader}>
                 <Text style={styles.modalText} status={status}>{text}</Text> 
-                <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOff()} status={status}>
+                <Button appearance='outline' size={'small'} onPress={() => {this.toggleNotificationOff(),onRefresh()}} status={status}>
                     OK
                 </Button>
             </Card>

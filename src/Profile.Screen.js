@@ -52,8 +52,8 @@ class ProfileScreen extends Component {
            <React.Fragment>
                <ScrollView style={{flex:1}}>
                     <View style={{flexDirection:'row'}} >
-                        <Text style={{alignSelf:'center',textAlign:'center',marginLeft:'30%', marginRight:'16%'}} category='h6'>Select a Theme</Text>
-                        <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%', marginLeft:'5%'}} onPress={() => this.setState({coloroverlayvisibility: false, activeSlide:0})}>
+                        <Text style={{alignSelf:'center',textAlign:'center',marginLeft:'25%', marginRight:'16%'}} category='h6'>Select a Theme</Text>
+                        <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%', marginLeft:'3%'}} onPress={() => this.setState({coloroverlayvisibility: false, activeSlide:0})}>
                             <EvilIcons name={'close'} size={30} color={'#5D738B'} />
                         </TouchableOpacity>
                     </View>
@@ -68,9 +68,11 @@ class ProfileScreen extends Component {
                             marginRight:'1%'
                             }}
                         />
-                        <View style={{backgroundColor: item.color1, width: 100, height: 40, alignSelf:'center'}} />
-                        <View style={{backgroundColor: item.color2, width: 100, height: 40, alignSelf:'center'}} />
-                        <View style={{backgroundColor: item.color3, width: 100, height: 40, alignSelf:'center'}} />
+                        <View style={{flexDirection:'row', alignSelf:'center', marginTop:'2%', marginBottom:'auto'}}>
+                            <View style={{backgroundColor: item.color1, width: 80, height: 40, alignSelf:'center'}} />
+                            <View style={{backgroundColor: item.color2, width: 80, height: 40, alignSelf:'center'}} />
+                            <View style={{backgroundColor: item.color3, width: 80, height: 40, alignSelf:'center'}} />
+                        </View>
                     </View>
                 </ScrollView>
             </React.Fragment>
