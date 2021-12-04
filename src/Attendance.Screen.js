@@ -38,7 +38,10 @@ class AttendanceScreen extends Component {
             loadingModalstate:true,
             regionCoach:this.props.sessionScreen.region,
             arrowSession: undefined,
-            loadingModalRecords:false
+            loadingModalRecords:false,
+            duplicatedRecords:false,
+            duplicatesRecordsModal:false,
+            duplicateRecordsList: []
         }
     }
     
@@ -323,22 +326,33 @@ class AttendanceScreen extends Component {
         this.setState({loadingModalstate:false});
     }
 
-    async createMissingAttendance(attendanceRecords) {
-        //this.setState({loadingModalstate:true});
-        await Axios.post(
-            `${ApiConfig.dataApi}/attendances`,
-            attendanceRecords
-        ).then(res => {
-            if (res.status === 200){ 
-               // Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
-                this._setCurrentSessionData();
-                setTimeout(() => {this.setState({loadingModalRecords:false})}, 3500);
+    async createMissingAttendance(attendanceRecords,enrollmentsDuplicate) {
+        enrollmentsDuplicate.map(v => v).sort().sort((a, b) => {
+            if (a.StudentId === b.StudentId) {
+                this.setState({duplicatedRecords:true});
+                this.state.duplicateRecordsList.push(a.StudentName);
+            }
+          })
+        if(this.state.duplicateRecordsList.length > 0){
+            console.log('duplicates found');
+            this.setState({loadingModalRecords:false,duplicatesRecordsModal:true});   
+        }else{
+        //console.log('MissingEnrollments',enrollmentsDuplicate)
+            await Axios.post(
+                `${ApiConfig.dataApi}/attendances`,
+                attendanceRecords
+            ).then(res => {
+                if (res.status === 200){ 
+                // Alert.alert("Success", "Attendance records created succesfully. Pull down to refresh");
+                    this._setCurrentSessionData();
+                    setTimeout(() => {this.setState({loadingModalRecords:false})}, 3500);
+            }
+            }).catch(error => {
+                this.setState({loadingModalRecords:false});
+                console.log("SOMETHING HAPPENED")
+                throw error;
+            })
         }
-        }).catch(error => {
-            this.setState({loadingModalRecords:false});
-            console.log("SOMETHING HAPPENED")
-            throw error;
-        })
     }
     
     async verifyAttendance() {
@@ -355,20 +369,31 @@ class AttendanceScreen extends Component {
                     const verifiedEnrollments = await this.parseFetchedAttendanceToObject(res.data);
                     // console.log(verifiedEnrollments);
                     // this.setState({missingEnrollments: verifiedEnrollments});
-                    if(verifiedEnrollments.length > 0){
-                        let missingEnrollments = [];
-                        await verifiedEnrollments.map(async enrollment => {
-                            let studentRecord = {
-                                SessionId: this.state.sessionId,
-                                StudentId: enrollment.StudentId,
-                                Attended: false
-                            }
-                            missingEnrollments.push(studentRecord);
-                        })
-                        this.setState({loadingModalstate:false});
-                        this.setState({loadingModalRecords:true});
-                        this.createMissingAttendance(missingEnrollments)
-                        //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                    if(this.state.duplicatedRecords === false){
+                        if(verifiedEnrollments.length > 0){
+                            this.setState({duplicatedRecords:false,duplicatesRecordsModal:false});
+                            let missingEnrollments = [];
+                            let enrollmentsDuplicate = [];
+                            await verifiedEnrollments.map(async enrollment => {
+                                let studentRecord = {
+                                    SessionId: this.state.sessionId,
+                                    StudentId: enrollment.StudentId,
+                                    Attended: false
+                                }
+                                let studentRecordDuplicate = {
+                                    SessionId: this.state.sessionId,
+                                    StudentName: enrollment.StudentName,
+                                    StudentId: enrollment.StudentId,
+                                    Attended: false
+                                }
+                                enrollmentsDuplicate.push(studentRecordDuplicate);
+                                missingEnrollments.push(studentRecord);
+                            })
+                            this.setState({loadingModalstate:false});
+                            this.setState({loadingModalRecords:true});
+                            this.createMissingAttendance(missingEnrollments,enrollmentsDuplicate)
+                            //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                        }
                     }
                 }
             }
@@ -671,6 +696,8 @@ class AttendanceScreen extends Component {
 
     toggleNotificationOff() { this.setState({responseStatusModal: false, responseSuccess: false}) }
 
+    toggleNotificationOffBack(){ this.setState({duplicatesRecordsModal: false}) }
+
     render() {
         const {navigation} = this.props;
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
@@ -683,6 +710,7 @@ class AttendanceScreen extends Component {
         const onRefresh = () => {
             this.setState({loadingModalstate: true});
             refreshing = true;
+            this.setState({duplicatedRecords:false,duplicatesRecordsModal:false, duplicateRecordsList: []});
             this._setCurrentSessionData().then(() => refreshing = false);
             setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
             // wait(2000).then(() => refreshing = false);
@@ -784,6 +812,15 @@ class AttendanceScreen extends Component {
             </Card>
         );
 
+        const updateUnSuccessCardDuplicate = (status, text) => (
+            <Card disabled={true} header={UnsuccessHeader}>
+                <Text style={styles.modalText} status={status}>{text}</Text> 
+                <Button appearance='outline' size={'small'} onPress={() => this.toggleNotificationOffBack()} status={status}>
+                    OK
+                </Button>
+            </Card>
+        );
+
         const updateModal = () => (
             <Modal
                 visible={this.state.responseStatusModal}
@@ -793,6 +830,15 @@ class AttendanceScreen extends Component {
                     updateSuccessCard("success", "Attendance updated successfuly") :
                     updateUnSuccessCard("danger", "Something went wrong. Please, try again.")
                 }
+            </Modal>)
+
+        const duplicatesRecordsModal = () => (
+            <Modal
+                visible={this.state.duplicatesRecordsModal}
+                style={styles.popOverContentModal}
+                backdropStyle={styles.backdrop}
+                onBackdropPress={() => this.toggleNotificationOffBack()}>
+                {updateUnSuccessCardDuplicate("danger", `The student/s: ${this.state.duplicateRecordsList.map((value) => {return value})} has duplicate enrollments. Please contact your Coordinator to resolve this issue.`)}
             </Modal>)
 
         const spinnerCard = () => (
@@ -903,6 +949,7 @@ class AttendanceScreen extends Component {
                 {descriptionArea()}
                 {updateModal()}
                 {loadingModal()}
+                {duplicatesRecordsModal()}
                 {loadingModalRecords()}
                 {updateButton()}
                 {updatingModal()}
