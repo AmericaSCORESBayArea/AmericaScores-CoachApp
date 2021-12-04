@@ -107,14 +107,15 @@ export const assessmentModal = (props) => {
         <Modal
             visible={responseStatusModal}
             style={{
-            width:'90%',
+            width:'100%',
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf:'center',
-            padding: '10%',
+            padding: '6%',
             shadowRadius: 10,
             shadowOpacity: 0.12,
             shadowColor: "#000"}}
+            backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
             onBackdropPress={() => toggleNotificationOff()}>
             { (responseSuccess) ?
                 updateSuccessCard("success", "Assessment created successfuly") :
