@@ -22,7 +22,7 @@ export const assessmentModal = (props) => {
     }
     const data=[
         'PACER',
-        'GODEN',
+        'Activity Feedback',
     ]
     const [fieldValue, setFieldValue] = React.useState(data[0]);
     function createAssessment() {
@@ -67,7 +67,7 @@ export const assessmentModal = (props) => {
         let assessment = {
             "AssessmentResponse": assessmentValue,
             "StudentId": props.route.params.Student.StudentId,
-            "AssessmentType": fieldValue
+            "AssessmentType": fieldValue.replace(' ', '_')
         }
         console.log(assessment)
         await Axios.post(`${ApiConfig.dataApi}/coach/${props.route.params.User.ContactId}/teamseasons/${props.route.params.Session.TeamSeasonId}/sessions/${props.route.params.Session.SessionId}/assessments`,
