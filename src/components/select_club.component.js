@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, ImageBackground, FlatList, ScrollView} from 'react-native';
-import { Layout, Text, Card } from '@ui-kitten/components';
+import { SafeAreaView, ImageBackground, FlatList, ScrollView, Linking, Platform } from 'react-native';
+import { Layout, Text, Card, Modal, Button } from '@ui-kitten/components';
 import { View} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { changeRegion, changeRegionList } from "../Redux/actions/SessionScreen.actions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { paletteColors } from './paletteColors';
+import checkVersion from 'react-native-store-version';
+import DeviceInfo from 'react-native-device-info';
 const Clubs = [
   {
       id:0,
@@ -39,6 +41,7 @@ const Headerr = (props) => (
     </View>
   );
   export const LogInScreen_Select_Club = ({navigation}) => {
+    const [updatedModal, setUpdatedModal] = React.useState(false);
     useEffect(() => {
       async function fetchMyAsyncStorage() {
         let aux = await AsyncStorage.getItem('userFirstTime')
@@ -47,7 +50,33 @@ const Headerr = (props) => (
         }
       }
       fetchMyAsyncStorage()
+      const init = async () => {
+        try{
+          const check = await checkVersion({
+            version: DeviceInfo.getVersion(), // app local version
+            iosStoreURL: 'https://apps.apple.com/bo/app/america-scores-attendance/id1527435979',
+            androidStoreURL: 'https://play.google.com/store/apps/details?id=com.americaScoresAttendance.app&hl=es_419&gl=US',
+          });
+          if(check.result === "new"){
+            setUpdatedModal(true);
+          }
+        } catch(e) {
+          console.log(e);
+        }
+      };
+      init();
     }, [])
+    function toggleNotificationOff() {
+      setUpdatedModal(false);
+    }
+    function toggleNotificationOffUpdate() {
+      setUpdatedModal(false);
+      if(Platform.OS === 'android'){
+        Linking.openURL('https://play.google.com/store/apps/details?id=com.americaScoresAttendance.app&hl=es_419&gl=US');
+      }else if(Platform.OS === 'ios'){
+        Linking.openURL('https://apps.apple.com/bo/app/america-scores-attendance/id1527435979');
+      }
+    }
     const dispatch = useDispatch();
     async function clubSelected(region) {
         dispatch(changeRegion(region));
@@ -71,6 +100,46 @@ const Headerr = (props) => (
         </Text>            
       </Card> 
     );
+    const SuccessHeader = (props) => (
+      <Layout {...props}>
+           <ImageBackground
+              resizeMode="contain"
+              style={{height:150, width:150, alignSelf:"center"}}
+              source={require('../../assets/update_icon.png')}
+          />
+          <Text category='h6' appearance='hint' status='info' style={{alignSelf:'center', marginTop:'2%'}}>New update is available</Text>
+      </Layout>
+  );
+  const updateSuccessCard = (status, text) => (
+    <Card disabled={true} header={SuccessHeader}>
+        <Text style={{margin: 15}} status={status}>{text}</Text> 
+        <Button appearance='filled' size={'small'} style={{marginBottom:'3%'}} onPress={() => {toggleNotificationOffUpdate()}} status={status}>
+              UPDATE
+        </Button>
+        <Button appearance='outline' size={'small'} onPress={() => {toggleNotificationOff()}} status={status}>
+              NOT NOW
+        </Button>
+    </Card>
+  );
+    const updateModal = () => (
+      <Modal
+          visible={updatedModal}
+          style={{
+          width:'100%',
+          flexDirection: 'row',
+          alignItems: 'center',
+          alignSelf:'center',
+          padding: '7%',
+          shadowRadius: 10,
+          shadowOpacity: 0.12,
+          shadowColor: "#000"}}
+          backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
+          onBackdropPress={() => toggleNotificationOff()}>
+          {
+              updateSuccessCard("info", "America SCORES Bay Area requests that you update to the latest version.")
+          }
+      </Modal>)
+
     return(
     <Layout style={{flex: 1}} level="4">
       <ScrollView bounces={false}>
@@ -79,12 +148,13 @@ const Headerr = (props) => (
             <Layout style={{padding: '2%', width:'100%', height:'100%'}} level="4">
               <Card style={{flex: 1, backgroundColor:"#F4F2F2", minHeight:'110%'}} status="primary" header={Header}>
               <Layout style={{ justifyContent: 'center', alignItems: 'center', marginTop:"2%", backgroundColor:"#F4F2F2"}}>
-              <FlatList
-                data={Clubs}
-                renderItem={renderItems}
-                keyExtractor={item => item.id}
-                numColumns={2}
-              />   
+                {updateModal()}
+                <FlatList
+                  data={Clubs}
+                  renderItem={renderItems}
+                  keyExtractor={item => item.id}
+                  numColumns={2}
+                />   
               </Layout>
               </Card>                   
             </Layout>   
