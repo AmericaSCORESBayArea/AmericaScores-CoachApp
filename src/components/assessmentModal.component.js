@@ -111,7 +111,7 @@ export const assessmentModal = (props) => {
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf:'center',
-            padding: '6%',
+            marginLeft: '5%',
             shadowRadius: 10,
             shadowOpacity: 0.12,
             shadowColor: "#000"}}
@@ -119,7 +119,7 @@ export const assessmentModal = (props) => {
             onBackdropPress={() => toggleNotificationOff()}>
             { (responseSuccess) ?
                 updateSuccessCard("success", "Assessment created successfuly") :
-                updateUnSuccessCard("danger", "Something went wrong. Please, try again.")
+                updateUnSuccessCard("danger", "Unable to create record. If you are certain this isn´t a duplicate of the same student, session, and type, please report this using Help->Report a Problem")
             }
         </Modal>)
 
