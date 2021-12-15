@@ -111,7 +111,8 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         console.log(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
-              .then(res => this.setState({studentList: res.data, loadingModalstate: false}))
+              .then(res => {
+                    this.setState({studentList: res.data.sort((a, b) => (a.StudentName.split(" ")[1].toLowerCase() > b.StudentName.split(" ")[1].toLowerCase())), loadingModalstate: false})})
               .catch(e => console.log(e));
     }
     /*async __syncCoachRegions(){
@@ -419,7 +420,6 @@ class ActivitiesScreen extends Component {
                 return; 
             }
             else{
-                console.log(item);
                 return (<ListItem
                             key={item.StudentId}
                             title={<Text style={{color: this.state.selected.textColor}}>{item.LastName}, {item.FirstName}</Text>}
@@ -808,7 +808,7 @@ class ActivitiesScreen extends Component {
         );
         const regionName = (status) =>(
             (
-                (this.state.activitiesRegion.length !== 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                (this.state.activitiesRegion.length !== 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false  && this.state.selectedTabIndex !== 1) &&
                  //(this.props.sessionScreen.region === "ASBA"?
                     <View style={{backgroundColor: this.state.selected.color1}}>{/*Region name #52a5cc*/}
                         <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
@@ -825,7 +825,7 @@ class ActivitiesScreen extends Component {
         );
         const noMatchRegion = (status) =>(
             (
-                (this.state.activities.length !== 0 && this.state.activitiesRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                (this.state.activities.length !== 0 && this.state.activitiesRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false && this.state.selectedTabIndex !== 1) &&
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
@@ -852,7 +852,7 @@ class ActivitiesScreen extends Component {
 
         const noMatch = (status) => (
             (
-                (this.state.nomatchModalVisibility) &&
+                (this.state.nomatchModalVisibility && this.state.selectedTabIndex !== 1) &&
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
@@ -862,6 +862,22 @@ class ActivitiesScreen extends Component {
                 <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
                         There are no active Sessions for the selected date.
+                    </Text>
+                </Card>
+            ))
+        );
+        const emptyStudentsList = (status) => (
+            (
+                (this.state.studentList.length === 0 && this.state.selectedTabIndex === 1) &&
+                (this.props.sessionScreen.region === "ASBA"?
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                    No Students Enrolled. Please use the Enroll Feature to Add a Student.
+                    </Text>
+                </Card>:
+                <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
+                    No Students Enrolled. Please use the Enroll Feature to Add a Student.
                     </Text>
                 </Card>
             ))
@@ -906,13 +922,14 @@ class ActivitiesScreen extends Component {
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                     {message("basic")}
-                    <Divider style={{marginTop:"15%"}}/>
+                    <Divider />
 
                     <ImageBackground source={getImage()} style={styles.image}>
                         {TopTabBar()}
                         {loadingModal()}
                         {helloMessage("info")}
                         {noMatch("basic")}
+                        {emptyStudentsList("basic")}
                         {noMatchRegion("basic")}
                         {regionName("basic")}
                         {(this.state.selectedTabIndex === 1 ?
@@ -920,7 +937,7 @@ class ActivitiesScreen extends Component {
                             style={{opacity: 0.95}}
                             data={this.state.studentList}
                             renderItem={studentItem}
-                            Divider={Divider}
+                            ItemSeparatorComponent={Divider}
                             refreshControl={
                                 <RefreshControl
                                 refreshing={refreshing}
