@@ -48,15 +48,20 @@ class LogInScreen_Google extends Component {
           }).then(async res => {
             if (res.status === 200) console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
             const userProfile = res.data;
-            await this.setLoginLocal(userProfile.ContactId);
-            if (userProfile.ContactId) {
-              //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-              //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;        
-                  // dispatch(loginUser(userProfile));
-                await actions.loginUser(userProfile);
-                this.setState({logged: "true"});
-                navigation.navigate("Select_Club");
-                this.setState({loadingModalstate: false})
+            if(res.data.ContactId === null){
+              this.setState({loadingModalstate: false});
+              this.initAsync();
+            }else{
+              await this.setLoginLocal(userProfile.ContactId);
+              if (userProfile.ContactId) {
+                //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+                //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;        
+                    // dispatch(loginUser(userProfile));
+                  await actions.loginUser(userProfile);
+                  this.setState({logged: "true"});
+                  navigation.navigate("Select_Club");
+                  this.setState({loadingModalstate: false})
+                }
               }
             })
           } else {
