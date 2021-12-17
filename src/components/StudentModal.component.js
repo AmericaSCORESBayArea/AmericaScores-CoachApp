@@ -81,9 +81,9 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     
 
       const renderSearchIcon = (props) => (
-        <TouchableWithoutFeedback onPress={() => filterData()}>
+        // <TouchableOpacity onPress={() => filterData()}>
           <Icon {...props} name='search-outline'/>
-        </TouchableWithoutFeedback>
+        // </TouchableOpacity>
       );
 
     function closeModal() {
@@ -231,12 +231,14 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     // );
 
     const SearchBar = () => (
+        <View>
         <Input
             placeholder='Student Name'
             value={value}
-            accessoryRight={renderSearchIcon}
+            // accessoryRight={renderSearchIcon}
             onChangeText={enteredSureNameValue => setValue(enteredSureNameValue)}
         />
+        </View>
     )
 
     return(
@@ -247,16 +249,21 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
             style={{ width: '80%', height: '100%'}}>
             <ScrollView>    
             <Card disabled={true} style={{ marginTop: '6%', height: '100%', width: '100%', marginBottom: '10%' }} header={Header} footer={Footer}>
+                <ScrollView>
                 {SearchBar()}
+                <Button style={{margin: 2}} appearance='outline' accessoryRight={renderSearchIcon} onPress={() => filterData()}>
+                    Search
+                </Button>
                 {loadingModal()}
                 {/* <View> */}
                     <List
-                        style={{opacity: 0.95, overflow: "scroll"}}
+                        style={{opacity: 0.95, overflow: "scroll", maxHeight: 180}}
                         data={data}
                         ItemSeparatorComponent={Divider}
                         renderItem={renderOption}
                     />
                 {/* </View> */}
+                </ScrollView>
             </Card>
             </ScrollView>
         </Modal>
