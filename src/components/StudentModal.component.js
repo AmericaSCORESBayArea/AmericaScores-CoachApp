@@ -102,13 +102,19 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     }
 
     async function canCreateStudent() {
+        if(selectedStudent){
         setLoadingModalstate(true);
         const exists = enrolled.find(student => student.StudentId === selectedStudent.Id);
+
         if(!exists) {
             createStudent()
         } else {
             setLoadingModalstate(false);
             Alert.alert("Error", "This student is already enrolled in this team");
+        }
+        }
+        else{
+            Alert.alert("Error", "You have to select a student first")
         }
     }
 
