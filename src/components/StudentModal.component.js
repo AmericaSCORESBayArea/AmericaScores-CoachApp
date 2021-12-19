@@ -42,7 +42,7 @@ export const CreateStudentModal = ({navigation}) => {
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{width:'80%'}}>
+            style={{width:'95%'}}>
             <Card disabled={true} header={Header} footer={Footer}>
                 <Text >Student name</Text>
                 <Input
@@ -252,7 +252,7 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{ width: '80%', height: '100%'}}>
+            style={{ width: '95%', height: '100%'}}>
             <ScrollView>    
             <Card disabled={true} style={{ marginTop: '6%', height: '100%', width: '100%', marginBottom: '10%' }} header={Header} footer={Footer}>
                 <ScrollView>
@@ -331,7 +331,7 @@ export const StudentInfoModal = ({navigation, route}) => {
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{width:'80%'}}>
+            style={{width:'95%'}}>
             <Card disabled={true} header={Header} footer={Footer}>
                 <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
                 <Text>    {Allergies}</Text>
