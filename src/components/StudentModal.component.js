@@ -333,27 +333,29 @@ export const StudentInfoModal = ({navigation, route}) => {
             onBackdropPress={() => closeModal()}
             style={{width:'95%'}}>
             <Card disabled={true} header={Header} footer={Footer}>
-                <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
-                <Text>    {Allergies}</Text>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Parent Info:</Text>
-                <Text >   {ParentName}</Text>
-                <TouchableOpacity onPress={() => openNumber(ParentPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{ParentPhone}</Text>
-                </TouchableOpacity>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
-                <Text >   {EmergencyContactName}</Text>
-                <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
-                <Text>   {EmergencyContactRelationToChild}</Text>
-                <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{EmergencyContactPhone}</Text>
-                </TouchableOpacity>
-                <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
-                <Text >   {SecondEmergencyContactName}</Text>
-                <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
-                <Text>   {SecondEmergencyContactRelationToChild}</Text>
-                <TouchableOpacity onPress={() => openNumber(SecondEmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
-                    <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{SecondEmergencyContactPhone}</Text>
-                </TouchableOpacity>
+                <ScrollView>
+                    <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
+                    <Text>    {Allergies}</Text>
+                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Parent Info:</Text>
+                    <Text >   {ParentName}</Text>
+                    <TouchableOpacity onPress={() => openNumber(ParentPhone)} style={{height: "6%", width: "50%"}}>
+                        <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{ParentPhone}</Text>
+                    </TouchableOpacity>
+                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
+                    <Text >   {EmergencyContactName}</Text>
+                    <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
+                    <Text>   {EmergencyContactRelationToChild}</Text>
+                    <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
+                        <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{EmergencyContactPhone}</Text>
+                    </TouchableOpacity>
+                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
+                    <Text >   {SecondEmergencyContactName}</Text>
+                    <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
+                    <Text>   {SecondEmergencyContactRelationToChild}</Text>
+                    <TouchableOpacity onPress={() => openNumber(SecondEmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
+                        <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{SecondEmergencyContactPhone}</Text>
+                    </TouchableOpacity>
+                </ScrollView>
             </Card>
         </Modal>
     );
