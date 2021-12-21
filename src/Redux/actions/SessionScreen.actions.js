@@ -2,6 +2,7 @@ import { SEASONTITLE_CHANGE } from '../constants';
 import { TEAMNAMETITLE_CHANGE } from '../constants';
 import { COACHREGION_CHANGE } from '../constants';
 import { REGIONS_LIST } from '../constants';
+import { UPDATE_APP } from '../constants';
 export function changeTitle(title) {
     return {
         type: SEASONTITLE_CHANGE,
@@ -24,5 +25,11 @@ export function changeRegionList(listofregions){
     return{
         type: REGIONS_LIST,
         payload: listofregions,
+    }
+}
+export function changeUpdateApp(flagUpdate){
+    return{
+        type: UPDATE_APP,
+        payload: flagUpdate,
     }
 }
