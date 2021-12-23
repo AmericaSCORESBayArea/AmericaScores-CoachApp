@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon, List, Divider, ListItem } from '@ui-kitten/components';
 import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView, Alert, TouchableWithoutFeedback, Image } from 'react-native';
 import moment from "moment";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
 import {ApiConfig} from "../config/ApiConfig";
 
@@ -297,9 +299,17 @@ export const StudentInfoModal = ({navigation, route}) => {
         navigation.goBack();
     }
 
+    function openWhatsapp(phone){
+        let phoneWithCountryCode = '+'+1+phone
+        let url = `http://api.whatsapp.com/send?phone=${phoneWithCountryCode}`
+        Linking.openURL(url).then((data) => {
+            console.log('WhatsApp Opened');
+          }).catch(() => {
+            alert('Make sure WhatsApp installed on your device');
+        });
+    }
     
     function openNumber(phone){
-
         let phoneNumber = '';
     
         if (Platform.OS === 'android') {
@@ -336,19 +346,76 @@ export const StudentInfoModal = ({navigation, route}) => {
                 <ScrollView>
                     <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
                     <Text>    {Allergies}</Text>
-                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Parent Info:</Text>
+                    <View style={{flexDirection:'row'}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Parent Info:</Text>
+                        {ParentPhone.length !== 0?
+                            <React.Fragment>
+                                <Ionicons
+                                        name="logo-whatsapp"
+                                        size={28}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'48%'}}
+                                        onPress={() => openWhatsapp(ParentPhone)}
+                                    />
+                                <Feather
+                                    name="phone-call"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'auto'}}
+                                    onPress={() => openNumber(ParentPhone)}
+                                />
+                            </React.Fragment>
+                            : <></>
+                        }
+                    </View>
                     <Text >   {ParentName}</Text>
                     <TouchableOpacity onPress={() => openNumber(ParentPhone)} style={{height: "6%", width: "50%"}}>
                         <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{ParentPhone}</Text>
                     </TouchableOpacity>
-                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Emergency Contact:</Text>
+                        {EmergencyContactPhone.length !== 0?
+                            <React.Fragment>
+                                <Ionicons
+                                        name="logo-whatsapp"
+                                        size={28}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'28%'}}
+                                        onPress={() => openWhatsapp(EmergencyContactPhone)}
+                                    />
+                                <Feather
+                                    name="phone-call"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between', marginLeft: 'auto'}}
+                                    onPress={() => openNumber(EmergencyContactPhone)}
+                                />
+                            </React.Fragment>
+                            : <></>
+                        }
+                    </View>
                     <Text >   {EmergencyContactName}</Text>
                     <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
                     <Text>   {EmergencyContactRelationToChild}</Text>
                     <TouchableOpacity onPress={() => openNumber(EmergencyContactPhone)} style={{height: "6%", width: "50%"}}>
                         <Text style={{color: '#add8e6', textDecorationLine: 'underline'}}>+1{EmergencyContactPhone}</Text>
                     </TouchableOpacity>
-                    <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
+                    <View style={{flexDirection: 'row'}}>
+                        <Text style={{fontWeight: 'bold', fontSize: 16}}>{'\n'}Second Emergency Contact:</Text>
+                        {SecondEmergencyContactPhone.length !== 0?
+                            <React.Fragment>
+                                <Ionicons
+                                        name="logo-whatsapp"
+                                        size={28}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'9.1%'}}
+                                        onPress={() => openWhatsapp(SecondEmergencyContactPhone)}
+                                    />
+                                <Feather
+                                    name="phone-call"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'auto'}}
+                                    onPress={() => openNumber(SecondEmergencyContactPhone)}
+                                />
+                            </React.Fragment>
+                            : <></>
+                        }
+                    </View>
                     <Text >   {SecondEmergencyContactName}</Text>
                     <Text style={{fontWeight: 'bold'}}>   Relationship:</Text>
                     <Text>   {SecondEmergencyContactRelationToChild}</Text>
