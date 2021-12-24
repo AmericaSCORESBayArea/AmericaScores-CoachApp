@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { SafeAreaView, ImageBackground, FlatList, ScrollView, Linking, Platform } from 'react-native';
 import { Layout, Text, Card, Modal, Button } from '@ui-kitten/components';
 import { View} from 'react-native';
-import { useDispatch } from 'react-redux';
-import { changeRegion, changeRegionList } from "../Redux/actions/SessionScreen.actions";
+import { useDispatch, useSelector } from 'react-redux';
+import { changeRegion, changeRegionList, changeUpdateApp } from "../Redux/actions/SessionScreen.actions";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { paletteColors } from './paletteColors';
 import checkVersion from 'react-native-store-version';
@@ -42,6 +42,8 @@ const Headerr = (props) => (
   );
   export const LogInScreen_Select_Club = ({navigation}) => {
     const [updatedModal, setUpdatedModal] = React.useState(false);
+    const dispatch = useDispatch();
+    const state = useSelector(state => state.sessionScreen.updateapp)
     useEffect(() => {
       async function fetchMyAsyncStorage() {
         let aux = await AsyncStorage.getItem('userFirstTime')
@@ -57,8 +59,9 @@ const Headerr = (props) => (
             iosStoreURL: 'https://apps.apple.com/bo/app/america-scores-attendance/id1527435979',
             androidStoreURL: 'https://play.google.com/store/apps/details?id=com.americaScoresAttendance.app&hl=es_419&gl=US',
           });
-          if(check.result === "new"){
+          if(check.result === "new" && state !== true){
             setUpdatedModal(true);
+            dispatch(changeUpdateApp(true));
           }
         } catch(e) {
           console.log(e);
@@ -77,7 +80,6 @@ const Headerr = (props) => (
         Linking.openURL('https://apps.apple.com/bo/app/america-scores-attendance/id1527435979');
       }
     }
-    const dispatch = useDispatch();
     async function clubSelected(region) {
         dispatch(changeRegion(region));
         if(region === 'ASBA'){
