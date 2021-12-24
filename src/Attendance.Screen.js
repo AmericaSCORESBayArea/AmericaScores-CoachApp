@@ -838,7 +838,7 @@ class AttendanceScreen extends Component {
                 style={styles.popOverContentModal}
                 backdropStyle={styles.backdrop}
                 onBackdropPress={() => this.toggleNotificationOffBack()}>
-                {updateUnSuccessCardDuplicate("danger", `The student/s: ${this.state.duplicateRecordsList.map((value) => {return value})} has duplicate enrollments. Please contact your Coordinator to resolve this issue.`)}
+                {updateUnSuccessCardDuplicate("danger", `The student/s: ${this.state.duplicateRecordsList.map((value) => {return value})} has duplicate enrollments. Please contact your Coordinator to resolve this issue.\nYou may take enrollment for your other students.`)}
             </Modal>)
 
         const spinnerCard = () => (
