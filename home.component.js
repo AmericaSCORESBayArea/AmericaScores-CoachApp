@@ -10,7 +10,7 @@ import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
 import Profile from "./src/Profile.Screen";
 import { ApiConfig } from './src/config/ApiConfig';
-
+import analytics from '@react-native-firebase/analytics';
 import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
 
@@ -148,13 +148,21 @@ export default OptionOverflowMenu = (navigation) => {
         <Button style={{flex:1, backgroundColor: coloroverflow}} appearance='ghost' accessoryRight={OptionsIcon} onPress={() => setOverflowMenuVisible(true)}/>
     );
 
-    function menuItemOnPress(modalScreen) {
+    async function menuItemOnPress(modalScreen) {
+        await analytics().logSelectContent({
+            content_type: `Pressed ${modalScreen}`,
+            item_id: modalScreen,
+          })
         setOverflowMenuVisible(false);
         navigation.navigate(modalScreen);
     };
 
     async function changeAfflitiation(){
         try{
+            await analytics().logSelectContent({
+                content_type: `Pressed affiliation change`,
+                item_id: "affiliation-change",
+              })
             setOverflowMenuVisible(false);
             await dispatch(changeRegion(null));         
             navigation.navigate('Login', { screen: 'Select_Club' });
@@ -162,12 +170,20 @@ export default OptionOverflowMenu = (navigation) => {
     }
     async function profileScreen(){
         try{
+            await analytics().logSelectContent({
+                content_type: `Pressed profile`,
+                item_id: "profile-screen",
+              })
             setOverflowMenuVisible(false);
             navigation.navigate('profile');
         } catch (error) {console.log(error)}
     }
     async function logOutOnPress(){
         try {
+            await analytics().logSelectContent({
+                content_type: `Pressed log out button`,
+                item_id: "log-out",
+              })
             setOverflowMenuVisible(false);
             await GoogleSignIn.signOutAsync();
             await auth().signOut();
