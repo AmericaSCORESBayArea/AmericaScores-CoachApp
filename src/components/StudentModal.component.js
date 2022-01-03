@@ -311,16 +311,22 @@ export const StudentInfoModal = ({navigation, route}) => {
     
     function openNumber(phone){
         let phoneNumber = '';
-    
         if (Platform.OS === 'android') {
           phoneNumber = `tel:${phone}`;
         } else {
           phoneNumber = `telprompt:${phone}`;
         }
-    
         Linking.openURL(phoneNumber);
       };
-
+    function smsNumber(phone){
+        let phoneNumber = '';
+        if (Platform.OS === 'android') {
+          phoneNumber = `sms:${phone}`;
+        } else {
+          phoneNumber = `sms:${phone}`;
+        }
+        Linking.openURL(phoneNumber);
+    }
     const Footer = (props) => (
         <Layout {...props}>
             <Button onPress={() => closeModal()}>
@@ -341,9 +347,9 @@ export const StudentInfoModal = ({navigation, route}) => {
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{width:'95%'}}>
-            <Card disabled={true} header={Header} footer={Footer}>
-                <ScrollView>
+            style={{width:'100%'}}>
+            <Card disabled={true} header={Header} footer={Footer} style={{width:'102%'}}>
+                <ScrollView >
                     <Text style={{fontWeight: 'bold', fontSize: 16}} >Allergies/Medical Conditions:</Text>
                     <Text>    {Allergies}</Text>
                     <View style={{flexDirection:'row'}}>
@@ -353,14 +359,20 @@ export const StudentInfoModal = ({navigation, route}) => {
                                 <Ionicons
                                         name="logo-whatsapp"
                                         size={28}
-                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'48%'}}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'38.9%'}}
                                         onPress={() => openWhatsapp(ParentPhone)}
                                     />
                                 <Feather
                                     name="phone-call"
                                     size={25}
-                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'auto'}}
+                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'3%'}}
                                     onPress={() => openNumber(ParentPhone)}
+                                />
+                                <Feather
+                                    name="message-square"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between', marginLeft:'3%'}}
+                                    onPress={() => smsNumber(ParentPhone)}
                                 />
                             </React.Fragment>
                             : <></>
@@ -377,14 +389,20 @@ export const StudentInfoModal = ({navigation, route}) => {
                                 <Ionicons
                                         name="logo-whatsapp"
                                         size={28}
-                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'28%'}}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'19.3%'}}
                                         onPress={() => openWhatsapp(EmergencyContactPhone)}
                                     />
                                 <Feather
                                     name="phone-call"
                                     size={25}
-                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between', marginLeft: 'auto'}}
+                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between', marginLeft:'3%'}}
                                     onPress={() => openNumber(EmergencyContactPhone)}
+                                />
+                                <Feather
+                                    name="message-square"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between',marginLeft:'3%'}}
+                                    onPress={() => smsNumber(EmergencyContactPhone)}
                                 />
                             </React.Fragment>
                             : <></>
@@ -403,14 +421,20 @@ export const StudentInfoModal = ({navigation, route}) => {
                                 <Ionicons
                                         name="logo-whatsapp"
                                         size={28}
-                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'9.1%'}}
+                                        style={{color: 'green', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'1%'}}
                                         onPress={() => openWhatsapp(SecondEmergencyContactPhone)}
                                     />
                                 <Feather
                                     name="phone-call"
                                     size={25}
-                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'auto'}}
+                                    style={{color: 'black', marginTop:'4.7%',justifyContent:'space-between', marginLeft:'3%'}}
                                     onPress={() => openNumber(SecondEmergencyContactPhone)}
+                                />
+                                 <Feather
+                                    name="message-square"
+                                    size={25}
+                                    style={{color: 'black', marginTop:'4.7%', justifyContent:'space-between', marginLeft: '3%'}}
+                                    onPress={() => smsNumber(SecondEmergencyContactPhone)}
                                 />
                             </React.Fragment>
                             : <></>
