@@ -69,9 +69,9 @@ const Headerr = (props) => (
       };
       init();
     }, [])
-    function toggleNotificationOff() {
+    /*function toggleNotificationOff() {
       setUpdatedModal(false);
-    }
+    }*/
     function toggleNotificationOffUpdate() {
       setUpdatedModal(false);
       if(Platform.OS === 'android'){
@@ -118,9 +118,9 @@ const Headerr = (props) => (
         <Button appearance='filled' size={'small'} style={{marginBottom:'3%'}} onPress={() => {toggleNotificationOffUpdate()}} status={status}>
               UPDATE
         </Button>
-        <Button appearance='outline' size={'small'} onPress={() => {toggleNotificationOff()}} status={status}>
+        {/* <Button appearance='outline' size={'small'} onPress={() => {toggleNotificationOff()}} status={status}>
               NOT NOW
-        </Button>
+            </Button>*/}
     </Card>
   );
     const updateModal = () => (
@@ -136,7 +136,7 @@ const Headerr = (props) => (
           shadowOpacity: 0.12,
           shadowColor: "#000"}}
           backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
-          onBackdropPress={() => toggleNotificationOff()}>
+          /*onBackdropPress={() => toggleNotificationOff()}*/>
           {
               updateSuccessCard("info", "America SCORES Bay Area requests that you update to the latest version.")
           }

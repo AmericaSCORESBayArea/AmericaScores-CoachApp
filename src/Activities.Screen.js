@@ -14,8 +14,7 @@ import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
-import { paletteColors } from './components/paletteColors';
-
+import { paletteColors } from './components/paletteColors';       
 class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
@@ -54,7 +53,7 @@ class ActivitiesScreen extends Component {
             selected: null
         }
     }
-
+    
     async componentDidMount() {
         let aux= await AsyncStorage.getItem('customTheme');
         if(aux === null){
@@ -157,7 +156,7 @@ class ActivitiesScreen extends Component {
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
             if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
+                this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})//change
             }
             this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
         }else{
@@ -202,6 +201,11 @@ class ActivitiesScreen extends Component {
     async fetchActivities() {
         const { user } = this.props;
         const { route } = this.props;
+        /*delete Axios.defaults.headers.common['client_id'];
+        delete Axios.defaults.headers.common['client_secret'];
+        Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+        Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;     
+        console.log(Axios.defaults.headers)*/
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
                 await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
@@ -782,7 +786,7 @@ class ActivitiesScreen extends Component {
                 size='large'
                 placement="bottom"
                 range={this.state.range}
-                min={this.state.StartSeason}
+                min={new Date('01/01/2020')}
                 max={this.state.EndSeason}
                 onSelect={range => this.selectRange(range)}
                 dateService={formatDateService}
