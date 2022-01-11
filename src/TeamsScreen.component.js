@@ -25,7 +25,11 @@ class TeamsScreen extends Component {
             regions: this.props.sessionScreen.listofregions,
             RegionSelected: "",//setting the region selected
             loadingModalstate: true,
-            selected: null
+            selected: null,
+            seasons: [],
+            selectedIndexSeason: "",
+            displayedValueSeason: "",
+            seasonId: ''
         }
     }
 
@@ -33,16 +37,14 @@ class TeamsScreen extends Component {
         let aux= await AsyncStorage.getItem('customTheme');
         this.setState({selected: JSON.parse(aux)})
         const {user} = this.props.user;
-        Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
-                params: {
-                    date: moment().format("YYYY-MM-DD")
-                }
-            })
-        .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
+        Axios.get(`${ApiConfig.dataApi}/seasons`)
+        .then(response => {
+            this.setState({seasons: response.data,selectedIndexSeason: 0,displayedValueSeason: response.data[0].Name, seasonId:  response.data[0].Id});
+            Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons?season=${response.data[0].Id}`)
+            .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
             this.setState({data: response.data, selectedData: response.data}),
-            this.regionFiltering(response.data),
-            console.log(response);
-        })
+            this.regionFiltering(response.data)
+            })
             .catch(e => console.log(e));
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         if (this.props.sessionScreen.region === 'IFC'){
@@ -52,6 +54,8 @@ class TeamsScreen extends Component {
         }else if (this.props.sessionScreen.region === 'OGSC'){
             this.setState({RegionSelected:"All OGSC"})
         }
+        })
+        .catch(e => console.log(e));
     }
     setSearchBarValue(value) { this.setState({value: value}); }
     onSelect = (index) => { this.setSearchBarValue(this.state.selectedData[index].TeamSeasonName)};
@@ -104,8 +108,26 @@ class TeamsScreen extends Component {
         }
             this.setState({RegionSelected:this.state.regions[index.row]})
     }
+    SelectIndexSeason(index){
+        this.setState({loadingModalstate:true});
+        this.setState({selectedIndexSeason: index});
+        this.setState({displayedValueSeason: this.state.seasons[index.row].Name});
+        this.fetchTeamsSeasonSelected(this.state.seasons[index.row]);
+    }
 
+    fetchTeamsSeasonSelected = (season) =>{
+        const {user} = this.props.user;
+        this.setState({seasonId: season.Id});
+        Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons?season=${season.Id}`)
+            .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
+            this.setState({data: response.data, selectedData: response.data}),
+            this.regionFiltering(response.data)
+            this.setState({loadingModalstate:false});
+            })
+            .catch(e => console.log(e));
+    }
     regionFiltering = (data) =>{
+        console.log(data)
         if(data.length === 0){
             this.setState({nomatchModalVisibility: true})
         }else{
@@ -144,11 +166,7 @@ class TeamsScreen extends Component {
             this.setState({loadingModalstate: true});
             refreshing = true;
             const {user} = this.props.user;
-            Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
-                    params: {
-                        date: moment().format("YYYY-MM-DD")
-                    }
-                })
+            Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons?season=${this.state.seasonId}`)
             .then(response => {response.data.sort((a, b) => (a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()));
                 this.setState({data: response.data, selectedData: response.data}),
                 this.regionFiltering(response.data),
@@ -174,6 +192,7 @@ class TeamsScreen extends Component {
             </View>);
 
         let teamItem = ({ item, index }) => {
+            console.log(item)
             return(
                 <ListItem 
                     title={<Text style={{color: this.state.selected.textColor,fontSize: 13}}>{item.TeamSeasonName}</Text>}
@@ -187,17 +206,30 @@ class TeamsScreen extends Component {
             {length: 20, offset: 20 * index, index}
           );
         const selectBox = () => (
+            <View>
+                <Select
+                    label="Select a Region"
+                    selectedIndex={this.state.selectedIndex}
+                    size='large'
+                    style={{margin: "2%",minWidth:"90%"}}
+                    value={this.state.displayedValue}
+                    onSelect={index => this.SelectIndex(index)}>
+                    {this.state.regions.map((title,i) =>
+                        <SelectItem key={title} title={title}/>
+                    )}
+            </Select>
             <Select
-                label="Select a Region"
-                selectedIndex={this.state.selectedIndex}
+                label="Select a Season"
+                selectedIndex={this.state.selectedIndexSeason}
                 size='large'
                 style={{margin: "2%",minWidth:"90%"}}
-                value={this.state.displayedValue}
-                onSelect={index => this.SelectIndex(index)}>
-                {this.state.regions.map((title,i) =>
-                    <SelectItem key={title} title={title}/>
+                value={this.state.displayedValueSeason}
+                onSelect={index => this.SelectIndexSeason(index)}>
+                {this.state.seasons.map((item,i) =>
+                    <SelectItem key={item.Id} title={item.Name}/>
                 )}
-          </Select>
+            </Select>
+        </View>
         );
         const regionName = (status) =>(
             (
@@ -227,12 +259,12 @@ class TeamsScreen extends Component {
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
-                        There are no active Teams for the selected Region.
+                        There are no active Teams. Please ensure that there are Teams for the selected Region and Season.
                     </Text>
                 </Card>:
                 <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
-                        There are no active Teams for the selected Region.
+                        There are no active Teams. Please ensure that there are Teams for the selected Region and Season.
                     </Text>
                 </Card>
             ))
