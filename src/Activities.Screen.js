@@ -115,19 +115,7 @@ class ActivitiesScreen extends Component {
                     this.setState({studentList: res.data.sort((a, b) => (a.StudentName.split(" ")[1].toLowerCase() > b.StudentName.split(" ")[1].toLowerCase())), loadingModalstate: false})})
               .catch(e => console.log(e));
     }
-    /*async __syncCoachRegions(){
-        console.log(this.state.date.format("YYYY-MM-DD"))
-        const { user } = this.props;
-        return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/regions`, {
-           params: {
-                // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                date: this.state.date.format("YYYY-MM-DD")
-            }
-          })
-          .then(res => console.log(res.data))
-          .catch(e => console.log(e));
-    }*/ //returns coach regions
-    //Syncs activitiesToRedux and state
+
     _syncReduxActivities(activitiesList) {
         const { actions } = this.props;
         const { route } = this.props;
@@ -243,18 +231,12 @@ class ActivitiesScreen extends Component {
             this.setState({range: dates})
         }else{
             this.setState({loadingModalstate:true});
-            /*if (route.name !== "Team Sessions"){
-                await this.setState({range: dates, dateCont: 0})
-                const activitiesList = await this.fetchActivities();
-                this._syncReduxActivities(activitiesList);
-                this.setState({loadingModalstate:false});
-            }else{*/
+            
                 this.RangeDatepicker.current.blur();
                 await this.setState({range: dates, dateCont: 0})
                 const activitiesList = await this.fetchActivities();
                 this._syncReduxActivities(activitiesList);
                 this.setState({loadingModalstate:false});
-            //}
         }
         console.log(this.state.RangeDatepickerVisibility)
     }
