@@ -124,13 +124,14 @@ class TeamsScreen extends Component {
             this.regionFiltering(response.data)
             this.setState({loadingModalstate:false});
             })
-            .catch(e => console.log(e));
+            .catch(e => {console.log(e), this.setState({teamsRegion: []})});
     }
     regionFiltering = (data) =>{
-        console.log(data)
         if(data.length === 0){
             this.setState({nomatchModalVisibility: true})
+            this.setState({teamsRegion: []})
         }else{
+            this.setState({nomatchModalVisibility: false})
             if (this.props.sessionScreen.region === 'IFC'){
                 this.setState({teamsRegion:data.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
             }else if (this.props.sessionScreen.region === 'OGSC'){
@@ -255,7 +256,7 @@ class TeamsScreen extends Component {
         );
         const noMatchRegion = (status) =>(
             (
-                (this.state.data.length !== 0 && this.state.teamsRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false) &&
+                (this.state.data.length !== 0 && this.state.teamsRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility === false) &&
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
@@ -282,12 +283,12 @@ class TeamsScreen extends Component {
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
-                        No matches found.
+                        There are no active Teams. Please ensure that there are Teams for the selected Region and Season.
                     </Text>
                 </Card>:
                 <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#86c0e3"}}>
-                        No matches found.
+                        There are no active Teams. Please ensure that there are Teams for the selected Region and Season.
                     </Text>
                 </Card>
             ))
@@ -359,15 +360,17 @@ class TeamsScreen extends Component {
                 </BottomSheet>
                 </KeyboardAvoidingView>: 
                 <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
-                    <Autocomplete style={{margin:"2%"}}
-                        label="Search a Team"
-                        placeholder='Search by Team name'
-                        ItemSeparatorComponent={Divider}
-                        value={this.state.value}
-                        onSelect={this.onSelect}
-                        size="large"
-                        onChangeText={this.onChangeText} >
-                    </Autocomplete>
+                    {this.state.teamsRegion.length > 10? 
+                        <Autocomplete style={{margin:"2%"}}
+                            label="Search a Team"
+                            placeholder='Search by Team name'
+                            ItemSeparatorComponent={Divider}
+                            value={this.state.value}
+                            onSelect={this.onSelect}
+                            size="large"
+                            onChangeText={this.onChangeText} >
+                        </Autocomplete>: <></>
+                    }
                     {selectBox()}
                 </BottomSheet>}
             </Layout>
