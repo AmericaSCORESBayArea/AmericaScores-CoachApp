@@ -6,6 +6,8 @@ import {launchImageLibrary} from 'react-native-image-picker'; // Migration from 
 import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { ApiConfig } from '../config/ApiConfig';
+import DeviceInfo from 'react-native-device-info';
+
 export const CreateReportModal = ({navigation}) => {
     const useInputState = (initialValue = '') => {
         const [descriptionvalue, setDescriptionValue] = React.useState(initialValue);
@@ -78,6 +80,13 @@ export const CreateReportModal = ({navigation}) => {
                         }
                     },
                     {
+                        "type": "section",
+                        "text": {
+                            "type": "mrkdwn",
+                            "text":  "Sent From: " + " " + DeviceInfo.getSystemName() + " " + DeviceInfo.getSystemVersion(),
+                        },
+                    },
+                    {
                         "type": "divider",
                         "block_id": "divider1"
                     },
@@ -125,6 +134,13 @@ export const CreateReportModal = ({navigation}) => {
                     "image_url": url,
                     "alt_text": url
                 }
+            },
+            {
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text":  "Sent From: " + " " + DeviceInfo.getSystemName() + " " + DeviceInfo.getSystemVersion(),
+                },
             },
             {
                 "type": "divider",
