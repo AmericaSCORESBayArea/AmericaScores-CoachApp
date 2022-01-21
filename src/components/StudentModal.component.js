@@ -190,34 +190,15 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
         } else {
             Alert.alert("", "No students found");
         }
-        // setStarted(false);
-        // setFinished(true);
-        // console.log("filtered data", filteredData);
     };
-
-    // const onChangeText = (query) => {
-    //     setValue(query);
-    //     if(started === false){
-    //         setStarted(true);
-    //         setFinished(false);
-    //         startTimer();
-    //     }
-    // };
 
     const renderOption = ({item, index}) => ( 
         <ListItem
         title={item.Name}
         onPress={() => onSelect(index)}
-        // description={`${item.description} ${index + 1}`}
         />
     );
 
-    // const renderOption = ({item, index}) => ( 
-    //     <AutocompleteItem
-    //         key={index}
-    //         title={item.Name}
-    //     />
-    // );
 
     const Footer = (props) => (
         <Layout {...props}>
@@ -243,23 +224,11 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
         </Layout>
     );
 
-    // const SearchBar = () => (
-    //     <Autocomplete
-    //         placeholder='Student Name'
-    //         value={value}
-    //         onSelect={onSelect}
-    //         accessoryRight={renderSearchIcon}
-    //         onChangeText={string => onChangeText(string)}>
-    //         {data.map(renderOption)}
-    //     </Autocomplete>
-    // );
-
     const SearchBar = () => (
         <View>
         <Input
             placeholder='Student Name'
             value={value}
-            // accessoryRight={renderSearchIcon}
             onChangeText={enteredSureNameValue => setValue(enteredSureNameValue)}
         />
         </View>
