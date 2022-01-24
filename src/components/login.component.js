@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { SafeAreaView, Alert, Keyboard, TouchableWithoutFeedback, ImageBackground, KeyboardAvoidingView, Platform} from 'react-native';
-import { Button, Layout, Icon, Input, Text, Card } from '@ui-kitten/components';
+import { Button, Layout, Icon, Input, Text, Card, Spinner } from '@ui-kitten/components';
 import { View } from 'react-native';
 import auth from '@react-native-firebase/auth';
 import {ApiConfig} from "../config/ApiConfig";
@@ -27,6 +27,11 @@ const Header = (props) => (
 
 const PhoneIcon = (props) => ( <Icon {...props} name='phone-outline'/> );
 const BackArrrowIcon = (props) => ( <Icon {...props} name='arrow-ios-back-outline'/> )
+const LoadingIndicator = (props) => (
+  <View style={[props.style,{justifyContent: 'center',alignItems: 'center',}]}>
+    <Spinner size='small' status='basic'/>
+  </View>
+);
 
 export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
   const dispatch = useDispatch();
@@ -78,9 +83,10 @@ export const LogInScreen_PhoneAuth_Phone = ({navigation}) => {
 };
 
 export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
-  const state = useSelector(state => state.user)
+  const state = useSelector(state => state.user);
   const dispatch = useDispatch();
   const loginCode = useInputState();
+  const [loading, setLoading] = useState(false);
 
   async function _setupUser(userIdentifier, serviceProvider) {
     await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
@@ -99,8 +105,9 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
             .then(userSessions => {
               dispatch(loginUser(userProfile));
               dispatch(syncSessions(userSessions));
+              setLoading(false);
               navigation.navigate("Select_Club");
-            }).catch(error => {console.log(error); _rollbackSetupUser()});
+            }).catch(error => {console.log(error);setLoading(false);_rollbackSetupUser()});
         } else {
           Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");
           console.log("[AUTH FETCH ISSUE NO userProfile", res.data);
@@ -120,11 +127,12 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
 
   async function confirmCode() {
     try {
+      setLoading(true);
       const res = await state.confirmation.confirm(loginCode.value);
       let newPhoneNumber = res.user.phoneNumber;
       newPhoneNumber = newPhoneNumber.replace('+1', '');
       _setupUser(newPhoneNumber, "Phone")
-    } catch (error) { Alert.alert("Login error: Invalid code","The code entered is invalid, please check your SMS message again."); }
+    } catch (error) {setLoading(false);Alert.alert("Login error: Invalid code","The code entered is invalid, please check your SMS message again."); }
   }
 
   const _rollbackSetupUser = async () => {
@@ -155,7 +163,7 @@ export const LogInScreen_PhoneAuth_Code = ({navigation}) => {
               >                
               <Layout style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button style={{width:'100%'}} accessoryLeft={BackArrrowIcon} appearance="ghost" status="basic" onPress={() => navigation.goBack()}>GO BACK</Button>
-                <Button style={{width:'100%'}} accessoryLeft={PhoneIcon} status="primary" onPress={() => confirmCode()}>CONTINUE</Button>
+                <Button style={{width:'100%'}} accessoryLeft={loading? LoadingIndicator:PhoneIcon} status="primary" onPress={() => confirmCode()}>{loading? 'LOADING':'CONTINUE'}</Button>
               </Layout>
               </KeyboardAvoidingView>
             </Layout>   
