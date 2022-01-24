@@ -1,6 +1,6 @@
 import React, {useEffect,useCallback} from 'react';
 import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Icon, Spinner  } from '@ui-kitten/components';
-import { ImageBackground,Keyboard, ScrollView, Alert, Dimensions, Image } from 'react-native';
+import { ImageBackground,Keyboard, ScrollView, Alert, Dimensions, Image, View } from 'react-native';
 //import DocumentPicker from "react-native-document-picker";
 import {launchImageLibrary} from 'react-native-image-picker'; // Migration from 2.x.x to 3.x.x => showImagePicker API is removed.
 import { useSelector } from 'react-redux';
@@ -48,6 +48,7 @@ export const CreateReportModal = ({navigation}) => {
         if(url !== undefined && url.length !== 0){
             setSubmit(true);
             postMessageToChannelWithImage();
+            setSubmit(false);
         }
     }, [url]);
     const message=
@@ -156,11 +157,17 @@ export const CreateReportModal = ({navigation}) => {
       .catch(function (error) {
         console.log(error);
         setVisible(false);
+        setSubmit(false);
         setResponseStatusModal(false);
         setReponseStatusUnsuccessModal(true);
       });
     }
-
+    const LoadingIndicator = (props) => (
+        <View style={[props.style,{justifyContent: 'center',alignItems: 'center',}]}>
+          <Spinner size='small' status='basic'/>
+        </View>
+    );
+    
     const postMessageToChannelWithImage = () => {console.log(url),axios.post(ApiConfig.slackWebHook,messagewithImage)
         .then(function (response) {
             console.log(response)
@@ -170,6 +177,7 @@ export const CreateReportModal = ({navigation}) => {
           .catch(function (error) {
             console.log(error);
             setVisible(false);
+            setSubmit(false);
             setResponseStatusModal(false);
             setReponseStatusUnsuccessModal(true);
           });
@@ -210,11 +218,14 @@ export const CreateReportModal = ({navigation}) => {
                     setUrl(data.secure_url);
                 }).catch(err => {
                     console.log(err)
+                    setSubmit(false);
                     Alert.alert('Oops',"An Error occured while uploading the Image. Please try again.")
                 }) 
       }
     function createReport() {
+        setSubmit(true);
         if(multilineInputState.descriptionvalue === ''){
+            setSubmit(false);
             Alert.alert(
                 'Tell us more',
                 'Please complete the details field',
@@ -229,6 +240,7 @@ export const CreateReportModal = ({navigation}) => {
                 asyncCall();
             }else{
                 postMessageToChannel();
+                setSubmit(false);
             }
         }
     }
@@ -242,8 +254,8 @@ export const CreateReportModal = ({navigation}) => {
                 <Button appearance='ghost' status='danger' onPress={() => cancellReport()}>
                     Cancel
                 </Button>
-                <Button onPress={() => createReport()}>
-                    {submit?  <Spinner size='small'  status='basic'/>: "Send"}
+                <Button accessoryLeft={submit? LoadingIndicator:null} onPress={() => createReport()}>
+                    {submit? "Loading": "Send"}
                 </Button>
         </Layout>
     );
