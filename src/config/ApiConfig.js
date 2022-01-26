@@ -9,5 +9,6 @@ export const ApiConfig = {
     cloudinaryURL: '',//url for cloudinary
     appVersion: 'Version: ' + DeviceInfo.getVersion(),//add the app version
     youtubeApi: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PLKLW4r_wa4rzyKrXbXGkv7J5dLY6q-guC',//youtube api url with the playlistID
-    youtubeSecretKey: ''//token for youtube integration
+    youtubeSecretKey: '',//token for youtube integration
+    scoresuURL: 'https://scoresu.org/intro-to-america-scores'//url for scoresu
 }
