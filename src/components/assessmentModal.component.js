@@ -48,7 +48,7 @@ export const assessmentModal = (props) => {
         </Layout>
     );
     const updateSuccessCard = (status, text) => (
-        <Card disabled={true} header={SuccessHeader}>
+        <Card style={{alignSelf:'center', marginLeft:'14%'}} disabled={true} header={SuccessHeader}>
             <Text style={{margin: 15}} status={status}>{text}</Text> 
             <Button appearance='outline' size={'small'} onPress={() => {toggleNotificationOff()}} status={status}>
                 OK
@@ -111,7 +111,6 @@ export const assessmentModal = (props) => {
             flexDirection: 'row',
             alignItems: 'center',
             alignSelf:'center',
-            marginLeft: '5%',
             shadowRadius: 10,
             shadowOpacity: 0.12,
             shadowColor: "#000"}}
