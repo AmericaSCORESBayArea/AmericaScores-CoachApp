@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Alert, Image, ImageBackground, SafeAreaView } from 'react-native';
-import { Button, Layout, Text, Icon, Modal } from '@ui-kitten/components';
+import { Alert, Image, ImageBackground, SafeAreaView, Linking } from 'react-native';
+import { Button, Layout, Text, Icon, Modal, Card } from '@ui-kitten/components';
 import { StyleSheet, View } from 'react-native';
 import Axios from "axios";
 import {ApiConfig} from "../config/ApiConfig";
@@ -29,6 +29,7 @@ class LogInScreen_Google extends Component {
           logged: "false",
           email: "",
           loadingModalstate:false,
+          responseStatusModal:false
         };
     }
 
@@ -129,10 +130,10 @@ class LogInScreen_Google extends Component {
               navigation.navigate("Select_Club");
             }).catch(error => {console.log(error); this._rollbackSetupUser()});
         } else {
-          Alert.alert("Not an America Scores account","This account apparently does not exist, please contact your Salesforce administrator.");
+          this.setState({responseStatusModal: true});
           return _rollbackSetupUser()
         };
-      }).catch(error => Alert.alert("Login Error", "User not found, please contact your company admin."))
+      }).catch(error => this.setState({responseStatusModal: true}))
     }
 
     _rollbackSetupUser = async () => {
@@ -192,7 +193,7 @@ class LogInScreen_Google extends Component {
 
         
         // Ensure Apple returned a user identityToken
-        if (!appleAuthRequestResponse.identityToken) Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+        if (!appleAuthRequestResponse.identityToken) this.setState({responseStatusModal: true});
 
         if (!appleAuthRequestResponse.email){
           Alert.alert("Log in error",`We need your email to log you in. Do NOT press "Hide email" please.`);}
@@ -226,7 +227,7 @@ class LogInScreen_Google extends Component {
         this._setupUser(appleAuthRequestResponse.email,"email");
       }
       } catch (error) {
-        Alert.alert("Log in error",`Apple log in failed, try another method or try later.`);
+        this.setState({responseStatusModal: true});
         console.log("[APPLE LOGIN ERROR]", error);
       }
     }
@@ -245,7 +246,9 @@ class LogInScreen_Google extends Component {
     LoadingGif = () =>{
           return require('../../assets/Scores_Logo.gif');//Scores logo gif
   }
-
+  toggleNotificationOff = ()=> {
+    this.setState({responseStatusModal: false});
+  }
     render() {
         const {navigation} = this.props;
         const loadingModal = () => (
@@ -255,7 +258,33 @@ class LogInScreen_Google extends Component {
               backdropStyle={styles.backdrop}>
               <Image source={this.LoadingGif()}/>
           </Modal>
-      )
+        )
+        const Footer = (props) => (
+          <Layout {...props}>
+              <Button appearance='ghost' status='danger' onPress={() =>this.toggleNotificationOff()}>
+                  Cancel
+              </Button>
+              <Button onPress={() => {Linking.openURL(ApiConfig.scoresuURL),this.toggleNotificationOff()}}>
+                  Get Started
+              </Button>
+          </Layout>
+        );
+        const UnsuccessHeader = (props) => (
+          <Layout {...props}>
+            <Text category='h4' appearance='hint' status='danger' style={{alignSelf:'center', marginTop:'2%'}}>Login Error</Text>
+          </Layout>
+        );
+        const errorModal= () =>(
+          <Modal
+            visible={this.state.responseStatusModal}
+            style={{width:'80%'}}
+            backdropStyle={styles.backdrop}
+            onBackdropPress={() => this.toggleNotificationOff()}>
+              <Card disabled={true} header={UnsuccessHeader} footer={Footer}>
+                  <Text status={'danger'} style={{ margin: 15, alignSelf:"center",textAlign:'justify'}}>This account apparently does not exist, please contact your Scores administrator or select [Get Started] to begin the process of registering as a Scores Coach today.</Text> 
+              </Card>
+          </Modal>
+        ) 
         const Header = (props) => (
             <View {...props} style={{margin: "3%"}}>
               <Text category='h6'>Log in</Text>
@@ -271,6 +300,7 @@ class LogInScreen_Google extends Component {
             <Layout style={{flex: 1}} level="4">
               <ImageBackground source={require('../../assets/LogInBackground.jpeg')} style={{flex: 1}}>
               {loadingModal()}
+              {errorModal()}
                 <SafeAreaView style={{ flex: 1,backgroundColor:"rgba(0,0,0,0.5)" }}>
                   <View style={{flex: 1, justifyContent: "center", alignItems: 'center'}} >
                     <Layout style={{width:'100%', height:'100%', backgroundColor:"rgba(0,0,0,0)"}} level="4">
