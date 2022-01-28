@@ -10,5 +10,5 @@ export const ApiConfig = {
     appVersion: 'Version: ' + DeviceInfo.getVersion(),//add the app version
     youtubeApi: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PLKLW4r_wa4rzyKrXbXGkv7J5dLY6q-guC',//youtube api url with the playlistID
     youtubeSecretKey: '',//token for youtube integration
-    scoresuURL: 'https://scoresu.org/intro-to-america-scores'//url for scoresu
+    scoresuURL: 'https://scoresu.org/intro-to-america-scores'//url for scoresU
 }
