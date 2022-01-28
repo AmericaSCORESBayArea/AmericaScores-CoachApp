@@ -1,6 +1,6 @@
 import React, {Component, createRef} from "react";
-import { Layout, Divider, List, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
+import { Layout, Divider, List, Input, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar, MenuItem, OverflowMenu } from '@ui-kitten/components';
+import { ImageBackground, View, StyleSheet, RefreshControl, Image, Linking } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
@@ -14,7 +14,10 @@ import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
 import { bindActionCreators } from 'redux';
-import { paletteColors } from './components/paletteColors';       
+import { paletteColors } from './components/paletteColors';   
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import SendSMS from 'react-native-sms'
+
 class ActivitiesScreen extends Component {
     constructor(props) {
         super(props);
@@ -41,6 +44,7 @@ class ActivitiesScreen extends Component {
             studentList: "",
             isTeamSessions: false,
             displayMessage:"",
+            visibleMenu:false,
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
                 startDate: new Date(moment().subtract(10, "days")),
@@ -50,7 +54,10 @@ class ActivitiesScreen extends Component {
             EndSeason: '',
             dateCont: 0,
             loadingModalstate:true,
-            selected: null
+            selected: null,
+            wppUrl: '',
+            wppModal: false,
+            parentsNumbers: []
         }
     }
     
@@ -189,11 +196,11 @@ class ActivitiesScreen extends Component {
     async fetchActivities() {
         const { user } = this.props;
         const { route } = this.props;
-        /*delete Axios.defaults.headers.common['client_id'];
+        delete Axios.defaults.headers.common['client_id'];
         delete Axios.defaults.headers.common['client_secret'];
         Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
         Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;     
-        console.log(Axios.defaults.headers)*/
+        console.log(Axios.defaults.headers)
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
                 await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
@@ -252,6 +259,33 @@ class ActivitiesScreen extends Component {
         this.setState({welcomeModalVisibility: false})
         actions.updateFirstTimeLoggedIn();
     }
+    openWhatsappGroup = (students) => {
+        let parentsNumbers=[]
+        students.map(item =>{
+            if(item.ParentInfoFirstName.FirstPhone.length !== 0){
+                let phone= 1+item.ParentInfoFirstName.FirstPhone
+                parentsNumbers.push(phone)
+            }
+            SendSMS.send({
+                body: this.state.wppUrl,
+                recipients: parentsNumbers,
+                successTypes: ['sent', 'queued'],
+                allowAndroidSendWithoutReadPermission: true,
+            }, (completed, cancelled, error) => {
+                console.log('SMS Callback: completed: ' + completed + ' cancelled: ' + cancelled + 'error: ' + error);
+                this.setState({visibleMenu:false,wppUrl:false})
+            });
+        })
+        /*let phoneWithCountryCode = []
+        phoneWithCountryCode.map(value => {
+            let url = `http://api.whatsapp.com/send?text=hello&phone=${value}`
+            Linking.openURL(url).then((data) => {
+                console.log('WhatsApp Opened');
+              }).catch(() => {
+                alert('Make sure WhatsApp installed on your device');
+            });
+        });*/
+    }
     SelectIndex(index){
         this.setState({selectedIndex: index});
         this.setState({displayedValue: this.state.regions[index.row]});
@@ -307,6 +341,8 @@ class ActivitiesScreen extends Component {
         ));
 
         const addIcon = (props) => ( <Icon {...props} name='person-add-outline'/> );
+        const removeIcon = (props) => ( <Icon {...props} name='person-remove-outline'/> );
+        const shareIcon = (props) => ( <Icon {...props} name='share-outline'/> );
         let refreshing = false;
         const onRefresh = async () => {
             let aux= await AsyncStorage.getItem('customTheme');
@@ -835,7 +871,38 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
-
+        const HeaderWPP = (props) => (
+            <Layout {...props}>
+              <Text category='h6'>Whatsapp Group</Text>
+              <Text category='s1' appearance='hint'>The url of the whatsapp group will be sent by SMS to the parents of the selected team.</Text>
+            </Layout>
+        );
+        const FooterWPP = (props) => (
+            <Layout {...props}>
+                <Button appearance='ghost' status='danger' onPress={() => this.setState({wppUrl:'', wppModal: false})}>
+                    Cancel
+                </Button>
+                <Button onPress={() => this.openWhatsappGroup(this.state.studentList)}>
+                    Send SMS
+                </Button>
+            </Layout>
+        );
+        const wppGroupURL = () => (
+            <Modal
+                visible={this.state.wppModal}
+                backdropStyle={styles.backdrop}
+                onBackdropPress={() => this.setState({wppUrl:'', wppModal: false})}
+                style={{width:'95%'}}>
+                <Card disabled={true} header={HeaderWPP} footer={FooterWPP}>
+                    <Text>Whatsapp Group URL</Text>
+                    <Input
+                        placeholder='URL'
+                        value={this.state.wppUrl}
+                        onChangeText={enteredValue => this.setState({wppUrl:enteredValue})}
+                    />
+                </Card>
+            </Modal>
+        )
         const noMatch = (status) => (
             (
                 (this.state.nomatchModalVisibility && this.state.selectedTabIndex !== 1) &&
@@ -901,8 +968,8 @@ class ActivitiesScreen extends Component {
                 return require('../assets/Genesis_Logo.png');
             }
         }
-        const OptionButtons = () => (
-            <Button style={{position:"absolute",top:"1.2%", left:"5%"}} appearance='ghost' accessoryRight={ArrowIcon} onPress={() => this.setState({OverflowMenuVisible:true})}/>
+        const renderToggleButton = () => (
+            <AntDesign name={'menufold'} size={25} style={{alignSelf:'center',backgroundColor: '#00467F', marginRight:'8%',borderRadius:35, padding: 15}} color={'white'} onPress={() => this.setState({visibleMenu: true})}/>
         );
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
@@ -918,6 +985,7 @@ class ActivitiesScreen extends Component {
                         {emptyStudentsList("basic")}
                         {noMatchRegion("basic")}
                         {regionName("basic")}
+                        {wppGroupURL()}
                         {(this.state.selectedTabIndex === 1 ?
                             <List
                             style={{opacity: 0.95}}
@@ -947,15 +1015,25 @@ class ActivitiesScreen extends Component {
                             />
                         )}
                     </ImageBackground>
-                    <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
-                    {(this.state.selectedTabIndex === 1 ?
-                        <Button style={{width:"80%", marginTop: "2%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}>ENROLL STUDENT</Button>
-                        :
-                        <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
-
-                    )}
-                    </View>
-                    
+                    {/*<Button style={{width:"80%", marginTop: "2%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}>ENROLL STUDENT</Button>*/}
+                    {(this.state.selectedTabIndex !== 1 ?
+                        <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
+                            <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
+                        </View>:
+                        <View style={{position:'absolute', bottom: '3%', alignSelf:'flex-end'}}>
+                            <OverflowMenu
+                                anchor={renderToggleButton}
+                                backdropStyle={styles.backdrop}
+                                style={{width:'80%'}}
+                                visible={this.state.visibleMenu}
+                                placement='left end'
+                                onBackdropPress={() => this.setState({visibleMenu:false})}>
+                                <MenuItem title='ENROLL STUDENT' accessoryLeft={addIcon} onPress={() => {this.setState({visibleMenu:false}),this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}}/>
+                                <MenuItem title='UNENROLL STUDENT' accessoryLeft={removeIcon} />
+                                <MenuItem title='SHARE WHATSAPP LINK' accessoryLeft={shareIcon} onPress={() => this.setState({wppModal:true})}/>
+                            </OverflowMenu>
+                        </View>
+                    )}                    
                     {(this.state.selectedTabIndex === 0 ?
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         {searchBoxRanges()}
