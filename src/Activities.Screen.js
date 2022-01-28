@@ -196,11 +196,11 @@ class ActivitiesScreen extends Component {
     async fetchActivities() {
         const { user } = this.props;
         const { route } = this.props;
-        delete Axios.defaults.headers.common['client_id'];
+        /*delete Axios.defaults.headers.common['client_id'];
         delete Axios.defaults.headers.common['client_secret'];
         Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
         Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;     
-        console.log(Axios.defaults.headers)
+        console.log(Axios.defaults.headers)*/
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
                 await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
