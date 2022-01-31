@@ -6,6 +6,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import Axios from 'axios';
 import {ApiConfig} from "../config/ApiConfig";
+import analytics from '@react-native-firebase/analytics';
 
 export const CreateStudentModal = ({navigation}) => {
     const [visible, setVisible] = React.useState(true);
@@ -139,7 +140,11 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
             student)
               .then(res => {
                   if(res.data){
-                      setLoadingModalstate(false); 
+                      setLoadingModalstate(false);
+                      await analytics().logSelectContent({
+                        content_type: `Enrolled student ${selectedStudent.Id}`,
+                        item_id: "student_enrolled",
+                      }) 
                       Alert.alert("Success", "Student was enrolled succesfully")
                     }
                     setLoadingModalstate(false); 
