@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import { Modal, Card, Text, Button, Layout, Input,  Autocomplete, AutocompleteItem, Icon, List, Divider, ListItem } from '@ui-kitten/components';
-import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView, Alert, TouchableWithoutFeedback, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Linking, Platform, ScrollView, Alert, Keyboard, Image } from 'react-native';
 import moment from "moment";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
@@ -72,6 +72,7 @@ export const CreateStudentModal = ({navigation}) => {
 // const filter = async (item, value) => await item.Name.toLowerCase().includes(value.toLowerCase());
 
 export const AddStudentToTeamModal = ({navigation, route}) => {
+    const [keyboardSize, setKeyboardSize] = React.useState(0);
     const [students, setStudents] = React.useState([]);
     const [finished, setFinished] = React.useState(false);
     const [started, setStarted] = React.useState(false);
@@ -80,7 +81,20 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     const [selectedStudent, setSelectedStudent] = React.useState();
     const [suggestions, setSuggestions] = React.useState();
     const [loadingModalstate, setLoadingModalstate] = React.useState(false);
+    useEffect(() => {
+        Keyboard.addListener("keyboardDidShow", (e) => {
+            setKeyboardSize(e.endCoordinates.height)
+        })
     
+        Keyboard.addListener("keyboardDidHide", (e) => {
+            setKeyboardSize(e.endCoordinates.height)
+        })
+    
+        return (() => {
+            Keyboard.removeAllListeners("keyboardDidShow");
+            Keyboard.removeAllListeners("keyboardDidHide");
+        })
+    }, [])
 
       const renderSearchIcon = (props) => (
         // <TouchableOpacity onPress={() => filterData()}>
@@ -165,6 +179,10 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
     )
 
     async function fetchStudents(query) {
+        /*delete Axios.defaults.headers.common['client_id'];
+        delete Axios.defaults.headers.common['client_secret'];
+        Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+        Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;  */
         return await Axios.get(`${ApiConfig.dataApi}/contacts/search`, {
             params: {
                 // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
@@ -239,9 +257,9 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
         <Modal
             visible={visible}
             onBackdropPress={() => closeModal()}
-            style={{ width: '95%', height: '100%'}}>
+            style={{ width: '95%', height: '100%', marginTop:'17%'}}>
             <ScrollView>    
-            <Card disabled={true} style={{ marginTop: '6%', height: '100%', width: '100%', marginBottom: '10%' }} header={Header} footer={Footer}>
+            <Card disabled={true} style={{ height: '100%', width: '100%', marginBottom: keyboardSize }} header={Header} footer={Footer}>
                 <ScrollView>
                 {SearchBar()}
                 <Button style={{margin: 2}} appearance='outline' accessoryRight={renderSearchIcon} onPress={() => filterData()}>
