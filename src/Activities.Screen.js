@@ -1160,11 +1160,11 @@ class ActivitiesScreen extends Component {
                                 backdropStyle={styles.backdrop}
                                 style={{width:'80%'}}
                                 visible={this.state.visibleMenu}
-                                placement='left end'
+                                placement='left start'
                                 onBackdropPress={() => this.setState({visibleMenu:false})}>
                                 <MenuItem title='ENROLL STUDENT' accessoryLeft={addIcon} onPress={() => {this.setState({visibleMenu:false}),this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}}/>
                                 <MenuItem title='UNENROLL STUDENTS' accessoryLeft={removeIcon} onPress={() => {this.setState({checkBoxView:true, visibleMenu:false})}} />
-                                <MenuItem title='SEND SMS TO ENTIRE TEAM' accessoryLeft={groupIcon} onPress={() => this.setState({groupModal:true})} />
+                                <MenuItem title='SEND SMS TO TEAM' accessoryLeft={groupIcon} onPress={() => this.setState({groupModal:true})} />
                                 <MenuItem title='SHARE WHATSAPP LINK' accessoryLeft={shareIcon} onPress={() => this.setState({wppModal:true})}/>
                             </OverflowMenu>
                         </View>:
