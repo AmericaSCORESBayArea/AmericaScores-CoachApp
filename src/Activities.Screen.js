@@ -1160,7 +1160,7 @@ class ActivitiesScreen extends Component {
                                 backdropStyle={styles.backdrop}
                                 style={{width:'80%'}}
                                 visible={this.state.visibleMenu}
-                                placement='left start'
+                                placement='left end'
                                 onBackdropPress={() => this.setState({visibleMenu:false})}>
                                 <MenuItem title='ENROLL STUDENT' accessoryLeft={addIcon} onPress={() => {this.setState({visibleMenu:false}),this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}}/>
                                 <MenuItem title='UNENROLL STUDENTS' accessoryLeft={removeIcon} onPress={() => {this.setState({checkBoxView:true, visibleMenu:false})}} />
