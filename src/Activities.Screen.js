@@ -1158,7 +1158,7 @@ class ActivitiesScreen extends Component {
                             <OverflowMenu
                                 anchor={renderToggleButton}
                                 backdropStyle={styles.backdrop}
-                                style={{width:'80%'}}
+                                style={{width:'60%'}}
                                 visible={this.state.visibleMenu}
                                 placement='left end'
                                 onBackdropPress={() => this.setState({visibleMenu:false})}>
