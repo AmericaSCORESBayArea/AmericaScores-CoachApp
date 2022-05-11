@@ -154,7 +154,9 @@ export const AddStudentToTeamModal = ({navigation, route}) => {
               .then(res => {
                   if(res.data){
                       setLoadingModalstate(false); 
-                      Alert.alert("Success", "Student was enrolled succesfully")
+                      Alert.alert("Success", "Student was enrolled succesfully");
+                      setValue("");
+                      setData([]);
                     }
                     setLoadingModalstate(false); 
                 })
