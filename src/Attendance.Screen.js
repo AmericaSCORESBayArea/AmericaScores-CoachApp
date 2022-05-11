@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner, Input  } from '@ui-kitten/components';
 import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground, Alert } from 'react-native';
 import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
@@ -41,6 +41,10 @@ class AttendanceScreen extends Component {
             loadingModalRecords:false,
             duplicatedRecords:false,
             duplicatesRecordsModal:false,
+            headCountModalStatus:false,
+            headCount: 0,
+            headCountFemale: 0,
+            numberOfStudentsCounted:0,
             duplicateRecordsList: []
         }
     }
@@ -322,8 +326,14 @@ class AttendanceScreen extends Component {
                 await this._fetchSessionInfo();
             }
         this.setState({loadingModalstate:false});
+        if(currentTopic === 'Game Day'){
+            this.setState({headCountModalStatus: true});
+        }
         }
         this.setState({loadingModalstate:false});
+        if(currentTopic === 'Game Day'){
+            this.setState({headCountModalStatus: true});
+        }
     }
 
     async createMissingAttendance(attendanceRecords,enrollmentsDuplicate) {
@@ -689,7 +699,24 @@ class AttendanceScreen extends Component {
     }
 
     editSession(modalScreen){
-        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date, oldTopic: this.state.topic});
+        const number = function(topic) { 
+            if(topic === 'Soccer')
+                return 0
+            else if (topic === 'Writing')
+                return 1 
+            else if (topic === 'Game Day')
+                return 2
+            else if (topic === 'Soccer and Writing')
+                return 3
+            else return 0
+        }
+        var id = number(this.state.topic)
+        console.log(id)
+        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date, oldTopic: this.state.topic, topicId: id});
+    }
+
+    editHeadCountSession(modalScreen){
+        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date });
     }
 
     toogleSpinnerOff(){ this.setState({updatingModalstate: false}) }
@@ -907,6 +934,67 @@ class AttendanceScreen extends Component {
                 return "#001541"
             }
         }
+        const headCountHeader = () => (
+            <Layout style={{padding: 5}}level="2">
+                <Icon
+                    fill={buttonColor()}
+                    name='arrow-back-outline'
+                    style={styles.icon}
+                    onPress={() => {this.setState({headCountModalStatus: false}),this.props.navigation.goBack()}}
+                />
+                <View style={styles.row}>
+                    <View style={styles.column}>
+                        {descriptionRowText("Team:",this.state.teamName)}
+                        {descriptionRowTextImage("Program Type:",'Poetry for All')}
+                        {descriptionRowTextDate("Date:", this.state.date)}
+                        {descriptionRowText("Counted Students:", this.state.numberOfStudentsCounted)}
+                    </View>
+                </View>
+            </Layout>
+        );
+        const headCountFooter = (props) => (
+            <Layout {...props}>
+                <View style={styles.row}>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editHeadCountSession("EditHeadCountSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                </View>
+            </Layout>
+        );
+        const headCountModal = () =>(
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.headCountModalStatus}
+                backdropStyle={styles.backdrop}>
+                <Card disabled={true} header={headCountHeader} footer={headCountFooter}>
+                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                        <Input
+                            keyboardType = 'numeric'
+                            status='primary'
+                            label='Headcount'
+                            placeholder='Headcount'
+                            style={{width: '45%'}}
+                            value={this.state.headCount}
+                            onChangeText={nextValue => this.setState({headCount: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCountFemale)})}    
+                        />
+                        <Input
+                            keyboardType = 'numeric'
+                            status='primary'
+                            label='Female Headcount'
+                            style={{width: '45%'}}
+                            placeholder='Headcount'
+                            value={this.state.headCountFemale}
+                            onChangeText={nextValue => this.setState({headCountFemale: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCount)})}    
+                        />
+                    </View>
+                    {Number(this.state.headCount) !==0 && Number(this.state.headCountFemale) !==0 ?
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginTop: '5%'}}>
+                        <Button style={{width:"70%"}} size='medium' appearance="filled" status="success"> Update Attendance </Button>
+                    </View>:null
+                    }
+                </Card>
+            </Modal>
+        )
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -933,39 +1021,50 @@ class AttendanceScreen extends Component {
 
         return(
             <Layout style={{ flex: 1}} level="1">
-                <Button style={{width:"100%"}} 
-                    appearance='ghost' 
-                    status='primary' 
-                    accessoryLeft={cameraIcon} 
-                    onPress={() => navigation.navigate("Scan students QR", {
-                            enrollments: this.state.enrollments,
-                            checkStudentById: this.checkStudentById
-                        }
-                    )}
-                >
-                    SCAN QR CODE
-                </Button> 
-                <Divider/>
-                {descriptionArea()}
-                {updateModal()}
-                {loadingModal()}
-                {duplicatesRecordsModal()}
-                {loadingModalRecords()}
-                {updateButton()}
-                {updatingModal()}
-                {noMatch("basic")}
-                <Divider/>
-                <List
-                    style={{width: "100%"}}
-                    data={this.state.enrollments}
-                    ItemSeparatorComponent={Divider}
-                    renderItem={studentAttendanceItem}
+                {this.state.topic === 'Game Day'?
+                    <React.Fragment>
+                        {loadingModal()}
+                        {duplicatesRecordsModal()}
+                        {loadingModalRecords()}
+                        {headCountModal()}
+                    </React.Fragment>
+                    :
+                <React.Fragment>
+                    <Button style={{width:"100%"}} 
+                        appearance='ghost' 
+                        status='primary' 
+                        accessoryLeft={cameraIcon} 
+                        onPress={() => navigation.navigate("Scan students QR", {
+                                enrollments: this.state.enrollments,
+                                checkStudentById: this.checkStudentById
+                            }
+                        )}
+                    >
+                        SCAN QR CODE
+                    </Button> 
+                    <Divider/>
+                    {descriptionArea()}
+                    {updateModal()}
+                    {loadingModal()}
+                    {duplicatesRecordsModal()}
+                    {loadingModalRecords()}
+                    {updateButton()}
+                    {updatingModal()}
+                    {noMatch("basic")}
+                    <Divider/>
+                    <List
+                        style={{width: "100%"}}
+                        data={this.state.enrollments}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={studentAttendanceItem}
                     />
-                <View style={styles.row}>
-                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
-                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
-                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
-                </View>
+                    <View style={styles.row}>
+                        <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                        <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                        <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                    </View>
+                </React.Fragment>
+                }
             </Layout>
         )
     }
@@ -987,6 +1086,12 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    rowBottom: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
     },
     column: {
         flexDirection: "column"
@@ -1020,5 +1125,10 @@ const styles = StyleSheet.create({
         // flex: 1,
         // backgroundColor: 'pink',
         
-      }
+      },
+    icon: {
+        width: 25,
+        height: 25,
+        marginBottom: '2%'
+    },
 });
