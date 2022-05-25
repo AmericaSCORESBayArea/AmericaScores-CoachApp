@@ -3,6 +3,8 @@ import { Modal, Card, Text, Button, Layout, Input, Select, SelectItem, Spinner }
 import { ScrollView,  KeyboardAvoidingView, Platform, ImageBackground } from 'react-native';
 import Axios from 'axios';
 import { ApiConfig } from '../config/ApiConfig';
+import analytics from '@react-native-firebase/analytics';
+
 export const assessmentModal = (props) => {
     const [visible, setVisible] = React.useState(true);
     const [assessmentValue, setAssessmentValue] = React.useState();
@@ -70,6 +72,12 @@ export const assessmentModal = (props) => {
             "AssessmentType": fieldValue.replace(' ', '_')
         }
         console.log(assessment)
+        await analytics().logEvent('CreateAssessment', {
+            coach_Id: props.route.params.User.ContactId,
+            student_Id: assessment.StudentId,
+            assessment_Type: assessment.AssessmentType,
+            assessment_Response: assessment.AssessmentResponse
+        });
         await Axios.post(`${ApiConfig.dataApi}/coach/${props.route.params.User.ContactId}/teamseasons/${props.route.params.Session.TeamSeasonId}/sessions/${props.route.params.Session.SessionId}/assessments`,
             assessment)
               .then(res => {
