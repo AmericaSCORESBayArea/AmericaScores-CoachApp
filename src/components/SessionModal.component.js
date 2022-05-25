@@ -6,9 +6,11 @@ import { ApiConfig } from '../config/ApiConfig';
 import { StyleSheet, View, Alert, Image } from 'react-native';
 import { AttendanceScreen } from '../Attendance.Screen';
 import moment from 'moment';
+import analytics from '@react-native-firebase/analytics';
 import { useSelector } from 'react-redux';
 
 export const EditSessionModal = ({route, navigation}) => {
+    const user = useSelector(state => state.user.user)
     const [visible, setVisible] = React.useState(true);
     const {session, oldDate, oldTopic} = route.params;
     const [date, setDate] = React.useState(moment(oldDate));
@@ -65,6 +67,10 @@ export const EditSessionModal = ({route, navigation}) => {
 
     async function pushChanges(changes){
      setupdatingModalstate(true);   
+     await analytics().logEvent('EditSession', {
+        coach_Id: user.ContactId,
+        session_Id: session
+    });
      Axios.patch(
                 `${ApiConfig.dataApi}/sessions/${session}`,
                 changes
@@ -325,6 +331,12 @@ export const AddSessionModal = ({route, navigation}) => {
 
     async function pushChanges(changes){
      setupdatingModalstate(true);   
+     await analytics().logEvent('CreateSession', {
+        coach_Id: user.ContactId,
+        session_Date: changes.SessionDate,
+        sessionTopic: changes.SessionTopic,
+        teamSeasonId: changes.TeamSeasonId
+    });
      Axios.post(
                 `${ApiConfig.dataApi}/sessions`,
                 changes
