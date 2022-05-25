@@ -8,6 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { paletteColors } from './paletteColors';
 import checkVersion from 'react-native-store-version';
 import DeviceInfo from 'react-native-device-info';
+import analytics from '@react-native-firebase/analytics';
+
 const Clubs = [
   {
       id:0,
@@ -44,6 +46,7 @@ const Headerr = (props) => (
     const [updatedModal, setUpdatedModal] = React.useState(false);
     const dispatch = useDispatch();
     const state = useSelector(state => state.sessionScreen.updateapp)
+    const user = useSelector(state => state.user.user)
     useEffect(() => {
       async function fetchMyAsyncStorage() {
         let aux = await AsyncStorage.getItem('userFirstTime')
@@ -94,6 +97,10 @@ const Headerr = (props) => (
         if(aux === null){
             await AsyncStorage.setItem('customTheme',JSON.stringify(paletteColors[0]));
         }
+        await analytics().logEvent('AffiliationSelect', {
+          coach_Id: user.ContactId,
+          club_Selected: region,
+        });
     }
     const renderItems = ({ item }) => (
       <Card style={{margin:"2%", width:"47%"}} status="primary" key={item.title} header={() => Headerr(item.image)} onPress={() => clubSelected(item.title)}>
