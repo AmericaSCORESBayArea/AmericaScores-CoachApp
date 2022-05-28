@@ -5,10 +5,16 @@ import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ApiConfig } from '../config/ApiConfig';
 import Carousel, { Pagination } from 'react-native-snap-carousel';
-import { data } from 'browserslist';
+import analytics from '@react-native-firebase/analytics';
+import { useSelector } from 'react-redux';
+
 export const userGuideModal = ({ navigation }) => {
-    useEffect(() => {
+    const user = useSelector(state => state.user.user)
+    useEffect(async() => {
         getYoutubeVideos();
+        await analytics().logEvent('userGuide', {
+            coach_Id: user.ContactId,
+        });
     }, []);
     const [visible, setVisible] = React.useState(true);
     const [slider1ActiveSlide, setSlider1ActiveSlide] = React.useState(0);
