@@ -140,7 +140,7 @@ export const EditSessionModal = ({route, navigation}) => {
     const warningCard = (status, text) => (
         <Card disabled={true} header={WarningHeader}>
             <Text style={styles.modalText} status={status}>{text}</Text> 
-            <Button appearance='outline' appearance='ghost' onPress={() => toggleNotificationOff()} status='danger'>
+            <Button appearance='ghost' onPress={() => toggleNotificationOff()} status='danger'>
                 Cancel
             </Button>
             <Button appearance='outline' onPress={() => deleteSession()}>
@@ -357,7 +357,6 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
         let changes =
             {
                 "SessionDate": date.format("YYYY-MM-DD"),
-                "SessionTopic": displayValue.replace(/\s/g, '_'),
             };
         console.log(changes);
         await pushChanges(changes);
@@ -444,7 +443,7 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
     const warningCard = (status, text) => (
         <Card disabled={true} header={WarningHeader}>
             <Text style={styles.modalText} status={status}>{text}</Text> 
-            <Button appearance='outline' appearance='ghost' onPress={() => toggleNotificationOff()} status='danger'>
+            <Button appearance='ghost' onPress={() => toggleNotificationOff()} status='danger'>
                 Cancel
             </Button>
             <Button appearance='outline' onPress={() => deleteSession()}>
@@ -486,7 +485,7 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
             ).then(res => {
                 Alert.alert(
                     res.data.message,
-                    "Changes applied: \nOld: "+oldDate+" "+oldTopic+"\nNew: "+date.format("MMM-DD-YYYY")+" "+displayValue+"\n\nPull down on the session description to refresh.",
+                    "Changes applied: \nOld: "+oldDate+"\nNew: "+date.format("MMM-DD-YYYY")+"\n\nPull down on the session description to refresh.",
                     [
                       { text: "OK", onPress: () => navigation.navigate('Home')}
                     ]
