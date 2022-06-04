@@ -46,7 +46,7 @@ class ActivitiesScreen extends Component {
             visibleMenu:false,
             //range: {startDate: moment(), endDate: moment().add(10, 'days')},
             range:{
-                startDate: new Date(moment().subtract(10, "days")),
+                startDate: new Date(moment().subtract(5, "days")),
                 endDate: new Date(moment()),
             },
             StartSeason: '',
@@ -172,7 +172,7 @@ class ActivitiesScreen extends Component {
         if(route.name === "Team Sessions"){
             this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
             if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})//change
+                this.setState({range:{startDate: new Date(moment().subtract(5, "days")),endDate: new Date(moment())}})//change
             }
             this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
         }else{
@@ -220,11 +220,11 @@ class ActivitiesScreen extends Component {
         /*delete Axios.defaults.headers.common['client_id'];
         delete Axios.defaults.headers.common['client_secret'];
         Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-        Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;    
+        Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
         console.log(Axios.defaults.headers)*/
         if(route.name === "Team Sessions"){
             if(this.state.isUpdated !== true){
-                await this.setState({range:{startDate: new Date(moment().subtract(10, "days")),endDate: new Date(moment())}})
+                await this.setState({range:{startDate: new Date(moment().subtract(5, "days")),endDate: new Date(moment())}})
             }
         }
         if(this.state.range.endDate !== null){
@@ -902,6 +902,7 @@ class ActivitiesScreen extends Component {
         );
         const noMatchRegion = (status) =>(
             (
+                this.state.activities!== undefined?
                 (this.state.activities.length !== 0 && this.state.activitiesRegion.length === 0 && this.state.RegionSelected.length !== 0 && this.state.nomatchModalVisibility===false && this.state.selectedTabIndex !== 1) &&
                 (this.props.sessionScreen.region === "ASBA"?
                 <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
@@ -914,7 +915,13 @@ class ActivitiesScreen extends Component {
                         There are no active Sessions for the selected Region.
                     </Text>
                 </Card>
-            ))
+                ):  
+                <Card style={{opacity: 0.9, backgroundColor:"#C0E4F5"}}>
+                    <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5"}}>
+                        There are no active Sessions.
+                    </Text>
+                </Card>
+            )
         );
         const helloMessage = (status) => (
             (
