@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner  } from '@ui-kitten/components';
+import { Layout,CheckBox, Button, Divider, Icon, List, ListItem, Text, Modal, Card, Spinner, Input  } from '@ui-kitten/components';
 import { StyleSheet, View, RefreshControl, ScrollView, Image, ImageBackground, Alert } from 'react-native';
 import { connect} from 'react-redux';
 import { syncSessions, updateSession} from "./Redux/actions/Session.actions";
@@ -41,7 +41,12 @@ class AttendanceScreen extends Component {
             loadingModalRecords:false,
             duplicatedRecords:false,
             duplicatesRecordsModal:false,
-            duplicateRecordsList: []
+            headCountModalStatus:false,
+            headCount: 0,
+            headCountFemale: 0,
+            numberOfStudentsCounted:0,
+            duplicateRecordsList: [],
+            showHeadcounts: false
         }
     }
     
@@ -218,11 +223,31 @@ class AttendanceScreen extends Component {
         actions.updateSession(payload);
     }
 
-    
+    async updateHeadcountAttendance() {
+        this.setState({updatingModalstate:true});
+        let headCountObject = {
+            "Headcount": this.state.headCount,
+            "FemaleHeadcount": this.state.headCountFemale
+        }
+        await Axios.patch(
+            `${ApiConfig.dataApi}/sessions/${this.state.sessionId}`,
+            headCountObject
+        ).then(res => {
+            if (res.status === 200){ 
+                setTimeout(() => {this.setState({updatingModalstate:false, responseSuccess: true})});
+                this.setState({ responseStatusModal: true });
+        }
+        }).catch(error => {
+            this.setState({updatingModalstate:false, responseSuccess: false, responseStatusModal: true});
+            console.log("SOMETHING HAPPENED")
+            throw error;
+        })
+    }
 
     //Filters the current session and sets the student list for attendance 
     async _setCurrentSessionData() {
         const {route} = this.props;
+        console.log('route', route.params)
         var currentSession = await this.props.sessions.sessions.find(session => session.TeamSeasonId === route.params.teamSeasonId);
         var currentSessionData = await currentSession.Sessions.find(session => session.SessionId === route.params.sessionId);
         if( this.state.arrowSession !== undefined){
@@ -231,99 +256,138 @@ class AttendanceScreen extends Component {
         }
         let currentDate = moment();
         let currentTopic = "";
-        
+        let useHeadcount = "";
+        let programType = "";
+        let femaleHeadcount = "";
+        let headcount = "";
         if (currentSession) {
             console.log("[Attendance.Screen.js] : FETCH SESSION") 
             await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`)
             .then(async res => {
-                console.log(res.data.SessionTopic);
+                console.log('data',res.data);
                 currentDate = res.data.SessionDate;
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
+                useHeadcount = res.data.UsesHeadcount;
+                programType = res.data.ProgramType;
+                femaleHeadcount = res.data.FemaleHeadcount;
+                headcount = res.data.Headcount;
             }).catch(error => error)
-            const newState = {
-                sessionId: currentSessionData.SessionId,
-                enrollments: [],
-                teamName: currentSession.TeamSeasonName,
-                teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
-                completeTeamSeasonId: currentSession.TeamSeasonId,
-                topic: currentTopic,
-                date: moment(currentDate).format("MMM-DD-YYYY"),
-                numberOfStudents: 0,
-                missingEnrollments: [],
-            }
-            await this.setState(newState);
-            await this._fetchGetEnrollments();
-            await this.verifyAttendance();
-
-            if(this.props.sessionAttendance.sessionsAttendance !== undefined){
-                console.log("redux",this.props.sessionAttendance.sessionsAttendance)
-            }
-            if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
-                if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
-                    this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
-                        console.log(valueredux)
-                        if(valueredux.SessionId === currentSessionData.SessionId){
-                            this.setState({nomatchattendance:true})
-                            this.state.enrollments.map((value) =>{
-                                //value.Attended = false
-                                valueredux.attendanceList.map((redux) =>{
-                                    if(value.StudentId === redux.StudentId){
-                                        value.Attended = redux.Attended
-                                    }
-                                });
-                            });
-                            this.setState({isUpdated: true})
-                        }
-                    });
+            if(useHeadcount){
+                this.setState({showHeadcounts:true});
+                if(headcount !== null){
+                    headcount = headcount.replace(/\./g,'');
+                    headcount = headcount/10
+                    this.setState({ headCount: headcount.toString(), numberOfStudentsCounted: (Number(this.state.headCountFemale) + Number(headcount)) })
                 }else{
-                        this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                    this.setState({ headCount: 0, numberOfStudentsCounted: (Number(this.state.headCountFemale) + 0) })
+                }
+                if(femaleHeadcount !== null){
+                    femaleHeadcount = femaleHeadcount.replace(/\./g,'');
+                    femaleHeadcount = femaleHeadcount/10
+                    this.setState({ headCountFemale: femaleHeadcount.toString(), numberOfStudentsCounted: (Number(this.state.headCount) + Number(femaleHeadcount)) })
+                }else{
+                    this.setState({ headCountFemale: 0, numberOfStudentsCounted: (Number(this.state.headCount) + 0) })
+                }
+                const newState = {
+                    sessionId: currentSessionData.SessionId,
+                    teamName: currentSession.TeamSeasonName,
+                    teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+                    completeTeamSeasonId: currentSession.TeamSeasonId,
+                    topic: currentTopic,
+                    date: moment(currentDate).format("MMM-DD-YYYY"),
+                    numberOfStudents: 0,
+                    programType: programType
+                }
+                await this.setState(newState);
+                this.setState({headCountModalStatus: true});
+            }else{
+                this.setState({showHeadcounts:false});
+                this.setState({headCountModalStatus: false});
+                const newState = {
+                    sessionId: currentSessionData.SessionId,
+                    enrollments: [],
+                    teamName: currentSession.TeamSeasonName,
+                    teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+                    completeTeamSeasonId: currentSession.TeamSeasonId,
+                    topic: currentTopic,
+                    date: moment(currentDate).format("MMM-DD-YYYY"),
+                    numberOfStudents: 0,
+                    missingEnrollments: [],
+                }
+                await this.setState(newState);
+                await this._fetchGetEnrollments();
+                await this.verifyAttendance();
+
+                if(this.props.sessionAttendance.sessionsAttendance !== undefined){
+                    console.log("redux",this.props.sessionAttendance.sessionsAttendance)
+                }
+                if(this.props.sessionAttendance.sessionsAttendance.length !== 0){
+                    if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
+                        this.props.sessionAttendance.sessionsAttendance.map((valueredux) =>{
+                            console.log(valueredux)
                             if(valueredux.SessionId === currentSessionData.SessionId){
                                 this.setState({nomatchattendance:true})
                                 this.state.enrollments.map((value) =>{
-                                    //value.Attended=false
+                                    //value.Attended = false
                                     valueredux.attendanceList.map((redux) =>{
                                         if(value.StudentId === redux.StudentId){
                                             value.Attended = redux.Attended
-                                            }
-                                        });
+                                        }
+                                    });
                                 });
                                 this.setState({isUpdated: true})
                             }
-                        })
-                    }
-                    if(this.state.nomatchattendance === false){
-                        if(this.state.enrollments !== null){
-                            this.state.enrollments.map((value) =>{
-                                if(value.Attended !== undefined){
-                                    //value.Attended=false
+                        });
+                    }else{
+                            this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
+                                if(valueredux.SessionId === currentSessionData.SessionId){
+                                    this.setState({nomatchattendance:true})
+                                    this.state.enrollments.map((value) =>{
+                                        //value.Attended=false
+                                        valueredux.attendanceList.map((redux) =>{
+                                            if(value.StudentId === redux.StudentId){
+                                                value.Attended = redux.Attended
+                                                }
+                                            });
+                                    });
+                                    this.setState({isUpdated: true})
                                 }
-                                { () => this.studentAttendanceItem(this.state.enrollments) }
                             })
-                    }
-                }
-                await this._fetchSessionInfo();
-                if(this.state.enrollments.length !== 0){
-                    this.setState({nomatchModalVisibility: false})
-                }else{
-                    this.setState({nomatchModalVisibility: true})
-                }
-            }else{
-                if(this.state.enrollments.length !== 0){
-                    this.setState({nomatchModalVisibility: false})
-                    this.state.enrollments.map((value) =>{
-                        if(value.Attended !== undefined){
-                            //value.Attended = false
                         }
-                    });
+                        if(this.state.nomatchattendance === false){
+                            if(this.state.enrollments !== null){
+                                this.state.enrollments.map((value) =>{
+                                    if(value.Attended !== undefined){
+                                        //value.Attended=false
+                                    }
+                                    { () => this.studentAttendanceItem(this.state.enrollments) }
+                                })
+                        }
+                    }
+                    await this._fetchSessionInfo();
+                    if(this.state.enrollments.length !== 0){
+                        this.setState({nomatchModalVisibility: false})
+                    }else{
+                        this.setState({nomatchModalVisibility: true})
+                    }
                 }else{
-                    this.setState({nomatchModalVisibility: true})
-                    this.setState({loadingModalstate:false});
+                    if(this.state.enrollments.length !== 0){
+                        this.setState({nomatchModalVisibility: false})
+                        this.state.enrollments.map((value) =>{
+                            if(value.Attended !== undefined){
+                                //value.Attended = false
+                            }
+                        });
+                    }else{
+                        this.setState({nomatchModalVisibility: true})
+                        this.setState({loadingModalstate:false});
+                    }
+                    await this._fetchSessionInfo();
                 }
-                await this._fetchSessionInfo();
+            this.setState({loadingModalstate:false});
             }
-        this.setState({loadingModalstate:false});
+            this.setState({loadingModalstate:false});
         }
-        this.setState({loadingModalstate:false});
     }
 
     async createMissingAttendance(attendanceRecords,enrollmentsDuplicate) {
@@ -689,7 +753,24 @@ class AttendanceScreen extends Component {
     }
 
     editSession(modalScreen){
-        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date, oldTopic: this.state.topic});
+        const number = function(topic) { 
+            if(topic === 'Soccer')
+                return 0
+            else if (topic === 'Writing')
+                return 1 
+            else if (topic === 'Game Day')
+                return 2
+            else if (topic === 'Soccer and Writing')
+                return 3
+            else return 0
+        }
+        var id = number(this.state.topic)
+        console.log(id)
+        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date, oldTopic: this.state.topic, topicId: id});
+    }
+
+    editHeadCountSession(modalScreen){
+        this.props.navigation.navigate(modalScreen, {session: this.state.sessionId, oldDate: this.state.date });
     }
 
     toogleSpinnerOff(){ this.setState({updatingModalstate: false}) }
@@ -907,6 +988,67 @@ class AttendanceScreen extends Component {
                 return "#001541"
             }
         }
+        const headCountHeader = () => (
+            <Layout style={{padding: 5}}level="2">
+                <Icon
+                    fill={buttonColor()}
+                    name='arrow-back-outline'
+                    style={styles.icon}
+                    onPress={() => {this.setState({headCountModalStatus: false}),this.props.navigation.goBack()}}
+                />
+                <View style={styles.row}>
+                    <View style={styles.column}>
+                        {descriptionRowText("Team:",this.state.teamName)}
+                        {descriptionRowTextImage("Program Type:",this.state.programType)}
+                        {descriptionRowTextDate("Date:", this.state.date)}
+                        {descriptionRowText("Counted Students:", this.state.numberOfStudentsCounted)}
+                    </View>
+                </View>
+            </Layout>
+        );
+        const headCountFooter = (props) => (
+            <Layout {...props}>
+                <View style={styles.row}>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editHeadCountSession("EditHeadCountSessionModal")}>EDIT SESSION</Button>
+                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                </View>
+            </Layout>
+        );
+        const headCountModal = () =>(
+            <Modal
+                style={styles.popOverContent}
+                visible={this.state.headCountModalStatus}
+                backdropStyle={styles.backdrop}>
+                <Card disabled={true} header={headCountHeader} footer={headCountFooter}>
+                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                        <Input
+                            keyboardType = 'numeric'
+                            status='primary'
+                            label='Headcount'
+                            placeholder='Headcount'
+                            style={{width: '45%'}}
+                            value={this.state.headCount}
+                            onChangeText={nextValue => this.setState({headCount: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCountFemale)})}    
+                        />
+                        <Input
+                            keyboardType = 'numeric'
+                            status='primary'
+                            label='Female Headcount'
+                            style={{width: '45%'}}
+                            placeholder='Headcount'
+                            value={this.state.headCountFemale}
+                            onChangeText={nextValue => this.setState({headCountFemale: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCount)})}    
+                        />
+                    </View>
+                    {Number(this.state.headCount) !==0 && Number(this.state.headCountFemale) !==0 ?
+                    <View style={{justifyContent: 'center', alignItems: 'center', marginTop: '5%'}}>
+                        <Button style={{width:"70%"}} size='medium' appearance="filled" status="success"  onPress={() => this.updateHeadcountAttendance()}> Update Attendance </Button>
+                    </View>:null
+                    }
+                </Card>
+            </Modal>
+        )
         const descriptionArea = () => (
             <Layout style={{padding: 5}}level="2">
                 <ScrollView
@@ -933,39 +1075,49 @@ class AttendanceScreen extends Component {
 
         return(
             <Layout style={{ flex: 1}} level="1">
-                <Button style={{width:"100%"}} 
-                    appearance='ghost' 
-                    status='primary' 
-                    accessoryLeft={cameraIcon} 
-                    onPress={() => navigation.navigate("Scan students QR", {
-                            enrollments: this.state.enrollments,
-                            checkStudentById: this.checkStudentById
-                        }
-                    )}
-                >
-                    SCAN QR CODE
-                </Button> 
-                <Divider/>
-                {descriptionArea()}
-                {updateModal()}
-                {loadingModal()}
-                {duplicatesRecordsModal()}
-                {loadingModalRecords()}
-                {updateButton()}
-                {updatingModal()}
-                {noMatch("basic")}
-                <Divider/>
-                <List
-                    style={{width: "100%"}}
-                    data={this.state.enrollments}
-                    ItemSeparatorComponent={Divider}
-                    renderItem={studentAttendanceItem}
+                {this.state.showHeadcounts?
+                    <React.Fragment>
+                        {loadingModal()}
+                        {updateModal()}
+                        {headCountModal()}
+                    </React.Fragment>
+                    :
+                <React.Fragment>
+                    <Button style={{width:"100%"}} 
+                        appearance='ghost' 
+                        status='primary' 
+                        accessoryLeft={cameraIcon} 
+                        onPress={() => navigation.navigate("Scan students QR", {
+                                enrollments: this.state.enrollments,
+                                checkStudentById: this.checkStudentById
+                            }
+                        )}
+                    >
+                        SCAN QR CODE
+                    </Button> 
+                    <Divider/>
+                    {descriptionArea()}
+                    {updateModal()}
+                    {loadingModal()}
+                    {duplicatesRecordsModal()}
+                    {loadingModalRecords()}
+                    {updateButton()}
+                    {updatingModal()}
+                    {noMatch("basic")}
+                    <Divider/>
+                    <List
+                        style={{width: "100%"}}
+                        data={this.state.enrollments}
+                        ItemSeparatorComponent={Divider}
+                        renderItem={studentAttendanceItem}
                     />
-                <View style={styles.row}>
-                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
-                    <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
-                    <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
-                </View>
+                    <View style={styles.row}>
+                        <Button style={{width:'17%', backgroundColor: buttonColor(), marginRight:'2%'}} status="primary" accessoryLeft={backIcon} onPress={() => this.backArrow()}></Button>
+                        <Button style={{width:'62%',alignSelf: 'center', backgroundColor: buttonColor()}} status="primary" accessoryLeft={editIcon} onPress={() => this.editSession("EditSessionModal")}>EDIT SESSION</Button>
+                        <Button style={{width:'17%', backgroundColor: buttonColor(), marginLeft: '2%'}} status="primary" accessoryLeft={forwardIcon} onPress={() => this.ForwardArrow()}></Button>
+                    </View>
+                </React.Fragment>
+                }
             </Layout>
         )
     }
@@ -987,6 +1139,12 @@ const styles = StyleSheet.create({
     row: {
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    rowBottom: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        position: 'absolute',
+        bottom: 0,
     },
     column: {
         flexDirection: "column"
@@ -1020,5 +1178,10 @@ const styles = StyleSheet.create({
         // flex: 1,
         // backgroundColor: 'pink',
         
-      }
+      },
+    icon: {
+        width: 25,
+        height: 25,
+        marginBottom: '2%'
+    },
 });
