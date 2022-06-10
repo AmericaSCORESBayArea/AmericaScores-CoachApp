@@ -562,7 +562,7 @@ export const AddSessionModal = ({route, navigation}) => {
     useEffect(
         () => {
                 if(route.params.teamSeasonId === ''){
-                    fetchTeams()
+                    fetchTeams();
                 }
             },
         []
@@ -582,11 +582,18 @@ export const AddSessionModal = ({route, navigation}) => {
     }
 
     async function fetchTeams(){
-        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons`, {
-            params: {
-                date: moment().format("YYYY-MM-DD")
-            }
-        })
+        await Axios.get(`${ApiConfig.dataApi}/seasons`)
+        .then(response => {
+            response.data.map(value => {
+                if (date.format("YYYY-MM-DD") >= value.StartDate && date.format("YYYY-MM-DD") <= value.EndDate) {
+                    fetchTeamsBySeason(value);
+                }
+            })
+        }).catch(e => console.log(e));
+    }
+
+    async function fetchTeamsBySeason(season){
+        await Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons?season=${season.Id}`)
         .then(response => {
             if(actualRegion === 'ASBA'){
                 var list=response.data.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
@@ -606,9 +613,9 @@ export const AddSessionModal = ({route, navigation}) => {
                     "Oops",
                     "Adding a new session is not possible. There are no active Teams for the selected affilitation.",
                     [
-                      { text: "OK", onPress: () => navigation.goBack()}
+                    { text: "OK", onPress: () => navigation.goBack()}
                     ]
-                  );
+                );
             }
         })
         .catch(e => console.log(e));
