@@ -224,7 +224,15 @@ class AttendanceScreen extends Component {
     }
 
     async updateHeadcountAttendance() {
+        const {user} = this.props.user;
         this.setState({updatingModalstate:true});
+        await analytics().logEvent('Headcount', {
+            coach_Id: user.ContactId,
+            Headcount: this.state.headCount,
+            FemaleHeadcount: this.state.headCountFemale,
+            teamSeasonId: this.state.teamSeasonId,
+            sessionId: this.state.sessionId
+        });
         let headCountObject = {
             "Headcount": this.state.headCount,
             "FemaleHeadcount": this.state.headCountFemale
