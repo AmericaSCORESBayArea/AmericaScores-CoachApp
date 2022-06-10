@@ -582,7 +582,7 @@ export const AddSessionModal = ({route, navigation}) => {
     }
 
     async function fetchTeams(){
-        await Axios.get(`${ApiConfig.dataApi}/seasons`)
+        await Axios.get(`${ApiConfig.dataApi}/seasons`)//seasons endpoint
         .then(response => {
             response.data.map(value => {
                 if (date.format("YYYY-MM-DD") >= value.StartDate && date.format("YYYY-MM-DD") <= value.EndDate) {
