@@ -8,7 +8,7 @@ import { HomeScreen } from './home.component';
 import { CreateStudentModal, AddStudentToTeamModal, StudentInfoModal } from './src/components/StudentModal.component';
 import { CreateReportModal } from './src/components/ReportModal.component';
 import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
-import { EditSessionModal, AddSessionModal } from './src/components/SessionModal.component';
+import { EditSessionModal, AddSessionModal, EditHeadCountSessionModal } from './src/components/SessionModal.component';
 import { userGuideModal, userGuideModalLogin} from './src/components/userGuideModal.component';
 import { assessmentModal } from './src/components/assessmentModal.component';
 
@@ -35,6 +35,7 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen name="AddStudentToTeamModal" component={AddStudentToTeamModal}/>
       <HomeRootStack.Screen name="EditSessionModal" component={EditSessionModal}/>
       <HomeRootStack.Screen name="AddSessionModal" component={AddSessionModal}/>
+      <HomeRootStack.Screen name="EditHeadCountSessionModal" component={EditHeadCountSessionModal}/>
       <HomeRootStack.Screen name="CreateReportModal" component={CreateReportModal}/>
       <HomeRootStack.Screen name="StudentInfoModal" component={StudentInfoModal}/>
       <HomeRootStack.Screen name="userGuideModal" component={userGuideModal} />

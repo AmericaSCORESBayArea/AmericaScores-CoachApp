@@ -355,21 +355,23 @@ PODS:
     - React-jsi (= 0.64.1)
     - React-perflogger (= 0.64.1)
   - React-jsinspector (0.64.1)
-  - react-native-camera (3.40.0):
+  - react-native-camera (3.44.3):
     - React-Core
-    - react-native-camera/RCT (= 3.40.0)
-    - react-native-camera/RN (= 3.40.0)
-  - react-native-camera/RCT (3.40.0):
+    - react-native-camera/RCT (= 3.44.3)
+    - react-native-camera/RN (= 3.44.3)
+  - react-native-camera/RCT (3.44.3):
     - React-Core
-  - react-native-camera/RN (3.40.0):
+  - react-native-camera/RN (3.44.3):
     - React-Core
   - react-native-document-picker (6.1.1):
     - React-Core
-  - react-native-image-picker (4.0.6):
+  - react-native-image-picker (4.6.1):
     - React-Core
   - react-native-safe-area-context (3.0.2):
     - React
-  - react-native-webview (11.14.1):
+  - react-native-sms (1.11.0):
+    - React
+  - react-native-webview (11.15.0):
     - React-Core
   - React-perflogger (0.64.1)
   - React-RCTActionSheet (0.64.1):
@@ -437,33 +439,33 @@ PODS:
     - React-perflogger (= 0.64.1)
   - RNAppleAuthentication (1.1.2):
     - React
-  - RNCAsyncStorage (1.15.8):
+  - RNCAsyncStorage (1.15.14):
     - React-Core
-  - RNCMaskedView (0.1.10):
+  - RNCMaskedView (0.1.11):
     - React
-  - RNDeviceInfo (8.4.0):
+  - RNDeviceInfo (8.7.1):
     - React-Core
-  - RNFBAnalytics (14.1.0):
+  - RNFBAnalytics (14.2.1):
     - Firebase/Analytics (= 8.10.0)
     - React-Core
     - RNFBApp
-  - RNFBApp (14.1.0):
+  - RNFBApp (14.2.1):
     - Firebase/CoreOnly (= 8.10.0)
     - React-Core
-  - RNFBAuth (14.1.0):
+  - RNFBAuth (14.2.1):
     - Firebase/Auth (= 8.10.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (1.8.0):
-    - React
+  - RNGestureHandler (1.10.3):
+    - React-Core
   - RNGoogleSignin (4.0.3):
     - GoogleSignIn (~> 5.0.0)
     - React
   - RNPermissions (2.2.2):
     - React-Core
-  - RNScreens (2.12.0):
+  - RNScreens (2.18.1):
     - React-Core
-  - RNSVG (12.1.0):
+  - RNSVG (12.1.1):
     - React
   - UMAppLoader (1.2.0)
   - UMBarCodeScannerInterface (5.2.1)
@@ -521,6 +523,7 @@ DEPENDENCIES:
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-sms (from `../node_modules/react-native-sms`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
@@ -649,6 +652,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-image-picker"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-sms:
+    :path: "../node_modules/react-native-sms"
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-perflogger:
@@ -747,7 +752,7 @@ SPEC CHECKSUMS:
   EXSQLite: b001ba35deb3001bd6e4b256581a558ae745ef2f
   EXUpdates: 8c4570807f9435337769850d9976d63a407cecfc
   FBLazyVector: 7b423f9e248eae65987838148c36eec1dbfe0b53
-  FBReactNativeSpec: ebb02df981c3f77ef4266cfde122763113a62729
+  FBReactNativeSpec: 8e03490841e0a12cc3d72294c2eda79572d0b513
   Firebase: 44213362f1dcc52555b935dc925ed35ac55f1b20
   FirebaseAnalytics: 319c9b3b1bdd400d60e2f415dff0c5f6959e6760
   FirebaseAuth: 59a2d2b933b5b79e18fb1e6ad230c6abdaa73d26
@@ -775,11 +780,12 @@ SPEC CHECKSUMS:
   React-jsi: 5de8204706bd872b78ea646aee5d2561ca1214b6
   React-jsiexecutor: 124e8f99992490d0d13e0649d950d3e1aae06fe9
   React-jsinspector: 500a59626037be5b3b3d89c5151bc3baa9abf1a9
-  react-native-camera: 5c1fbfecf63b802b8ca4a71c60d30a71550fb348
+  react-native-camera: fefef39fcd20850d17c3780638b04f741e0ccaae
   react-native-document-picker: 855e3468ac80f886d46cfc9ed132a4469ecaf817
-  react-native-image-picker: 7bda3c7297c3ea16f4f504ad6174aa7e548192ef
+  react-native-image-picker: febf8b5e300bedb47c9157b2b6434dc4f6137ab5
   react-native-safe-area-context: c23e140ee9a482e89991798aed110fbffefb2f51
-  react-native-webview: 16054e7a26009b7d5944a18e19f450e26bd4c969
+  react-native-sms: 31fbb9d6ebb565ad32e409eaf9dc70329936a129
+  react-native-webview: fcadb5d977e7098e14eb3b27d339feae16c549ff
   React-perflogger: aad6d4b4a267936b3667260d1f649b6f6069a675
   React-RCTActionSheet: fc376be462c9c8d6ad82c0905442fd77f82a9d2a
   React-RCTAnimation: ba0a1c3a2738be224a08092fa7f1b444ab77d309
@@ -793,17 +799,17 @@ SPEC CHECKSUMS:
   React-runtimeexecutor: ff951a0c241bfaefc4940a3f1f1a229e7cb32fa6
   ReactCommon: bedc99ed4dae329c4fcf128d0c31b9115e5365ca
   RNAppleAuthentication: 473b2c076f1a48a537610580a168c1fb6d0a90c6
-  RNCAsyncStorage: 0f655864a81214d1c5a9bf0faf79d86dc25c383e
-  RNCMaskedView: f5c7d14d6847b7b44853f7acb6284c1da30a3459
-  RNDeviceInfo: 99b0a4fc191808e58e0a045640706100fc3d771c
-  RNFBAnalytics: 0555b9d857644540ad36872fed900b2a08080530
-  RNFBApp: e884e9a2dcc5edfa73e2651ef6638df5e0672f89
-  RNFBAuth: fd6cbf93302641dbe20045a44e64c1fa3d4eff02
-  RNGestureHandler: 7a5833d0f788dbd107fbb913e09aa0c1ff333c39
+  RNCAsyncStorage: 4b6538222ce3f01f61011f512226ba3aaa0dc336
+  RNCMaskedView: f127cd9652acfa31b91dcff613e07ba18b774db6
+  RNDeviceInfo: af47a7d1a09d64c8cbb8b0c883db9bca422a9813
+  RNFBAnalytics: c2bc124906b6719c9d3e407f06f9222a15638edc
+  RNFBApp: 4f490a1e02e41721c55b354019f39f2323d72f82
+  RNFBAuth: 8a2d139824431757f1a6b71a8d086cb104e56a0d
+  RNGestureHandler: a479ebd5ed4221a810967000735517df0d2db211
   RNGoogleSignin: ccf71ee4b6cfd324fd788a41e457e2043838c0d9
   RNPermissions: 067727df624665d4a6c8e2cffcc172ba608b96ed
-  RNScreens: 4b488fdf9537bbce829e2910c8cce1d17f6d9be8
-  RNSVG: ce9d996113475209013317e48b05c21ee988d42e
+  RNScreens: f7ad633b2e0190b77b6a7aab7f914fad6f198d8d
+  RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   UMAppLoader: 98b77b58fac12abab963f79f762ceef008c50505
   UMBarCodeScannerInterface: e1299aafa3bede8ba674e84199e9f319a0195cad
   UMCameraInterface: 68da359d6fe7423d7b114b96ea0df268a84da39f
