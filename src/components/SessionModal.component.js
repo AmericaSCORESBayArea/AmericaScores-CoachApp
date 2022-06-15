@@ -46,8 +46,17 @@ export const EditSessionModal = ({route, navigation}) => {
     }
     function deleteSession() {
         setWarningStatusModal(false);
-        setResponseSuccessDelete(true);
-        setResponseStatusModal(true);
+        setupdatingModalstate(true);
+        Axios.delete(
+            `${ApiConfig.dataApi}/sessions/${session}`).then(res => {
+            setupdatingModalstate(false);
+            setResponseSuccessDelete(true);
+            setResponseStatusModal(true);
+        }).catch(error => {
+            setupdatingModalstate(false);
+            setResponseSuccessDelete(false);
+            setResponseStatusModal(true);
+        })
     }
     async function editSession() {
         let changes =
