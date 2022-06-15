@@ -25,7 +25,6 @@ export const EditSessionModal = ({route, navigation}) => {
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(topicId));
 
     const [updatingModalstate, setupdatingModalstate] = React.useState(false);
-    const [responseSuccess, setResponseSuccess] = React.useState(false);
     const [responseSuccessDelete, setResponseSuccessDelete] = React.useState(false);
 
     function closeModal() {
