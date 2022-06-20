@@ -25,7 +25,6 @@ export const EditSessionModal = ({route, navigation}) => {
     const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(topicId));
 
     const [updatingModalstate, setupdatingModalstate] = React.useState(false);
-    const [responseSuccess, setResponseSuccess] = React.useState(false);
     const [responseSuccessDelete, setResponseSuccessDelete] = React.useState(false);
 
     function closeModal() {
@@ -46,8 +45,25 @@ export const EditSessionModal = ({route, navigation}) => {
     }
     function deleteSession() {
         setWarningStatusModal(false);
-        setResponseSuccessDelete(true);
-        setResponseStatusModal(true);
+        setupdatingModalstate(true);
+        Axios.delete(
+            `${ApiConfig.dataApi}/sessions/${session}`).then(res => {
+                console.log(res.data)
+                if(res.data.success === false){
+                    setupdatingModalstate(false);
+                    setResponseSuccessDelete(false);
+                    setResponseStatusModal(true);
+                }else{
+                    setupdatingModalstate(false);
+                    setResponseSuccessDelete(true);
+                    setResponseStatusModal(true);
+                }
+        }).catch(error => {
+            console.log(error);
+            setupdatingModalstate(false);
+            setResponseSuccessDelete(false);
+            setResponseStatusModal(true);
+        })
     }
     async function editSession() {
         let changes =
@@ -68,9 +84,9 @@ export const EditSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>
+            </Button>*/}
         </Layout>
     );
 
@@ -350,8 +366,25 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
     }
     function deleteSession() {
         setWarningStatusModal(false);
-        setResponseSuccessDelete(true);
-        setResponseStatusModal(true);
+        setupdatingModalstate(true);
+        Axios.delete(
+            `${ApiConfig.dataApi}/sessions/${session}`).then(res => {
+                console.log(res.data)
+                if(res.data.success === false){
+                    setupdatingModalstate(false);
+                    setResponseSuccessDelete(false);
+                    setResponseStatusModal(true);
+                }else{
+                    setupdatingModalstate(false);
+                    setResponseSuccessDelete(true);
+                    setResponseStatusModal(true);
+                }
+        }).catch(error => {
+            console.log(error);
+            setupdatingModalstate(false);
+            setResponseSuccessDelete(false);
+            setResponseStatusModal(true);
+        })
     }
     async function editSession() {
         let changes =
@@ -371,9 +404,9 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>
+            </Button>*/}
         </Layout>
     );
 

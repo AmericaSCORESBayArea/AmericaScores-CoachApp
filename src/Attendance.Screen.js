@@ -8,7 +8,7 @@ import { bindActionCreators } from 'redux';
 import Axios from 'axios';
 import { ApiConfig } from './config/ApiConfig';
 import moment from "moment";
-import {isEqual} from 'lodash';
+import analytics from '@react-native-firebase/analytics';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const wait = (timeout) => {
     return new Promise(resolve => setTimeout(resolve, timeout));
@@ -44,6 +44,7 @@ class AttendanceScreen extends Component {
             headCountModalStatus:false,
             headCount: 0,
             headCountFemale: 0,
+            headCountNonBinary: 0,
             numberOfStudentsCounted:0,
             duplicateRecordsList: [],
             showHeadcounts: false
@@ -228,14 +229,16 @@ class AttendanceScreen extends Component {
         this.setState({updatingModalstate:true});
         await analytics().logEvent('Headcount', {
             coach_Id: user.ContactId,
-            Headcount: this.state.headCount,
-            FemaleHeadcount: this.state.headCountFemale,
+            boysPresent: this.state.headCount,
+            girlsPresent: this.state.headCountFemale,
+            nonbinaryPresent: this.state.headCountNonBinary,
             teamSeasonId: this.state.teamSeasonId,
             sessionId: this.state.sessionId
         });
         let headCountObject = {
-            "Headcount": this.state.headCount,
-            "FemaleHeadcount": this.state.headCountFemale
+            "BoysPresent": this.state.headCount,
+            "GirlsPresent": this.state.headCountFemale,
+            "NonbinaryPresent": this.state.headCountNonBinary
         }
         await Axios.patch(
             `${ApiConfig.dataApi}/sessions/${this.state.sessionId}`,
@@ -266,8 +269,9 @@ class AttendanceScreen extends Component {
         let currentTopic = "";
         let useHeadcount = "";
         let programType = "";
-        let femaleHeadcount = "";
-        let headcount = "";
+        let girlsHeadcount = "";
+        let boysHeadcount = "";
+        let nonBinaryHeadcount = "";
         if (currentSession) {
             console.log("[Attendance.Screen.js] : FETCH SESSION") 
             await Axios.get(`${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`)
@@ -277,24 +281,32 @@ class AttendanceScreen extends Component {
                 currentTopic = res.data.SessionTopic.replace(/_/g,' ');
                 useHeadcount = res.data.UsesHeadcount;
                 programType = res.data.ProgramType;
-                femaleHeadcount = res.data.FemaleHeadcount;
-                headcount = res.data.Headcount;
+                girlsHeadcount = res.data.GirlsPresent;
+                boysHeadcount = res.data.BoysPresent;
+                nonBinaryHeadcount = res.data.NonbinaryPresent;
             }).catch(error => error)
             if(useHeadcount){
                 this.setState({showHeadcounts:true});
-                if(headcount !== null){
-                    headcount = headcount.replace(/\./g,'');
-                    headcount = headcount/10
-                    this.setState({ headCount: headcount.toString(), numberOfStudentsCounted: (Number(this.state.headCountFemale) + Number(headcount)) })
+                if(boysHeadcount !== null){
+                    boysHeadcount = boysHeadcount.replace(/\./g,'');
+                    boysHeadcount = boysHeadcount/10
+                    this.setState({ headCount: boysHeadcount.toString(), numberOfStudentsCounted: (Number(this.state.headCountFemale) + Number(boysHeadcount)+ Number(this.state.headCountNonBinary)) })
                 }else{
-                    this.setState({ headCount: 0, numberOfStudentsCounted: (Number(this.state.headCountFemale) + 0) })
+                    this.setState({ headCount: 0, numberOfStudentsCounted: (Number(this.state.headCountFemale) + 0 + Number(this.state.headCountNonBinary)) })
                 }
-                if(femaleHeadcount !== null){
-                    femaleHeadcount = femaleHeadcount.replace(/\./g,'');
-                    femaleHeadcount = femaleHeadcount/10
-                    this.setState({ headCountFemale: femaleHeadcount.toString(), numberOfStudentsCounted: (Number(this.state.headCount) + Number(femaleHeadcount)) })
+                if(girlsHeadcount !== null){
+                    girlsHeadcount = girlsHeadcount.replace(/\./g,'');
+                    girlsHeadcount = girlsHeadcount/10
+                    this.setState({ headCountFemale: girlsHeadcount.toString(), numberOfStudentsCounted: (Number(this.state.headCount) + Number(girlsHeadcount) + Number(this.state.headCountNonBinary)) })
                 }else{
-                    this.setState({ headCountFemale: 0, numberOfStudentsCounted: (Number(this.state.headCount) + 0) })
+                    this.setState({ headCountFemale: 0, numberOfStudentsCounted: (Number(this.state.headCount) + 0 + Number(this.state.headCountNonBinary)) })
+                }
+                if(nonBinaryHeadcount !== null){
+                    nonBinaryHeadcount = nonBinaryHeadcount.replace(/\./g,'');
+                    nonBinaryHeadcount = nonBinaryHeadcount/10
+                    this.setState({ headCountNonBinary: nonBinaryHeadcount.toString(), numberOfStudentsCounted: (Number(this.state.headCount) + Number(this.state.headCountFemale) + Number(nonBinaryHeadcount)) })
+                }else{
+                    this.setState({ headCountNonBinary: 0, numberOfStudentsCounted: (Number(this.state.headCount) + Number(this.state.headCountFemale) + 0) })
                 }
                 const newState = {
                     sessionId: currentSessionData.SessionId,
@@ -862,7 +874,7 @@ class AttendanceScreen extends Component {
         const updateButton = () => {
             if (this.state.isUpdated){
                  return <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                <Button style={{width:"70%"}} onPress={() => this.toogleUpdate()} size='large' appearance="filled" status="success"> Update Attendance </Button>
+                <Button style={{width:"70%"}} onPress={() => this.toogleUpdate()} size='large' appearance="filled" status="success"> Save Attendance </Button>
                 </View>
                 }
         }
@@ -1009,7 +1021,7 @@ class AttendanceScreen extends Component {
                         {descriptionRowText("Team:",this.state.teamName)}
                         {descriptionRowTextImage("Program Type:",this.state.programType)}
                         {descriptionRowTextDate("Date:", this.state.date)}
-                        {descriptionRowText("Counted Students:", this.state.numberOfStudentsCounted)}
+                        {descriptionRowText("Session attendance:", this.state.numberOfStudentsCounted)}
                     </View>
                 </View>
             </Layout>
@@ -1029,29 +1041,36 @@ class AttendanceScreen extends Component {
                 visible={this.state.headCountModalStatus}
                 backdropStyle={styles.backdrop}>
                 <Card disabled={true} header={headCountHeader} footer={headCountFooter}>
-                    <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                    <Text  category="s1" >Number of:</Text>
+                    <View style={{flexDirection:'row', justifyContent:'space-between', marginTop: '5%'}}>
                         <Input
                             keyboardType = 'numeric'
                             status='primary'
-                            label='Headcount'
-                            placeholder='Headcount'
-                            style={{width: '45%'}}
+                            label='Boys'
+                            style={{width: '30%'}}
                             value={this.state.headCount}
-                            onChangeText={nextValue => this.setState({headCount: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCountFemale)})}    
+                            onChangeText={nextValue => this.setState({headCount: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCountFemale)+Number(this.state.headCountNonBinary)})}    
                         />
                         <Input
                             keyboardType = 'numeric'
                             status='primary'
-                            label='Female Headcount'
-                            style={{width: '45%'}}
-                            placeholder='Headcount'
+                            label='Girls'
+                            style={{width: '30%'}}
                             value={this.state.headCountFemale}
-                            onChangeText={nextValue => this.setState({headCountFemale: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCount)})}    
+                            onChangeText={nextValue => this.setState({headCountFemale: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCount)+Number(this.state.headCountNonBinary)})}    
+                        />
+                        <Input
+                            keyboardType = 'numeric'
+                            status='primary'
+                            label='Non binary'
+                            style={{width: '30%'}}
+                            value={this.state.headCountNonBinary}
+                            onChangeText={nextValue => this.setState({headCountNonBinary: nextValue.replace(/\D/g, ''), numberOfStudentsCounted:Number(nextValue.replace(/\D/g, ''))+Number(this.state.headCountFemale)+Number(this.state.headCount)})}    
                         />
                     </View>
-                    {Number(this.state.headCount) !==0 && Number(this.state.headCountFemale) !==0 ?
+                    {Number(this.state.headCount) !==0 && Number(this.state.headCountFemale) !==0 && Number(this.state.headCountNonBinary) !==0 ?
                     <View style={{justifyContent: 'center', alignItems: 'center', marginTop: '5%'}}>
-                        <Button style={{width:"70%"}} size='medium' appearance="filled" status="success"  onPress={() => this.updateHeadcountAttendance()}> Update Attendance </Button>
+                        <Button style={{width:"70%"}} size='medium' appearance="filled" status="success"  onPress={() => this.updateHeadcountAttendance()}> Save Attendance </Button>
                     </View>:null
                     }
                 </Card>
