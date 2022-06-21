@@ -5,6 +5,6 @@
       location = "group:AmericanScoresApp.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Pods/Pods.xcodeproj">
+      location = "container:Pods">
    </FileRef>
 </Workspace>
