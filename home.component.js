@@ -120,7 +120,7 @@ const Stack_Teams_Navigation = ({navigation}) => (
 const Stack_Affiliation = createStackNavigator();
 
 const { Navigator, Screen } = createBottomTabNavigator();
-//change order
+
 const TabNavigator = (navigation) => {
     const [customHomeProps, setCustomHomeProps] = React.useState(0);
     useFocusEffect(
