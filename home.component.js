@@ -13,6 +13,8 @@ import { ApiConfig } from './src/config/ApiConfig';
 import analytics from '@react-native-firebase/analytics';
 import auth from '@react-native-firebase/auth';
 import * as GoogleSignIn from 'expo-google-sign-in';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,6 +25,7 @@ import { changeRegion } from "./src/Redux/actions/SessionScreen.actions";
 const SchoolIcon = (props) => ( <Icon {...props} name='home-outline'/> );
 const TodayIcon = (props) => ( <Icon {...props} name='calendar-outline'/> );
 const StudentsIcon = (props) => ( <Icon {...props} name='people-outline'/> );
+
 const colorList = () =>{
     if(useSelector(state => state.sessionScreen.region) === "ASBA"){
         return '#00467F'
@@ -30,14 +33,25 @@ const colorList = () =>{
         return "#001541"
     }
 }
-  
-const BottomTabBar = ({ navigation, state }) => (
+
+const BottomTabBar = ({ navigation, state,data }) => (
+    //change order
+    data===0?
     <BottomNavigation
     indicatorStyle={{backgroundColor: colorList(), height: 4}} 
     selectedIndex={state.index} 
     onSelect={index => navigation.navigate(state.routeNames[index])} >
         <BottomNavigationTab title='Sessions' icon={TodayIcon} />
         <BottomNavigationTab title='Teams'  icon={StudentsIcon} />
+        {/* <BottomNavigationTab title='Students'  icon={TodayIcon} /> */}
+    </BottomNavigation>
+    :
+    <BottomNavigation
+    indicatorStyle={{backgroundColor: colorList(), height: 4}} 
+    selectedIndex={state.index} 
+    onSelect={index => navigation.navigate(state.routeNames[index])} >
+        <BottomNavigationTab title='Teams'  icon={StudentsIcon} />
+        <BottomNavigationTab title='Sessions' icon={TodayIcon} />
         {/* <BottomNavigationTab title='Students'  icon={TodayIcon} /> */}
     </BottomNavigation>
 );
@@ -106,14 +120,48 @@ const Stack_Teams_Navigation = ({navigation}) => (
 const Stack_Affiliation = createStackNavigator();
 
 const { Navigator, Screen } = createBottomTabNavigator();
-const TabNavigator = () => (
-    <Navigator tabBar={props => <BottomTabBar {...props} /> } >
-        <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
-        <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
-        <Screen name='profile' component={Stack_Profile_Navigation}/>
-        {/*<Screen name='StudentsScreen' component={Stack_Students_Navigation}/>*/}
-    </Navigator>
-);
+//change order
+const TabNavigator = (navigation) => {
+    const [customHomeProps, setCustomHomeProps] = React.useState(0);
+    useFocusEffect(
+        React.useCallback(() => {
+          let isActive = true;
+          const fetchCustomHomeScreen = async () => {
+            try {
+                const unsubscribe = await AsyncStorage.getItem('customHomeScreen');
+              if (isActive) {
+                if(unsubscribe === undefined){
+                    setCustomHomeProps(0);
+                }else{
+                    setCustomHomeProps(JSON.parse(unsubscribe).id);
+                }
+              }
+            } catch (e) {
+              // Handle error
+            }
+          };
+          fetchCustomHomeScreen();
+          return () => {
+            isActive = false;
+          };
+        }, [navigation])
+      );
+      return(
+        customHomeProps === 0?
+        <Navigator tabBar={props => <BottomTabBar {...props} data={customHomeProps} /> } >
+            <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
+            <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
+            <Screen name='profile' component={Stack_Profile_Navigation}/>
+            {/*<Screen name='StudentsScreen' component={Stack_Students_Navigation}/>*/}
+        </Navigator>:
+        <Navigator tabBar={props => <BottomTabBar {...props} data={customHomeProps} /> } >
+            <Screen name='TeamsStack' component={Stack_Teams_Navigation}/>
+            <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
+            <Screen name='profile' component={Stack_Profile_Navigation}/>
+            {/*<Screen name='StudentsScreen' component={Stack_Students_Navigation}/>*/}
+        </Navigator>
+      )
+};
 
 export const HomeScreen = ({navigation}) => {
     return(
@@ -134,6 +182,7 @@ export default OptionOverflowMenu = (navigation) => {
             return "#001541"
         }
     }
+
     const OptionsIcon = (props) => ( <Icon {...props} fill="#FFFFFF" name='more-vertical-outline' /> );
     const addStudentToSchoolIcon = (props) => (<Icon {...props} name="person-add-outline"/>);
     const addStudentIcon = (props) => (<Icon {...props} name='plus-outline'/>);
