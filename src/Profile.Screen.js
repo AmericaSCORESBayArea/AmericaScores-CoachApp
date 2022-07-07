@@ -23,11 +23,26 @@ class ProfileScreen extends Component {
             visibility: false,
             image: '',
             coloroverlayvisibility: false,
+            homeScreenvisibilityModal: false,
             selected: null,
             activeItem: '',
             activeSlide: 0,
             slider1Ref: '',
             changedColor:false,
+            changedHomeOption: false,
+            homeScreenOptionSelected: 0,
+            homeScreenOptions: [
+                {
+                    id: 0,
+                    title: 'Sessions screen',
+                    icon: 'calendar-outline'
+                },
+                {
+                    id: 1,
+                    title: 'Teams screen',
+                    icon: 'people-outline'
+                }
+            ]
         }
     }
     async componentDidMount() {
@@ -114,6 +129,14 @@ class ProfileScreen extends Component {
             }
         })
     }
+
+    onPressChangeHomeScreen = async (value) =>{
+        this.setState({homeScreenOptionSelected: value.id}),
+        setTimeout(() => (this.setState({changedHomeOption: true})), 500);
+        setTimeout(() => {this.setState({changedHomeOption: false})}, 3500);
+        await AsyncStorage.setItem('customHomeScreen',JSON.stringify(value));
+    }
+
     containerColor() {
         if(this.state.selected === 0){
             return '#3D7C99'
@@ -131,6 +154,7 @@ class ProfileScreen extends Component {
     }
     render() {
         const cameraIcon = (props) => ( <Icon {...props} name='camera-outline'/> );
+        const homeIcon = (props) => ( <Icon {...props} name='home-outline'/> );
         const editIcon = (props) => ( <Icon {...props} name='color-palette-outline' />);
         const checkboxPassive = (props) => ( <Icon {...props} name='checkmark-square-2-outline' fill= '#808080' style={{height:50, width:50}}/> );
         const checkboxActive = (props) => ( <Icon {...props} name='checkmark-square-2-outline' fill= '#4CBB17' style={{height:50, width:50}}/> );
@@ -246,7 +270,7 @@ class ProfileScreen extends Component {
                             containerStyle={{ borderColor: 'white', borderStyle:'solid', alignSelf:'center', marginTop:'5%'}}
                         />
                         <Layout style={{ flexDirection: 'row',flexWrap: 'wrap', alignSelf:'center', marginTop:'5%',backgroundColor: this.containerColor() }}>
-                            <Button appearance='outline' accessoryRight={cameraIcon} style={{backgroundColor: 'white'}} onPress={() => this.setState({visibility: true})} />
+                            <Button appearance='outline' accessoryRight={homeIcon} style={{backgroundColor: 'white'}} onPress={() => this.setState({homeScreenvisibilityModal: true})} />
                             <Button appearance='outline' accessoryRight={editIcon}  style={{backgroundColor: 'white',marginLeft:'5%'}} onPress={() => this.setState({coloroverlayvisibility: true})} />
                         </Layout>
                         <Text style={{color: 'white', alignSelf:'center', marginTop:'5%'}}>{this.state.firstName} {this.state.lastName}</Text>
@@ -307,6 +331,33 @@ class ProfileScreen extends Component {
                             { this.pagination }
                         </View>
                     </Overlay>
+                    <Overlay isVisible={this.state.homeScreenvisibilityModal} overlayStyle={styles.overlayHomeScreen} onBackdropPress={() => {this.setState({homeScreenvisibilityModal: false}),this.props.navigation.navigate("My Profile")}}>
+                        <TouchableOpacity style={{alignSelf:'flex-end',marginTop: '1%', marginLeft:'3%'}} onPress={() => {this.setState({homeScreenvisibilityModal: false}),this.props.navigation.navigate("My Profile")}}>
+                            <EvilIcons name={'close'} size={30} color={'#5D738B'} />
+                        </TouchableOpacity>
+                        <View style={{alignItems:'center'}}>
+                            <Text category='h5' style={{marginTop: '10%'}}>Select your home screen:</Text>
+                            <View style={{flexDirection:'row', marginTop: '15%'}}>
+                                {this.state.homeScreenOptions.map((value,index) => (
+                                    <View style={value.id === this.state.homeScreenOptionSelected? styles.selectedItem : styles.optionView}>
+                                    <TouchableOpacity onPress={() => this.onPressChangeHomeScreen(value)}>
+                                        <Icon name={value.icon} fill='#8F9BB3' style={{width: 80,height: 80, alignSelf: 'center'}}/>
+                                        <Text category='h6'>{value.title}</Text>
+                                    </TouchableOpacity >
+                                </View>
+                                ))}
+                            </View>
+                            <View>
+                                {
+                                    this.state.changedHomeOption?
+                                    <View style={{flexDirection:'row', marginTop:'4%',alignSelf:'center'}}>
+                                        <Icon style={styles.icon}  name='checkmark-circle-outline' fill='#4CBB17'/>  
+                                        <Text style={{color:'#4CBB17',marginTop:'2%', marginLeft:'2%'}}>HOME SCREEN CHANGED!</Text>
+                                    </View>:<></>
+                                }
+                            </View>
+                        </View>
+                    </Overlay>
                 </ScrollView>
             </View>                      
         );
@@ -345,6 +396,11 @@ const styles = StyleSheet.create({
         height: '90%',
         alignSelf:'center'
     },
+    overlayHomeScreen: {
+        width: '90%',
+        height: '50%',
+        alignSelf:'center'
+    },
     optionsTitle :{
         marginTop: '2%',
         color: '#5D738B',
@@ -360,5 +416,29 @@ const styles = StyleSheet.create({
         marginBottom: Platform.select({ ios: 0, android: 1 }), // Prevent a random Android rendering issue
         backgroundColor: 'white',
         borderRadius: 8,
+    },
+    optionView: {
+        height: "100%",
+        width: "45%",
+        alignItems: 'center',
+        borderColor: '#E0E0E0',
+        borderWidth: 3,
+        borderRadius: 5,
+        marginLeft: '1.5%',
+        marginRight: '1.5%',
+        marginBottom: '1.5%',
+        marginTop: '1%',
+    },
+    selectedItem: {
+        height: "100%",
+        width: "45%",
+        alignItems: 'center',
+        borderColor: '#52a5cc',
+        borderWidth: 3,
+        borderRadius: 5,
+        marginLeft: '1.5%',
+        marginRight: '1.5%',
+        marginBottom: '1.5%',
+        marginTop: '1%',
     },
 });

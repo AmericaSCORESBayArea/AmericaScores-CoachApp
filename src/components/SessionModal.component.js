@@ -84,9 +84,9 @@ export const EditSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>*/}
+            </Button>
         </Layout>
     );
 
@@ -404,9 +404,9 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>*/}
+            </Button>
         </Layout>
     );
 
