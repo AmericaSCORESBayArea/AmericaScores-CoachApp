@@ -71,7 +71,7 @@ export const EditSessionModal = ({route, navigation}) => {
                 "SessionDate": date.format("YYYY-MM-DD"),
                 "SessionTopic": displayValue.replace(/\s/g, '_'),
             };
-        console.log(changes);
+        console.log('change',changes);
         await pushChanges(changes);
         
     }
@@ -84,9 +84,9 @@ export const EditSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>*/}
+            </Button>
         </Layout>
     );
 
@@ -171,7 +171,7 @@ export const EditSessionModal = ({route, navigation}) => {
             style={styles.popOverContent}
             onBackdropPress={() => toggleNotificationOff()}>
             {
-                warningCard("warning", "Removing a session will delete any recorded attendance data.")
+                warningCard("warning", "Only sessions with no attendance or assessments can be deleted.")
             }
         </Modal>
     )
@@ -391,7 +391,7 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
             {
                 "SessionDate": date.format("YYYY-MM-DD"),
             };
-        console.log(changes);
+        console.log('changeHead',changes);
         await pushChanges(changes);
         
     }
@@ -404,9 +404,9 @@ export const EditHeadCountSessionModal = ({route, navigation}) => {
             <Button onPress={() => editSession()}>
                 SAVE CHANGES
             </Button>
-            {/*<Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
+            <Button style={{marginTop: '0.5%' }} status='danger' onPress={() => warningModalFunction()}>
                 DELETE SESSION
-            </Button>*/}
+            </Button>
         </Layout>
     );
 
