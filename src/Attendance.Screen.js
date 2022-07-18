@@ -285,7 +285,7 @@ class AttendanceScreen extends Component {
                 boysHeadcount = res.data.BoysPresent;
                 nonBinaryHeadcount = res.data.NonbinaryPresent;
             }).catch(error => error)
-            if(useHeadcount){
+            if(useHeadcount === true || useHeadcount === 'true'){
                 this.setState({showHeadcounts:true});
                 if(boysHeadcount !== null){
                     boysHeadcount = boysHeadcount.replace(/\./g,'');
