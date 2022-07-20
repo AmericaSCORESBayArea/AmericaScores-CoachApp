@@ -212,7 +212,6 @@ const Stack_Teams_Navigation = ({ navigation }) =>
 const Stack_Affiliation = createStackNavigator();
 
 const { Navigator, Screen } = createBottomTabNavigator();
-
 const TabNavigator = (navigation) => {
   const [customHomeProps, setCustomHomeProps] = React.useState();
   useFocusEffect(
@@ -222,7 +221,7 @@ const TabNavigator = (navigation) => {
         try {
           const unsubscribe = await AsyncStorage.getItem("customHomeScreen");
           if (isActive) {
-            if (unsubscribe === undefined) {
+            if (unsubscribe === undefined || unsubscribe === null) {
               setCustomHomeProps(0);
             } else {
               setCustomHomeProps(JSON.parse(unsubscribe).id);
@@ -238,7 +237,6 @@ const TabNavigator = (navigation) => {
       };
     }, [navigation])
   );
-  console.log(customHomeProps);
   return customHomeProps === 0 ? (
     <Navigator
       tabBar={(props) => <BottomTabBar {...props} data={customHomeProps} />}
