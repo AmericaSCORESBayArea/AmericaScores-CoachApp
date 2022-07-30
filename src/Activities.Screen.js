@@ -62,7 +62,9 @@ class ActivitiesScreen extends Component {
             checkBoxView:false,
             studentsBoxCheck: [],
             responseSuccess: false,
-            responseStatusModal:false
+            responseStatusModal:false,
+            showStudents: false,
+            programType: ''
         }
     }
     
@@ -79,6 +81,11 @@ class ActivitiesScreen extends Component {
             // this.setState({loadingModalstate:false});
         }else{
             actions.changeTitleTeam(route.params.SeasonName);
+            if(route.params.UsesHeadcount === 'true'){
+                this.setState({showStudents: false})
+            }else{
+                this.setState({showStudents: true})
+            }
         }
         this.setState({displayedValue:this.state.regions[0]})//setting "basic" region filter with All
         if (this.props.sessionScreen.region === 'IFC'){
@@ -110,7 +117,7 @@ class ActivitiesScreen extends Component {
                 if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId && route.params.region && route.params.teamName){
                     await this.fetchStudents();
                     await this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
-                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, isTeamSessions: true});
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, isTeamSessions: true, programType: route.params.ProgramType});
                 }
             })
             .catch(error => console.log(error));
@@ -136,7 +143,6 @@ class ActivitiesScreen extends Component {
         this.setState({loadingModalstate: true});
         const { user } = this.props;
         const { route } = this.props;
-        console.log(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
         return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`)
               .then(res => {
                     this.setState({studentList: res.data.sort((a, b) => (a.StudentName.split(" ")[1].toLowerCase() > b.StudentName.split(" ")[1].toLowerCase())), loadingModalstate: false})})
@@ -148,6 +154,7 @@ class ActivitiesScreen extends Component {
         const { route } = this.props;
         this.setState({listofSessions: null});
         actions.syncSessions(activitiesList);
+        console.log(activitiesList)
         this.setState({activities: activitiesList});//saving the activitiesList
         if (this.props.sessionScreen.region === 'IFC'){
             this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All IFC"})//saving sessions without filtering
@@ -377,7 +384,7 @@ class ActivitiesScreen extends Component {
     }
     render() {
         const TopTabBar = () => (
-            (this.state.isTeamSessions === true ?
+            (this.state.isTeamSessions === true && this.state.showStudents===true ?
                 <TabBar
                 selectedIndex={this.state.selectedTabIndex}
                 onSelect={index => this.setState({selectedTabIndex: index})}>
@@ -409,46 +416,48 @@ class ActivitiesScreen extends Component {
         const CalendarIcon = (props) => ( <Icon {...props} name='calendar'/> );
         const ArrowIcon = (props) => ( <Icon {...props} fill="#4f5c63" size='medium' name='arrow-ios-forward-outline'/> );
         const renderItemIcon = (props) => (
+            props = Math.floor(props),
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
-                <Text  style={{alignSelf:"baseline"}}></Text>
-                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
-                <Icon {...props} fill="#4f5c63" name='calendar-outline'/> 
-                <Icon {...props} fill="#4f5c63" name='arrow-ios-forward-outline'/> 
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#8F9BB3", width: 24}} fill="#4f5c63" name='people-outline'/>
+                <Text  style={{alignSelf:"baseline", marginTop: '2%', color: props===0? 'red' : 'green' }}>{props}</Text>
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#8F9BB3", width: 24}} fill="#4f5c63" name='calendar-outline'/> 
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#8F9BB3", width: 24}} fill="#4f5c63" name='arrow-ios-forward-outline'/> 
             </View>
         );
         const renderItemIconRed = (props) => (
+            props = Math.floor(props),
             <View style={{flex: 1, flexDirection: 'row', justifyContent:'flex-end'}}>
-                <Text  style={{alignSelf:"baseline"}}></Text>
-                {/*<Icon {...props} name='people-outline'/> fill="#D62E0A"*/}
-                <Icon {...props} fill="#D62E0A" name='calendar-outline'/> 
-                <Icon {...props} fill="#D62E0A" name='arrow-ios-forward-outline'/> 
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#D62E0A", width: 24}} fill="#D62E0A" name='people-outline'/>
+                <Text  style={{alignSelf:"baseline", marginTop: '2%', color: props===0? 'red' : 'green' }}>{props}</Text>
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#D62E0A", width: 24}} fill="#D62E0A" name='calendar-outline'/> 
+                <Icon style={{height: 24, marginHorizontal: 8, tintColor: "#D62E0A", width: 24}}  fill="#D62E0A" name='arrow-ios-forward-outline'/> 
             </View>
         );
-        const RenderItemImageNL = () => (
+        const RenderItemImageNL = (props) => (
             <Image
               style={{ width: 45, height: 35,resizeMode: "contain"}}
               source={require('../assets/Unassigned_Session.png')}
             />
           );
-        const RenderItemImageSW = () => (
+        const RenderItemImageSW = (props) => (
             <Image
               style={{ width: 45, height: 45,resizeMode: "contain"}}
               source={require('../assets/Scores_Soccer_and_writing.png')}
             />
           );
-        const RenderItemImageS = () => (
+        const RenderItemImageS = (props) => (
                 <Image
                 style={{ width: 45, height: 45, resizeMode: "contain"}}
                 source={require('../assets/Scores_Ball.png')}
                 />
             );
-        const RenderItemImageW = () => (
+        const RenderItemImageW = (props) => (
                 <Image
                 style={{  width: 45, height: 45,resizeMode: "contain"}}
                 source={require('../assets/Scores_Pencil_Edit.png')}
                 />
         );
-        const RenderItemImageGD = () => (
+        const RenderItemImageGD = (props) => (
             <Image
             style={{  width: 45, height: 45,resizeMode: "contain"}}
             source={require('../assets/Scores_goal.png')}
@@ -538,14 +547,14 @@ class ActivitiesScreen extends Component {
                                     title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor,fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                     style={{backgroundColor: colorList(value.SessionDate)}}
                                     description={() => description(value.SessionDate)}
-                                    accessoryLeft={RenderItemImageNL}
-                                    accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                    accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
+                                    accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                         ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                        renderItemIcon
+                                        renderItemIcon(value.TotalStudentsPresent)
                                         :
-                                        renderItemIconRed)
+                                        renderItemIconRed(value.TotalStudentsPresent))
                                         :
-                                        renderItemIcon}
+                                        renderItemIcon(value.TotalStudentsPresent)}
                                     onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                 />                                      
                             }else{
@@ -561,8 +570,8 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageNL}
-                                        accessoryRight={renderItemIconRed}
+                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                 }else{
@@ -571,8 +580,8 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={`${value.SessionDate}`}
-                                        accessoryLeft={RenderItemImageNL}
-                                        accessoryRight={renderItemIcon}
+                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                 }
@@ -583,8 +592,8 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageNL}
-                                        accessoryRight={renderItemIcon}
+                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                         }
@@ -597,14 +606,14 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageSW}
-                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                        accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
+                                        accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon
+                                            renderItemIcon(value.TotalStudentsPresent)
                                             :
-                                            renderItemIconRed)
+                                            renderItemIconRed(value.TotalStudentsPresent))
                                             :
-                                            renderItemIcon}
+                                            renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                           
@@ -621,8 +630,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageSW}
-                                            accessoryRight={renderItemIconRed}
+                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }else{
@@ -631,8 +640,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageSW}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }
@@ -643,8 +652,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageSW}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                             }
@@ -656,14 +665,14 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageS}
-                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                        accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
+                                        accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon
+                                            renderItemIcon(value.TotalStudentsPresent)
                                             :
-                                            renderItemIconRed)
+                                            renderItemIconRed(value.TotalStudentsPresent))
                                             :
-                                            renderItemIcon}
+                                            renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                           
@@ -680,8 +689,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageS}
-                                            accessoryRight={renderItemIconRed}
+                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }else{
@@ -690,8 +699,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageS}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }
@@ -702,8 +711,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageS}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                             }
@@ -715,14 +724,14 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageW}
-                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                        accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
+                                        accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon
+                                            renderItemIcon(value.TotalStudentsPresent)
                                             :
-                                            renderItemIconRed)
+                                            renderItemIconRed(value.TotalStudentsPresent))
                                             :
-                                            renderItemIcon}
+                                            renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                         
@@ -739,8 +748,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageW}
-                                            accessoryRight={renderItemIconRed}
+                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }else{
@@ -749,8 +758,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageW}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }
@@ -761,8 +770,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageW}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                             }
@@ -775,14 +784,14 @@ class ActivitiesScreen extends Component {
                                         title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                         style={{backgroundColor: colorList(value.SessionDate)}}
                                         description={() => description(value.SessionDate)}
-                                        accessoryLeft={RenderItemImageGD}
-                                        accessoryRight={(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
+                                        accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
+                                        accessoryRight={() => (String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
                                             ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon
+                                            renderItemIcon(value.TotalStudentsPresent)
                                             :
-                                            renderItemIconRed)
+                                            renderItemIconRed(value.TotalStudentsPresent))
                                             :
-                                            renderItemIcon}
+                                            renderItemIcon(value.TotalStudentsPresent)}
                                         onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                     />
                                         
@@ -799,8 +808,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageGD}
-                                            accessoryRight={renderItemIconRed}
+                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }else{
@@ -809,8 +818,8 @@ class ActivitiesScreen extends Component {
                                             title={`${item.Team_Name}`}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageGD}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                                     }
@@ -821,8 +830,8 @@ class ActivitiesScreen extends Component {
                                             title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
                                             style={{backgroundColor: colorList(value.SessionDate)}}
                                             description={() => description(value.SessionDate)}
-                                            accessoryLeft={RenderItemImageGD}
-                                            accessoryRight={renderItemIcon}
+                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
                                             onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
                                         />
                             }
@@ -1121,7 +1130,7 @@ class ActivitiesScreen extends Component {
                         {wppGroupURL()}
                         {textGroup()}
                         {deleteModal()}
-                        {(this.state.selectedTabIndex === 1 ?
+                        {(this.state.selectedTabIndex === 1?
                             <React.Fragment>
                                 <List
                                     style={{opacity: 0.95}}
@@ -1158,7 +1167,7 @@ class ActivitiesScreen extends Component {
                     {/*<Button style={{width:"80%", marginTop: "2%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}>ENROLL STUDENT</Button>*/}
                     {(this.state.selectedTabIndex !== 1 ?
                         <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%"}}>
-                            <Button style={{width:"46%"}} status="primary" onPress={() => this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId})}>+ ADD SESSION</Button>
+                            <Button style={{width:"46%"}} status="primary" onPress={() => {this.state.showStudents === true? this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId}):this.props.navigation.navigate("AddSessionHeadcountModal", {teamSeasonId: this.state.teamSeasonId, programType: this.state.programType})}}>+ ADD SESSION</Button>
                         </View>:
                         this.state.checkBoxView ===false?
                         <View style={{position:'absolute', bottom: '3%', alignSelf:'flex-end'}}>
