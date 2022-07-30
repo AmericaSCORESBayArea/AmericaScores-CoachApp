@@ -17,6 +17,7 @@ import LogInScreen_Google from "./src/Auth/LogInMain.Screen";
 import {
   EditSessionModal,
   AddSessionModal,
+  AddSessionHeadcountModal,
   EditHeadCountSessionModal,
 } from "./src/components/SessionModal.component";
 import {
@@ -70,6 +71,10 @@ export const HomeRootStackScreen = () => {
       <HomeRootStack.Screen
         name="AddSessionModal"
         component={AddSessionModal}
+      />
+      <HomeRootStack.Screen
+        name="AddSessionHeadcountModal"
+        component={AddSessionHeadcountModal}
       />
       <HomeRootStack.Screen
         name="EditHeadCountSessionModal"
