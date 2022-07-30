@@ -12,7 +12,12 @@ import {
   List,
   Divider,
   ListItem,
+  IndexPath,
+  Select,
+  SelectItem,
+  Datepicker,
 } from "@ui-kitten/components";
+import { MomentDateService } from "@ui-kitten/moment";
 import {
   StyleSheet,
   View,
@@ -22,6 +27,7 @@ import {
   ScrollView,
   Alert,
   Keyboard,
+  Dimensions,
   Image,
 } from "react-native";
 import moment from "moment";
@@ -29,29 +35,211 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
+import { Root, Popup } from "popup-ui";
 
-export const CreateStudentModal = ({ navigation }) => {
-  const [visible, setVisible] = React.useState(true);
+export const CreateStudentModal = ({ navigation, route }) => {
+  const data = ["Male", "Female", "Non-binary", "Prefer not to say"];
+  const relations = [
+    "Parent",
+    "Legal guardian",
+    "Foster parent",
+    "Grandparent",
+    "Sibling/Other relative",
+  ];
+  const grade = [
+    "Kindergarten",
+    "First",
+    "Second",
+    "Third",
+    "Fourth",
+    "Fifth",
+    "Sixth",
+    "Seventh",
+    "Eighth",
+  ];
+  const gradeApi = [
+    "K",
+    "1st",
+    "2nd",
+    "3rd",
+    "4th",
+    "5th",
+    "6th",
+    "7th",
+    "8th",
+  ];
+  const [visibleModal, setVisibleModal] = React.useState(true);
+  const [keyboardSize, setKeyboardSize] = React.useState(0);
+  const [parentName, setParenName] = React.useState();
+  const [parentLastName, setParentLastName] = React.useState();
+  const { teamSeasonId, region, enrolled } = route.params;
   const [nameValue, setNameValue] = React.useState();
-  const [surenameValue, setSureNameValue] = React.useState();
+  const [middleNameValue, setMiddleNameValue] = React.useState();
+  const [lastNameValue, setLastNameValue] = React.useState();
+  const [allergies, setAllergies] = React.useState();
+  const [selectedIndex, setSelectedIndex] = React.useState();
+  const [displayedValue, setDisplayedValue] = React.useState(data[0]);
+  const [parentEmail, setParentEmail] = React.useState();
+  const [selectedIndexRelation, setSelectedIndexRelation] = React.useState();
+  const [displayedValueRelation, setDisplayedValueRelation] = React.useState(
+    relations[0]
+  );
+  const [selectedIndexGrade, setSelectedIndexGrade] = React.useState();
+  const [displayedValueGrade, setDisplayedValueGrade] = React.useState(
+    grade[0]
+  );
+  const [loadingModalstate, setLoadingModalstate] = React.useState(false);
+  const [emergencyContactName, setEmergencyContactName] = React.useState();
+  const [date, setDate] = React.useState(moment());
+
+  useEffect(() => {
+    console.log("test");
+    Keyboard.addListener("keyboardDidShow", (e) => {
+      setKeyboardSize(e.endCoordinates.height);
+    });
+
+    Keyboard.addListener("keyboardDidHide", (e) => {
+      setKeyboardSize(e.endCoordinates.height);
+    });
+
+    return () => {
+      Keyboard.removeAllListeners("keyboardDidShow");
+      Keyboard.removeAllListeners("keyboardDidHide");
+    };
+  }, []);
+
+  const selectIndex = (index) => {
+    setSelectedIndex(index);
+    setDisplayedValue(data[index.row]);
+  };
+
+  const selectIndexRelation = (index) => {
+    setSelectedIndexRelation(index);
+    setDisplayedValueRelation(relations[index.row]);
+  };
+
+  const selectIndexGrade = (index) => {
+    setSelectedIndexGrade(index);
+    setDisplayedValueGrade(grade[index.row]);
+  };
+
+  const LoadingGif = () => {
+    if (region === "ASBA") {
+      return require("../../assets/Scores_Logo.gif"); //Scores logo gif
+    } else if (region === "IFC") {
+      return require("../../assets/IFC_Logo_animated.gif"); //IFC logo gif
+    } else if (region === "OGSC") {
+      return require("../../assets/OGSC_logo_spinner.gif"); //Genesis logo gif
+    }
+  };
+
+  const loadingModal = () => (
+    <Modal
+      style={styles.popOverContent}
+      visible={loadingModalstate}
+      backdropStyle={styles.backdrop}
+    >
+      <Image source={LoadingGif()} />
+    </Modal>
+  );
 
   function closeModal() {
-    setVisible(false);
-    navigation.goBack();
+    setVisibleModal(false);
+    navigation.pop(2);
   }
 
   function createStudent() {
-    console.log(nameValue, surenameValue);
-    closeModal();
+    setLoadingModalstate(true);
+    var birthDateFormat = date.toISOString().slice(0, 10);
+    const student = {
+      name: nameValue,
+      middleName: middleNameValue,
+      lastName: lastNameValue,
+      gender: displayedValue,
+      grade: gradeApi[selectedIndexGrade],
+      birthdate: birthDateFormat,
+      homePhone: studentHomePhone.value,
+      allergies: allergies,
+      parent: {
+        name: parentName,
+        lastName: parentLastName,
+        phone: parentPhone.value,
+        email: parentEmail,
+      },
+      emergencyContact: {
+        name: emergencyContactName,
+        phone: emergencyContactPhone.value,
+        relationship: displayedValueRelation,
+      },
+    };
+    if (student.name === undefined || student.lastName === undefined) {
+      setLoadingModalstate(false);
+      Popup.show({
+        type: "Warning",
+        title: "Warning!",
+        button: true,
+        textBody: "Complete required fields!",
+        buttonText: "Ok",
+        callback: () => Popup.hide(),
+      });
+    } else {
+      createStudentEndpoint(student);
+    }
+  }
+
+  async function createStudentEndpoint(student) {
+    let studentObject = {
+      FirstName: student.name,
+      MiddleName: student.middleName,
+      LastName: student.lastName,
+      ContactType: "SCORES Student",
+      Gender: student.gender,
+      Birthdate: student.birthdate,
+      HomePhone: student.homePhone,
+      Allergies: student.allergies,
+      Grade: student.grade,
+      ParentFName: student.parent.name,
+      ParentLName: student.parent.lastName,
+      ParentPhone1: student.parent.phone,
+      ParentEmail: student.parent.email,
+      Emergency_Contact_Name: student.emergencyContact.name,
+      Emergency_Contact_Phone1: student.emergencyContact.phone,
+      Emergency_Contact_Relationship: student.emergencyContact.relationship,
+    };
+    console.log(studentObject);
+    await Axios.post(`${ApiConfig.dataApi}/contacts`, studentObject)
+      .then((res) => {
+        if (res.data) {
+          setLoadingModalstate(false);
+          Popup.show({
+            type: "Success",
+            title: "Student created!",
+            button: true,
+            textBody: "The student was created successfully.",
+            buttonText: "Ok",
+            callback: () => {
+              Popup.hide(), closeModal();
+            },
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(e),
+          setLoadingModalstate(false),
+          Popup.show({
+            type: "Danger",
+            title: "Error!",
+            button: true,
+            textBody: "Oops, something went wrong. Please try again later.",
+            buttonText: "Ok",
+            callback: () => Popup.hide(),
+          });
+      });
   }
 
   const Footer = (props) => (
-    <Layout {...props}>
-      <Button
-        appearance="ghost"
-        status="danger"
-        onPress={() => createStudent()}
-      >
+    <Layout {...props} style={{ marginBottom: "15%" }}>
+      <Button appearance="ghost" status="danger" onPress={() => closeModal()}>
         Cancel
       </Button>
       <Button onPress={() => createStudent()}>CREATE STUDENT</Button>
@@ -67,36 +255,209 @@ export const CreateStudentModal = ({ navigation }) => {
     </Layout>
   );
 
+  const useInputState = (initialValue = "") => {
+    const [value, setValue] = React.useState(initialValue);
+    return { value, onChangeText: setValue };
+  };
+  const studentHomePhone = useInputState("");
+  const parentPhone = useInputState("");
+  const emergencyContactPhone = useInputState("");
+  const windowHeight = Dimensions.get("window").height;
+  const CalendarIcon = (props) => <Icon {...props} name="calendar" />;
+  const dateService = new MomentDateService();
+  const searchBox = () => (
+    <Datepicker
+      placeholder="Pick Date"
+      min={moment("01/01/1900", "MM/DD/YYYY")}
+      max={moment("01/01/2060", "MM/DD/YYYY")}
+      date={date}
+      placement="bottom"
+      style={{ marginTop: "2%", marginBottom: "2%" }}
+      dateService={dateService}
+      onSelect={(nextDate) => setDate(nextDate)}
+      accessoryRight={CalendarIcon}
+    />
+  );
   return (
     <Modal
-      visible={visible}
+      visible={visibleModal}
       onBackdropPress={() => closeModal()}
-      style={{ width: "95%" }}
+      style={{
+        width: "95%",
+        height: windowHeight,
+        marginBottom: keyboardSize,
+        marginTop: "7%",
+      }}
     >
-      <Card disabled={true} header={Header} footer={Footer}>
-        <Text>Student name</Text>
-        <Input
-          placeholder="Name"
-          value={nameValue}
-          onChangeText={(enteredValue) => setNameValue(enteredValue)}
-        />
-        <Text>Student surename</Text>
-        <Input
-          placeholder="Surename"
-          value={surenameValue}
-          onChangeText={(enteredSureNameValue) =>
-            setSureNameValue(enteredSureNameValue)
-          }
-        />
-        <Text>Team</Text>
-        <Input
-          placeholder="Team"
-          value={surenameValue}
-          onChangeText={(enteredSureNameValue) =>
-            setSureNameValue(enteredSureNameValue)
-          }
-        />
-      </Card>
+      <Root>
+        <ScrollView>
+          <Card
+            disabled={true}
+            style={{ marginBottom: keyboardSize, marginTop: "6%" }}
+            header={Header}
+            footer={Footer}
+          >
+            {loadingModal()}
+            <Text style={{ marginBottom: "4%", fontWeight: "bold" }}>
+              Student
+            </Text>
+            <Text>First name(*)</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Name"
+              value={nameValue}
+              onChangeText={(enteredValue) => setNameValue(enteredValue)}
+            />
+            <Text>Middle name</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Name"
+              value={middleNameValue}
+              onChangeText={(enteredValue) => setMiddleNameValue(enteredValue)}
+            />
+            <Text>Last name(*)</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Last Name"
+              value={lastNameValue}
+              onChangeText={(enteredLastNameValue) =>
+                setLastNameValue(enteredLastNameValue)
+              }
+            />
+            <Text>Gender(*)</Text>
+            <Select
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Select an option"
+              value={displayedValue}
+              selectedIndex={selectedIndex}
+              onSelect={(index) => selectIndex(index)}
+            >
+              <SelectItem title="Male" />
+              <SelectItem title="Female" />
+              <SelectItem title="Non-binary" />
+              <SelectItem title="Prefer not to say" />
+            </Select>
+            <Text>Birthdate(*)</Text>
+            {searchBox()}
+            <Text>Grade level</Text>
+            <Select
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Select an option"
+              value={displayedValueGrade}
+              selectedIndex={selectedIndexGrade}
+              onSelect={(index) => selectIndexGrade(index)}
+            >
+              <SelectItem title="Kindergarten" />
+              <SelectItem title="First" />
+              <SelectItem title="Second" />
+              <SelectItem title="Third" />
+              <SelectItem title="Fourth" />
+              <SelectItem title="Fifth" />
+              <SelectItem title="Sixth" />
+              <SelectItem title="Seventh" />
+              <SelectItem title="Eighth" />
+            </Select>
+            <Text>Allergies</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Allergies"
+              value={allergies}
+              onChangeText={(enteredAllergiesValue) =>
+                setAllergies(enteredAllergiesValue)
+              }
+            />
+            <Text>Home phone</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              keyboardType="numeric"
+              placeholder="646 660 0404" //America scores phone
+              {...studentHomePhone}
+            />
+            <Divider
+              style={{
+                backgroundColor: "black",
+                marginTop: "5%",
+                marginBottom: "5%",
+              }}
+            />
+            <Text style={{ marginBottom: "4%", fontWeight: "bold" }}>
+              Emergency Contact
+            </Text>
+            <Text>Name</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Name"
+              value={emergencyContactName}
+              onChangeText={(enteredValue) =>
+                setEmergencyContactName(enteredValue)
+              }
+            />
+            <Text>Relationship</Text>
+            <Select
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Select an option"
+              value={displayedValueRelation}
+              selectedIndex={selectedIndexRelation}
+              onSelect={(index) => selectIndexRelation(index)}
+            >
+              <SelectItem title="Parent" />
+              <SelectItem title="Legal Guardian" />
+              <SelectItem title="Foster Parent" />
+              <SelectItem title="Grandparent" />
+              <SelectItem title="Sibling/Other Relative" />
+            </Select>
+            <Text>Phone</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              keyboardType="numeric"
+              placeholder="646 660 0404" //America scores phone
+              {...emergencyContactPhone}
+            />
+            <Divider
+              style={{
+                backgroundColor: "black",
+                marginTop: "5%",
+                marginBottom: "5%",
+              }}
+            />
+            <Text style={{ marginBottom: "4%", fontWeight: "bold" }}>
+              Parent
+            </Text>
+            <Text>First name</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Name"
+              value={parentName}
+              onChangeText={(enteredValue) => setParenName(enteredValue)}
+            />
+            <Text>Last name</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Last Name"
+              value={parentLastName}
+              onChangeText={(enteredLastNameValue) =>
+                setParentLastName(enteredLastNameValue)
+              }
+            />
+            <Text>Phone</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              keyboardType="numeric"
+              placeholder="646 660 0404" //America scores phone
+              {...parentPhone}
+            />
+            <Text>Email</Text>
+            <Input
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Email"
+              value={parentEmail}
+              onChangeText={(parentemailValue) =>
+                setParentEmail(parentemailValue)
+              }
+            />
+          </Card>
+        </ScrollView>
+      </Root>
     </Modal>
   );
 };
@@ -114,6 +475,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   const [suggestions, setSuggestions] = React.useState();
   const [loadingModalstate, setLoadingModalstate] = React.useState(false);
   useEffect(() => {
+    setVisible(true);
     Keyboard.addListener("keyboardDidShow", (e) => {
       setKeyboardSize(e.endCoordinates.height);
     });
@@ -138,6 +500,16 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     setVisible(false);
     navigation.goBack();
   }
+
+  function createStudentModal() {
+    setVisible(false);
+    navigation.navigate("CreateStudentModal", {
+      teamSeasonId: teamSeasonId,
+      region: region,
+      enrolled: enrolled,
+    });
+  }
+
   function openWhatsappGroup() {
     let phoneWithCountryCode = [];
     phoneWithCountryCode.map((value) => {
@@ -237,6 +609,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
 
   async function filterData() {
     const unfiltered = await fetchStudents(value);
+    console.log(unfiltered);
     if (unfiltered.length > 0) {
       setData(unfiltered);
     } else {
@@ -245,7 +618,10 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   }
 
   const renderOption = ({ item, index }) => (
-    <ListItem title={item.Name} onPress={() => onSelect(index)} />
+    <ListItem
+      title={item.FirstName + " " + item.MiddleName + " " + item.LastName}
+      onPress={() => onSelect(index)}
+    />
   );
 
   const Footer = (props) => (
@@ -273,7 +649,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
         <Text category="s1" appearance="hint" style={styles.missingStudentText}>
           Haven't found a student?
         </Text>
-        <Button appearance="ghost" onPress={() => closeModal()}>
+        <Button appearance="ghost" onPress={() => createStudentModal()}>
           Create student
         </Button>
       </View>
