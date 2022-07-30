@@ -155,7 +155,9 @@ class TeamsScreen extends Component {
     Region,
     SeasonName,
     SeasonStartDate,
-    SeasonEndDate
+    SeasonEndDate,
+    UsesHeadcount,
+    ProgramType
   ) {
     this.props.navigation.navigate("Team Sessions", {
       teamSeasonId: teamSeasonId,
@@ -164,6 +166,8 @@ class TeamsScreen extends Component {
       seasonStart: SeasonStartDate,
       seasonEnd: SeasonEndDate,
       SeasonName: SeasonName,
+      UsesHeadcount: UsesHeadcount,
+      ProgramType: ProgramType,
     });
   }
 
@@ -289,8 +293,7 @@ class TeamsScreen extends Component {
               a.TeamSeasonName.toLowerCase() > b.TeamSeasonName.toLowerCase()
           );
           this.setState({ data: response.data, selectedData: response.data }),
-            this.regionFiltering(response.data),
-            console.log(response);
+            this.regionFiltering(response.data);
         })
         .catch((e) => console.log(e));
       this.setState({ displayedValue: this.state.regions[0] }); //setting "basic" region filter with All
@@ -336,7 +339,9 @@ class TeamsScreen extends Component {
               item.Region,
               item.SeasonName,
               item.SeasonStartDate,
-              item.SeasonEndDate
+              item.SeasonEndDate,
+              item.UsesHeadcount,
+              item.ProgramType
             )
           }
         />
@@ -388,7 +393,7 @@ class TeamsScreen extends Component {
           </Text>
         </View>
       );
-      /*(this.props.sessionScreen.region === "ASBA"?
+    /*(this.props.sessionScreen.region === "ASBA"?
                         <View style={{backgroundColor:"#52a5cc"}}>
                             <Text style={{textAlign:"center", color:"white"}} status={status} category='h6'>
                                 {this.state.RegionSelected}
