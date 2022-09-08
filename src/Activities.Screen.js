@@ -1,6 +1,6 @@
 import React, {Component, createRef} from "react";
 import { Layout, Divider, List, Input, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar, MenuItem, OverflowMenu, CheckBox, BottomNavigationTab } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, Image } from "react-native";
+import { ImageBackground, View, StyleSheet, RefreshControl, Image, TouchableOpacity } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
@@ -16,6 +16,7 @@ import { bindActionCreators } from 'redux';
 import { paletteColors } from './components/paletteColors';   
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SendSMS from 'react-native-sms'
+import { Root, Toast } from "popup-ui";
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -64,7 +65,9 @@ class ActivitiesScreen extends Component {
             responseSuccess: false,
             responseStatusModal:false,
             showStudents: false,
-            programType: ''
+            programType: '',
+            studentsCheck: false,
+            studentsCheckToast: true
         }
     }
     
@@ -203,7 +206,7 @@ class ActivitiesScreen extends Component {
     }
 
     async filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
-        this.setState({displayMessage:teamName, displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
+        this.setState({displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
         this.setState({listofSessions: null});
         const activities = await this.state.activities.filter(
             activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
@@ -497,14 +500,71 @@ class ActivitiesScreen extends Component {
             </Text>
         }
         
+        const fieldsToCheck = [
+            "FirstName",
+            "LastName",
+            "MiddleName",
+            "HomePhone",
+            "Birthdate",
+            "Gender",
+            "Grade",
+            "Ethnicity",
+            "Allergies",
+            "ParentFName",
+            "ParentLName",
+            "ParentEmail",
+            "ContactType",
+            "ParentPhone1",
+            "Emergency_Contact_Name",
+            "Emergency_Contact_Phone1",
+            "Emergency_Contact_Relationship",
+          ];
+        const studentTitle = (item) => {
+            let showWarning = false;
+            let aux = "";
+            for (const property in item) {
+                if (fieldsToCheck.includes(`${property}`) === true) {
+                    aux = `${item[property]}`;
+                    aux.length === 0?
+                     (showWarning = true)
+                    : showWarning = false
+                }
+            }
+            showWarning===true && this.state.studentsCheck === false? this.setState({studentsCheck: true}) : null
+            return(
+                <View>
+                    <View style={{ flexDirection: "row" }}>
+                        <Text tyle={{color: this.state.selected.textColor}}>
+                            {item.FirstName + " " + item.LastName}
+                        </Text>
+                        {showWarning === true ? (
+                            <Icon
+                            style={{
+                                height: 22,
+                                marginHorizontal: 18,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                tintColor: "#FFCC00",
+                                width: 22,
+                            }}
+                            fill="#e7c828"
+                            name="alert-circle-outline"
+                            />
+                        ) : null}
+                    </View>
+                </View>
+            );
+        }
+
         let studentItem = ({item, index}) => {
             if (item === null){
                 return; 
             }
             else{
-                return (<ListItem
+                return (
+                        <ListItem
                             key={item.StudentId}
-                            title={() => <Text style={{color: this.state.selected.textColor}}>{item.LastName}, {item.FirstName}</Text>}
+                            title={studentTitle(item)}
                             style={{backgroundColor: this.state.selected.color2}}
                             description={studentDescription(item.Birthdate)}
                             accessoryLeft={this.state.checkBoxView ===false? studentIcon : () => 
@@ -527,7 +587,7 @@ class ActivitiesScreen extends Component {
                                 SecondEmergencyContactPhone: item.SecondEmergencyContactInfo.FirstPhone,
                                 LastModifiedDate: item.LastModifiedDate
                             })}
-                        /> )
+                        />)
             }
         }
     
@@ -942,6 +1002,25 @@ class ActivitiesScreen extends Component {
                     </Card>
             )
         );
+
+        const studentsCheck = (status) => (
+            (
+                this.state.studentsCheck === true && this.state.studentsCheckToast ===true ?
+                    <View style={{backgroundColor: '#f39c12', height: '6%', flexDirection: 'row'}}>
+                        <Image
+                            source={require("../assets/Icons/warning_Icon.png")}
+                            style={{ width: 30, height: 30, marginVertical: 6 }}
+                            resizeMode="contain"
+                        />
+                        <Text category="s2" status={status} style={{alignSelf: 'center', marginVertical: 5}}>
+                            One or more students have incomplete information.
+                        </Text>
+                        <TouchableOpacity onPress={() => this.setState({studentsCheckToast:false})}>
+                            <Icon style={{width: 20, height: 20, marginHorizontal: 8, marginVertical: 10}} fill="#4f5c63" name='close-outline'/>
+                        </TouchableOpacity>
+                    </View>:null
+            )
+        );
         const SuccessHeader = (props) => (
             <Layout {...props}>
                  <ImageBackground
@@ -1118,11 +1197,11 @@ class ActivitiesScreen extends Component {
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
                     {message("basic")}
                     <Divider />
-
                     <ImageBackground source={getImage()} style={styles.image}>
                         {TopTabBar()}
                         {loadingModal()}
                         {helloMessage("info")}
+                        {studentsCheck("control")}
                         {noMatch("basic")}
                         {emptyStudentsList("basic")}
                         {noMatchRegion("basic")}
@@ -1130,6 +1209,7 @@ class ActivitiesScreen extends Component {
                         {wppGroupURL()}
                         {textGroup()}
                         {deleteModal()}
+                        <Root>
                         {(this.state.selectedTabIndex === 1?
                             <React.Fragment>
                                 <List
@@ -1160,9 +1240,10 @@ class ActivitiesScreen extends Component {
                                  refreshing={refreshing}
                                  onRefresh={onRefresh}
                                  />
-                             }
-                            />
-                        )}
+                                }
+                                />
+                                )}
+                            </Root>
                     </ImageBackground>
                     {/*<Button style={{width:"80%", marginTop: "2%"}} accessoryLeft={addIcon} status="primary" onPress={() => this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}>ENROLL STUDENT</Button>*/}
                     {(this.state.selectedTabIndex !== 1 ?
@@ -1191,7 +1272,7 @@ class ActivitiesScreen extends Component {
                                     onSelect={() =>this.state.studentsBoxCheck.length !==0? this.unEnrollStudents():null}
                                     title={() => <Text style={{color:this.state.studentsBoxCheck.length !==0? 'white':'grey', fontSize: 12 }}>UNENROLL STUDENTS</Text>}
                                     icon={unenrollIcon}
-                                />
+                                    />
                                 <BottomNavigationTab style={{width:'40%'}} icon={cancelIcon} title={() => <Text style={{color: 'white', fontSize: 12}}>CANCEL</Text>} onSelect={() => this.setState({checkBoxView:false})} />
                             </View>
                         </View>
@@ -1203,7 +1284,7 @@ class ActivitiesScreen extends Component {
                         {selectBox()}
                     </BottomSheet> :
                     null)}
-                </Layout>      
+                </Layout> 
            /* </View>     */                 
         );
     };
