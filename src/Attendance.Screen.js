@@ -488,7 +488,6 @@ class AttendanceScreen extends Component {
           ) {
             this.props.sessionAttendance.sessionsAttendance.map(
               (valueredux) => {
-                console.log(valueredux);
                 if (valueredux.SessionId === currentSessionData.SessionId) {
                   this.setState({ nomatchattendance: true });
                   this.state.enrollments.map((value) => {
