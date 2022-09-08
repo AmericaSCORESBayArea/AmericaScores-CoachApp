@@ -30,7 +30,7 @@
     "expo-updates": "~0.2.10",
     "firebase": "^8.10.0",
     "lodash": "^4.17.21",
-    "moment": "^2.29.2",
+    "moment": "^2.29.4",
     "popup-ui": "^1.2.2",
     "react": "16.13.1",
     "react-native": "0.64.1",
