@@ -35,7 +35,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
-import { Root, Popup } from "popup-ui";
+import { Root, Popup, Toast } from "popup-ui";
 
 export const CreateStudentModal = ({ navigation, route }) => {
   const data = ["Male", "Female", "Non-binary", "Prefer not to say"];
@@ -68,6 +68,19 @@ export const CreateStudentModal = ({ navigation, route }) => {
     "7th",
     "8th",
   ];
+
+  const ethnicityValues = [
+    "Hispanic/Latinx",
+    "Native American",
+    "African American",
+    "Pacific Islander",
+    "Asian",
+    "Caucasian",
+    "Middle Eastern/Arabic",
+    "Multi-Racial/Multi-Ethnic",
+    "Filipino",
+  ]; //change also in line 393
+
   const [visibleModal, setVisibleModal] = React.useState(true);
   const [keyboardSize, setKeyboardSize] = React.useState(0);
   const [parentName, setParenName] = React.useState();
@@ -78,18 +91,18 @@ export const CreateStudentModal = ({ navigation, route }) => {
   const [lastNameValue, setLastNameValue] = React.useState();
   const [allergies, setAllergies] = React.useState();
   const [selectedIndex, setSelectedIndex] = React.useState();
-  const [displayedValue, setDisplayedValue] = React.useState(data[0]);
+  const [displayedValue, setDisplayedValue] = React.useState(undefined);
   const [parentEmail, setParentEmail] = React.useState();
   const [selectedIndexRelation, setSelectedIndexRelation] = React.useState();
-  const [displayedValueRelation, setDisplayedValueRelation] = React.useState(
-    relations[0]
-  );
+  const [displayedValueRelation, setDisplayedValueRelation] =
+    React.useState(undefined);
   const [selectedIndexGrade, setSelectedIndexGrade] = React.useState();
-  const [displayedValueGrade, setDisplayedValueGrade] = React.useState(
-    grade[0]
-  );
+  const [displayedValueGrade, setDisplayedValueGrade] =
+    React.useState(undefined);
   const [loadingModalstate, setLoadingModalstate] = React.useState(false);
   const [emergencyContactName, setEmergencyContactName] = React.useState();
+  const [ethnicityValue, setEthnicityValue] = React.useState(undefined);
+  const [selectedIndexEthnicity, setSelectedIndexEthnicity] = React.useState();
   const [date, setDate] = React.useState(moment());
 
   useEffect(() => {
@@ -121,6 +134,11 @@ export const CreateStudentModal = ({ navigation, route }) => {
   const selectIndexGrade = (index) => {
     setSelectedIndexGrade(index);
     setDisplayedValueGrade(grade[index.row]);
+  };
+
+  const selectIndexEthnicity = (index) => {
+    setSelectedIndexEthnicity(index);
+    setEthnicityValue(ethnicityValues[index.row]);
   };
 
   const LoadingGif = () => {
@@ -160,6 +178,7 @@ export const CreateStudentModal = ({ navigation, route }) => {
       birthdate: birthDateFormat,
       homePhone: studentHomePhone.value,
       allergies: allergies,
+      ethnicity: ethnicityValue,
       parent: {
         name: parentName,
         lastName: parentLastName,
@@ -172,7 +191,12 @@ export const CreateStudentModal = ({ navigation, route }) => {
         relationship: displayedValueRelation,
       },
     };
-    if (student.name === undefined || student.lastName === undefined) {
+    if (
+      student.name === undefined ||
+      student.lastName === undefined ||
+      student.gender === undefined ||
+      student.grade === undefined
+    ) {
       setLoadingModalstate(false);
       Popup.show({
         type: "Warning",
@@ -198,6 +222,7 @@ export const CreateStudentModal = ({ navigation, route }) => {
       HomePhone: student.homePhone,
       Allergies: student.allergies,
       Grade: student.grade,
+      Ethnicity: student.ethnicity,
       ParentFName: student.parent.name,
       ParentLName: student.parent.lastName,
       ParentPhone1: student.parent.phone,
@@ -339,7 +364,7 @@ export const CreateStudentModal = ({ navigation, route }) => {
             </Select>
             <Text>Birthdate(*)</Text>
             {searchBox()}
-            <Text>Grade level</Text>
+            <Text>Grade level(*)</Text>
             <Select
               style={{ marginTop: "2%", marginBottom: "2%" }}
               placeholder="Select an option"
@@ -356,6 +381,24 @@ export const CreateStudentModal = ({ navigation, route }) => {
               <SelectItem title="Sixth" />
               <SelectItem title="Seventh" />
               <SelectItem title="Eighth" />
+            </Select>
+            <Text>Ethnicity</Text>
+            <Select
+              style={{ marginTop: "2%", marginBottom: "2%" }}
+              placeholder="Select an option"
+              value={ethnicityValue}
+              selectedIndex={selectedIndexEthnicity}
+              onSelect={(index) => selectIndexEthnicity(index)}
+            >
+              <SelectItem title="Hispanic/Latinx" />
+              <SelectItem title="Native American" />
+              <SelectItem title="African American" />
+              <SelectItem title="Pacific Islander" />
+              <SelectItem title="Asian" />
+              <SelectItem title="Caucasian" />
+              <SelectItem title="Middle Eastern/Arabic" />
+              <SelectItem title="Multi-Racial/Multi-Ethnic" />
+              <SelectItem title="Filipino" />
             </Select>
             <Text>Allergies</Text>
             <Input
@@ -606,7 +649,25 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   //     setTimeout(filterData, 3000);
   //     // console.log()
   // };
-
+  const fieldsToCheck = [
+    "FirstName",
+    "LastName",
+    "MiddleName",
+    "HomePhone",
+    "Birthdate",
+    "Gender",
+    "Grade",
+    "Ethnicity",
+    "Allergies",
+    "ParentFName",
+    "ParentLName",
+    "ParentEmail",
+    "ContactType",
+    "ParentPhone1",
+    "Emergency_Contact_Name",
+    "Emergency_Contact_Phone1",
+    "Emergency_Contact_Relationship",
+  ];
   async function filterData() {
     const unfiltered = await fetchStudents(value);
     console.log(unfiltered);
@@ -616,12 +677,58 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
       Alert.alert("", "No students found");
     }
   }
+  // </TouchableOpacity>
+  const studentTitle = (item) => {
+    let showWarning = false;
+    let aux = "";
+    for (const property in item) {
+      if (fieldsToCheck.includes(`${property}`) === true) {
+        aux = `${item[property]}`;
+        aux.length === 0
+          ? ((showWarning = true),
+            Toast.show({
+              title: "Warning",
+              text: "One or more students have incomplete information.",
+              color: "#f39c12",
+              timing: 6000,
+              icon: (
+                <Image
+                  source={require("../../assets/Icons/warning_Icon.png")}
+                  style={{ width: 60, height: 60 }}
+                  resizeMode="contain"
+                />
+              ),
+            }))
+          : (showWarning = false);
+      }
+    }
+    return (
+      <View>
+        <View style={{ flexDirection: "row" }}>
+          <Text>
+            {item.FirstName + " " + item.MiddleName + " " + item.LastName}
+          </Text>
+          {showWarning === true ? (
+            <Icon
+              style={{
+                height: 22,
+                marginHorizontal: 18,
+                alignItems: "center",
+                justifyContent: "center",
+                tintColor: "#FFCC00",
+                width: 22,
+              }}
+              fill="#e7c828"
+              name="alert-circle-outline"
+            />
+          ) : null}
+        </View>
+      </View>
+    );
+  };
 
   const renderOption = ({ item, index }) => (
-    <ListItem
-      title={item.FirstName + " " + item.MiddleName + " " + item.LastName}
-      onPress={() => onSelect(index)}
-    />
+    <ListItem title={studentTitle(item)} onPress={() => onSelect(index)} />
   );
 
   const Footer = (props) => (
@@ -668,45 +775,47 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
 
   return (
     <React.Fragment>
-      <Modal
-        visible={visible}
-        onBackdropPress={() => closeModal()}
-        style={{ width: "95%", height: "100%", marginTop: "17%" }}
-      >
-        <ScrollView>
-          <Card
-            disabled={true}
-            style={{
-              height: "100%",
-              width: "100%",
-              marginBottom: keyboardSize,
-            }}
-            header={Header}
-            footer={Footer}
-          >
-            <ScrollView>
-              {SearchBar()}
-              <Button
-                style={{ margin: 2 }}
-                appearance="outline"
-                accessoryRight={renderSearchIcon}
-                onPress={() => filterData()}
-              >
-                Search
-              </Button>
-              {loadingModal()}
-              {/* <View> */}
-              <List
-                style={{ opacity: 0.95, overflow: "scroll", maxHeight: 180 }}
-                data={data}
-                ItemSeparatorComponent={Divider}
-                renderItem={renderOption}
-              />
-              {/* </View> */}
-            </ScrollView>
-          </Card>
-        </ScrollView>
-      </Modal>
+      <Root style={{ bottom: 12 }}>
+        <Modal
+          visible={visible}
+          onBackdropPress={() => closeModal()}
+          style={{ width: "95%", height: "100%", marginTop: "17%" }}
+        >
+          <ScrollView>
+            <Card
+              disabled={true}
+              style={{
+                height: "100%",
+                width: "100%",
+                marginBottom: keyboardSize,
+              }}
+              header={Header}
+              footer={Footer}
+            >
+              <ScrollView>
+                {SearchBar()}
+                <Button
+                  style={{ margin: 2 }}
+                  appearance="outline"
+                  accessoryRight={renderSearchIcon}
+                  onPress={() => filterData()}
+                >
+                  Search
+                </Button>
+                {loadingModal()}
+                {/* <View> */}
+                <List
+                  style={{ opacity: 0.95, overflow: "scroll", maxHeight: 180 }}
+                  data={data}
+                  ItemSeparatorComponent={Divider}
+                  renderItem={renderOption}
+                />
+                {/* </View> */}
+              </ScrollView>
+            </Card>
+          </ScrollView>
+        </Modal>
+      </Root>
     </React.Fragment>
   );
 };
