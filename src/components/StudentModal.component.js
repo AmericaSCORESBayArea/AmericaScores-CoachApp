@@ -756,10 +756,15 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
         <Text category="s1" appearance="hint" style={styles.missingStudentText}>
           Haven't found a student?
         </Text>
-        <Button appearance="ghost" onPress={() => createStudentModal()}>
-          Create student
-        </Button>
       </View>
+      <Button
+        appearance="outline"
+        size={"small"}
+        style={{ alignSelf: "flex-start", marginTop: "4%" }}
+        onPress={() => createStudentModal()}
+      >
+        Create student
+      </Button>
     </Layout>
   );
 
