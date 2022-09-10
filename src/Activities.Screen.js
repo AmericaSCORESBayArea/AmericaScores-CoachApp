@@ -1006,13 +1006,13 @@ class ActivitiesScreen extends Component {
         const studentsCheck = (status) => (
             (
                 this.state.studentsCheck === true && this.state.studentsCheckToast ===true ?
-                    <View style={{backgroundColor: '#f39c12', height: '6%', flexDirection: 'row'}}>
+                    <View style={{backgroundColor: '#f39c12', flexDirection: 'row'}}>
                         <Image
                             source={require("../assets/Icons/warning_Icon.png")}
                             style={{ width: 30, height: 30, marginVertical: 6 }}
                             resizeMode="contain"
                         />
-                        <Text category="s2" status={status} style={{alignSelf: 'center', marginVertical: 5}}>
+                        <Text category="s2" status={status} style={{alignSelf: 'center', marginVertical: 5, flex: 1, flexWrap: 'wrap', backgroundColor: '#f39c12'}}>
                             One or more students have incomplete information.
                         </Text>
                         <TouchableOpacity onPress={() => this.setState({studentsCheckToast:false})}>
@@ -1255,7 +1255,7 @@ class ActivitiesScreen extends Component {
                             <OverflowMenu
                                 anchor={renderToggleButton}
                                 backdropStyle={styles.backdrop}
-                                style={{width:'66%'}}
+                                style={{width:'69%'}}
                                 visible={this.state.visibleMenu}
                                 placement='left end'
                                 onBackdropPress={() => this.setState({visibleMenu:false})}>
