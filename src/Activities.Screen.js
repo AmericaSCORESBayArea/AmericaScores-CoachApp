@@ -1105,7 +1105,7 @@ class ActivitiesScreen extends Component {
                     <Text category="s1" status={status} style={{alignSelf: 'center', backgroundColor:"#C0E4F5",alignSelf:"stretch" }}>
                         There are no active Sessions for the selected date.
                         Need help with team setup?
-                        Try <Text style={{fontWeight:'bold'}}  onPress={() => {this.state.showStudents === true? this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId}):this.props.navigation.navigate("AddSessionHeadcountModal", {teamSeasonId: this.state.teamSeasonId, programType: this.state.programType})}}>+Add Session</Text> or <Text style={{fontWeight:'bold'}} onPress={() => this.props.navigation.navigate("CreateReportModal")}>Ask for Help</Text>
+                        Try <Text style={{fontWeight:'bold'}} onPress={() => {this.state.showStudents === true? this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId}):this.props.navigation.navigate("AddSessionHeadcountModal", {teamSeasonId: this.state.teamSeasonId, programType: this.state.programType})}}>+Add Session</Text> or <Text style={{fontWeight:'bold'}} onPress={() => this.props.navigation.navigate("CreateReportModal")}>Ask for Help</Text>
                     </Text>
                 </Card>:
                 <Card style={{opacity: 0.9, backgroundColor:"#86c0e3"}}>
