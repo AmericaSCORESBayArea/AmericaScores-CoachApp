@@ -380,7 +380,6 @@ class AttendanceScreen extends Component {
         `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
       )
         .then(async (res) => {
-          console.log("data", res.data);
           currentDate = res.data.SessionDate;
           currentTopic = res.data.SessionTopic.replace(/_/g, " ");
           useHeadcount = res.data.UsesHeadcount;
@@ -1620,28 +1619,24 @@ class AttendanceScreen extends Component {
               }
             />
           </View>
-          {Number(this.state.headCount) !== 0 &&
-          Number(this.state.headCountFemale) !== 0 &&
-          Number(this.state.headCountNonBinary) !== 0 ? (
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "5%",
-              }}
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "5%",
+            }}
+          >
+            <Button
+              style={{ width: "70%" }}
+              size="medium"
+              appearance="filled"
+              status="success"
+              onPress={() => this.updateHeadcountAttendance()}
             >
-              <Button
-                style={{ width: "70%" }}
-                size="medium"
-                appearance="filled"
-                status="success"
-                onPress={() => this.updateHeadcountAttendance()}
-              >
-                {" "}
-                Save Attendance{" "}
-              </Button>
-            </View>
-          ) : null}
+              {" "}
+              Save Attendance{" "}
+            </Button>
+          </View>
         </Card>
       </Modal>
     );
