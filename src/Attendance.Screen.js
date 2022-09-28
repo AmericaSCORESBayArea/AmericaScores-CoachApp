@@ -380,8 +380,12 @@ class AttendanceScreen extends Component {
         `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
       )
         .then(async (res) => {
+          console.log(res.data.SessionTopic);
           currentDate = res.data.SessionDate;
-          currentTopic = res.data.SessionTopic.replace(/_/g, " ");
+          currentTopic =
+            res.data.SessionTopic !== null
+              ? res.data.SessionTopic.replace(/_/g, " ")
+              : undefined;
           useHeadcount = res.data.UsesHeadcount;
           programType = res.data.ProgramType;
           girlsHeadcount = res.data.GirlsPresent;
@@ -1567,7 +1571,7 @@ class AttendanceScreen extends Component {
             style={{
               flexDirection: "row",
               justifyContent: "space-between",
-              marginTop: "5%",
+              marginTop: "4%",
             }}
           >
             <Input
