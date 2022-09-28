@@ -1088,7 +1088,6 @@ class AttendanceScreen extends Component {
       else return 0;
     };
     var id = number(this.state.topic);
-    console.log(id);
     this.props.navigation.navigate(modalScreen, {
       session: this.state.sessionId,
       oldDate: this.state.date,
