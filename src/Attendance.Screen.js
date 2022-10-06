@@ -1097,9 +1097,19 @@ class AttendanceScreen extends Component {
   }
 
   editHeadCountSession(modalScreen) {
+    const number = function (topic) {
+      if (topic === "Soccer") return 0;
+      else if (topic === "Writing") return 1;
+      else if (topic === "Game Day") return 2;
+      else if (topic === "Soccer and Writing") return 3;
+      else return 0;
+    };
+    var id = number(this.state.topic);
     this.props.navigation.navigate(modalScreen, {
       session: this.state.sessionId,
       oldDate: this.state.date,
+      oldTopic: this.state.topic,
+      topicId: id,
     });
   }
 

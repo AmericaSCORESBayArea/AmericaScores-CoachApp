@@ -404,13 +404,18 @@ export const EditSessionModal = ({ route, navigation }) => {
 };
 
 export const EditHeadCountSessionModal = ({ route, navigation }) => {
+  const user = useSelector((state) => state.user.user);
   const [visible, setVisible] = React.useState(true);
   const { session, oldDate, oldTopic, topicId } = route.params;
   const [date, setDate] = React.useState(moment(oldDate));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
+  const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];
+  const [selectedIndex, setSelectedIndex] = React.useState(
+    new IndexPath(topicId)
+  );
+
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
-  const [responseSuccess, setResponseSuccess] = React.useState(false);
   const [responseSuccessDelete, setResponseSuccessDelete] =
     React.useState(false);
 
@@ -456,8 +461,9 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
   async function editSession() {
     let changes = {
       SessionDate: date.format("YYYY-MM-DD"),
+      SessionTopic: displayValue.replace(/\s/g, "_"),
     };
-    console.log("changeHead", changes);
+    console.log("change", changes);
     await pushChanges(changes);
   }
 
@@ -586,7 +592,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
     >
       {warningCard(
         "warning",
-        "Removing a session will delete any recorded attendance data."
+        "Only sessions with no attendance or assessments can be deleted."
       )}
     </Modal>
   );
@@ -610,14 +616,22 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
 
   async function pushChanges(changes) {
     setupdatingModalstate(true);
+    await analytics().logEvent("EditSession", {
+      coach_Id: user.ContactId,
+      session_Id: session,
+    });
     Axios.patch(`${ApiConfig.dataApi}/sessions/${session}`, changes)
       .then((res) => {
         Alert.alert(
           res.data.message,
           "Changes applied: \nOld: " +
             oldDate +
+            " " +
+            oldTopic +
             "\nNew: " +
             date.format("MMM-DD-YYYY") +
+            " " +
+            displayValue +
             "\n\nPull down on the session description to refresh.",
           [{ text: "OK", onPress: () => navigation.navigate("Home") }]
         );
@@ -649,6 +663,78 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
     </Layout>
   );
 
+  const renderImage = (title) => {
+    if (title === "Soccer") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Ball.png")}
+        />
+      );
+    } else if (title === "Soccer and Writing") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Soccer_and_writing.png")}
+        />
+      );
+    } else if (title === "Writing") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Pencil_Edit.png")}
+        />
+      );
+    } else if (title === "Game Day") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_goal.png")}
+        />
+      );
+    }
+  };
+  const renderImageDisplay = (title) => {
+    if (title === "Soccer") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Ball.png")}
+        />
+      );
+    } else if (title === "Soccer and Writing") {
+      return (
+        <Image
+          style={{ width: 30, height: 30, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Soccer_and_writing.png")}
+        />
+      );
+    } else if (title === "Writing") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Pencil_Edit.png")}
+        />
+      );
+    } else if (title === "Game Day") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_goal.png")}
+        />
+      );
+    }
+  };
+  const renderOption = (title) => (
+    <SelectItem
+      key={title}
+      title={title}
+      accessoryLeft={() => renderImage(title)}
+    />
+  );
+
+  const displayValue = data[selectedIndex.row];
+
   const CalendarIcon = (props) => <Icon {...props} name="calendar" />;
   const dateService = new MomentDateService();
   const searchBox = () => (
@@ -675,6 +761,22 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
           <Text>Change Session Date:</Text>
           {searchBox()}
           {updatingModal()}
+          <Text>Change Session Type:</Text>
+          <Select
+            selectedIndex={selectedIndex}
+            size="medium"
+            value={displayValue}
+            accessoryLeft={() => renderImageDisplay(displayValue)}
+            placeholder="Select a type"
+            // label='Scores Program Type'
+            onSelect={(index) => {
+              setSelectedIndex(index),
+                console.log(index),
+                console.log(index.equals);
+            }}
+          >
+            {data.map(renderOption)}
+          </Select>
         </Card>
       </Modal>
       {warningModal()}
@@ -1122,7 +1224,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
     await analytics().logEvent("CreateSession", {
       coach_Id: user.ContactId,
       session_Date: changes.SessionDate,
-      sessionTopic: "Soccer",
+      sessionTopic: displayValue.replace(/\s/g, "_"),
       teamSeasonId: changes.TeamSeasonId,
     });
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
@@ -1215,6 +1317,44 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
 
   const displayValue = data[selectedIndex.row];
 
+  const renderImageDisplayAddSession = (title) => {
+    if (title === "Soccer") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Ball.png")}
+        />
+      );
+    } else if (title === "Soccer and Writing") {
+      return (
+        <Image
+          style={{ width: 30, height: 30, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Soccer_and_writing.png")}
+        />
+      );
+    } else if (title === "Writing") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_Pencil_Edit.png")}
+        />
+      );
+    } else if (title === "Game Day") {
+      return (
+        <Image
+          style={{ width: 40, height: 40, resizeMode: "contain" }}
+          source={require("../../assets/Scores_goal.png")}
+        />
+      );
+    }
+  };
+  const renderOption = (title) => (
+    <SelectItem
+      key={title}
+      title={title}
+      accessoryLeft={() => renderImageAddSession(title)}
+    />
+  );
   const CalendarIcon = (props) => <Icon {...props} name="calendar" />;
   const dateService = new MomentDateService();
   const searchBox = () => (
@@ -1251,6 +1391,18 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         >
           {route.params.programType}
         </Text>
+        <Text>Session Topic:</Text>
+        <Select
+          selectedIndex={selectedIndex}
+          size="medium"
+          value={displayValue}
+          placeholder="Select a topic"
+          accessoryLeft={() => renderImageDisplayAddSession(displayValue)}
+          // label='Scores Program Type'
+          onSelect={(index) => setSelectedIndex(index)}
+        >
+          {data.map(renderOption)}
+        </Select>
         {selectTeam()}
       </Card>
     </Modal>
