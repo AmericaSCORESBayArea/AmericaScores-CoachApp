@@ -1,5 +1,5 @@
 import React, { Component, createRef } from "react";
-import { Layout, Icon, Text, Button } from "@ui-kitten/components";
+import { Modal, Card, Layout, Icon, Text, Button } from "@ui-kitten/components";
 import {
   TouchableOpacity,
   View,
@@ -19,15 +19,18 @@ import { bindActionCreators } from "redux";
 import { paletteColors } from "./components/paletteColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
+import { RequestDeleteAccount } from "./utils/RequestDeleteAccount";
+import { changeRegion } from "./Redux/actions/SessionScreen.actions";
+import { logOutUser } from "./Redux/actions/user.actions";
 
 class ProfileScreen extends Component {
   constructor(props) {
     super(props);
-    console.log(props.user);
     this._carousel = createRef();
     this.state = {
       firstName: this.props.user.user.FirstName,
       lastName: this.props.user.user.LastName,
+      visible: false,
       visibility: false,
       image: "",
       coloroverlayvisibility: false,
@@ -39,6 +42,7 @@ class ProfileScreen extends Component {
       changedColor: false,
       changedHomeOption: false,
       homeScreenOptionSelected: 0,
+      loadingModalstate: false,
       homeScreenOptions: [
         {
           id: 0,
@@ -60,7 +64,11 @@ class ProfileScreen extends Component {
     if (unsubscribe === undefined) {
       this.setState({ homeScreenOptionSelected: 0 });
     } else {
-      this.setState({ homeScreenOptionSelected: JSON.parse(unsubscribe).id });
+      if (JSON.parse(unsubscribe) === null) {
+        this.setState({ homeScreenOptionSelected: 0 });
+      } else {
+        this.setState({ homeScreenOptionSelected: JSON.parse(unsubscribe).id });
+      }
     }
   }
   _renderItem = ({ item, index }) => {
@@ -201,6 +209,19 @@ class ProfileScreen extends Component {
     });
   };
 
+  deleteAccount = () => {
+    const { actions } = this.props;
+    this.setState({ loadingModalstate: true });
+    RequestDeleteAccount(
+      () => this.setState({ visible: false }),
+      this.props.user.user,
+      () => this.setState({ loadingModalstate: false }),
+      () => actions.logOutUser(),
+      () => actions.changeRegion(null),
+      () => this.prop.navigation.navigate("Login")
+    );
+  };
+
   onPressChangeHomeScreen = async (value) => {
     this.setState({ homeScreenOptionSelected: value.id }),
       setTimeout(() => this.setState({ changedHomeOption: true }), 500);
@@ -225,6 +246,7 @@ class ProfileScreen extends Component {
       return "#3D7C99";
     }
   }
+
   render() {
     const cameraIcon = (props) => <Icon {...props} name="camera-outline" />;
     const homeIcon = (props) => <Icon {...props} name="home-outline" />;
@@ -317,13 +339,88 @@ class ProfileScreen extends Component {
         requestCameraPermission();
       }
     };
+
+    const LoadingGif = () => {
+      if (this.props.sessionScreen.region === "ASBA") {
+        return require("../assets/Scores_Logo.gif"); //Scores logo gif
+      } else if (this.props.sessionScreen.region === "IFC") {
+        return require("../assets/IFC_Logo_animated.gif"); //IFC logo gif
+      } else if (this.props.sessionScreen.region === "OGSC") {
+        return require("../assets/OGSC_logo_spinner.gif"); //Genesis logo gif
+      }
+    };
+
+    const loadingModal = () => (
+      <Modal
+        style={styles.popOverContent}
+        visible={this.state.loadingModalstate}
+        backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
+        <Image source={LoadingGif()} />
+      </Modal>
+    );
+
+    const Header = (props) => (
+      <Layout {...props}>
+        <Image
+          source={require("../assets/Icons/warning_Icon.png")}
+          style={{
+            height: 100,
+            width: 100,
+            resizeMode: "contain",
+            alignSelf: "center",
+          }}
+        />
+        <Text category="h6" style={{ alignSelf: "center" }}>
+          Remove My Account
+        </Text>
+      </Layout>
+    );
+
+    const Footer = (props) => (
+      <Layout {...props}>
+        <Button
+          appearance="ghost"
+          status="danger"
+          onPress={() => this.setState({ visible: false })}
+        >
+          CANCEL
+        </Button>
+        <Button
+          style={{ marginTop: "0.5%" }}
+          status="danger"
+          onPress={() => this.deleteAccount()}
+        >
+          REMOVE MY ACCOUNT
+        </Button>
+      </Layout>
+    );
+
+    const ModalDeleteAccount = () => (
+      <Modal
+        visible={this.state.visible}
+        onBackdropPress={() => this.setState({ visible: false })}
+        style={{ width: "80%" }}
+        backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
+        <Card disabled={true} header={Header} footer={Footer}>
+          <Text category="s1" style={{ textAlign: "justify" }}>
+            By confirming, you are initiating REMOVAL OF YOUR PERSONAL
+            INFORMATION and you will lose access to the Coach App. {"\n"}
+            {"\n"}
+            An email will be sent to your email address on record once removal
+            is completed.
+          </Text>
+        </Card>
+      </Modal>
+    );
     return (
       <View style={{ flex: 1 }}>
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
           <View
             style={{
               backgroundColor: this.containerColor(),
-              height: 290,
+              height: 350,
               width: "95%",
               marginTop: "6%",
               marginBottom: "2.5%",
@@ -399,12 +496,26 @@ class ProfileScreen extends Component {
                 onPress={() => this.setState({ coloroverlayvisibility: true })}
               />
             </Layout>
+            <Button
+              appearance="outline"
+              style={{
+                backgroundColor: "white",
+                width: "50%",
+                alignSelf: "center",
+                marginTop: "4%",
+              }}
+              status="danger"
+              onPress={() => this.setState({ visible: true })}
+            >
+              Remove My Account
+            </Button>
             <Text
-              style={{ color: "white", alignSelf: "center", marginTop: "5%" }}
+              style={{ color: "white", alignSelf: "center", marginTop: "4%" }}
             >
               {this.state.firstName} {this.state.lastName}
             </Text>
           </View>
+          {ModalDeleteAccount()}
           <Overlay
             isVisible={this.state.visibility}
             overlayStyle={styles.overlay}
@@ -604,10 +715,7 @@ const mapStateToProps = (state) => ({
   sessionScreen: state.sessionScreen,
 });
 
-const ActionCreators = Object.assign(
-  {},
-  { syncSessions, updateFirstTimeLoggedIn }
-);
+const ActionCreators = Object.assign({}, { logOutUser, changeRegion });
 
 const mapDispatchToProps = (dispatch) => ({
   actions: bindActionCreators(ActionCreators, dispatch),
