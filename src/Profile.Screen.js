@@ -420,7 +420,7 @@ class ProfileScreen extends Component {
           <View
             style={{
               backgroundColor: this.containerColor(),
-              height: 350,
+              height: "58%",
               width: "95%",
               marginTop: "6%",
               marginBottom: "2.5%",
@@ -500,7 +500,7 @@ class ProfileScreen extends Component {
               appearance="outline"
               style={{
                 backgroundColor: "white",
-                width: "50%",
+                width: "55%",
                 alignSelf: "center",
                 marginTop: "4%",
               }}
