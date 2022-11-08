@@ -1,5 +1,13 @@
 import React, { Component, createRef } from "react";
-import { Modal, Card, Layout, Icon, Text, Button } from "@ui-kitten/components";
+import {
+  Modal,
+  Card,
+  Layout,
+  Icon,
+  Text,
+  Button,
+  ButtonGroup,
+} from "@ui-kitten/components";
 import {
   TouchableOpacity,
   View,
@@ -22,6 +30,7 @@ import EvilIcons from "react-native-vector-icons/EvilIcons";
 import { RequestDeleteAccount } from "./utils/RequestDeleteAccount";
 import { changeRegion } from "./Redux/actions/SessionScreen.actions";
 import { logOutUser } from "./Redux/actions/user.actions";
+import moment from "moment";
 
 class ProfileScreen extends Component {
   constructor(props) {
@@ -43,6 +52,10 @@ class ProfileScreen extends Component {
       changedHomeOption: false,
       homeScreenOptionSelected: 0,
       loadingModalstate: false,
+      visibleEditCalendar: false,
+      textCalendar: "",
+      calendarOptionSelected: "",
+      changedCalendar: false,
       homeScreenOptions: [
         {
           id: 0,
@@ -59,7 +72,16 @@ class ProfileScreen extends Component {
   }
   async componentDidMount() {
     let aux = await AsyncStorage.getItem("customTheme");
-    let change = await this.setState({ selected: JSON.parse(aux).id });
+    let auxCalendar = await AsyncStorage.getItem("customCalendar");
+    if (auxCalendar !== null) {
+      this.setState({
+        calendarOptionSelected: JSON.parse(auxCalendar).optionSelected,
+        textCalendar: JSON.parse(auxCalendar).textCalendar,
+      }); //change
+    }
+    if (aux !== null) {
+      let change = await this.setState({ selected: JSON.parse(aux).id });
+    }
     const unsubscribe = await AsyncStorage.getItem("customHomeScreen");
     if (unsubscribe === undefined) {
       this.setState({ homeScreenOptionSelected: 0 });
@@ -231,6 +253,32 @@ class ProfileScreen extends Component {
     await AsyncStorage.setItem("customHomeScreen", JSON.stringify(value));
   };
 
+  onPressEditCalendar = async (value, text) => {
+    let startingDate = "";
+    let endingDate = "";
+    this.setState({ calendarOptionSelected: value });
+    if (value === "T") {
+      endingDate = 0;
+    } else if (value === "M") {
+      endingDate = 30;
+    } else {
+      endingDate = 7;
+    }
+    let calendarEdited = {
+      optionSelected: value,
+      endDate: endingDate,
+      textCalendar: text,
+    };
+    await AsyncStorage.setItem(
+      "customCalendar",
+      JSON.stringify(calendarEdited)
+    );
+    this.setState({ changedCalendar: true });
+    setTimeout(() => {
+      this.setState({ changedCalendar: false });
+    }, 3500);
+  };
+
   containerColor() {
     if (this.state.selected === 0) {
       return "#3D7C99";
@@ -252,6 +300,9 @@ class ProfileScreen extends Component {
     const homeIcon = (props) => <Icon {...props} name="home-outline" />;
     const editIcon = (props) => (
       <Icon {...props} name="color-palette-outline" />
+    );
+    const calendaroutline = (props) => (
+      <Icon {...props} name="calendar-outline" />
     );
     const checkboxPassive = (props) => (
       <Icon
@@ -357,6 +408,122 @@ class ProfileScreen extends Component {
         backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
       >
         <Image source={LoadingGif()} />
+      </Modal>
+    );
+
+    const HeaderCalendar = (props) => (
+      <Layout {...props}>
+        <TouchableOpacity
+          style={{
+            alignSelf: "flex-end",
+            marginTop: "1%",
+            marginLeft: "3%",
+          }}
+          onPress={() => {
+            this.setState({ visibleEditCalendar: false });
+          }}
+        >
+          <EvilIcons name={"close"} size={30} color={"#5D738B"} />
+        </TouchableOpacity>
+        <Text category="h6">
+          Select how many days to see in your session list by default
+        </Text>
+      </Layout>
+    );
+
+    const FooterCalendar = (props) => (
+      <Layout {...props}>
+        {this.state.changedCalendar ? (
+          <View
+            style={{
+              flexDirection: "row",
+              marginBottom: "5%",
+              alignSelf: "center",
+            }}
+          >
+            <Icon
+              style={styles.icon}
+              name="checkmark-circle-outline"
+              fill="#4CBB17"
+            />
+            <Text
+              style={{
+                color: "#4CBB17",
+                marginTop: "2%",
+                marginLeft: "2%",
+              }}
+            >
+              CALENDAR CHANGED!
+            </Text>
+          </View>
+        ) : (
+          <View style={{ marginBottom: "5%" }} />
+        )}
+      </Layout>
+    );
+
+    const ModalEditCalendar = () => (
+      <Modal
+        visible={this.state.visibleEditCalendar}
+        onBackdropPress={() => this.setState({ visibleEditCalendar: false })}
+        style={{ width: "95%" }}
+        backdropStyle={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      >
+        <Card disabled={true} header={HeaderCalendar} footer={FooterCalendar}>
+          <Layout style={styles.container} level="1">
+            <ButtonGroup status="basic" appearance="outline">
+              <Button
+                style={{
+                  backgroundColor:
+                    this.state.calendarOptionSelected === "T"
+                      ? "#192f9e"
+                      : "white",
+                }}
+                onPress={() => {
+                  this.setState({
+                    textCalendar: "Today sessions",
+                  });
+                  this.onPressEditCalendar("T", "Today sessions");
+                }}
+              >
+                T
+              </Button>
+              <Button
+                style={{
+                  backgroundColor:
+                    this.state.calendarOptionSelected === "W"
+                      ? "#192f9e"
+                      : "white",
+                }}
+                onPress={() => {
+                  this.setState({
+                    textCalendar: "Week sessions",
+                  });
+                  this.onPressEditCalendar("W", "Week sessions");
+                }}
+              >
+                W
+              </Button>
+              <Button
+                style={{
+                  backgroundColor:
+                    this.state.calendarOptionSelected === "M"
+                      ? "#192f9e"
+                      : "white",
+                }}
+                onPress={() => {
+                  this.setState({
+                    textCalendar: "Month sessions",
+                  });
+                  this.onPressEditCalendar("M", "Month sessions");
+                }}
+              >
+                M
+              </Button>
+            </ButtonGroup>
+            <Text style={styles.text}>{this.state.textCalendar}</Text>
+          </Layout>
+        </Card>
       </Modal>
     );
 
@@ -495,6 +662,12 @@ class ProfileScreen extends Component {
                 style={{ backgroundColor: "white", marginLeft: "5%" }}
                 onPress={() => this.setState({ coloroverlayvisibility: true })}
               />
+              <Button
+                appearance="outline"
+                accessoryRight={calendaroutline}
+                style={{ backgroundColor: "white", marginLeft: "5%" }}
+                onPress={() => this.setState({ visibleEditCalendar: true })}
+              />
             </Layout>
             <Button
               appearance="outline"
@@ -510,12 +683,17 @@ class ProfileScreen extends Component {
               Remove My Account
             </Button>
             <Text
-              style={{ color: "white", alignSelf: "center", marginTop: "4%" }}
+              style={{
+                color: "white",
+                alignSelf: "center",
+                marginTop: "4%",
+              }}
             >
               {this.state.firstName} {this.state.lastName}
             </Text>
           </View>
           {ModalDeleteAccount()}
+          {ModalEditCalendar()}
           <Overlay
             isVisible={this.state.visibility}
             overlayStyle={styles.overlay}
@@ -612,13 +790,19 @@ class ProfileScreen extends Component {
                   <Button
                     appearance="ghost"
                     accessoryRight={checkboxActive}
-                    style={{ backgroundColor: "white", alignSelf: "center" }}
+                    style={{
+                      backgroundColor: "white",
+                      alignSelf: "center",
+                    }}
                   />
                 ) : (
                   <Button
                     appearance="ghost"
                     accessoryRight={checkboxPassive}
-                    style={{ backgroundColor: "white", alignSelf: "center" }}
+                    style={{
+                      backgroundColor: "white",
+                      alignSelf: "center",
+                    }}
                     onPress={this.onPressChangeTheme}
                   />
                 )}
@@ -666,7 +850,11 @@ class ProfileScreen extends Component {
                       <Icon
                         name={value.icon}
                         fill="#8F9BB3"
-                        style={{ width: 80, height: 80, alignSelf: "center" }}
+                        style={{
+                          width: 80,
+                          height: 80,
+                          alignSelf: "center",
+                        }}
                       />
                       <Text category="h6">{value.title}</Text>
                     </TouchableOpacity>
@@ -732,6 +920,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.12,
     shadowColor: "#000",
   },
+  text: {
+    marginHorizontal: 8,
+    fontWeight: "bold",
+    fontSize: 18,
+    fontStyle: "italic",
+  },
   image: {
     flex: 1,
     resizeMode: "contain",
@@ -791,5 +985,9 @@ const styles = StyleSheet.create({
     marginRight: "1.5%",
     marginBottom: "1.5%",
     marginTop: "1%",
+  },
+  container: {
+    flexDirection: "row",
+    alignItems: "center",
   },
 });
