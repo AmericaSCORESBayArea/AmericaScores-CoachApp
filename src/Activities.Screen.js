@@ -73,6 +73,10 @@ class ActivitiesScreen extends Component {
     
     async componentDidMount() {
         let aux= await AsyncStorage.getItem('customTheme');
+        let auxCalendar= await AsyncStorage.getItem('customCalendar');
+        if(auxCalendar !== null){
+            this.setState({range:{startDate: new Date(moment()),endDate: new Date(moment().add(JSON.parse(auxCalendar).endDate, 'days'))}})//change
+        }
         if(aux === null){
             this.setState({selected: paletteColors[0]})
         }else{
@@ -407,6 +411,10 @@ class ActivitiesScreen extends Component {
         let refreshing = false;
         const onRefresh = async () => {
             let aux= await AsyncStorage.getItem('customTheme');
+            let auxCalendar= await AsyncStorage.getItem('customCalendar');
+            if(auxCalendar !== null){
+                this.setState({range:{startDate: new Date(moment()),endDate: new Date(moment().add(JSON.parse(auxCalendar).endDate, 'days'))}})//change
+            }
             this.setState({selected: JSON.parse(aux)})
             this.setState({loadingModalstate: true});
             refreshing = true;
