@@ -10,7 +10,7 @@ import com.facebook.react.ReactApplication;
 import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
 import com.imagepicker.ImagePickerPackage;
 import com.reactnativedocumentpicker.DocumentPickerPackage;
-
+import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 
 import com.facebook.react.ReactInstanceManager;
