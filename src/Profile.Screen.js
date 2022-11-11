@@ -254,19 +254,23 @@ class ProfileScreen extends Component {
   };
 
   onPressEditCalendar = async (value, text) => {
-    let startingDate = "";
-    let endingDate = "";
+    var start = null;
+    var end = null;
     this.setState({ calendarOptionSelected: value });
     if (value === "T") {
-      endingDate = 0;
+      start = new Date(moment());
+      end = new Date(moment());
     } else if (value === "M") {
-      endingDate = 30;
+      start = new Date(moment().startOf("month"));
+      end = new Date(moment().endOf("month"));
     } else {
-      endingDate = 7;
+      start = new Date(moment().startOf("week"));
+      end = new Date(moment().endOf("week"));
     }
     let calendarEdited = {
       optionSelected: value,
-      endDate: endingDate,
+      startDate: start,
+      endDate: end,
       textCalendar: text,
     };
     await AsyncStorage.setItem(
@@ -497,9 +501,9 @@ class ProfileScreen extends Component {
                 }}
                 onPress={() => {
                   this.setState({
-                    textCalendar: "Week sessions",
+                    textCalendar: "This week sessions",
                   });
-                  this.onPressEditCalendar("W", "Week sessions");
+                  this.onPressEditCalendar("W", "This week sessions");
                 }}
               >
                 W
@@ -513,9 +517,9 @@ class ProfileScreen extends Component {
                 }}
                 onPress={() => {
                   this.setState({
-                    textCalendar: "Month sessions",
+                    textCalendar: "This month sessions",
                   });
-                  this.onPressEditCalendar("M", "Month sessions");
+                  this.onPressEditCalendar("M", "This month sessions");
                 }}
               >
                 M
