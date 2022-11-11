@@ -16,6 +16,7 @@
     "@react-native-firebase/analytics": "^14.2.1",
     "@react-native-firebase/app": "^14.2.1",
     "@react-native-firebase/auth": "^14.2.1",
+    "@react-native-firebase/in-app-messaging": "^14.2.1",
     "@react-navigation/bottom-tabs": "^5.11.15",
     "@react-navigation/native": "^5.9.8",
     "@react-navigation/stack": "^5.14.9",
