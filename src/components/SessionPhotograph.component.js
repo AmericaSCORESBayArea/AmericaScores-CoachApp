@@ -142,7 +142,6 @@ export default class SessionPhotograph extends React.Component {
           console.log("ImagePicker Error: ", response.error);
         } else {
           this.setState({ image: response });
-          console.log(response);
           this.setState({ visibility: true });
         }
       });
