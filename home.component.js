@@ -16,6 +16,7 @@ import {
 import TeamsScreen from "./src/TeamsScreen.component";
 import ActivitiesScreen from "./src/Activities.Screen";
 import AttendanceScreen from "./src/Attendance.Screen";
+import SessionPhotograph from "./src/components/SessionPhotograph.component";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from "@react-navigation/stack";
 import StudentsScreen from "./src/StudentsScreen.component";
@@ -85,6 +86,11 @@ const Stack_Activities_Navigation = () =>
         component={AttendanceScreen}
       />
       <Stack_Activities.Screen
+        name="Session Photograph"
+        component={SessionPhotograph}
+        options={headerOptions}
+      />
+      <Stack_Activities.Screen
         options={headerOptions}
         name="Scan students QR"
         component={QRScanScreen}
@@ -101,6 +107,11 @@ const Stack_Activities_Navigation = () =>
         options={headerOptionsIFC}
         name="Attendance"
         component={AttendanceScreen}
+      />
+      <Stack_Activities.Screen
+        name="Session Photograph"
+        component={SessionPhotograph}
+        options={headerOptionsIFC}
       />
       <Stack_Activities.Screen
         options={headerOptionsIFC}
@@ -169,6 +180,11 @@ const Stack_Teams_Navigation = ({ navigation }) =>
         component={QRScanScreen}
         options={headerOptions}
       />
+      <Stack_Teams.Screen
+        name="Session Photograph"
+        component={SessionPhotograph}
+        options={headerOptions}
+      />
     </Stack_Teams.Navigator>
   ) : (
     <Stack_Teams.Navigator>
@@ -201,6 +217,11 @@ const Stack_Teams_Navigation = ({ navigation }) =>
         name="Attendance"
         component={AttendanceScreen}
         options={headerOptionsIFC}
+      />
+      <Stack_Teams.Screen
+        name="Session Photograph"
+        component={SessionPhotograph}
+        options={headerOptions}
       />
       <Stack_Teams.Screen
         name="Scan students QR"
