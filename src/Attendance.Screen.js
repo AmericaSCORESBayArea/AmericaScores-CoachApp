@@ -1152,7 +1152,16 @@ class AttendanceScreen extends Component {
       }, 3500);
       // wait(2000).then(() => refreshing = false);
     };
-
+    const sessionPhotographLayout = () => {
+      const { user } = this.props.user;
+      this.props.navigation.navigate("Session Photograph", {
+        team: this.state.teamName,
+        session_Type: this.state.topic,
+        session_ID: this.state.sessionId,
+        region: this.state.regionCoach,
+        coach_ID: user.ContactId,
+      });
+    };
     const studentAttendanceItem = ({ item, index }) => (
       <ListItem
         title={`${item.StudentName}`}
@@ -1232,7 +1241,7 @@ class AttendanceScreen extends Component {
         <Text style={styles.attendanceDescriptionText_Label} category="s1">
           {label}{" "}
         </Text>
-        {description === "" ? (
+        {description === "" || description === undefined ? (
           <Text style={{ fontSize: 14 }} category="p1">
             Unassigned
           </Text>
@@ -1265,7 +1274,7 @@ class AttendanceScreen extends Component {
             source={require("../assets/Scores_goal.png")}
           />
         ) : null}
-        {description === "" ? (
+        {description === "" || description === undefined ? (
           <Image
             style={{ width: 40, height: 25, resizeMode: "contain" }}
             source={require("../assets/Unassigned_Session.png")}
@@ -1689,14 +1698,9 @@ class AttendanceScreen extends Component {
               appearance="ghost"
               status="primary"
               accessoryLeft={cameraIcon}
-              onPress={() =>
-                navigation.navigate("Scan students QR", {
-                  enrollments: this.state.enrollments,
-                  checkStudentById: this.checkStudentById,
-                })
-              }
+              onPress={sessionPhotographLayout}
             >
-              SCAN QR CODE
+              Session Photograph
             </Button>
             <Divider />
             {descriptionArea()}

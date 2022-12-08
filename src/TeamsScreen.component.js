@@ -320,7 +320,6 @@ class TeamsScreen extends Component {
     );
 
     let teamItem = ({ item, index }) => {
-      console.log(item);
       return (
         <ListItem
           title={
