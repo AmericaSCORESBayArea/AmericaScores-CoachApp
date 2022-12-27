@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   BottomNavigationTab,
@@ -12,6 +12,7 @@ import {
   Tab,
   Layout,
   Text,
+  CheckBox,
 } from "@ui-kitten/components";
 import TeamsScreen from "./src/TeamsScreen.component";
 import ActivitiesScreen from "./src/Activities.Screen";
@@ -28,7 +29,7 @@ import auth from "@react-native-firebase/auth";
 import * as GoogleSignIn from "expo-google-sign-in";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-
+import { Linking, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -293,6 +294,19 @@ export const HomeScreen = ({ navigation }) => {
 export default OptionOverflowMenu = (navigation) => {
   const state = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [checked, setChecked] = React.useState(false);
+  useEffect(() => {
+    const dismissFirebaseModal = async () => {
+      const notifications = await AsyncStorage.getItem("appNotifications");
+      console.log(notifications);
+      if (notifications === null || notifications === "true") {
+        setChecked(true);
+      } else {
+        setChecked(false);
+      }
+    };
+    dismissFirebaseModal();
+  }, []);
   const [visoverflowMenuVisibleble, setOverflowMenuVisible] =
     React.useState(false);
   const coloroverflow = () => {
@@ -321,6 +335,15 @@ export default OptionOverflowMenu = (navigation) => {
   const versionicon = (props) => <Icon {...props} name="info-outline" />;
   const howtouseicon = (props) => (
     <Icon {...props} name="play-circle-outline" />
+  );
+
+  const toggle = (props) => (
+    <CheckBox
+      {...props}
+      status="basic"
+      checked={checked}
+      onChange={(nextChecked) => checkNotifications(nextChecked)}
+    />
   );
 
   const OptionButtons = () => (
@@ -383,6 +406,18 @@ export default OptionOverflowMenu = (navigation) => {
     }
   }
 
+  async function checkNotifications(checkProps) {
+    if (checkProps) {
+      console.log(checkProps);
+      await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
+      setChecked(checkProps);
+    } else {
+      console.log(!checked);
+      await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
+      setChecked(!checked);
+    }
+  }
+
   return (
     <OverflowMenu
       anchor={OptionButtons}
@@ -411,6 +446,11 @@ export default OptionOverflowMenu = (navigation) => {
         title="Help"
         onPress={() => menuItemOnPress("CreateReportModal")}
         accessoryLeft={reporticon}
+      />
+      <MenuItem
+        title="Notifications"
+        onPress={() => checkNotifications()}
+        accessoryLeft={toggle}
       />
       <MenuItem
         title="Log out"
