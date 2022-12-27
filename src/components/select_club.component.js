@@ -67,8 +67,6 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       let aux = await AsyncStorage.getItem("userFirstTime");
       if (!aux) {
         navigation.navigate("userGuideModalLogin");
-      } else {
-        inAppMessaging().setMessagesDisplaySuppressed(false);
       }
     }
     fetchMyAsyncStorage();
@@ -165,6 +163,11 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
         "customCalendar",
         JSON.stringify(calendarEdited)
       );
+    }
+    const notifications = await AsyncStorage.getItem("appNotifications");
+    if (notifications === null || notifications === "true") {
+      inAppMessaging().setMessagesDisplaySuppressed(false);
+      await inAppMessaging().triggerEvent("main_activity_ready");
     }
     await analytics().logEvent("AffiliationSelect", {
       coach_Id: user.ContactId,
