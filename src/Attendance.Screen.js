@@ -69,6 +69,7 @@ class AttendanceScreen extends Component {
       numberOfStudentsCounted: 0,
       duplicateRecordsList: [],
       showHeadcounts: false,
+      showNullSessionsError: false,
     };
   }
 
@@ -350,214 +351,223 @@ class AttendanceScreen extends Component {
 
   //Filters the current session and sets the student list for attendance
   async _setCurrentSessionData() {
+    this.setState({ showNullSessionsError: false });
     const { route } = this.props;
     console.log("route", route.params);
     var currentSession = await this.props.sessions.sessions.find(
       (session) => session.TeamSeasonId === route.params.teamSeasonId
     );
-    var currentSessionData = await currentSession.Sessions.find(
-      (session) => session.SessionId === route.params.sessionId
-    );
-    if (this.state.arrowSession !== undefined) {
-      var currentSession = await this.props.sessions.sessions.find(
-        (session) =>
-          session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
-      );
+    if (currentSession.Sessions === null) {
+      this.setState({ showNullSessionsError: true });
+    } else {
       var currentSessionData = await currentSession.Sessions.find(
-        (session) => session.SessionId === this.state.arrowSession.SessionId
+        (session) => session.SessionId === route.params.sessionId
       );
-    }
-    let currentDate = moment();
-    let currentTopic = "";
-    let useHeadcount = "";
-    let programType = "";
-    let girlsHeadcount = "";
-    let boysHeadcount = "";
-    let nonBinaryHeadcount = "";
-    if (currentSession) {
-      console.log("[Attendance.Screen.js] : FETCH SESSION");
-      await Axios.get(
-        `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
-      )
-        .then(async (res) => {
-          console.log(res.data.SessionTopic);
-          currentDate = res.data.SessionDate;
-          currentTopic =
-            res.data.SessionTopic !== null
-              ? res.data.SessionTopic.replace(/_/g, " ")
-              : undefined;
-          useHeadcount = res.data.UsesHeadcount;
-          programType = res.data.ProgramType;
-          girlsHeadcount = res.data.GirlsPresent;
-          boysHeadcount = res.data.BoysPresent;
-          nonBinaryHeadcount = res.data.NonbinaryPresent;
-        })
-        .catch((error) => error);
-      if (useHeadcount === true || useHeadcount === "true") {
-        this.setState({ showHeadcounts: true });
-        if (boysHeadcount !== null) {
-          boysHeadcount = boysHeadcount.replace(/\./g, "");
-          boysHeadcount = boysHeadcount / 10;
-          this.setState({
-            headCount: boysHeadcount.toString(),
-            numberOfStudentsCounted:
-              Number(this.state.headCountFemale) +
-              Number(boysHeadcount) +
-              Number(this.state.headCountNonBinary),
-          });
-        } else {
-          this.setState({
-            headCount: 0,
-            numberOfStudentsCounted:
-              Number(this.state.headCountFemale) +
-              0 +
-              Number(this.state.headCountNonBinary),
-          });
-        }
-        if (girlsHeadcount !== null) {
-          girlsHeadcount = girlsHeadcount.replace(/\./g, "");
-          girlsHeadcount = girlsHeadcount / 10;
-          this.setState({
-            headCountFemale: girlsHeadcount.toString(),
-            numberOfStudentsCounted:
-              Number(this.state.headCount) +
-              Number(girlsHeadcount) +
-              Number(this.state.headCountNonBinary),
-          });
-        } else {
-          this.setState({
-            headCountFemale: 0,
-            numberOfStudentsCounted:
-              Number(this.state.headCount) +
-              0 +
-              Number(this.state.headCountNonBinary),
-          });
-        }
-        if (nonBinaryHeadcount !== null) {
-          nonBinaryHeadcount = nonBinaryHeadcount.replace(/\./g, "");
-          nonBinaryHeadcount = nonBinaryHeadcount / 10;
-          this.setState({
-            headCountNonBinary: nonBinaryHeadcount.toString(),
-            numberOfStudentsCounted:
-              Number(this.state.headCount) +
-              Number(this.state.headCountFemale) +
-              Number(nonBinaryHeadcount),
-          });
-        } else {
-          this.setState({
-            headCountNonBinary: 0,
-            numberOfStudentsCounted:
-              Number(this.state.headCount) +
-              Number(this.state.headCountFemale) +
-              0,
-          });
-        }
-        const newState = {
-          sessionId: currentSessionData.SessionId,
-          teamName: currentSession.TeamSeasonName,
-          teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
-          completeTeamSeasonId: currentSession.TeamSeasonId,
-          topic: currentTopic,
-          date: moment(currentDate).format("MMM-DD-YYYY"),
-          numberOfStudents: 0,
-          programType: programType,
-        };
-        await this.setState(newState);
-        this.setState({ headCountModalStatus: true });
-      } else {
-        this.setState({ showHeadcounts: false });
-        this.setState({ headCountModalStatus: false });
-        const newState = {
-          sessionId: currentSessionData.SessionId,
-          enrollments: [],
-          teamName: currentSession.TeamSeasonName,
-          teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
-          completeTeamSeasonId: currentSession.TeamSeasonId,
-          topic: currentTopic,
-          date: moment(currentDate).format("MMM-DD-YYYY"),
-          numberOfStudents: 0,
-          missingEnrollments: [],
-        };
-        await this.setState(newState);
-        await this._fetchGetEnrollments();
-        await this.verifyAttendance();
-
-        if (this.props.sessionAttendance.sessionsAttendance !== undefined) {
-          console.log("redux", this.props.sessionAttendance.sessionsAttendance);
-        }
-        if (this.props.sessionAttendance.sessionsAttendance.length !== 0) {
-          if (
-            this.props.sessionAttendance.sessionsAttendance[0][0] === undefined
-          ) {
-            this.props.sessionAttendance.sessionsAttendance.map(
-              (valueredux) => {
-                if (valueredux.SessionId === currentSessionData.SessionId) {
-                  this.setState({ nomatchattendance: true });
-                  this.state.enrollments.map((value) => {
-                    //value.Attended = false
-                    valueredux.attendanceList.map((redux) => {
-                      if (value.StudentId === redux.StudentId) {
-                        value.Attended = redux.Attended;
-                      }
-                    });
-                  });
-                  this.setState({ isUpdated: true });
-                }
-              }
-            );
-          } else {
-            this.props.sessionAttendance.sessionsAttendance[0].map(
-              (valueredux) => {
-                if (valueredux.SessionId === currentSessionData.SessionId) {
-                  this.setState({ nomatchattendance: true });
-                  this.state.enrollments.map((value) => {
-                    //value.Attended=false
-                    valueredux.attendanceList.map((redux) => {
-                      if (value.StudentId === redux.StudentId) {
-                        value.Attended = redux.Attended;
-                      }
-                    });
-                  });
-                  this.setState({ isUpdated: true });
-                }
-              }
-            );
-          }
-          if (this.state.nomatchattendance === false) {
-            if (this.state.enrollments !== null) {
-              this.state.enrollments.map((value) => {
-                if (value.Attended !== undefined) {
-                  //value.Attended=false
-                }
-                {
-                  () => this.studentAttendanceItem(this.state.enrollments);
-                }
-              });
-            }
-          }
-          await this._fetchSessionInfo();
-          if (this.state.enrollments.length !== 0) {
-            this.setState({ nomatchModalVisibility: false });
-          } else {
-            this.setState({ nomatchModalVisibility: true });
-          }
-        } else {
-          if (this.state.enrollments.length !== 0) {
-            this.setState({ nomatchModalVisibility: false });
-            this.state.enrollments.map((value) => {
-              if (value.Attended !== undefined) {
-                //value.Attended = false
-              }
+      if (this.state.arrowSession !== undefined) {
+        var currentSession = await this.props.sessions.sessions.find(
+          (session) =>
+            session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
+        );
+        var currentSessionData = await currentSession.Sessions.find(
+          (session) => session.SessionId === this.state.arrowSession.SessionId
+        );
+      }
+      let currentDate = moment();
+      let currentTopic = "";
+      let useHeadcount = "";
+      let programType = "";
+      let girlsHeadcount = "";
+      let boysHeadcount = "";
+      let nonBinaryHeadcount = "";
+      if (currentSession) {
+        console.log("[Attendance.Screen.js] : FETCH SESSION");
+        await Axios.get(
+          `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
+        )
+          .then(async (res) => {
+            console.log(res.data.SessionTopic);
+            currentDate = res.data.SessionDate;
+            currentTopic =
+              res.data.SessionTopic !== null
+                ? res.data.SessionTopic.replace(/_/g, " ")
+                : undefined;
+            useHeadcount = res.data.UsesHeadcount;
+            programType = res.data.ProgramType;
+            girlsHeadcount = res.data.GirlsPresent;
+            boysHeadcount = res.data.BoysPresent;
+            nonBinaryHeadcount = res.data.NonbinaryPresent;
+          })
+          .catch((error) => error);
+        if (useHeadcount === true || useHeadcount === "true") {
+          this.setState({ showHeadcounts: true });
+          if (boysHeadcount !== null) {
+            boysHeadcount = boysHeadcount.replace(/\./g, "");
+            boysHeadcount = boysHeadcount / 10;
+            this.setState({
+              headCount: boysHeadcount.toString(),
+              numberOfStudentsCounted:
+                Number(this.state.headCountFemale) +
+                Number(boysHeadcount) +
+                Number(this.state.headCountNonBinary),
             });
           } else {
-            this.setState({ nomatchModalVisibility: true });
-            this.setState({ loadingModalstate: false });
+            this.setState({
+              headCount: 0,
+              numberOfStudentsCounted:
+                Number(this.state.headCountFemale) +
+                0 +
+                Number(this.state.headCountNonBinary),
+            });
           }
-          await this._fetchSessionInfo();
+          if (girlsHeadcount !== null) {
+            girlsHeadcount = girlsHeadcount.replace(/\./g, "");
+            girlsHeadcount = girlsHeadcount / 10;
+            this.setState({
+              headCountFemale: girlsHeadcount.toString(),
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                Number(girlsHeadcount) +
+                Number(this.state.headCountNonBinary),
+            });
+          } else {
+            this.setState({
+              headCountFemale: 0,
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                0 +
+                Number(this.state.headCountNonBinary),
+            });
+          }
+          if (nonBinaryHeadcount !== null) {
+            nonBinaryHeadcount = nonBinaryHeadcount.replace(/\./g, "");
+            nonBinaryHeadcount = nonBinaryHeadcount / 10;
+            this.setState({
+              headCountNonBinary: nonBinaryHeadcount.toString(),
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                Number(this.state.headCountFemale) +
+                Number(nonBinaryHeadcount),
+            });
+          } else {
+            this.setState({
+              headCountNonBinary: 0,
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                Number(this.state.headCountFemale) +
+                0,
+            });
+          }
+          const newState = {
+            sessionId: currentSessionData.SessionId,
+            teamName: currentSession.TeamSeasonName,
+            teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+            completeTeamSeasonId: currentSession.TeamSeasonId,
+            topic: currentTopic,
+            date: moment(currentDate).format("MMM-DD-YYYY"),
+            numberOfStudents: 0,
+            programType: programType,
+          };
+          await this.setState(newState);
+          this.setState({ headCountModalStatus: true });
+        } else {
+          this.setState({ showHeadcounts: false });
+          this.setState({ headCountModalStatus: false });
+          const newState = {
+            sessionId: currentSessionData.SessionId,
+            enrollments: [],
+            teamName: currentSession.TeamSeasonName,
+            teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+            completeTeamSeasonId: currentSession.TeamSeasonId,
+            topic: currentTopic,
+            date: moment(currentDate).format("MMM-DD-YYYY"),
+            numberOfStudents: 0,
+            missingEnrollments: [],
+          };
+          await this.setState(newState);
+          await this._fetchGetEnrollments();
+          await this.verifyAttendance();
+
+          if (this.props.sessionAttendance.sessionsAttendance !== undefined) {
+            console.log(
+              "redux",
+              this.props.sessionAttendance.sessionsAttendance
+            );
+          }
+          if (this.props.sessionAttendance.sessionsAttendance.length !== 0) {
+            if (
+              this.props.sessionAttendance.sessionsAttendance[0][0] ===
+              undefined
+            ) {
+              this.props.sessionAttendance.sessionsAttendance.map(
+                (valueredux) => {
+                  if (valueredux.SessionId === currentSessionData.SessionId) {
+                    this.setState({ nomatchattendance: true });
+                    this.state.enrollments.map((value) => {
+                      //value.Attended = false
+                      valueredux.attendanceList.map((redux) => {
+                        if (value.StudentId === redux.StudentId) {
+                          value.Attended = redux.Attended;
+                        }
+                      });
+                    });
+                    this.setState({ isUpdated: true });
+                  }
+                }
+              );
+            } else {
+              this.props.sessionAttendance.sessionsAttendance[0].map(
+                (valueredux) => {
+                  if (valueredux.SessionId === currentSessionData.SessionId) {
+                    this.setState({ nomatchattendance: true });
+                    this.state.enrollments.map((value) => {
+                      //value.Attended=false
+                      valueredux.attendanceList.map((redux) => {
+                        if (value.StudentId === redux.StudentId) {
+                          value.Attended = redux.Attended;
+                        }
+                      });
+                    });
+                    this.setState({ isUpdated: true });
+                  }
+                }
+              );
+            }
+            if (this.state.nomatchattendance === false) {
+              if (this.state.enrollments !== null) {
+                this.state.enrollments.map((value) => {
+                  if (value.Attended !== undefined) {
+                    //value.Attended=false
+                  }
+                  {
+                    () => this.studentAttendanceItem(this.state.enrollments);
+                  }
+                });
+              }
+            }
+            await this._fetchSessionInfo();
+            if (this.state.enrollments.length !== 0) {
+              this.setState({ nomatchModalVisibility: false });
+            } else {
+              this.setState({ nomatchModalVisibility: true });
+            }
+          } else {
+            if (this.state.enrollments.length !== 0) {
+              this.setState({ nomatchModalVisibility: false });
+              this.state.enrollments.map((value) => {
+                if (value.Attended !== undefined) {
+                  //value.Attended = false
+                }
+              });
+            } else {
+              this.setState({ nomatchModalVisibility: true });
+              this.setState({ loadingModalstate: false });
+            }
+            await this._fetchSessionInfo();
+          }
+          this.setState({ loadingModalstate: false });
         }
         this.setState({ loadingModalstate: false });
       }
-      this.setState({ loadingModalstate: false });
     }
   }
 
@@ -1506,6 +1516,15 @@ class AttendanceScreen extends Component {
           </Text>
         </Card>
       );
+    const nullSessionsError = (status) =>
+      this.state.showNullSessionsError && (
+        <Card style={{ opacity: 0.9 }}>
+          <Text category="s1" status={status} style={{ alignSelf: "center" }}>
+            An error occurred. Please go back and try a smaller range of dates
+            or refresh the list of sessions.
+          </Text>
+        </Card>
+      );
     const buttonColor = () => {
       if (this.props.sessionScreen.region === "ASBA") {
         return "#00467F";
@@ -1711,6 +1730,7 @@ class AttendanceScreen extends Component {
             {updateButton()}
             {updatingModal()}
             {noMatch("basic")}
+            {nullSessionsError("basic")}
             <Divider />
             <List
               style={{ width: "100%" }}
