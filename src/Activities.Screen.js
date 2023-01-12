@@ -67,7 +67,8 @@ class ActivitiesScreen extends Component {
             showStudents: false,
             programType: '',
             studentsCheck: false,
-            studentsCheckToast: true
+            studentsCheckToast: true,
+            showIncompletePhones: false
         }
     }
     
@@ -306,21 +307,26 @@ class ActivitiesScreen extends Component {
     }
     openWhatsappGroup = (students) => {
         let parentsNumbers=[]
-        students.map(item =>{
-            if(item.ParentInfoFirstName.FirstPhone.length !== 0){
-                let phone= 1+item.ParentInfoFirstName.FirstPhone
-                parentsNumbers.push(phone)
-            }
-            SendSMS.send({
-                body: this.state.wppUrl.length ===0?  this.state.textGroup :  this.state.wppUrl,
-                recipients: parentsNumbers,
-                successTypes: ['sent', 'queued'],
-                allowAndroidSendWithoutReadPermission: true,
-            }, (completed, cancelled, error) => {
-                console.log('SMS Callback: completed: ' + completed + ' cancelled: ' + cancelled + 'error: ' + error);
-                this.setState({visibleMenu:false,wppUrl:'', textGroup: '', groupModal:false})
-            });
-        })
+        if(students.every(elem => elem.ParentInfoFirstName.FirstPhone.length === 0) === true){
+            this.setState({showIncompletePhones: true})
+            setTimeout(() => this.setState({showIncompletePhones: false}), 4000);
+        }else{
+            students.map(item =>{
+                if(item.ParentInfoFirstName.FirstPhone.length !== 0){
+                    let phone= 1+item.ParentInfoFirstName.FirstPhone
+                    parentsNumbers.push(phone)
+                }
+                SendSMS.send({
+                    body: this.state.wppUrl.length ===0?  this.state.textGroup :  this.state.wppUrl,
+                    recipients: parentsNumbers,
+                    successTypes: ['sent', 'queued'],
+                    allowAndroidSendWithoutReadPermission: true,
+                }, (completed, cancelled, error) => {
+                    console.log('SMS Callback: completed: ' + completed + ' cancelled: ' + cancelled + 'error: ' + error);
+                    this.setState({visibleMenu:false,wppUrl:'', textGroup: '', groupModal:false})
+                });
+            })
+        }
         /*let phoneWithCountryCode = []
         phoneWithCountryCode.map(value => {
             let url = `http://api.whatsapp.com/send?text=hello&phone=${value}`
@@ -1102,6 +1108,7 @@ class ActivitiesScreen extends Component {
                         value={this.state.groupText}
                         onChangeText={enteredValue => this.setState({groupText:enteredValue})}
                     />
+                    {this.state.showIncompletePhones === true? <Text category='s1' appearance='hint' status='danger'>No student has complete information about their parents. Please fill in the information and try again.</Text> : null}
                 </Card>
             </Modal>
         )

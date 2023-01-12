@@ -558,7 +558,8 @@ class TeamsScreen extends Component {
             sliderMinHeight={28}
             lineStyle={{ marginTop: "3%" }}
           >
-            {this.state.teamsRegion.length > 10 ? (
+            {this.state.teamsRegion.length > 10 ||
+            this.state.value.length !== 0 ? (
               <Autocomplete
                 style={{ margin: "2%" }}
                 label="Search a Team"
