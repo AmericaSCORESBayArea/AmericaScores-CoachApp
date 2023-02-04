@@ -517,6 +517,8 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   const [selectedStudent, setSelectedStudent] = React.useState();
   const [suggestions, setSuggestions] = React.useState();
   const [loadingModalstate, setLoadingModalstate] = React.useState(false);
+  const [studentsToAdd, setStudentsToAdd] = React.useState([]);
+  const [showWarn, setShowWarn] = React.useState(false);
   useEffect(() => {
     setVisible(true);
     Keyboard.addListener("keyboardDidShow", (e) => {
@@ -603,9 +605,20 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
       .then((res) => {
         if (res.data) {
           setLoadingModalstate(false);
-          Alert.alert("Success", "Student was enrolled succesfully");
+          Alert.alert(
+            "Success",
+            `The student ${
+              selectedStudent.FirstName +
+              " " +
+              selectedStudent.MiddleName +
+              " " +
+              selectedStudent.LastName +
+              " "
+            } was enrolled succesfully`
+          );
           setValue("");
           setData([]);
+          setSelectedStudent();
         }
         setLoadingModalstate(false);
       })
@@ -615,9 +628,8 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   const [value, setValue] = React.useState("");
   const [data, setData] = React.useState([]);
 
-  const onSelect = (index) => {
-    setValue(data[index].Name);
-    setSelectedStudent(data[index]);
+  const onSelect = (item) => {
+    setSelectedStudent(item);
   };
 
   const loadingModal = () => (
@@ -669,6 +681,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     "Emergency_Contact_Relationship",
   ];
   async function filterData() {
+    setShowWarn(false);
     const unfiltered = await fetchStudents(value);
     console.log(unfiltered);
     if (unfiltered.length > 0) {
@@ -684,8 +697,8 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     for (const property in item) {
       if (fieldsToCheck.includes(`${property}`) === true) {
         aux = `${item[property]}`;
-        aux.length === 0
-          ? ((showWarning = true),
+        aux.length === 0 && showWarn === false
+          ? ((setShowWarn(true), (showWarning = true)),
             Toast.show({
               title: "Warning",
               text: "One or more students have incomplete information.",
@@ -699,6 +712,8 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
                 />
               ),
             }))
+          : aux.length === 0
+          ? (showWarning = true)
           : (showWarning = false);
       }
     }
@@ -728,7 +743,23 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   };
 
   const renderOption = ({ item, index }) => (
-    <ListItem title={studentTitle(item)} onPress={() => onSelect(index)} />
+    <ListItem
+      title={studentTitle(item)}
+      onPress={() => onSelect(item)}
+      accessoryRight={() => {
+        if (selectedStudent === item) {
+          return (
+            <Icon
+              fill="#008000"
+              style={styles.icon}
+              name="checkmark-circle-outline"
+            />
+          );
+        } else {
+          return null;
+        }
+      }}
+    />
   );
 
   const Footer = (props) => (
@@ -778,9 +809,21 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     </View>
   );
 
+  const renderStudentToAdd = () => {
+    return (
+      <Text category="s1" appearance="hint">
+        {selectedStudent.FirstName +
+          " " +
+          selectedStudent.MiddleName +
+          " " +
+          selectedStudent.LastName +
+          " "}
+      </Text>
+    );
+  };
   return (
     <React.Fragment>
-      <Root style={{ bottom: 12 }}>
+      <Root style={{ bottom: 14 }}>
         <Modal
           visible={visible}
           onBackdropPress={() => closeModal()}
@@ -807,6 +850,14 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
                 >
                   Search
                 </Button>
+                <Text
+                  category="s1"
+                  appearance="hint"
+                  style={{ marginBottom: 5, marginTop: 5 }}
+                >
+                  Student selected:{" "}
+                  {selectedStudent ? renderStudentToAdd() : null}
+                </Text>
                 {loadingModal()}
                 {/* <View> */}
                 <List
@@ -814,6 +865,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
                   data={data}
                   ItemSeparatorComponent={Divider}
                   renderItem={renderOption}
+                  keyExtractor={(item) => item.id}
                 />
                 {/* </View> */}
               </ScrollView>
@@ -1086,5 +1138,10 @@ const styles = StyleSheet.create({
   },
   missingStudentText: {
     marginTop: "3.5%",
+  },
+  icon: {
+    width: 25,
+    height: 25,
+    marginRight: "3%",
   },
 });
