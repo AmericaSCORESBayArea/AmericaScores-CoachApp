@@ -308,8 +308,7 @@ class ActivitiesScreen extends Component {
     openWhatsappGroup = (students) => {
         let parentsNumbers=[]
         if(students.every(elem => elem.ParentInfoFirstName.FirstPhone.length === 0) === true){
-            this.setState({showIncompletePhones: true})
-            setTimeout(() => this.setState({showIncompletePhones: false}), 4000);
+            this.setState({showIncompletePhones: true, groupModal: true})
         }else{
             students.map(item =>{
                 if(item.ParentInfoFirstName.FirstPhone.length !== 0){
@@ -1062,9 +1061,11 @@ class ActivitiesScreen extends Component {
         );
         const HeaderGroup = (props) => (
             <Layout {...props}>
-              <Text category='h6'>Send SMS to entire Team</Text>
-              <Text category='s1' appearance='hint'>The message will be sent by SMS to the parents of the selected team.</Text>
-              <Text category='s1' appearance='hint' status='danger'>Your mobile provider may charge for SMS.</Text>
+                <ImageBackground
+                    resizeMode="contain"
+                    style={{ height: 100, width: 100, alignSelf: "center" }}
+                    source={require("../assets/error_icon.png")}
+                />
             </Layout>
         );
         const FooterWPP = (props) => (
@@ -1097,18 +1098,17 @@ class ActivitiesScreen extends Component {
             <Modal
                 visible={this.state.groupModal}
                 backdropStyle={styles.backdrop}
-                onBackdropPress={() => this.setState({groupText:'', groupModal: false})}
                 style={{width:'95%'}}>
-                <Card disabled={true} header={HeaderGroup} footer={FooterWPP}>
-                    <Text>Enter your message</Text>
-                    <Input
-                        placeholder='Text...'
-                        multiline={true}
-                        textStyle={{ minHeight: 44,maxHeight: 250}}
-                        value={this.state.groupText}
-                        onChangeText={enteredValue => this.setState({groupText:enteredValue})}
-                    />
-                    {this.state.showIncompletePhones === true? <Text category='s1' appearance='hint' status='danger'>No student has complete information about their parents. Please fill in the information and try again.</Text> : null}
+                <Card disabled={true} header={HeaderGroup}>
+                    {this.state.showIncompletePhones === true? <Text category='h6' appearance='hint' status='danger'>No student has complete information about their parents. Please fill in the information and try again.</Text> : null}
+                    <Button
+                        appearance="outline"
+                        size={"small"}
+                        onPress={() => this.setState({groupText:'', groupModal: false})}
+                        status={"danger"}
+                    >
+                        OK
+                    </Button>
                 </Card>
             </Modal>
         )
@@ -1280,7 +1280,7 @@ class ActivitiesScreen extends Component {
                                 onBackdropPress={() => this.setState({visibleMenu:false})}>
                                 <MenuItem title='ENROLL STUDENT' accessoryLeft={addIcon} onPress={() => {this.setState({visibleMenu:false}),this.props.navigation.navigate("AddStudentToTeamModal", {teamSeasonId: this.state.teamSeasonId, region: this.props.sessionScreen.region, enrolled: this.state.studentList})}}/>
                                 <MenuItem title='UNENROLL STUDENTS' accessoryLeft={removeIcon} onPress={() => {this.setState({checkBoxView:true, visibleMenu:false})}} />
-                                <MenuItem title='SEND SMS TO TEAM' accessoryLeft={groupIcon} onPress={() => this.setState({groupModal:true})} />
+                                <MenuItem title='CREATE GROUP CHAT' accessoryLeft={groupIcon} onPress={() => this.openWhatsappGroup(this.state.studentList)} />
                                 <MenuItem title='SHARE WHATSAPP LINK' accessoryLeft={shareIcon} onPress={() => this.setState({wppModal:true})}/>
                             </OverflowMenu>
                         </View>:
