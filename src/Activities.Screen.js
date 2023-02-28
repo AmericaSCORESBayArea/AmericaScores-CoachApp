@@ -1,6 +1,6 @@
 import React, {Component, createRef} from "react";
 import { Layout, Divider, List, Input, ListItem, Icon, Text, Datepicker, Card, Button, ButtonGroup, Modal, Select, SelectItem, RangeDatepicker, NativeDateService, Tab, TabBar, MenuItem, OverflowMenu, CheckBox, BottomNavigationTab } from '@ui-kitten/components';
-import { ImageBackground, View, StyleSheet, RefreshControl, Image, TouchableOpacity } from "react-native";
+import { ImageBackground, View, StyleSheet, RefreshControl, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
@@ -8,7 +8,7 @@ import BottomSheet from 'react-native-simple-bottom-sheet';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ApiConfig} from "./config/ApiConfig";
 import { connect } from 'react-redux';
-import { syncSessions } from "./Redux/actions/Session.actions";
+import { syncSessions,syncSessions_SessionTab } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
 import { changeTitle } from "./Redux/actions/SessionScreen.actions";
 import { changeTitleTeam } from "./Redux/actions/SessionScreen.actions";
@@ -17,6 +17,7 @@ import { paletteColors } from './components/paletteColors';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import SendSMS from 'react-native-sms'
 import { Root, Toast } from "popup-ui";
+import FastImage from 'react-native-fast-image';
 
 class ActivitiesScreen extends Component {
     constructor(props) {
@@ -68,10 +69,13 @@ class ActivitiesScreen extends Component {
             programType: '',
             studentsCheck: false,
             studentsCheckToast: true,
-            showIncompletePhones: false
+            showIncompletePhones: false,
+            offset: 0,
+            activeSessionsLoading: false,
+            endReached: false,
         }
     }
-    
+
     async componentDidMount() {
         let aux= await AsyncStorage.getItem('customTheme');
         let auxCalendar= await AsyncStorage.getItem('customCalendar');
@@ -122,8 +126,11 @@ class ActivitiesScreen extends Component {
             .then(activitiesList => this._syncReduxActivities(activitiesList))    
             .then(async () => {
                 //Check if we are in the team activities name
+                this.setState({ offset: this.state.offset + 15})
                 if (route.name === "Team Sessions" && route.params && route.params.teamSeasonId && route.params.region && route.params.teamName){
-                    await this.fetchStudents();
+                    if(this.state.offset === 15){
+                        await this.fetchStudents();
+                    }
                     await this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region,route.params.teamName); // filter the activities for a specific team
                     this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, isTeamSessions: true, programType: route.params.ProgramType});
                 }
@@ -158,71 +165,99 @@ class ActivitiesScreen extends Component {
     }
 
     _syncReduxActivities(activitiesList) {
-        const { actions } = this.props;
-        const { route } = this.props;
-        this.setState({listofSessions: null});
-        actions.syncSessions(activitiesList);
-        console.log(activitiesList)
-        this.setState({activities: activitiesList});//saving the activitiesList
-        if (this.props.sessionScreen.region === 'IFC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('IFC-SF'))),displayedValue:this.state.regions[0],RegionSelected:"All IFC"})//saving sessions without filtering
-            var activitiesregion = activitiesList.filter((value) => (value.Region.match('IFC-SF')));
-        }else if (this.props.sessionScreen.region === 'OGSC'){
-            this.setState({activitiesRegion:activitiesList.filter((value) => (value.Region.match('Genesis'))),displayedValue:this.state.regions[0],RegionSelected:"All OGSC"})//saving sessions without filtering
-            var activitiesregion = activitiesList.filter((value) => (value.Region.match('Genesis')));
-        }else{
-            this.setState({activitiesRegion:activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))),displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
-            var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))
-        }
-        activitiesregion.map(value => {
-                if(value.Sessions !== null){
-                    this.setState({ listofSessions: value.Sessions})
+        if(activitiesList.length !==0){
+            const { actions } = this.props;
+            const { route } = this.props;
+            this.setState({listofSessions: null});
+            if(this.state.offset === 0){
+                actions.syncSessions(activitiesList);
+                this.setState({activities: activitiesList});//saving the activitiesList
+                if(route.name !== "Team Sessions"){
+                    actions.syncSessions_SessionTab(activitiesList);
                 }
-            });
-        if(this.state.listofSessions === null){
-            this.setState({nomatchModalVisibility: true});
-        }else{
-            this.setState({nomatchModalVisibility: false});
-        }
-        if(route.name === "Team Sessions"){
-            this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
-            if(this.state.isUpdated !== true){
-                this.setState({range:{startDate: new Date(moment().subtract(5, "days")),endDate: new Date(moment())}})//change
-            }
-            this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
-        }else{
-            if(activitiesList.length === 0){
-                (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
             }else{
-                if(this.state.listofSessions === null){//if there are teams with null sessions, we set nomatchModal True
-                    (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: true}))//saving seasonName
-                }else{
-                    (this.setState({seasonName: activitiesList[0].Season_Name ,nomatchModalVisibility: false}))//saving seasonName
+                var activitiesListNew = [...new Set([...activitiesList, ...this.state.activitiesRegion])]
+                actions.syncSessions(activitiesListNew);
+                this.setState({activities: activitiesListNew});//saving the activitiesList
+                if(route.name !== "Team Sessions"){
+                    actions.syncSessions_SessionTab(activitiesListNew);
                 }
             }
-            if (this.state.seasonName !== ""){
-                if(this.state.seasonName !== "Sessions"){
-                    actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+            if (this.props.sessionScreen.region === 'IFC'){
+                this.setState({displayedValue:this.state.regions[0],RegionSelected:"All IFC"})//saving sessions without filtering
+                var activitiesregion = activitiesList.filter((value) => (value.Region.match('IFC-SF')));
+                this.setState({activitiesRegion:this.state.offset !==0? [...new Set([...this.state.activitiesRegion, ...activitiesregion])]: activitiesregion})
+            }else if (this.props.sessionScreen.region === 'OGSC'){
+                this.setState({displayedValue:this.state.regions[0],RegionSelected:"All OGSC"})//saving sessions without filtering
+                var activitiesregion = activitiesList.filter((value) => (value.Region.match('Genesis')));
+                this.setState({activitiesRegion:this.state.offset !==0? [...new Set([...this.state.activitiesRegion, ...activitiesregion])]: activitiesregion})
+            }else{
+                this.setState({displayedValue:this.state.regions[0],RegionSelected:"All ASBA"})//saving sessions without filtering
+                var activitiesregion = activitiesList.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))
+                this.setState({activitiesRegion:this.state.offset !==0? [...new Set([...this.state.activitiesRegion, ...activitiesregion])]: activitiesregion})
+            }
+            if(this.state.offset === 0){
+                activitiesregion.map(value => {
+                        if(value !== null || value.length !==0){
+                            this.setState({ listofSessions: value})
+                        }
+                });
+                if(this.state.listofSessions === null){
+                    this.setState({nomatchModalVisibility: true});
                 }else{
-                    actions.changeTitle(this.state.seasonName)//shows the actual season name
+                    this.setState({nomatchModalVisibility: false});
+                }
+                if(route.name === "Team Sessions"){
+                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
+                    if(this.state.isUpdated !== true){
+                        this.setState({range:{startDate: new Date(moment().subtract(5, "days")),endDate: new Date(moment())}})//change
+                    }
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
+                }else{
+                    if(activitiesList.length === 0){
+                        (this.setState({seasonName: "Sessions", nomatchModalVisibility: true}))//saving seasonName
+                    }else{
+                        if(this.state.listofSessions === null){//if there are teams with null sessions, we set nomatchModal True
+                            (this.setState({seasonName: activitiesList[0].SeasonName ,nomatchModalVisibility: true}))//saving seasonName
+                        }else{
+                            (this.setState({seasonName: activitiesList[0].SeasonName ,nomatchModalVisibility: false}))//saving seasonName
+                        }
+                    }
+                    if (this.state.seasonName !== ""){
+                        if(this.state.seasonName !== "Sessions"){
+                            actions.changeTitle(this.state.seasonName + " " + "Sessions")//shows the actual season name
+                        }else{
+                            actions.changeTitle(this.state.seasonName)//shows the actual season name
+                        }
+                    }
+                }
+            }else{
+                if(route.name === "Team Sessions"){
+                    this.filterActivitiesByTeamSeasonId(route.params.teamSeasonId,route.params.region, route.params.teamName, route.params.seasonStart, route.params.seasonEnd); // filter the activities for a specific team
+                    if(this.state.isUpdated !== true){
+                        this.setState({range:{startDate: new Date(moment().subtract(5, "days")),endDate: new Date(moment())}})//change
+                    }
+                    this.setState({isUpdated: true, teamSeasonId: route.params.teamSeasonId, region: route.params.region, teamName: route.params.teamName, StartSeason: new Date(route.params.seasonStart),EndSeason:  new Date(route.params.seasonEnd)});
                 }
             }
+        }else{
+            this.setState({endReached:true})
         }
     }
 
     async filterActivitiesByTeamSeasonId(teamSeasonId,region,teamName) {
         this.setState({displayedValue:region, RegionSelected:region, selectedIndex:this.state.regions.indexOf(region), disabledbox:true});
-        this.setState({listofSessions: null});
-        const activities = await this.state.activities.filter(
-            activity => { if (activity.Sessions) return activity.Sessions[0].TeamSeasonId === teamSeasonId;});
+        //this.setState({listofSessions: null});
+        /*const activities = await this.state.activities.filter(
+            activity => { if (activity) return activity.TeamSeasonId === teamSeasonId;});
         this.setState({activities: activities});
         this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
         await activities.map(value => {
-            if(value.Sessions !== null){
-                this.setState({ listofSessions: value.Sessions})
+            if(value !== null || value.length !==0){
+                this.setState({ listofSessions: value})
             }
-        });
-        if(this.state.listofSessions === null){
+        });*/
+        if(this.state.activitiesRegion.length === 0){
             this.setState({nomatchModalVisibility: true})
         }else{
             this.setState({nomatchModalVisibility: false})
@@ -232,6 +267,7 @@ class ActivitiesScreen extends Component {
     async fetchActivities() {
         const { user } = this.props;
         const { route } = this.props;
+        const regionsArray = []
         /*delete Axios.defaults.headers.common['client_id'];
         delete Axios.defaults.headers.common['client_secret'];
         Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
@@ -243,25 +279,70 @@ class ActivitiesScreen extends Component {
             }
         }
         if(this.state.range.endDate !== null){
-            return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
-                params: {
-                    // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                    firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
-                    secondDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-                }
-              })
-              .then(res => res.data)
-              .catch(e => console.log(e));
+            if(route.name === "Team Sessions"){
+                return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/allSessions`, { 
+                    params: {
+                        // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                        startDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
+                        endDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
+                        limit: 15,
+                        regions: `'${route.params.region.toString()}'`,
+                        teamseasonId: route.params.teamSeasonId,
+                        offset: this.state.offset
+                    }
+                  })
+                .then(res => res.data)
+                .catch(e => console.log(e));
+            }else{
+                this.state.regions.map(region => {
+                    regionsArray.push(`'${region}'`)
+                })
+                return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/allSessions`, { 
+                    params: {
+                        // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                        startDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
+                        endDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
+                        limit: 15,
+                        regions: regionsArray.toString(),
+                        offset: this.state.offset
+                    }
+                  })
+                .then(res => res.data)
+                .catch(e => console.log(e));
+            }
         }
         else{
-            return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/all`, {
-                params: {
-                    // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                    firstDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),    
-                }
-            })
-              .then(res => res.data)
-              .catch(e => console.log(e));
+            if(route.name === "Team Sessions"){
+                return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/allSessions`, {
+                    params: {
+                        // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                        startDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),   
+                        endDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
+                        regions: route.params.region.toString().replace(String.fromCharCode(34), "'"),
+                        teamseasonId: route.params.teamSeasonId,
+                        limit: 15,
+                        offset: this.state.offset 
+                    }
+                })
+                .then(res => res.data)
+                .catch(e => console.log(e));
+            }else{
+                this.state.regions.map(region => {
+                    regionsArray.push(`'${region}'`)
+                })
+                return await Axios.get(`${ApiConfig.dataApi}/coach/${user.user.ContactId}/allSessions`, {
+                    params: {
+                        // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+                        startDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),   
+                        endDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
+                        regions: regionsArray.toString(),
+                        limit: 15,
+                        offset: this.state.offset 
+                    }
+                })
+                .then(res => res.data)
+                .catch(e => console.log(e));
+            }
         }
     }
 
@@ -273,6 +354,7 @@ class ActivitiesScreen extends Component {
     async selectRange(dates) {
         const { route } = this.props;
         console.log(this.state.dateCont, dates.endDate)
+        this.setState({offset: 0, endReached:false});
         if(dates.endDate === null && this.state.dateCont < 1){
             this.setState({dateCont: this.state.dateCont+1})
             this.setState({range: dates})
@@ -280,7 +362,7 @@ class ActivitiesScreen extends Component {
             this.setState({loadingModalstate:true});
             
                 this.RangeDatepicker.current.blur();
-                await this.setState({range: dates, dateCont: 0})
+                await this.setState({range: dates, dateCont: 0, offset: 0})
                 const activitiesList = await this.fetchActivities();
                 this._syncReduxActivities(activitiesList);
                 this.setState({loadingModalstate:false});
@@ -298,13 +380,27 @@ class ActivitiesScreen extends Component {
         this.deleteStudents(aux);
     }
 
-    selectActivity(teamSeasonId, sessionId) { this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion}) }
+    selectActivity(teamSeasonId, sessionId) { const { route } = this.props; this.state.activeSessionsLoading? null : this.props.navigation.navigate("Attendance", {teamSeasonId: teamSeasonId, sessionId: sessionId, activitiesRegion: this.state.activitiesRegion, name: route.name}) }
 
     toggleWelcomeModalOff() { 
         const { actions } = this.props;
         this.setState({welcomeModalVisibility: false})
         actions.updateFirstTimeLoggedIn();
     }
+
+    LoadMoreRandomData = () => {
+        if(this.state.activeSessionsLoading === false){
+            if(this.state.activitiesRegion.length > 8){
+                this.setState({ activeSessionsLoading: true })
+                this._syncActivities();
+                setTimeout(() => {this.setState({activeSessionsLoading:false})}, 1500);
+            }
+        }
+    }
+        /*this.setState({
+        offset: this.state.offset + 10, activeSessionsLoading: true
+        },()=>this._syncActivities().then(() => this.setState({activeSessionsLoading:false})))*/
+    
     openWhatsappGroup = (students) => {
         let parentsNumbers=[]
         if(students.every(elem => elem.ParentInfoFirstName.FirstPhone.length === 0) === true){
@@ -420,8 +516,7 @@ class ActivitiesScreen extends Component {
             if(auxCalendar !== null){
                 this.setState({range:{startDate: new Date(JSON.parse(auxCalendar).startDate),endDate: new Date(JSON.parse(auxCalendar).endDate)}})//change
             }
-            this.setState({selected: JSON.parse(aux)})
-            this.setState({loadingModalstate: true});
+            this.setState({offset: 0, endReached:false, selected: JSON.parse(aux), loadingModalstate: true});
             refreshing = true;
             this._syncActivities().then(() => refreshing = false);
             setTimeout(() => {this.setState({loadingModalstate:false})}, 3500);
@@ -450,32 +545,37 @@ class ActivitiesScreen extends Component {
             </View>
         );
         const RenderItemImageNL = (props) => (
-            <Image
-              style={{ width: 45, height: 35,resizeMode: "contain"}}
+            <FastImage
+                resizeMode={FastImage.resizeMode.contain}
+              style={{ width: 45, height: 35}}
               source={require('../assets/Unassigned_Session.png')}
             />
           );
         const RenderItemImageSW = (props) => (
-            <Image
-              style={{ width: 45, height: 45,resizeMode: "contain"}}
+            <FastImage
+                resizeMode={FastImage.resizeMode.contain}
+              style={{ width: 45, height: 45}}
               source={require('../assets/Scores_Soccer_and_writing.png')}
             />
           );
         const RenderItemImageS = (props) => (
-                <Image
-                style={{ width: 45, height: 45, resizeMode: "contain"}}
+            <FastImage
+                resizeMode={FastImage.resizeMode.contain}
+                style={{ width: 45, height: 45}}
                 source={require('../assets/Scores_Ball.png')}
-                />
-            );
+            />
+        );
         const RenderItemImageW = (props) => (
-                <Image
-                style={{  width: 45, height: 45,resizeMode: "contain"}}
+            <FastImage
+                resizeMode={FastImage.resizeMode.contain}
+                style={{  width: 45, height: 45}}
                 source={require('../assets/Scores_Pencil_Edit.png')}
-                />
+            />
         );
         const RenderItemImageGD = (props) => (
-            <Image
-            style={{  width: 45, height: 45,resizeMode: "contain"}}
+            <FastImage
+            resizeMode={FastImage.resizeMode.contain}
+            style={{  width: 45, height: 45}}
             source={require('../assets/Scores_goal.png')}
             />
         );
@@ -605,307 +705,309 @@ class ActivitiesScreen extends Component {
         }
     
         let activityItem = ({ item, index }) => {
-            if (item.Sessions === null){
+            if (item === null || item.length ===0){
                 return; 
             }
             else {
+                let array = []
+                array.push(item)
                 //let sessionTopic = "Unasigned"
                 //if (item.Sessions[0].SessionTopic) sessionTopic = item.Sessions[0].SessionTopic;
-                return item.Sessions.map(value => {
-                    if(value.SessionTopic === null){
+                return array.map(item => {
+                    if(item.SessionTopic === null || item.SessionTopic.length === 0){
                         if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                             if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                 return <ListItem
-                                    key={value.SessionId}
-                                    title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor,fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                    style={{backgroundColor: colorList(value.SessionDate)}}
-                                    description={() => description(value.SessionDate)}
-                                    accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
+                                    key={item.SessionId}
+                                    title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor,fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                    style={{backgroundColor: colorList(item.SessionDate)}}
+                                    description={() => description(item.SessionDate)}
+                                    accessoryLeft={() => RenderItemImageNL(item.UsesHeadcount)}
                                     accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
-                                        ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                        renderItemIcon(value.TotalStudentsPresent)
+                                        ((item.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                        renderItemIcon(item.StudentsPresent)
                                         :
-                                        renderItemIconRed(value.TotalStudentsPresent))
+                                        renderItemIconRed(item.StudentsPresent))
                                         :
-                                        renderItemIcon(value.TotalStudentsPresent)}
-                                    onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        renderItemIcon(item.StudentsPresent)}
+                                    onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                 />                                      
                             }else{
                                 let found=null;
                                 this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
-                                    if(value.SessionId === valueredux.SessionId){
+                                    if(item.SessionId === valueredux.SessionId){
                                         found=true
                                     }
                                 });
                                 if(found === true){
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
-                                        accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageNL(item.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIconRed(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                 }else{
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={`${value.SessionDate}`}
-                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
-                                        accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={`${item.SessionDate}`}
+                                        accessoryLeft={() => RenderItemImageNL(item.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                 }
                             }
                         }else{
                             return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageNL(value.UsesHeadcount)}
-                                        accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageNL(item.UsesHeadcount)}
+                                        accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                         }
                     }else{
-                        if(value.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
+                        if(item.SessionTopic.replace(/_/g,' ') === "Soccer and Writing"){
                             if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageSW(item.UsesHeadcount)}
                                         accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
-                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon(value.TotalStudentsPresent)
+                                            ((item.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon(item.StudentsPresent)
                                             :
-                                            renderItemIconRed(value.TotalStudentsPresent))
+                                            renderItemIconRed(item.StudentsPresent))
                                             :
-                                            renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                           
                                 }else{
                                     let found=null;
                                     this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
-                                        if(value.SessionId === valueredux.SessionId){
+                                        if(item.SessionId === valueredux.SessionId){
                                             found=true
                                         }
                                     });
                                     if(found === true){
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageSW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }else{
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageSW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }
                                 }
                             }else{
                                 return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageSW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageSW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                             }
-                        }else if(value.SessionTopic.replace(/_/g,' ') === "Soccer"){
+                        }else if(item.SessionTopic.replace(/_/g,' ') === "Soccer"){
                             if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageS(item.UsesHeadcount)}
                                         accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
-                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon(value.TotalStudentsPresent)
+                                            ((item.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon(item.StudentsPresent)
                                             :
-                                            renderItemIconRed(value.TotalStudentsPresent))
+                                            renderItemIconRed(item.StudentsPresent))
                                             :
-                                            renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                           
                                 }else{
                                     let found=null;
                                     this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
-                                        if(value.SessionId === valueredux.SessionId){
+                                        if(item.SessionId === valueredux.SessionId){
                                             found=true
                                         }
                                     });
                                     if(found === true){
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageS(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }else{
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageS(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }
                                 }
                             }else{
                                 return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageS(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageS(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                             }
-                        }else if(value.SessionTopic.replace(/_/g,' ') === "Writing"){
+                        }else if(item.SessionTopic.replace(/_/g,' ') === "Writing"){
                             if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageW(item.UsesHeadcount)}
                                         accessoryRight={() =>(String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
-                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon(value.TotalStudentsPresent)
+                                            ((item.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon(item.StudentsPresent)
                                             :
-                                            renderItemIconRed(value.TotalStudentsPresent))
+                                            renderItemIconRed(item.StudentsPresent))
                                             :
-                                            renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                         
                                 }else{
                                     let found=null;
                                     this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
-                                        if(value.SessionId === valueredux.SessionId){
+                                        if(item.SessionId === valueredux.SessionId){
                                             found=true
                                         }
                                     });
                                     if(found === true){
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }else{
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }
                                 }
                             }else{
                                 return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageW(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageW(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                             }
                         }
-                        else if(value.SessionTopic.replace(/_/g,' ') === "Game Day"){
+                        else if(item.SessionTopic.replace(/_/g,' ') === "Game Day"){
                             if(String(this.props.sessionAttendance.sessionsAttendance).length !== 0){
                                 if(this.props.sessionAttendance.sessionsAttendance[0][0] === undefined){
                                     return <ListItem
-                                        key={value.SessionId}
-                                        title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                        style={{backgroundColor: colorList(value.SessionDate)}}
-                                        description={() => description(value.SessionDate)}
-                                        accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
+                                        key={item.SessionId}
+                                        title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                        style={{backgroundColor: colorList(item.SessionDate)}}
+                                        description={() => description(item.SessionDate)}
+                                        accessoryLeft={() => RenderItemImageGD(item.UsesHeadcount)}
                                         accessoryRight={() => (String(this.props.sessionAttendance.sessionsAttendance).length !== 0)?
-                                            ((value.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
-                                            renderItemIcon(value.TotalStudentsPresent)
+                                            ((item.SessionId !== this.props.sessionAttendance.sessionsAttendance[0].SessionId)?
+                                            renderItemIcon(item.StudentsPresent)
                                             :
-                                            renderItemIconRed(value.TotalStudentsPresent))
+                                            renderItemIconRed(item.StudentsPresent))
                                             :
-                                            renderItemIcon(value.TotalStudentsPresent)}
-                                        onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            renderItemIcon(item.StudentsPresent)}
+                                        onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                     />
                                         
                                 }else{
                                     let found=null;
                                     this.props.sessionAttendance.sessionsAttendance[0].map((valueredux) =>{
-                                        if(value.SessionId === valueredux.SessionId){
+                                        if(item.SessionId === valueredux.SessionId){
                                             found=true
                                         }
                                     });
                                     if(found === true){
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIconRed(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text  style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageGD(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIconRed(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }else{
                                         return <ListItem
-                                            key={value.SessionId}
-                                            title={`${item.Team_Name}`}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={`${item.TeamName}`}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageGD(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                                     }
                                 }
                             }else{
                                 return <ListItem
-                                            key={value.SessionId}
-                                            title={() => (moment().format("MM-DD-YYYY") === moment(value.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.Team_Name}</Text>:<Text style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.Team_Name}</Text>}
-                                            style={{backgroundColor: colorList(value.SessionDate)}}
-                                            description={() => description(value.SessionDate)}
-                                            accessoryLeft={() => RenderItemImageGD(value.UsesHeadcount)}
-                                            accessoryRight={() => renderItemIcon(value.TotalStudentsPresent)}
-                                            onPress={() => this.selectActivity(item.TeamSeasonId, value.SessionId)}
+                                            key={item.SessionId}
+                                            title={() => (moment().format("MM-DD-YYYY") === moment(item.SessionDate).format("MM-DD-YYYY"))? <Text style={{color: this.state.selected.todayTextColor, fontSize: 15}}>{item.TeamName}</Text>:<Text style={{color: this.state.selected.textColor, fontSize: 15, fontWeight: 'bold'}}>{item.TeamName}</Text>}
+                                            style={{backgroundColor: colorList(item.SessionDate)}}
+                                            description={() => description(item.SessionDate)}
+                                            accessoryLeft={() => RenderItemImageGD(item.UsesHeadcount)}
+                                            accessoryRight={() => renderItemIcon(item.StudentsPresent)}
+                                            onPress={() => this.selectActivity(item.TeamSeasonId, item.SessionId)}
                                         />
                             }
                         }
@@ -1211,6 +1313,13 @@ class ActivitiesScreen extends Component {
         const renderToggleButton = () => (
             <AntDesign name={'menufold'} size={25} style={{alignSelf:'center',backgroundColor: '#00467F', marginRight:'8%',borderRadius:35, padding: 15}} color={'white'} onPress={() => this.setState({visibleMenu: true})}/>
         );
+        const renderFooter = () => {
+            return this.state.activeSessionsLoading && !this.state.endReached? (
+              <View style={{alignSelf:'center', padding: 10}}>
+                <ActivityIndicator size="large" color="#1C5D99"/>
+              </View>
+            ) : null;
+          };
         return(
             /*<View source={require('../assets/ASBA_Logo.png')} style={{flex: 1}}>*/
                 <Layout style={{ flex: 1, justifyContent: 'center'}}>
@@ -1251,9 +1360,14 @@ class ActivitiesScreen extends Component {
                              <List
                              style={{opacity: 0.95}}
                              data={this.state.activitiesRegion}
-                             initialNumToRender={50}
                              renderItem={activityItem}
+                             bounces={false}
                              Divider={Divider}
+                             keyExtractor={(item, index) => String(index)}
+                             ListFooterComponent={renderFooter}
+                             ListHeaderComponent={Divider}
+                             onEndReachedThreshold={0.2}
+                             onEndReached={!this.state.endReached? this.LoadMoreRandomData : null}
                              refreshControl={
                                  <RefreshControl
                                  refreshing={refreshing}
@@ -1311,7 +1425,7 @@ class ActivitiesScreen extends Component {
 
 const mapStateToProps = state => ({ sessions: state.sessions, user: state.user , sessionScreen: state.sessionScreen , sessionAttendance: state.sessionAttendance });
   
-const ActionCreators = Object.assign( {}, { syncSessions, updateFirstTimeLoggedIn, changeTitle, changeTitleTeam } );
+const ActionCreators = Object.assign( {}, { syncSessions, syncSessions_SessionTab, updateFirstTimeLoggedIn, changeTitle, changeTitleTeam } );
   
 const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
