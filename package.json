@@ -39,6 +39,7 @@
     "react-native-device-info": "^8.7.1",
     "react-native-document-picker": "^6.0.4",
     "react-native-elements": "^3.4.2",
+    "react-native-fast-image": "^8.6.3",
     "react-native-gesture-handler": "^1.10.3",
     "react-native-image-picker": "^4.6.1",
     "react-native-permissions": "^2.2.2",

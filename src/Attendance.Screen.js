@@ -23,7 +23,11 @@ import {
   Alert,
 } from "react-native";
 import { connect } from "react-redux";
-import { syncSessions, updateSession } from "./Redux/actions/Session.actions";
+import {
+  syncSessions,
+  updateSession,
+  syncSessions_SessionTab,
+} from "./Redux/actions/Session.actions";
 import { UnsavedAttendance } from "./Redux/actions/UnsavedAttendance.actions";
 import { bindActionCreators } from "redux";
 import Axios from "axios";
@@ -87,14 +91,32 @@ class AttendanceScreen extends Component {
   ForwardArrow() {
     const { route } = this.props;
     route.params.activitiesRegion.map((value) => {
-      if (value.Sessions !== null) {
+      value = { Sessions: [value] };
+      if (value.Sessions !== null || value.Sessions.length !== 0) {
         value.Sessions.map((val) => {
           if (val.SessionId === this.state.sessionId) {
-            var posAc = route.params.activitiesRegion.indexOf(value);
-            if (route.params.activitiesRegion[posAc].Sessions.length >= 1) {
-              var pos =
-                route.params.activitiesRegion[posAc].Sessions.indexOf(val);
-              if (pos === 0) {
+            let posAc = route.params.activitiesRegion.indexOf(val);
+            if (
+              JSON.stringify(route.params.activitiesRegion[posAc]).length >= 1
+            ) {
+              var aclong = route.params.activitiesRegion.length;
+              console.log(posAc, aclong - 1);
+              if (posAc == aclong - 1) {
+                Alert.alert(
+                  "",
+                  "No following sessions found.\nTry adjusting the date range in the Sessions Calendar."
+                );
+              } else {
+                console.log("entered", posAc, aclong - 1);
+                this.setState({ auxRedux: [] });
+                this.setState({
+                  arrowSession: route.params.activitiesRegion[posAc + 1],
+                });
+                this.setState({ loadingModalstate: true });
+                this._setCurrentSessionData();
+              }
+              //var pos = route.params.activitiesRegion[posAc].indexOf(val);
+              /*if (pos === 0) {
                 if (posAc === 0) {
                   Alert.alert(
                     "",
@@ -102,9 +124,7 @@ class AttendanceScreen extends Component {
                   );
                 } else {
                   var ACPos = posAc - 1;
-                  while (
-                    route.params.activitiesRegion[ACPos].Sessions === null
-                  ) {
+                  while (route.params.activitiesRegion[ACPos] === null) {
                     ACPos = ACPos - 1;
                     if (ACPos < 0) {
                       break;
@@ -118,29 +138,18 @@ class AttendanceScreen extends Component {
                   } else {
                     this.setState({ auxRedux: [] });
                     var cont = posAc - 1;
-                    while (
-                      route.params.activitiesRegion[cont].Sessions === null
-                    ) {
+                    while (route.params.activitiesRegion[cont] === null) {
                       cont = cont - 1;
                     }
                     if (cont !== posAc - 1) {
-                      var backlong =
-                        route.params.activitiesRegion[cont].Sessions.length;
+                      var backlong = route.params.activitiesRegion[cont].length;
                       this.setState({
-                        arrowSession:
-                          route.params.activitiesRegion[cont].Sessions[
-                            backlong - 1
-                          ],
+                        arrowSession: route.params.activitiesRegion[cont],
                       });
                     } else {
-                      var backlong =
-                        route.params.activitiesRegion[posAc - 1].Sessions
-                          .length;
+                      var backlong = route.params.activitiesRegion[posAc - 1];
                       this.setState({
-                        arrowSession:
-                          route.params.activitiesRegion[posAc - 1].Sessions[
-                            backlong - 1
-                          ],
+                        arrowSession: route.params.activitiesRegion[posAc - 1],
                       });
                     }
                     this.setState({ loadingModalstate: true });
@@ -150,12 +159,11 @@ class AttendanceScreen extends Component {
               } else {
                 this.setState({ auxRedux: [] });
                 this.setState({
-                  arrowSession:
-                    route.params.activitiesRegion[posAc].Sessions[pos - 1],
+                  arrowSession: route.params.activitiesRegion[posAc],
                 });
                 this.setState({ loadingModalstate: true });
                 this._setCurrentSessionData();
-              }
+              }*/
             }
           }
         });
@@ -166,16 +174,33 @@ class AttendanceScreen extends Component {
   backArrow() {
     const { route } = this.props;
     route.params.activitiesRegion.map((value) => {
-      if (value.Sessions !== null) {
+      value = { Sessions: [value] };
+      if (value.Sessions !== null || value.Sessions.length !== 0) {
         value.Sessions.map((val) => {
           if (val.SessionId === this.state.sessionId) {
-            var posAc = route.params.activitiesRegion.indexOf(value);
-            if (route.params.activitiesRegion[posAc].Sessions.length >= 1) {
-              var pos =
-                route.params.activitiesRegion[posAc].Sessions.indexOf(val);
-              var long = route.params.activitiesRegion[posAc].Sessions.length;
+            let posAc = route.params.activitiesRegion.indexOf(
+              value.Sessions[0]
+            );
+            if (
+              JSON.stringify(route.params.activitiesRegion[posAc]).length >= 1
+            ) {
+              //var pos = 0;
+              //var long = route.params.activitiesRegion[posAc].length;
               var aclong = route.params.activitiesRegion.length;
-              if (aclong === 1) {
+              if (posAc === 0) {
+                Alert.alert(
+                  "",
+                  "No previous sessions found.\nTry adjusting the date range in the Sessions Calendar."
+                );
+              } else {
+                this.setState({ auxRedux: [] });
+                this.setState({
+                  arrowSession: route.params.activitiesRegion[posAc - 1],
+                });
+                this.setState({ loadingModalstate: true });
+                this._setCurrentSessionData();
+              }
+              /*if (aclong === 1) {
                 if (posAc === aclong - 1) {
                   if (pos === long - 1) {
                     Alert.alert(
@@ -185,8 +210,7 @@ class AttendanceScreen extends Component {
                   } else {
                     this.setState({ auxRedux: [] });
                     this.setState({
-                      arrowSession:
-                        route.params.activitiesRegion[posAc].Sessions[pos + 1],
+                      arrowSession: route.params.activitiesRegion[posAc],
                     });
                     this.setState({ loadingModalstate: true });
                     this._setCurrentSessionData();
@@ -194,9 +218,7 @@ class AttendanceScreen extends Component {
                 } else {
                   this.setState({ auxRedux: [] });
                   var cont = posAc + 1;
-                  while (
-                    route.params.activitiesRegion[cont].Sessions[0] === null
-                  ) {
+                  while (route.params.activitiesRegion[cont] === null) {
                     cont = cont + 1;
                     if (cont > aclong - 1) {
                       break;
@@ -210,13 +232,11 @@ class AttendanceScreen extends Component {
                   } else {
                     if (cont !== posAc + 1) {
                       this.setState({
-                        arrowSession:
-                          route.params.activitiesRegion[cont].Sessions[0],
+                        arrowSession: route.params.activitiesRegion[cont],
                       });
                     } else {
                       this.setState({
-                        arrowSession:
-                          route.params.activitiesRegion[posAc + 1].Sessions[0],
+                        arrowSession: route.params.activitiesRegion[posAc + 1],
                       });
                     }
                     this.setState({ loadingModalstate: true });
@@ -232,9 +252,7 @@ class AttendanceScreen extends Component {
                     );
                   } else {
                     var cont = posAc + 1;
-                    while (
-                      route.params.activitiesRegion[cont].Sessions === null
-                    ) {
+                    while (route.params.activitiesRegion[cont] === null) {
                       cont = cont + 1;
                       if (cont > aclong - 1) {
                         break;
@@ -248,14 +266,12 @@ class AttendanceScreen extends Component {
                     } else {
                       if (cont !== posAc + 1) {
                         this.setState({
-                          arrowSession:
-                            route.params.activitiesRegion[cont].Sessions[0],
+                          arrowSession: route.params.activitiesRegion[cont],
                         });
                       } else {
                         this.setState({
                           arrowSession:
-                            route.params.activitiesRegion[posAc + 1]
-                              .Sessions[0],
+                            route.params.activitiesRegion[posAc + 1],
                         });
                       }
                       this.setState({ auxRedux: [] });
@@ -266,13 +282,12 @@ class AttendanceScreen extends Component {
                 } else {
                   this.setState({ auxRedux: [] });
                   this.setState({
-                    arrowSession:
-                      route.params.activitiesRegion[posAc].Sessions[pos + 1],
+                    arrowSession: route.params.activitiesRegion[posAc],
                   });
                   this.setState({ loadingModalstate: true });
                   this._setCurrentSessionData();
                 }
-              }
+              }*/
             }
           }
         });
@@ -353,24 +368,36 @@ class AttendanceScreen extends Component {
   async _setCurrentSessionData() {
     this.setState({ showNullSessionsError: false });
     const { route } = this.props;
-    console.log("route", route.params);
-    var currentSession = await this.props.sessions.sessions.find(
-      (session) => session.TeamSeasonId === route.params.teamSeasonId
-    );
-    if (currentSession.Sessions === null) {
-      this.setState({ showNullSessionsError: true });
+    console.log(route.params);
+    var currentSession =
+      (await route.params.name) === "Sessions"
+        ? this.props.sessions.sessions_tab.find(
+            (session) => session.SessionId === route.params.sessionId
+          )
+        : this.props.sessions.sessions.find(
+            (session) => session.SessionId === route.params.sessionId
+          );
+    console.log("s", currentSession);
+    if (
+      currentSession === null ||
+      currentSession === undefined ||
+      currentSession.length === 0
+    ) {
+      this.setState({ showNullSessionsError: true, loadingModalstate: false });
     } else {
-      var currentSessionData = await currentSession.Sessions.find(
-        (session) => session.SessionId === route.params.sessionId
-      );
+      var currentSessionData = { SessionId: currentSession.SessionId };
       if (this.state.arrowSession !== undefined) {
-        var currentSession = await this.props.sessions.sessions.find(
-          (session) =>
-            session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
-        );
-        var currentSessionData = await currentSession.Sessions.find(
-          (session) => session.SessionId === this.state.arrowSession.SessionId
-        );
+        var currentSession =
+          (await route.params.name) === "Sessions"
+            ? this.props.sessions.sessions_tab.find(
+                (session) =>
+                  session.SessionId === this.state.arrowSession.SessionId
+              )
+            : this.props.sessions.sessions.find(
+                (session) =>
+                  session.SessionId === this.state.arrowSession.SessionId
+              );
+        var currentSessionData = { SessionId: currentSession.SessionId };
       }
       let currentDate = moment();
       let currentTopic = "";
@@ -385,7 +412,7 @@ class AttendanceScreen extends Component {
           `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
         )
           .then(async (res) => {
-            console.log(res.data.SessionTopic);
+            console.log(res.data);
             currentDate = res.data.SessionDate;
             currentTopic =
               res.data.SessionTopic !== null
@@ -460,7 +487,7 @@ class AttendanceScreen extends Component {
           const newState = {
             sessionId: currentSessionData.SessionId,
             teamName: currentSession.TeamSeasonName,
-            teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+            teamSeasonId: currentSession.TeamSeasonId,
             completeTeamSeasonId: currentSession.TeamSeasonId,
             topic: currentTopic,
             date: moment(currentDate).format("MMM-DD-YYYY"),
@@ -476,7 +503,7 @@ class AttendanceScreen extends Component {
             sessionId: currentSessionData.SessionId,
             enrollments: [],
             teamName: currentSession.TeamSeasonName,
-            teamSeasonId: currentSession.Sessions[0].TeamSeasonId,
+            teamSeasonId: currentSession.TeamSeasonId,
             completeTeamSeasonId: currentSession.TeamSeasonId,
             topic: currentTopic,
             date: moment(currentDate).format("MMM-DD-YYYY"),
@@ -727,17 +754,29 @@ class AttendanceScreen extends Component {
     this.setState({ auxRedux: [] });
     if (value) newEnrollments[index].Attended = true;
     else newEnrollments[index].Attended = false;
-    var currentSession = this.props.sessions.sessions.find(
-      (session) => session.TeamSeasonId === route.params.teamSeasonId
-    );
+    var currentSession =
+      route.params.name === "Sessions"
+        ? this.props.sessions.sessions_tab.find(
+            (session) => session.SessionId === route.params.sessionId
+          )
+        : this.props.sessions.sessions.find(
+            (session) => session.SessionId === route.params.sessionId
+          );
+    currentSession = { Sessions: [currentSession] };
     var currentSessionData = currentSession.Sessions.find(
       (session) => session.SessionId === route.params.sessionId
     );
     if (this.state.arrowSession !== undefined) {
-      var currentSession = this.props.sessions.sessions.find(
-        (session) =>
-          session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
-      );
+      var currentSession =
+        route.params.name === "Sessions"
+          ? this.props.sessions.sessions_tab.find(
+              (session) =>
+                session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
+            )
+          : this.props.sessions.sessions.find(
+              (session) =>
+                session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
+            );
       var currentSessionData = currentSession.Sessions.find(
         (session) => session.SessionId === this.state.arrowSession.SessionId
       );
@@ -1009,17 +1048,29 @@ class AttendanceScreen extends Component {
     const { route } = this.props;
     this.setState({ auxRedux: [] });
     this.updateAttendance();
-    var currentSession = this.props.sessions.sessions.find(
-      (session) => session.TeamSeasonId === route.params.teamSeasonId
-    );
+    var currentSession =
+      route.params.name === "Sessions"
+        ? this.props.sessions.sessions_tab.find(
+            (session) => session.TeamSeasonId === route.params.teamSeasonId
+          )
+        : this.props.sessions.sessions.find(
+            (session) => session.TeamSeasonId === route.params.teamSeasonId
+          );
+    currentSession = { Sessions: [currentSession] };
     var currentSessionData = currentSession.Sessions.find(
       (session) => session.SessionId === route.params.sessionId
     );
     if (this.state.arrowSession !== undefined) {
-      var currentSession = this.props.sessions.sessions.find(
-        (session) =>
-          session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
-      );
+      var currentSession =
+        route.params.name === "Sessions"
+          ? this.props.sessions.sessions_tab.find(
+              (session) =>
+                session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
+            )
+          : this.props.sessions.sessions.find(
+              (session) =>
+                session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
+            );
       var currentSessionData = currentSession.Sessions.find(
         (session) => session.SessionId === this.state.arrowSession.SessionId
       );
@@ -1195,9 +1246,17 @@ class AttendanceScreen extends Component {
         accessoryRight={() => {
           const { route } = this.props;
           const { user } = this.props.user;
-          var currentSession = this.props.sessions.sessions.find(
-            (session) => session.TeamSeasonId === route.params.teamSeasonId
-          );
+          var currentSession =
+            route.params.name === "Sessions"
+              ? this.props.sessions.sessions_tab.find(
+                  (session) =>
+                    session.TeamSeasonId === route.params.teamSeasonId
+                )
+              : this.props.sessions.sessions.find(
+                  (session) =>
+                    session.TeamSeasonId === route.params.teamSeasonId
+                );
+          currentSession = { Sessions: [currentSession] };
           var currentSessionData = currentSession.Sessions.find(
             (session) => session.SessionId === route.params.sessionId
           );
@@ -1781,6 +1840,7 @@ class AttendanceScreen extends Component {
 
 const mapStateToProps = (state) => ({
   sessions: state.sessions,
+  sessions_tab: state.sessions_tab,
   user: state.user,
   sessionAttendance: state.sessionAttendance,
   sessionScreen: state.sessionScreen,
@@ -1788,7 +1848,7 @@ const mapStateToProps = (state) => ({
 
 const ActionCreators = Object.assign(
   {},
-  { syncSessions, updateSession, UnsavedAttendance }
+  { syncSessions, syncSessions_SessionTab, updateSession, UnsavedAttendance }
 );
 
 const mapDispatchToProps = (dispatch) => ({

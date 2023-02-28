@@ -15,7 +15,14 @@ import {
 import { MomentDateService } from "@ui-kitten/moment";
 import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
-import { StyleSheet, View, Alert, Image, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Alert,
+  Image,
+  ImageBackground,
+  ActivityIndicator,
+} from "react-native";
 import { AttendanceScreen } from "../Attendance.Screen";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
@@ -1192,7 +1199,20 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
       <Button appearance="ghost" status="danger" onPress={() => closeModal()}>
         Cancel
       </Button>
-      <Button onPress={() => editSession()}>CREATE</Button>
+      <Button
+        onPress={
+          route.params.teamSeasonId === "" && !showTeams
+            ? null
+            : () => editSession()
+        }
+        style={{ marginBottom: "2%" }}
+      >
+        {route.params.teamSeasonId === "" && !showTeams ? (
+          <ActivityIndicator color="white" />
+        ) : (
+          "CREATE"
+        )}
+      </Button>
     </Layout>
   );
 
