@@ -29,6 +29,7 @@ import {
   Keyboard,
   Dimensions,
   Image,
+  ActivityIndicator,
 } from "react-native";
 import moment from "moment";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -357,10 +358,11 @@ export const CreateStudentModal = ({ navigation, route }) => {
               selectedIndex={selectedIndex}
               onSelect={(index) => selectIndex(index)}
             >
-              <SelectItem title="Male" />
               <SelectItem title="Female" />
+              <SelectItem title="Male" />
               <SelectItem title="Non-binary" />
               <SelectItem title="Prefer not to say" />
+              <SelectItem title="Unknown" />
             </Select>
             <Text>Birthdate(*)</Text>
             {searchBox()}
@@ -519,6 +521,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   const [loadingModalstate, setLoadingModalstate] = React.useState(false);
   const [studentsToAdd, setStudentsToAdd] = React.useState([]);
   const [showWarn, setShowWarn] = React.useState(false);
+  const [searchingStudents, setSearchingStudents] = React.useState(false);
   useEffect(() => {
     setVisible(true);
     Keyboard.addListener("keyboardDidShow", (e) => {
@@ -681,12 +684,15 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     "Emergency_Contact_Relationship",
   ];
   async function filterData() {
+    setSearchingStudents(true);
     setShowWarn(false);
     const unfiltered = await fetchStudents(value);
     console.log(unfiltered);
     if (unfiltered.length > 0) {
       setData(unfiltered);
+      setSearchingStudents(false);
     } else {
+      setSearchingStudents(false);
       Alert.alert("", "No students found");
     }
   }
@@ -809,6 +815,14 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     </View>
   );
 
+  const renderActivityIndicator = () => {
+    return (
+      <View style={{ alignSelf: "center" }}>
+        <ActivityIndicator size="small" color="#1C5D99" />
+      </View>
+    );
+  };
+
   const renderStudentToAdd = () => {
     return (
       <Text category="s1" appearance="hint">
@@ -845,7 +859,11 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
                 <Button
                   style={{ margin: 2 }}
                   appearance="outline"
-                  accessoryRight={renderSearchIcon}
+                  accessoryRight={
+                    searchingStudents
+                      ? renderActivityIndicator
+                      : renderSearchIcon
+                  }
                   onPress={() => filterData()}
                 >
                   Search
