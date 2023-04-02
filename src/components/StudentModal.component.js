@@ -33,6 +33,7 @@ import {
 } from "react-native";
 import moment from "moment";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
@@ -903,6 +904,7 @@ export const StudentInfoModal = ({ navigation, route }) => {
     Allergies,
     ParentName,
     ParentPhone,
+    ParentEmail,
     EmergencyContactName,
     EmergencyContactRelationToChild,
     EmergencyContactPhone,
@@ -927,6 +929,10 @@ export const StudentInfoModal = ({ navigation, route }) => {
       .catch(() => {
         alert("Make sure WhatsApp installed on your device");
       });
+  }
+  function openEmail(parentEmail) {
+    let url = `mailto:${parentEmail}`;
+    return Linking.openURL(url);
   }
   function openNumber(phone) {
     let phoneNumber = "";
@@ -1022,6 +1028,30 @@ export const StudentInfoModal = ({ navigation, route }) => {
                     marginLeft: "7%",
                   }}
                   onPress={() => smsNumber(ParentPhone)}
+                />
+              </React.Fragment>
+            ) : (
+              <></>
+            )}
+          </View>
+          <View style={{ flexDirection: "row", marginTop: "2%" }}>
+            <TouchableOpacity
+              onPress={() => openEmail(ParentEmail)}
+              style={{ width: "45%", marginTop: "1%" }}
+            >
+              <Text
+                style={{ color: "#add8e6", textDecorationLine: "underline" }}
+              >
+                {ParentEmail}
+              </Text>
+            </TouchableOpacity>
+            {ParentEmail.length !== 0 ? (
+              <React.Fragment>
+                <MaterialCommunityIcons
+                  name="email-outline"
+                  size={27}
+                  style={{ color: "black", justifyContent: "space-between" }}
+                  onPress={() => openEmail(ParentEmail)}
                 />
               </React.Fragment>
             ) : (
