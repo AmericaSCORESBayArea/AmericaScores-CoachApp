@@ -769,14 +769,15 @@ class AttendanceScreen extends Component {
     if (this.state.arrowSession !== undefined) {
       var currentSession =
         route.params.name === "Sessions"
-          ? this.props.sessions.sessions_tab.find(
+          ? this.props.sessions.sessions_tab.filter(
               (session) =>
                 session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
             )
-          : this.props.sessions.sessions.find(
+          : this.props.sessions.sessions.filter(
               (session) =>
                 session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
             );
+      currentSession = { Sessions: currentSession };
       var currentSessionData = currentSession.Sessions.find(
         (session) => session.SessionId === this.state.arrowSession.SessionId
       );
@@ -865,6 +866,7 @@ class AttendanceScreen extends Component {
               }
             );
           }
+          console.log("asd", currentSessionData);
           let payloadd = {
             SessionId: currentSessionData.SessionId,
             attendanceList: this.state.attendanceListRedux,
@@ -1050,27 +1052,28 @@ class AttendanceScreen extends Component {
     this.updateAttendance();
     var currentSession =
       route.params.name === "Sessions"
-        ? this.props.sessions.sessions_tab.find(
+        ? this.props.sessions.sessions_tab.filter(
             (session) => session.TeamSeasonId === route.params.teamSeasonId
           )
-        : this.props.sessions.sessions.find(
+        : this.props.sessions.sessions.filter(
             (session) => session.TeamSeasonId === route.params.teamSeasonId
           );
-    currentSession = { Sessions: [currentSession] };
+    currentSession = { Sessions: currentSession };
     var currentSessionData = currentSession.Sessions.find(
       (session) => session.SessionId === route.params.sessionId
     );
     if (this.state.arrowSession !== undefined) {
       var currentSession =
         route.params.name === "Sessions"
-          ? this.props.sessions.sessions_tab.find(
+          ? this.props.sessions.sessions_tab.filter(
               (session) =>
                 session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
             )
-          : this.props.sessions.sessions.find(
+          : this.props.sessions.sessions.filter(
               (session) =>
                 session.TeamSeasonId === this.state.arrowSession.TeamSeasonId
             );
+      currentSession = { Sessions: currentSession };
       var currentSessionData = currentSession.Sessions.find(
         (session) => session.SessionId === this.state.arrowSession.SessionId
       );
@@ -1248,15 +1251,15 @@ class AttendanceScreen extends Component {
           const { user } = this.props.user;
           var currentSession =
             route.params.name === "Sessions"
-              ? this.props.sessions.sessions_tab.find(
+              ? this.props.sessions.sessions_tab.filter(
                   (session) =>
                     session.TeamSeasonId === route.params.teamSeasonId
                 )
-              : this.props.sessions.sessions.find(
+              : this.props.sessions.sessions.filter(
                   (session) =>
                     session.TeamSeasonId === route.params.teamSeasonId
                 );
-          currentSession = { Sessions: [currentSession] };
+          currentSession = { Sessions: currentSession };
           var currentSessionData = currentSession.Sessions.find(
             (session) => session.SessionId === route.params.sessionId
           );
