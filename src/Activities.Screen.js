@@ -403,12 +403,12 @@ class ActivitiesScreen extends Component {
     
     openWhatsappGroup = (students) => {
         let parentsNumbers=[]
-        if(students.every(elem => elem.ParentInfoFirstName.FirstPhone.length === 0) === true){
+        if(students.every(elem => elem.ParentInfo.FirstPhone.length === 0) === true){
             this.setState({showIncompletePhones: true, groupModal: true})
         }else{
             students.map(item =>{
-                if(item.ParentInfoFirstName.FirstPhone.length !== 0){
-                    let phone= 1+item.ParentInfoFirstName.FirstPhone
+                if(item.ParentInfo.FirstPhone.length !== 0){
+                    let phone= 1+item.ParentInfo.FirstPhone
                     parentsNumbers.push(phone)
                 }
                 SendSMS.send({
@@ -690,8 +690,9 @@ class ActivitiesScreen extends Component {
                                 StudentName: item.StudentName,
                                 Birthdate: item.Birthdate,
                                 Allergies: item.Allergies,
-                                ParentName: `${item.ParentInfoFirstName.FirstName} ${item.ParentInfoFirstName.LastName}`,
-                                ParentPhone: item.ParentInfoFirstName.FirstPhone,
+                                ParentName: `${item.ParentInfo.FirstName} ${item.ParentInfo.LastName}`,
+                                ParentPhone: item.ParentInfo.FirstPhone,
+                                ParentEmail: item.ParentInfo.Email,
                                 EmergencyContactName: item.EmergencyContactInfo.Name,
                                 EmergencyContactRelationToChild: item.EmergencyContactInfo.RelationshipToChild,
                                 EmergencyContactPhone: item.EmergencyContactInfo.FirstPhone,
