@@ -21,6 +21,7 @@ import {
   Image,
   ImageBackground,
   Alert,
+  Keyboard,
 } from "react-native";
 import { connect } from "react-redux";
 import {
@@ -70,6 +71,7 @@ class AttendanceScreen extends Component {
       headCount: 0,
       headCountFemale: 0,
       headCountNonBinary: 0,
+      headCountUnknown: 0,
       numberOfStudentsCounted: 0,
       duplicateRecordsList: [],
       showHeadcounts: false,
@@ -326,6 +328,7 @@ class AttendanceScreen extends Component {
   }
 
   async updateHeadcountAttendance() {
+    Keyboard.dismiss();
     const { user } = this.props.user;
     this.setState({ updatingModalstate: true });
     await analytics().logEvent("Headcount", {
@@ -333,14 +336,26 @@ class AttendanceScreen extends Component {
       boysPresent: this.state.headCount,
       girlsPresent: this.state.headCountFemale,
       nonbinaryPresent: this.state.headCountNonBinary,
+      unknownPresent: this.state.headCountUnknown,
       teamSeasonId: this.state.teamSeasonId,
       sessionId: this.state.sessionId,
     });
     let headCountObject = {
-      BoysPresent: this.state.headCount,
-      GirlsPresent: this.state.headCountFemale,
-      NonbinaryPresent: this.state.headCountNonBinary,
+      BoysPresent: this.state.headCount.length === 0 ? 0 : this.state.headCount,
+      GirlsPresent:
+        this.state.headCountFemale.length === 0
+          ? 0
+          : this.state.headCountFemale,
+      NonbinaryPresent:
+        this.state.headCountNonBinary.length === 0
+          ? 0
+          : this.state.headCountNonBinary,
+      UnknownPresent:
+        this.state.headCountUnknown.length === 0
+          ? 0
+          : this.state.headCountUnknown,
     };
+    console.log(headCountObject);
     await Axios.patch(
       `${ApiConfig.dataApi}/sessions/${this.state.sessionId}`,
       headCountObject
@@ -406,6 +421,7 @@ class AttendanceScreen extends Component {
       let girlsHeadcount = "";
       let boysHeadcount = "";
       let nonBinaryHeadcount = "";
+      let unknownHeadcount = "";
       if (currentSession) {
         console.log("[Attendance.Screen.js] : FETCH SESSION");
         await Axios.get(
@@ -423,6 +439,7 @@ class AttendanceScreen extends Component {
             girlsHeadcount = res.data.GirlsPresent;
             boysHeadcount = res.data.BoysPresent;
             nonBinaryHeadcount = res.data.NonbinaryPresent;
+            unknownHeadcount = res.data.UnknownPresent;
           })
           .catch((error) => error);
         if (useHeadcount === true || useHeadcount === "true") {
@@ -435,6 +452,7 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCountFemale) +
                 Number(boysHeadcount) +
+                Number(this.state.headCountUnknown) +
                 Number(this.state.headCountNonBinary),
             });
           } else {
@@ -443,6 +461,7 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCountFemale) +
                 0 +
+                Number(this.state.headCountUnknown) +
                 Number(this.state.headCountNonBinary),
             });
           }
@@ -454,6 +473,7 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCount) +
                 Number(girlsHeadcount) +
+                Number(this.state.headCountUnknown) +
                 Number(this.state.headCountNonBinary),
             });
           } else {
@@ -462,6 +482,7 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCount) +
                 0 +
+                Number(this.state.headCountUnknown) +
                 Number(this.state.headCountNonBinary),
             });
           }
@@ -473,6 +494,7 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCount) +
                 Number(this.state.headCountFemale) +
+                Number(this.state.headCountUnknown) +
                 Number(nonBinaryHeadcount),
             });
           } else {
@@ -481,6 +503,28 @@ class AttendanceScreen extends Component {
               numberOfStudentsCounted:
                 Number(this.state.headCount) +
                 Number(this.state.headCountFemale) +
+                Number(this.state.headCountUnknown) +
+                0,
+            });
+          }
+          if (unknownHeadcount !== null) {
+            unknownHeadcount = unknownHeadcount.replace(/\./g, "");
+            unknownHeadcount = unknownHeadcount / 10;
+            this.setState({
+              headCountUnknown: unknownHeadcount.toString(),
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                Number(this.state.headCountFemale) +
+                Number(this.state.headCountNonBinary) +
+                Number(unknownHeadcount),
+            });
+          } else {
+            this.setState({
+              headCountUnknown: 0,
+              numberOfStudentsCounted:
+                Number(this.state.headCount) +
+                Number(this.state.headCountFemale) +
+                Number(this.state.headCountNonBinary) +
                 0,
             });
           }
@@ -1677,7 +1721,7 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Boys"
-              style={{ width: "30%" }}
+              style={{ width: "20%" }}
               value={this.state.headCount}
               onChangeText={(nextValue) =>
                 this.setState({
@@ -1685,6 +1729,7 @@ class AttendanceScreen extends Component {
                   numberOfStudentsCounted:
                     Number(nextValue.replace(/\D/g, "")) +
                     Number(this.state.headCountFemale) +
+                    Number(this.state.headCountUnknown) +
                     Number(this.state.headCountNonBinary),
                 })
               }
@@ -1693,7 +1738,7 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Girls"
-              style={{ width: "30%" }}
+              style={{ width: "20%" }}
               value={this.state.headCountFemale}
               onChangeText={(nextValue) =>
                 this.setState({
@@ -1701,6 +1746,7 @@ class AttendanceScreen extends Component {
                   numberOfStudentsCounted:
                     Number(nextValue.replace(/\D/g, "")) +
                     Number(this.state.headCount) +
+                    Number(this.state.headCountUnknown) +
                     Number(this.state.headCountNonBinary),
                 })
               }
@@ -1709,7 +1755,7 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Non binary"
-              style={{ width: "30%" }}
+              style={{ width: "20%" }}
               value={this.state.headCountNonBinary}
               onChangeText={(nextValue) =>
                 this.setState({
@@ -1717,9 +1763,27 @@ class AttendanceScreen extends Component {
                   numberOfStudentsCounted:
                     Number(nextValue.replace(/\D/g, "")) +
                     Number(this.state.headCountFemale) +
+                    Number(this.state.headCountUnknown) +
                     Number(this.state.headCount),
                 })
               }
+            />
+            <Input
+              keyboardType="numeric"
+              status="primary"
+              label="Unknown"
+              style={{ width: "20%" }}
+              value={this.state.headCountUnknown.toString()}
+              onChangeText={(nextValue) => {
+                this.setState({
+                  headCountUnknown: nextValue.replace(/\D/g, ""),
+                  numberOfStudentsCounted:
+                    Number(nextValue.replace(/\D/g, "")) +
+                    Number(this.state.headCountFemale) +
+                    Number(this.state.headCountNonBinary) +
+                    Number(this.state.headCount),
+                });
+              }}
             />
           </View>
           <View
