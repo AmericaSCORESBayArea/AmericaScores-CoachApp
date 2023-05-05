@@ -1712,17 +1712,21 @@ class AttendanceScreen extends Component {
           <Text category="s1">Number of:</Text>
           <View
             style={{
+              flex: 1,
               flexDirection: "row",
               justifyContent: "space-between",
-              marginTop: "4%",
+              alignItems: "center",
+              flexWrap: "wrap",
+              width: "70%",
+              alignSelf: "center",
             }}
           >
             <Input
               keyboardType="numeric"
               status="primary"
               label="Boys"
-              style={{ width: "20%" }}
-              value={this.state.headCount}
+              style={{ width: "40%" }}
+              value={this.state.headCount.toString()}
               onChangeText={(nextValue) =>
                 this.setState({
                   headCount: nextValue.replace(/\D/g, ""),
@@ -1738,8 +1742,8 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Girls"
-              style={{ width: "20%" }}
-              value={this.state.headCountFemale}
+              style={{ width: "40%" }}
+              value={this.state.headCountFemale.toString()}
               onChangeText={(nextValue) =>
                 this.setState({
                   headCountFemale: nextValue.replace(/\D/g, ""),
@@ -1755,8 +1759,8 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Non binary"
-              style={{ width: "20%" }}
-              value={this.state.headCountNonBinary}
+              style={{ width: "40%", marginTop: "2%" }}
+              value={this.state.headCountNonBinary.toString()}
               onChangeText={(nextValue) =>
                 this.setState({
                   headCountNonBinary: nextValue.replace(/\D/g, ""),
@@ -1772,7 +1776,7 @@ class AttendanceScreen extends Component {
               keyboardType="numeric"
               status="primary"
               label="Unknown"
-              style={{ width: "20%" }}
+              style={{ width: "40%", marginTop: "2%" }}
               value={this.state.headCountUnknown.toString()}
               onChangeText={(nextValue) => {
                 this.setState({
