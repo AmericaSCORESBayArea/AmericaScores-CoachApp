@@ -333,6 +333,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.americaScores.app;
 				PRODUCT_NAME = "America Scores Attendance";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -364,6 +367,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.americaScores.app;
 				PRODUCT_NAME = "America Scores Attendance";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
