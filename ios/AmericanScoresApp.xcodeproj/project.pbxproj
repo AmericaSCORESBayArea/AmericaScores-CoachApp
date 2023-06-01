@@ -25,10 +25,11 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = AmericanScoresApp/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = AmericanScoresApp/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = AmericanScoresApp/main.m; sourceTree = "<group>"; };
-		2F20A2A425E9E314008AFDD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		2F20A2A425E9E314008AFDD8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "AmericanScoresApp/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		2F5C1688970DF0B32E8428FD /* Pods-AmericanScoresApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmericanScoresApp.debug.xcconfig"; path = "Target Support Files/Pods-AmericanScoresApp/Pods-AmericanScoresApp.debug.xcconfig"; sourceTree = "<group>"; };
 		38CB6D42DD3F23B5BAA5F7E8 /* libPods-AmericanScoresApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-AmericanScoresApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		4956256524E5B256001B21B6 /* America Scores Attendance.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = "America Scores Attendance.entitlements"; path = "AmericanScoresApp/America Scores Attendance.entitlements"; sourceTree = "<group>"; };
+		6870AEA32A1E8E9F00C7EC27 /* AmericanScoresAppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = AmericanScoresAppRelease.entitlements; path = AmericanScoresApp/AmericanScoresAppRelease.entitlements; sourceTree = "<group>"; };
 		7DFE7BD675CECBC5194763C8 /* Pods-AmericanScoresApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AmericanScoresApp.release.xcconfig"; path = "Target Support Files/Pods-AmericanScoresApp/Pods-AmericanScoresApp.release.xcconfig"; sourceTree = "<group>"; };
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = AmericanScoresApp/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
@@ -50,6 +51,7 @@
 		13B07FAE1A68108700A75B9A /* AmericanScoresApp */ = {
 			isa = PBXGroup;
 			children = (
+				6870AEA32A1E8E9F00C7EC27 /* AmericanScoresAppRelease.entitlements */,
 				4956256524E5B256001B21B6 /* America Scores Attendance.entitlements */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -154,7 +156,6 @@
 				LastUpgradeCheck = 1200;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = 946F7TCJW5;
 						LastSwiftMigration = 1120;
 					};
 				};
@@ -326,7 +327,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.92;
+				MARKETING_VERSION = 3.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -334,6 +335,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.americaScores.app;
 				PRODUCT_NAME = "America Scores Attendance";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -347,7 +351,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = "AmericanScoresApp/America Scores Attendance.entitlements";
+				CODE_SIGN_ENTITLEMENTS = AmericanScoresApp/AmericanScoresAppRelease.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 946F7TCJW5;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
@@ -357,7 +361,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 2.92;
+				MARKETING_VERSION = 3.7;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -365,6 +369,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.americaScores.app;
 				PRODUCT_NAME = "America Scores Attendance";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
