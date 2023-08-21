@@ -1414,8 +1414,10 @@ class ActivitiesScreen extends Component {
                     {(this.state.selectedTabIndex === 0 ?
                     <BottomSheet isOpen sliderMinHeight={28} lineStyle={{marginTop:"3%"}}>
                         {searchBoxRanges()}
-                        {/* {searchBox()} */}
                         {selectBox()}
+                        <View style={{justifyContent: 'center', alignItems: 'center', marginBottom:"8%", marginTop: "3%"}}>
+                            <Button style={{width:"96%"}} status="primary" onPress={() => {this.state.showStudents === true? this.props.navigation.navigate("AddSessionModal", {teamSeasonId: this.state.teamSeasonId}):this.props.navigation.navigate("AddSessionHeadcountModal", {teamSeasonId: this.state.teamSeasonId, programType: this.state.programType})}}>+ ADD SESSION</Button>
+                        </View>
                     </BottomSheet> :
                     null)}
                 </Layout> 
