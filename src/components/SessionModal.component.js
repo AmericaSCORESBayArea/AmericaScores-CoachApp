@@ -10,6 +10,7 @@ import {
   IndexPath,
   Select,
   SelectItem,
+  Input,
   Spinner,
 } from "@ui-kitten/components";
 import { MomentDateService } from "@ui-kitten/moment";
@@ -23,15 +24,17 @@ import {
   ImageBackground,
   ActivityIndicator,
 } from "react-native";
-import { AttendanceScreen } from "../Attendance.Screen";
+import DatePicker from "react-native-date-picker";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
 import { useSelector } from "react-redux";
+import { TouchableOpacity } from "react-native";
 
 export const EditSessionModal = ({ route, navigation }) => {
   const user = useSelector((state) => state.user.user);
   const [visible, setVisible] = React.useState(true);
-  const { session, oldDate, oldTopic, topicId } = route.params;
+  const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
+    route.params;
   const [date, setDate] = React.useState(moment(oldDate));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
@@ -39,10 +42,27 @@ export const EditSessionModal = ({ route, navigation }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(
     new IndexPath(topicId)
   );
-
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
   const [responseSuccessDelete, setResponseSuccessDelete] =
     React.useState(false);
+  const [timePickerOptions, setTimePickerOptions] = React.useState({
+    type: "start",
+    open: false,
+    startDate: sessionStart
+      ? new Date(
+          new Date(`2023-08-26T${sessionStart}`).setHours(
+            new Date(`2023-08-26T${sessionStart}`).getHours() + 3
+          )
+        )
+      : new Date("2023-08-26T20:00:00.000Z"),
+    endDate: sessionEnd
+      ? new Date(
+          new Date(`2023-08-26T${sessionEnd}`).setHours(
+            new Date(`2023-08-26T${sessionEnd}`).getHours() + 3
+          )
+        )
+      : new Date("2023-08-26T21:00:00.000Z"),
+  });
 
   function closeModal() {
     setVisible(false);
@@ -87,6 +107,8 @@ export const EditSessionModal = ({ route, navigation }) => {
     let changes = {
       SessionDate: date.format("YYYY-MM-DD"),
       SessionTopic: displayValue.replace(/\s/g, "_"),
+      SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+      SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
     };
     console.log("change", changes);
     await pushChanges(changes);
@@ -97,7 +119,15 @@ export const EditSessionModal = ({ route, navigation }) => {
       <Button appearance="ghost" status="danger" onPress={() => closeModal()}>
         Cancel
       </Button>
-      <Button onPress={() => editSession()}>SAVE CHANGES</Button>
+      <Button
+        disabled={
+          moment(timePickerOptions.startDate).format("HH:mm") ===
+          moment(timePickerOptions.endDate).format("HH:mm")
+        }
+        onPress={() => editSession()}
+      >
+        SAVE CHANGES
+      </Button>
       <Button
         style={{ marginTop: "0.5%" }}
         status="danger"
@@ -257,6 +287,12 @@ export const EditSessionModal = ({ route, navigation }) => {
             date.format("MMM-DD-YYYY") +
             " " +
             displayValue +
+            "\nSession Start Time: " +
+            " " +
+            changes.SessionStart +
+            "\nSession End Time: " +
+            " " +
+            changes.SessionEnd +
             "\n\nPull down on the session description to refresh.",
           [{ text: "OK", onPress: () => navigation.navigate("Home") }]
         );
@@ -375,6 +411,80 @@ export const EditSessionModal = ({ route, navigation }) => {
     />
   );
 
+  const timePicker = () => {
+    return (
+      <View>
+        <View style={styles.inputsContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "start",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session Start:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.startDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "end",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session End:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.endDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <DatePicker
+          modal
+          open={timePickerOptions.open}
+          date={
+            timePickerOptions.type === "start"
+              ? timePickerOptions.startDate
+              : timePickerOptions.endDate
+          }
+          mode="time"
+          onConfirm={(datetime) => {
+            if (timePickerOptions.type === "start")
+              setTimePickerOptions({
+                ...timePickerOptions,
+                startDate: datetime,
+                open: false,
+              });
+            else
+              setTimePickerOptions({
+                ...timePickerOptions,
+                endDate: datetime,
+                open: false,
+              });
+          }}
+          onCancel={() => {
+            setTimePickerOptions({ ...timePickerOptions, open: false });
+          }}
+        />
+      </View>
+    );
+  };
+
   return (
     <React.Fragment>
       <Modal
@@ -386,6 +496,7 @@ export const EditSessionModal = ({ route, navigation }) => {
           <Text>Change Session Date:</Text>
           {searchBox()}
           {updatingModal()}
+          {timePicker()}
           <Text>Change Session Type:</Text>
           <Select
             selectedIndex={selectedIndex}
@@ -413,7 +524,8 @@ export const EditSessionModal = ({ route, navigation }) => {
 export const EditHeadCountSessionModal = ({ route, navigation }) => {
   const user = useSelector((state) => state.user.user);
   const [visible, setVisible] = React.useState(true);
-  const { session, oldDate, oldTopic, topicId } = route.params;
+  const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
+    route.params;
   const [date, setDate] = React.useState(moment(oldDate));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
@@ -421,7 +533,24 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
   const [selectedIndex, setSelectedIndex] = React.useState(
     new IndexPath(topicId)
   );
-
+  const [timePickerOptions, setTimePickerOptions] = React.useState({
+    type: "start",
+    open: false,
+    startDate: sessionStart
+      ? new Date(
+          new Date(`2023-08-26T${sessionStart}`).setHours(
+            new Date(`2023-08-26T${sessionStart}`).getHours() + 3
+          )
+        )
+      : new Date("2023-08-26T20:00:00.000Z"),
+    endDate: sessionEnd
+      ? new Date(
+          new Date(`2023-08-26T${sessionEnd}`).setHours(
+            new Date(`2023-08-26T${sessionEnd}`).getHours() + 3
+          )
+        )
+      : new Date("2023-08-26T21:00:00.000Z"),
+  });
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
   const [responseSuccessDelete, setResponseSuccessDelete] =
     React.useState(false);
@@ -469,6 +598,8 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
     let changes = {
       SessionDate: date.format("YYYY-MM-DD"),
       SessionTopic: displayValue.replace(/\s/g, "_"),
+      SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+      SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
     };
     console.log("change", changes);
     await pushChanges(changes);
@@ -479,7 +610,15 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
       <Button appearance="ghost" status="danger" onPress={() => closeModal()}>
         Cancel
       </Button>
-      <Button onPress={() => editSession()}>SAVE CHANGES</Button>
+      <Button
+        disabled={
+          moment(timePickerOptions.startDate).format("HH:mm") ===
+          moment(timePickerOptions.endDate).format("HH:mm")
+        }
+        onPress={() => editSession()}
+      >
+        SAVE CHANGES
+      </Button>
       <Button
         style={{ marginTop: "0.5%" }}
         status="danger"
@@ -639,6 +778,12 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
             date.format("MMM-DD-YYYY") +
             " " +
             displayValue +
+            "\nSession Start Time: " +
+            " " +
+            changes.SessionStart +
+            "\nSession End Time: " +
+            " " +
+            changes.SessionEnd +
             "\n\nPull down on the session description to refresh.",
           [{ text: "OK", onPress: () => navigation.navigate("Home") }]
         );
@@ -757,6 +902,80 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
     />
   );
 
+  const timePicker = () => {
+    return (
+      <View>
+        <View style={styles.inputsContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "start",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session Start:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.startDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "end",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session End:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.endDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <DatePicker
+          modal
+          open={timePickerOptions.open}
+          date={
+            timePickerOptions.type === "start"
+              ? timePickerOptions.startDate
+              : timePickerOptions.endDate
+          }
+          mode="time"
+          onConfirm={(datetime) => {
+            if (timePickerOptions.type === "start")
+              setTimePickerOptions({
+                ...timePickerOptions,
+                startDate: datetime,
+                open: false,
+              });
+            else
+              setTimePickerOptions({
+                ...timePickerOptions,
+                endDate: datetime,
+                open: false,
+              });
+          }}
+          onCancel={() => {
+            setTimePickerOptions({ ...timePickerOptions, open: false });
+          }}
+        />
+      </View>
+    );
+  };
+
   return (
     <React.Fragment>
       <Modal
@@ -768,6 +987,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
           <Text>Change Session Date:</Text>
           {searchBox()}
           {updatingModal()}
+          {timePicker()}
           <Text>Change Session Type:</Text>
           <Select
             selectedIndex={selectedIndex}
@@ -812,6 +1032,12 @@ export const AddSessionModal = ({ route, navigation }) => {
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
   const [responseSuccess, setResponseSuccess] = React.useState(false);
   const actualRegion = useSelector((state) => state.sessionScreen.region);
+  const [timePickerOptions, setTimePickerOptions] = React.useState({
+    type: "start",
+    open: false,
+    startDate: new Date("2023-08-26T20:00:00.000Z"),
+    endDate: new Date("2023-08-26T21:00:00.000Z"),
+  });
 
   function closeModal() {
     setVisible(false);
@@ -872,6 +1098,8 @@ export const AddSessionModal = ({ route, navigation }) => {
       let changes = {
         SessionDate: date.format("YYYY-MM-DD"),
         SessionTopic: displayValue.replace(/\s/g, "_"),
+        sessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+        sessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamsId[selectedTeamIndex.row],
       };
       console.log(changes);
@@ -880,6 +1108,8 @@ export const AddSessionModal = ({ route, navigation }) => {
       let changes = {
         SessionDate: date.format("YYYY-MM-DD"),
         SessionTopic: displayValue.replace(/\s/g, "_"),
+        sessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+        sessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamSeasonId,
       };
       console.log(changes);
@@ -892,7 +1122,15 @@ export const AddSessionModal = ({ route, navigation }) => {
       <Button appearance="ghost" status="danger" onPress={() => closeModal()}>
         Cancel
       </Button>
-      <Button onPress={() => editSession()}>CREATE</Button>
+      <Button
+        disabled={
+          moment(timePickerOptions.startDate).format("HH:mm") ===
+          moment(timePickerOptions.endDate).format("HH:mm")
+        }
+        onPress={() => editSession()}
+      >
+        CREATE
+      </Button>
     </Layout>
   );
 
@@ -926,6 +1164,8 @@ export const AddSessionModal = ({ route, navigation }) => {
       session_Date: changes.SessionDate,
       sessionTopic: changes.SessionTopic,
       teamSeasonId: changes.TeamSeasonId,
+      sessionStart: changes.SessionStart,
+      sessionEnd: changes.SessionEnd,
     });
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
       .then((res) => {
@@ -1070,6 +1310,80 @@ export const AddSessionModal = ({ route, navigation }) => {
     />
   );
 
+  const timePicker = () => {
+    return (
+      <View>
+        <View style={styles.inputsContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "start",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session Start:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.startDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "end",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session End:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.endDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <DatePicker
+          modal
+          open={timePickerOptions.open}
+          date={
+            timePickerOptions.type === "start"
+              ? timePickerOptions.startDate
+              : timePickerOptions.endDate
+          }
+          mode="time"
+          onConfirm={(datetime) => {
+            if (timePickerOptions.type === "start")
+              setTimePickerOptions({
+                ...timePickerOptions,
+                startDate: datetime,
+                open: false,
+              });
+            else
+              setTimePickerOptions({
+                ...timePickerOptions,
+                endDate: datetime,
+                open: false,
+              });
+          }}
+          onCancel={() => {
+            setTimePickerOptions({ ...timePickerOptions, open: false });
+          }}
+        />
+      </View>
+    );
+  };
+
   return (
     <Modal
       visible={visible}
@@ -1080,6 +1394,7 @@ export const AddSessionModal = ({ route, navigation }) => {
         <Text>Session Date:</Text>
         {searchBox()}
         {updatingModal()}
+        {timePicker()}
         <Text>Session Topic:</Text>
         <Select
           selectedIndex={selectedIndex}
@@ -1119,6 +1434,12 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
   const [responseSuccess, setResponseSuccess] = React.useState(false);
   const actualRegion = useSelector((state) => state.sessionScreen.region);
+  const [timePickerOptions, setTimePickerOptions] = React.useState({
+    type: "start",
+    open: false,
+    startDate: new Date("2023-08-26T20:00:00.000Z"),
+    endDate: new Date("2023-08-26T21:00:00.000Z"),
+  });
 
   function closeModal() {
     setVisible(false);
@@ -1179,6 +1500,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
       let changes = {
         SessionDate: date.format("YYYY-MM-DD"),
         SessionTopic: displayValue.replace(/\s/g, "_"),
+        SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+        SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamsId[selectedTeamIndex.row],
       };
       console.log(changes);
@@ -1187,6 +1510,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
       let changes = {
         SessionDate: date.format("YYYY-MM-DD"),
         SessionTopic: displayValue.replace(/\s/g, "_"),
+        SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
+        SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamSeasonId,
       };
       console.log(changes);
@@ -1200,6 +1525,10 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         Cancel
       </Button>
       <Button
+        disabled={
+          moment(timePickerOptions.startDate).format("HH:mm") ===
+          moment(timePickerOptions.endDate).format("HH:mm")
+        }
         onPress={
           route.params.teamSeasonId === "" && !showTeams
             ? null
@@ -1244,6 +1573,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
     await analytics().logEvent("CreateSession", {
       coach_Id: user.ContactId,
       session_Date: changes.SessionDate,
+      SessionStart: changes.SessionStart,
+      SessionEnd: changes.SessionEnd,
       sessionTopic: displayValue.replace(/\s/g, "_"),
       teamSeasonId: changes.TeamSeasonId,
     });
@@ -1383,12 +1714,86 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
       date={date}
       placement="bottom"
       // min={minDatePickerDate}
-      style={{ margin: "2%" }}
+      style={{ margin: "2%", marginHorizontal: 0 }}
       dateService={dateService}
       onSelect={(nextDate) => selectDate(nextDate)}
       accessoryRight={CalendarIcon}
     />
   );
+
+  const timePicker = () => {
+    return (
+      <View>
+        <View style={styles.inputsContainer}>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "start",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session Start:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.startDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() =>
+              setTimePickerOptions({
+                ...timePickerOptions,
+                type: "end",
+                open: true,
+              })
+            }
+          >
+            <View pointerEvents="none">
+              <Text>Session End:</Text>
+              <Input
+                style={styles.input}
+                editable={false}
+                placeholder="17:00"
+                value={moment(timePickerOptions.endDate).format("HH:mm")}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+        <DatePicker
+          modal
+          open={timePickerOptions.open}
+          date={
+            timePickerOptions.type === "start"
+              ? timePickerOptions.startDate
+              : timePickerOptions.endDate
+          }
+          mode="time"
+          onConfirm={(datetime) => {
+            if (timePickerOptions.type === "start")
+              setTimePickerOptions({
+                ...timePickerOptions,
+                startDate: datetime,
+                open: false,
+              });
+            else
+              setTimePickerOptions({
+                ...timePickerOptions,
+                endDate: datetime,
+                open: false,
+              });
+          }}
+          onCancel={() => {
+            setTimePickerOptions({ ...timePickerOptions, open: false });
+          }}
+        />
+      </View>
+    );
+  };
 
   return (
     <Modal
@@ -1400,6 +1805,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         <Text>Session Date:</Text>
         {searchBox()}
         {updatingModal()}
+        {timePicker()}
         <Text>Program Type:</Text>
         <Text
           style={{
@@ -1413,6 +1819,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         </Text>
         <Text>Session Topic:</Text>
         <Select
+          style={{ marginTop: "2%" }}
           selectedIndex={selectedIndex}
           size="medium"
           value={displayValue}
@@ -1444,4 +1851,10 @@ const styles = StyleSheet.create({
   backdrop: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  inputsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  input: { width: "100%", marginTop: "2%" },
 });
