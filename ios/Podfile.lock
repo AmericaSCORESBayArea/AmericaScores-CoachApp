@@ -383,6 +383,8 @@ PODS:
     - React-Core
   - react-native-camera/RN (3.44.3):
     - React-Core
+  - react-native-date-picker (4.2.14):
+    - React-Core
   - react-native-document-picker (6.1.1):
     - React-Core
   - react-native-image-picker (4.6.1):
@@ -554,6 +556,7 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - react-native-camera (from `../node_modules/react-native-camera`)
+  - react-native-date-picker (from `../node_modules/react-native-date-picker`)
   - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -687,6 +690,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   react-native-camera:
     :path: "../node_modules/react-native-camera"
+  react-native-date-picker:
+    :path: "../node_modules/react-native-date-picker"
   react-native-document-picker:
     :path: "../node_modules/react-native-document-picker"
   react-native-image-picker:
@@ -829,6 +834,7 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 124e8f99992490d0d13e0649d950d3e1aae06fe9
   React-jsinspector: 500a59626037be5b3b3d89c5151bc3baa9abf1a9
   react-native-camera: fefef39fcd20850d17c3780638b04f741e0ccaae
+  react-native-date-picker: 8847cb359cf259ddae5ed165217e15573a654519
   react-native-document-picker: 855e3468ac80f886d46cfc9ed132a4469ecaf817
   react-native-image-picker: febf8b5e300bedb47c9157b2b6434dc4f6137ab5
   react-native-safe-area-context: c23e140ee9a482e89991798aed110fbffefb2f51
