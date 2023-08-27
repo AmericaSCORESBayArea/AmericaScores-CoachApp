@@ -52,6 +52,8 @@ class AttendanceScreen extends Component {
     this.state = {
       studentsList: [],
       teamName: "",
+      sessionStart: "",
+      sessionEnd: "",
       isUpdated: false,
       responseSuccess: false,
       responseStatusModal: false,
@@ -383,7 +385,6 @@ class AttendanceScreen extends Component {
   async _setCurrentSessionData() {
     this.setState({ showNullSessionsError: false });
     const { route } = this.props;
-    console.log(route.params);
     var currentSession =
       (await route.params.name) === "Sessions"
         ? this.props.sessions.sessions_tab.find(
@@ -392,7 +393,6 @@ class AttendanceScreen extends Component {
         : this.props.sessions.sessions.find(
             (session) => session.SessionId === route.params.sessionId
           );
-    console.log("s", currentSession);
     if (
       currentSession === null ||
       currentSession === undefined ||
@@ -422,13 +422,14 @@ class AttendanceScreen extends Component {
       let boysHeadcount = "";
       let nonBinaryHeadcount = "";
       let unknownHeadcount = "";
+      let sessionStartTime = "";
+      let sessionEndTime = "";
       if (currentSession) {
         console.log("[Attendance.Screen.js] : FETCH SESSION");
         await Axios.get(
           `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
         )
           .then(async (res) => {
-            console.log(res.data);
             currentDate = res.data.SessionDate;
             currentTopic =
               res.data.SessionTopic !== null
@@ -440,6 +441,8 @@ class AttendanceScreen extends Component {
             boysHeadcount = res.data.BoysPresent;
             nonBinaryHeadcount = res.data.NonbinaryPresent;
             unknownHeadcount = res.data.UnknownPresent;
+            sessionStartTime = res.data.SessionStartTime ?? "";
+            sessionEndTime = res.data.SessionEndTime ?? "";
           })
           .catch((error) => error);
         if (useHeadcount === true || useHeadcount === "true") {
@@ -537,6 +540,8 @@ class AttendanceScreen extends Component {
             date: moment(currentDate).format("MMM-DD-YYYY"),
             numberOfStudents: 0,
             programType: programType,
+            sessionStart: sessionStartTime,
+            sessionEnd: sessionEndTime,
           };
           await this.setState(newState);
           this.setState({ headCountModalStatus: true });
@@ -553,6 +558,8 @@ class AttendanceScreen extends Component {
             date: moment(currentDate).format("MMM-DD-YYYY"),
             numberOfStudents: 0,
             missingEnrollments: [],
+            sessionStart: sessionStartTime,
+            sessionEnd: sessionEndTime,
           };
           await this.setState(newState);
           await this._fetchGetEnrollments();
@@ -1201,6 +1208,8 @@ class AttendanceScreen extends Component {
       oldDate: this.state.date,
       oldTopic: this.state.topic,
       topicId: id,
+      sessionStart: this.state.sessionStart,
+      sessionEnd: this.state.sessionEnd,
     });
   }
 
@@ -1218,6 +1227,8 @@ class AttendanceScreen extends Component {
       oldDate: this.state.date,
       oldTopic: this.state.topic,
       topicId: id,
+      sessionStart: this.state.sessionStart,
+      sessionEnd: this.state.sessionEnd,
     });
   }
 
@@ -1640,26 +1651,65 @@ class AttendanceScreen extends Component {
     };
     const headCountHeader = () => (
       <Layout style={{ padding: 5 }} level="2">
-        <Icon
-          fill={buttonColor()}
-          name="arrow-back-outline"
-          style={styles.icon}
-          onPress={() => {
-            this.setState({ headCountModalStatus: false }),
-              this.props.navigation.goBack();
-          }}
-        />
-        <View style={styles.row}>
-          <View style={styles.column}>
-            {descriptionRowText("Team:", this.state.teamName)}
-            {descriptionRowTextImage("Program Type:", this.state.programType)}
-            {descriptionRowTextDate("Date:", this.state.date)}
-            {descriptionRowText(
-              "Session attendance:",
-              this.state.numberOfStudentsCounted
-            )}
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          <Icon
+            fill={buttonColor()}
+            name="arrow-back-outline"
+            style={styles.icon}
+            onPress={() => {
+              this.setState({ headCountModalStatus: false }),
+                this.props.navigation.goBack();
+            }}
+          />
+          <View style={styles.row}>
+            <View style={styles.column}>
+              {descriptionRowText("Team:", this.state.teamName)}
+              {descriptionRowTextImage("Program Type:", this.state.programType)}
+              {descriptionRowTextDate("Date:", this.state.date)}
+              {descriptionRowTextDate(
+                "Start Time:",
+                this.state.sessionStart
+                  ? moment(
+                      new Date(
+                        new Date(
+                          `2023-08-26T${this.state.sessionStart}`
+                        ).setHours(
+                          new Date(
+                            `2023-08-26T${this.state.sessionStart}`
+                          ).getHours() + 3
+                        )
+                      )
+                    ).format("HH:mm")
+                  : ""
+              )}
+              {descriptionRowTextDate(
+                "End Time:",
+                this.state.sessionEnd
+                  ? moment(
+                      new Date(
+                        new Date(
+                          `2023-08-26T${this.state.sessionEnd}`
+                        ).setHours(
+                          new Date(
+                            `2023-08-26T${this.state.sessionEnd}`
+                          ).getHours() + 3
+                        )
+                      )
+                    ).format("HH:mm")
+                  : ""
+              )}
+              {descriptionRowText(
+                "Session attendance:",
+                this.state.numberOfStudentsCounted
+              )}
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </Layout>
     );
     const headCountFooter = (props) => (
@@ -1824,6 +1874,38 @@ class AttendanceScreen extends Component {
               {descriptionRowText("Team:", this.state.teamName)}
               {descriptionRowTextImage("Session Type:", this.state.topic)}
               {descriptionRowTextDate("Date:", this.state.date)}
+              {descriptionRowTextDate(
+                "Start Time:",
+                this.state.sessionStart
+                  ? moment(
+                      new Date(
+                        new Date(
+                          `2023-08-26T${this.state.sessionStart}`
+                        ).setHours(
+                          new Date(
+                            `2023-08-26T${this.state.sessionStart}`
+                          ).getHours() + 3
+                        )
+                      )
+                    ).format("HH:mm")
+                  : ""
+              )}
+              {descriptionRowTextDate(
+                "End Time:",
+                this.state.sessionEnd
+                  ? moment(
+                      new Date(
+                        new Date(
+                          `2023-08-26T${this.state.sessionEnd}`
+                        ).setHours(
+                          new Date(
+                            `2023-08-26T${this.state.sessionEnd}`
+                          ).getHours() + 3
+                        )
+                      )
+                    ).format("HH:mm")
+                  : ""
+              )}
               {descriptionRowText("Students:", this.state.numberOfStudents)}
             </View>
           </View>
