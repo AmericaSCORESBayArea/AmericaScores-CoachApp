@@ -5,8 +5,7 @@
     "ios": "react-native run-ios",
     "web": "expo start --web",
     "start": "react-native start",
-    "test": "jest",
-    "clean": "react-native-clean-project"
+    "test": "jest"
   },
   "dependencies": {
     "@eva-design/eva": "^2.1.1",
@@ -37,7 +36,6 @@
     "react": "16.13.1",
     "react-native": "0.64.1",
     "react-native-camera": "^3.44.3",
-    "react-native-clean-project": "^4.0.1",
     "react-native-date-picker": "^4.2.14",
     "react-native-device-info": "^8.7.1",
     "react-native-document-picker": "^6.0.4",
