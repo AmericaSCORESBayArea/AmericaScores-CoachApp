@@ -44,7 +44,7 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    if (user.phoneNumber !== null) {
+    if (user || user.phoneNumber !== null) {
       const number = user.phoneNumber.replace("+1", "");
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
