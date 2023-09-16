@@ -151,7 +151,7 @@ class LogInScreen_Google extends Component {
             });
         } else {
           this.setState({ responseStatusModal: true });
-          return _rollbackSetupUser();
+          return this._rollbackSetupUser();
         }
       })
       .catch((error) => {
