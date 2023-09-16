@@ -45,7 +45,7 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    if (user && !user.phoneNumber) {
+    if (user && user.phoneNumber) {
       const number = user.phoneNumber.replace("+1", "");
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
@@ -54,6 +54,7 @@ class LogInScreen_Google extends Component {
         },
       })
         .then(async (res) => {
+          console.log(res);
           if (res.status === 200)
             console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
           const userProfile = res.data;
@@ -74,7 +75,8 @@ class LogInScreen_Google extends Component {
             }
           }
         })
-        .catch(() => {
+        .catch((error) => {
+          console.log(error);
           this.setState({ loadingModalstate: false });
         });
     } else {
@@ -107,8 +109,7 @@ class LogInScreen_Google extends Component {
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
-      if (loggedStat !== null) {
-        console.log(email);
+      if (loggedStat) {
         this.setState({ logged: loggedStat });
         this.setState({ email: email });
       }
@@ -153,7 +154,9 @@ class LogInScreen_Google extends Component {
           return _rollbackSetupUser();
         }
       })
-      .catch((error) => this.setState({ responseStatusModal: true }));
+      .catch((error) => {
+        this.setState({ responseStatusModal: true }), console.log(error);
+      });
   };
 
   _rollbackSetupUser = async () => {
