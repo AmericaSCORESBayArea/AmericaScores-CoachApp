@@ -5,6 +5,7 @@ import {
   ImageBackground,
   SafeAreaView,
   Linking,
+  Platform,
 } from "react-native";
 import { Button, Layout, Text, Icon, Modal, Card } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
@@ -96,9 +97,12 @@ class LogInScreen_Google extends Component {
   };
 
   initAsync = async () => {
+    const id =
+      Platform.OS === "ios"
+        ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
+        : "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com";
     await GoogleSignIn.initAsync({
-      clientId:
-        "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com",
+      clientId: id,
     });
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
