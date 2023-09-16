@@ -196,9 +196,11 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
           return _rollbackSetupUser();
         }
       })
-      .catch((error) =>
-        console.log("[AUTH ERROR] SOMETHING ELSE HAPPENED", error)
-      );
+      .catch((error) => {
+        setLoading(false);
+        console.log("[AUTH ERROR] SOMETHING ELSE HAPPENED", error);
+        Alert.alert("[AUTH ERROR]", "API CONFIGS NOT PROVIDED");
+      });
   }
 
   async function setLoginLocal(loginData) {

@@ -52,27 +52,31 @@ class LogInScreen_Google extends Component {
           useridentifier: number,
           serviceprovider: "Phone",
         },
-      }).then(async (res) => {
-        if (res.status === 200)
-          console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
-        const userProfile = res.data;
-        if (res.data.ContactId === null) {
-          this.setState({ loadingModalstate: false });
-          this.initAsync();
-        } else {
-          await this.setLoginLocal(userProfile.ContactId);
-          if (userProfile.ContactId) {
-            //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-            //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
-            // dispatch(loginUser(userProfile));
-            await actions.loginUser(userProfile);
-            this.setState({ logged: "true" });
-            await analytics().logEvent("main_activity_ready");
-            navigation.navigate("Select_Club");
+      })
+        .then(async (res) => {
+          if (res.status === 200)
+            console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
+          const userProfile = res.data;
+          if (res.data.ContactId === null) {
             this.setState({ loadingModalstate: false });
+            this.initAsync();
+          } else {
+            await this.setLoginLocal(userProfile.ContactId);
+            if (userProfile.ContactId) {
+              //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+              //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
+              // dispatch(loginUser(userProfile));
+              await actions.loginUser(userProfile);
+              this.setState({ logged: "true" });
+              await analytics().logEvent("main_activity_ready");
+              navigation.navigate("Select_Club");
+              this.setState({ loadingModalstate: false });
+            }
           }
-        }
-      });
+        })
+        .catch(() => {
+          this.setState({ loadingModalstate: false });
+        });
     } else {
       this.setState({ loadingModalstate: false });
       this.initAsync();
@@ -83,6 +87,7 @@ class LogInScreen_Google extends Component {
     try {
       await AsyncStorage.setItem("loginData", loginData);
     } catch (err) {
+      this.setState({ loadingModalstate: false });
       console.log(err);
     }
   };
@@ -105,6 +110,7 @@ class LogInScreen_Google extends Component {
         this.setState({ email: email });
       }
     } catch (e) {
+      this.setState({ loadingModalstate: false });
       // error reading value
     }
   };
