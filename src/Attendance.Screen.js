@@ -22,6 +22,7 @@ import {
   ImageBackground,
   Alert,
   Keyboard,
+  KeyboardAvoidingView,
 } from "react-native";
 import { connect } from "react-redux";
 import {
@@ -36,15 +37,6 @@ import { ApiConfig } from "./config/ApiConfig";
 import moment from "moment";
 import analytics from "@react-native-firebase/analytics";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-const wait = (timeout) => {
-  return new Promise((resolve) => setTimeout(resolve, timeout));
-};
-
-const loadingIndicator = (props) => (
-  <View style={[props.style, styles.indicator]}>
-    <Spinner size="medium" status="basic" />
-  </View>
-);
 
 class AttendanceScreen extends Component {
   constructor(props) {
@@ -89,9 +81,6 @@ class AttendanceScreen extends Component {
     this._setCurrentSessionData();
   }
 
-  // componentWillMount() {
-  //     this._setCurrentSessionData();
-  // }
   ForwardArrow() {
     const { route } = this.props;
     route.params.activitiesRegion.map((value) => {
@@ -119,55 +108,6 @@ class AttendanceScreen extends Component {
                 this.setState({ loadingModalstate: true });
                 this._setCurrentSessionData();
               }
-              //var pos = route.params.activitiesRegion[posAc].indexOf(val);
-              /*if (pos === 0) {
-                if (posAc === 0) {
-                  Alert.alert(
-                    "",
-                    "No following sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                  );
-                } else {
-                  var ACPos = posAc - 1;
-                  while (route.params.activitiesRegion[ACPos] === null) {
-                    ACPos = ACPos - 1;
-                    if (ACPos < 0) {
-                      break;
-                    }
-                  }
-                  if (ACPos < 0) {
-                    Alert.alert(
-                      "",
-                      "No following sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                    );
-                  } else {
-                    this.setState({ auxRedux: [] });
-                    var cont = posAc - 1;
-                    while (route.params.activitiesRegion[cont] === null) {
-                      cont = cont - 1;
-                    }
-                    if (cont !== posAc - 1) {
-                      var backlong = route.params.activitiesRegion[cont].length;
-                      this.setState({
-                        arrowSession: route.params.activitiesRegion[cont],
-                      });
-                    } else {
-                      var backlong = route.params.activitiesRegion[posAc - 1];
-                      this.setState({
-                        arrowSession: route.params.activitiesRegion[posAc - 1],
-                      });
-                    }
-                    this.setState({ loadingModalstate: true });
-                    this._setCurrentSessionData();
-                  }
-                }
-              } else {
-                this.setState({ auxRedux: [] });
-                this.setState({
-                  arrowSession: route.params.activitiesRegion[posAc],
-                });
-                this.setState({ loadingModalstate: true });
-                this._setCurrentSessionData();
-              }*/
             }
           }
         });
@@ -188,8 +128,6 @@ class AttendanceScreen extends Component {
             if (
               JSON.stringify(route.params.activitiesRegion[posAc]).length >= 1
             ) {
-              //var pos = 0;
-              //var long = route.params.activitiesRegion[posAc].length;
               var aclong = route.params.activitiesRegion.length;
               if (posAc === 0) {
                 Alert.alert(
@@ -204,94 +142,6 @@ class AttendanceScreen extends Component {
                 this.setState({ loadingModalstate: true });
                 this._setCurrentSessionData();
               }
-              /*if (aclong === 1) {
-                if (posAc === aclong - 1) {
-                  if (pos === long - 1) {
-                    Alert.alert(
-                      "",
-                      "No previous sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                    );
-                  } else {
-                    this.setState({ auxRedux: [] });
-                    this.setState({
-                      arrowSession: route.params.activitiesRegion[posAc],
-                    });
-                    this.setState({ loadingModalstate: true });
-                    this._setCurrentSessionData();
-                  }
-                } else {
-                  this.setState({ auxRedux: [] });
-                  var cont = posAc + 1;
-                  while (route.params.activitiesRegion[cont] === null) {
-                    cont = cont + 1;
-                    if (cont > aclong - 1) {
-                      break;
-                    }
-                  }
-                  if (cont > aclong) {
-                    Alert.alert(
-                      "",
-                      "No previous sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                    );
-                  } else {
-                    if (cont !== posAc + 1) {
-                      this.setState({
-                        arrowSession: route.params.activitiesRegion[cont],
-                      });
-                    } else {
-                      this.setState({
-                        arrowSession: route.params.activitiesRegion[posAc + 1],
-                      });
-                    }
-                    this.setState({ loadingModalstate: true });
-                    this._setCurrentSessionData();
-                  }
-                }
-              } else {
-                if (pos === long - 1) {
-                  if (posAc === aclong - 1) {
-                    Alert.alert(
-                      "",
-                      "No previous sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                    );
-                  } else {
-                    var cont = posAc + 1;
-                    while (route.params.activitiesRegion[cont] === null) {
-                      cont = cont + 1;
-                      if (cont > aclong - 1) {
-                        break;
-                      }
-                    }
-                    if (cont > aclong - 1) {
-                      Alert.alert(
-                        "",
-                        "No previous sessions found.\nTry adjusting the date range in the Sessions Calendar."
-                      );
-                    } else {
-                      if (cont !== posAc + 1) {
-                        this.setState({
-                          arrowSession: route.params.activitiesRegion[cont],
-                        });
-                      } else {
-                        this.setState({
-                          arrowSession:
-                            route.params.activitiesRegion[posAc + 1],
-                        });
-                      }
-                      this.setState({ auxRedux: [] });
-                      this.setState({ loadingModalstate: true });
-                      this._setCurrentSessionData();
-                    }
-                  }
-                } else {
-                  this.setState({ auxRedux: [] });
-                  this.setState({
-                    arrowSession: route.params.activitiesRegion[posAc],
-                  });
-                  this.setState({ loadingModalstate: true });
-                  this._setCurrentSessionData();
-                }
-              }*/
             }
           }
         });
@@ -1283,6 +1133,9 @@ class AttendanceScreen extends Component {
     };
     const studentAttendanceItem = ({ item, index }) => (
       <ListItem
+        onPress={() =>
+          this.checkStudent(index, !this.state.enrollments[index].Attended)
+        }
         title={`${item.StudentName}`}
         //onPress={() => this.checkStudent(index, !this.state.enrollments[index].Attended)}
         accessoryLeft={() => {
@@ -1758,107 +1611,116 @@ class AttendanceScreen extends Component {
         visible={this.state.headCountModalStatus}
         backdropStyle={styles.backdrop}
       >
-        <Card disabled={true} header={headCountHeader} footer={headCountFooter}>
-          <Text category="s1">Number of:</Text>
-          <View
-            style={{
-              flex: 1,
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-              width: "70%",
-              alignSelf: "center",
-            }}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "position" : null}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        >
+          <Card
+            disabled={true}
+            header={headCountHeader}
+            footer={headCountFooter}
           >
-            <Input
-              keyboardType="numeric"
-              status="primary"
-              label="Boys"
-              style={{ width: "40%" }}
-              value={this.state.headCount.toString()}
-              onChangeText={(nextValue) =>
-                this.setState({
-                  headCount: nextValue.replace(/\D/g, ""),
-                  numberOfStudentsCounted:
-                    Number(nextValue.replace(/\D/g, "")) +
-                    Number(this.state.headCountFemale) +
-                    Number(this.state.headCountUnknown) +
-                    Number(this.state.headCountNonBinary),
-                })
-              }
-            />
-            <Input
-              keyboardType="numeric"
-              status="primary"
-              label="Girls"
-              style={{ width: "40%" }}
-              value={this.state.headCountFemale.toString()}
-              onChangeText={(nextValue) =>
-                this.setState({
-                  headCountFemale: nextValue.replace(/\D/g, ""),
-                  numberOfStudentsCounted:
-                    Number(nextValue.replace(/\D/g, "")) +
-                    Number(this.state.headCount) +
-                    Number(this.state.headCountUnknown) +
-                    Number(this.state.headCountNonBinary),
-                })
-              }
-            />
-            <Input
-              keyboardType="numeric"
-              status="primary"
-              label="Non binary"
-              style={{ width: "40%", marginTop: "2%" }}
-              value={this.state.headCountNonBinary.toString()}
-              onChangeText={(nextValue) =>
-                this.setState({
-                  headCountNonBinary: nextValue.replace(/\D/g, ""),
-                  numberOfStudentsCounted:
-                    Number(nextValue.replace(/\D/g, "")) +
-                    Number(this.state.headCountFemale) +
-                    Number(this.state.headCountUnknown) +
-                    Number(this.state.headCount),
-                })
-              }
-            />
-            <Input
-              keyboardType="numeric"
-              status="primary"
-              label="Unknown"
-              style={{ width: "40%", marginTop: "2%" }}
-              value={this.state.headCountUnknown.toString()}
-              onChangeText={(nextValue) => {
-                this.setState({
-                  headCountUnknown: nextValue.replace(/\D/g, ""),
-                  numberOfStudentsCounted:
-                    Number(nextValue.replace(/\D/g, "")) +
-                    Number(this.state.headCountFemale) +
-                    Number(this.state.headCountNonBinary) +
-                    Number(this.state.headCount),
-                });
+            <Text category="s1">Number of:</Text>
+            <View
+              style={{
+                flex: 1,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+                flexWrap: "wrap",
+                width: "70%",
+                alignSelf: "center",
               }}
-            />
-          </View>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: "5%",
-            }}
-          >
-            <Button
-              style={{ width: "70%" }}
-              size="medium"
-              appearance="filled"
-              status="success"
-              onPress={() => this.updateHeadcountAttendance()}
             >
-              {" "}
-              Save Attendance{" "}
-            </Button>
-          </View>
-        </Card>
+              <Input
+                keyboardType="numeric"
+                status="primary"
+                label="Boys"
+                style={{ width: "40%" }}
+                value={this.state.headCount.toString()}
+                onChangeText={(nextValue) =>
+                  this.setState({
+                    headCount: nextValue.replace(/\D/g, ""),
+                    numberOfStudentsCounted:
+                      Number(nextValue.replace(/\D/g, "")) +
+                      Number(this.state.headCountFemale) +
+                      Number(this.state.headCountUnknown) +
+                      Number(this.state.headCountNonBinary),
+                  })
+                }
+              />
+              <Input
+                keyboardType="numeric"
+                status="primary"
+                label="Girls"
+                style={{ width: "40%" }}
+                value={this.state.headCountFemale.toString()}
+                onChangeText={(nextValue) =>
+                  this.setState({
+                    headCountFemale: nextValue.replace(/\D/g, ""),
+                    numberOfStudentsCounted:
+                      Number(nextValue.replace(/\D/g, "")) +
+                      Number(this.state.headCount) +
+                      Number(this.state.headCountUnknown) +
+                      Number(this.state.headCountNonBinary),
+                  })
+                }
+              />
+              <Input
+                keyboardType="numeric"
+                status="primary"
+                label="Non binary"
+                style={{ width: "40%", marginTop: "2%" }}
+                value={this.state.headCountNonBinary.toString()}
+                onChangeText={(nextValue) =>
+                  this.setState({
+                    headCountNonBinary: nextValue.replace(/\D/g, ""),
+                    numberOfStudentsCounted:
+                      Number(nextValue.replace(/\D/g, "")) +
+                      Number(this.state.headCountFemale) +
+                      Number(this.state.headCountUnknown) +
+                      Number(this.state.headCount),
+                  })
+                }
+              />
+              <Input
+                keyboardType="numeric"
+                status="primary"
+                label="Unknown"
+                style={{ width: "40%", marginTop: "2%" }}
+                value={this.state.headCountUnknown.toString()}
+                onChangeText={(nextValue) => {
+                  this.setState({
+                    headCountUnknown: nextValue.replace(/\D/g, ""),
+                    numberOfStudentsCounted:
+                      Number(nextValue.replace(/\D/g, "")) +
+                      Number(this.state.headCountFemale) +
+                      Number(this.state.headCountNonBinary) +
+                      Number(this.state.headCount),
+                  });
+                }}
+              />
+            </View>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginTop: "5%",
+              }}
+            >
+              <Button
+                style={{ width: "70%" }}
+                size="medium"
+                appearance="filled"
+                status="success"
+                onPress={() => this.updateHeadcountAttendance()}
+              >
+                {" "}
+                Save Attendance{" "}
+              </Button>
+            </View>
+          </Card>
+        </KeyboardAvoidingView>
       </Modal>
     );
     const descriptionArea = () => (

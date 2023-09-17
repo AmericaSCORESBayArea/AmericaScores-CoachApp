@@ -5,6 +5,7 @@ import {
   ImageBackground,
   SafeAreaView,
   Linking,
+  Platform,
 } from "react-native";
 import { Button, Layout, Text, Icon, Modal, Card } from "@ui-kitten/components";
 import { StyleSheet, View } from "react-native";
@@ -44,35 +45,40 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    console.log(user);
-    if (user) {
+    if (user && user.phoneNumber) {
       const number = user.phoneNumber.replace("+1", "");
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
           useridentifier: number,
           serviceprovider: "Phone",
         },
-      }).then(async (res) => {
-        if (res.status === 200)
-          console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
-        const userProfile = res.data;
-        if (res.data.ContactId === null) {
-          this.setState({ loadingModalstate: false });
-          this.initAsync();
-        } else {
-          await this.setLoginLocal(userProfile.ContactId);
-          if (userProfile.ContactId) {
-            //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-            //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
-            // dispatch(loginUser(userProfile));
-            await actions.loginUser(userProfile);
-            this.setState({ logged: "true" });
-            await analytics().logEvent("main_activity_ready");
-            navigation.navigate("Select_Club");
+      })
+        .then(async (res) => {
+          console.log(res);
+          if (res.status === 200)
+            console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
+          const userProfile = res.data;
+          if (res.data.ContactId === null) {
             this.setState({ loadingModalstate: false });
+            this.initAsync();
+          } else {
+            await this.setLoginLocal(userProfile.ContactId);
+            if (userProfile.ContactId) {
+              //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
+              //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
+              // dispatch(loginUser(userProfile));
+              await actions.loginUser(userProfile);
+              this.setState({ logged: "true" });
+              await analytics().logEvent("main_activity_ready");
+              navigation.navigate("Select_Club");
+              this.setState({ loadingModalstate: false });
+            }
           }
-        }
-      });
+        })
+        .catch((error) => {
+          console.log(error);
+          this.setState({ loadingModalstate: false });
+        });
     } else {
       this.setState({ loadingModalstate: false });
       this.initAsync();
@@ -83,6 +89,7 @@ class LogInScreen_Google extends Component {
     try {
       await AsyncStorage.setItem("loginData", loginData);
     } catch (err) {
+      this.setState({ loadingModalstate: false });
       console.log(err);
     }
   };
@@ -92,19 +99,22 @@ class LogInScreen_Google extends Component {
   };
 
   initAsync = async () => {
+    const id =
+      Platform.OS === "ios"
+        ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
+        : "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com";
     await GoogleSignIn.initAsync({
-      clientId:
-        "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com",
+      clientId: id,
     });
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
-      if (loggedStat !== null) {
-        console.log(email);
+      if (loggedStat) {
         this.setState({ logged: loggedStat });
         this.setState({ email: email });
       }
     } catch (e) {
+      this.setState({ loadingModalstate: false });
       // error reading value
     }
   };
@@ -141,10 +151,12 @@ class LogInScreen_Google extends Component {
             });
         } else {
           this.setState({ responseStatusModal: true });
-          return _rollbackSetupUser();
+          return this._rollbackSetupUser();
         }
       })
-      .catch((error) => this.setState({ responseStatusModal: true }));
+      .catch((error) => {
+        this.setState({ responseStatusModal: true }), console.log(error);
+      });
   };
 
   _rollbackSetupUser = async () => {
