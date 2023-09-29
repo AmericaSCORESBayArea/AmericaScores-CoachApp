@@ -454,18 +454,34 @@ class ActivitiesScreen extends Component {
         this.setState({displayedValue: this.state.regions[index.row]});
         if(this.state.regions[index.row] === "All IFC" || this.state.regions[index.row] === "All ASBA" || this.state.regions[index.row] === "All OGSC"){
             if (this.props.sessionScreen.region === 'IFC'){
-                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
-                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('IFC-SF')));
+                if(!this.state.activities){
+                    this.setState({activitiesRegion: []})
+                }else{
+                    this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('IFC-SF')))})//saving sessions without filtering
+                }
+                var activitiesregion =  this.state.activities ? this.state.activities.filter((value) => (value.Region.match('IFC-SF'))): [];
             }else if (this.props.sessionScreen.region === 'OGSC'){
-                this.setState({activitiesRegion:this.state.activities.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
-                var activitiesregion = this.state.activities.filter((value) => (value.Region.match('Genesis')));
+                if(!this.state.activities){
+                    this.setState({activitiesRegion: []})
+                }else{
+                this.setState({activitiesRegion:this.state.activities?.filter((value) => (value.Region.match('Genesis')))})//saving sessions without filtering
+                }
+                var activitiesregion =  this.state.activities ? this.state.activities.filter((value) => (value.Region.match('Genesis'))): [];
             }else{
+                if(!this.state.activities){
+                    this.setState({activitiesRegion: []})
+                }else{
                 this.setState({activitiesRegion:this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))))})//saving sessions without filtering
-                var activitiesregion = this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF'))));
+                }
+                var activitiesregion =  this.state.activities ? this.state.activities.filter((value => (!value.Region.match('Genesis') && !value.Region.match('IFC-SF')))): [];
             }
         }else{
+            if(!this.state.activities){
+                this.setState({activitiesRegion: []})
+            }else{
             this.setState({activitiesRegion:this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)))})
-            var activitiesregion = this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region)));
+            }
+            var activitiesregion =  this.state.activities ? this.state.activities.filter((value) =>((this.state.regions[index.row]).match(value.Region))): [];
         }
         this.setState({RegionSelected:this.state.regions[index.row]})
         var cont=0
