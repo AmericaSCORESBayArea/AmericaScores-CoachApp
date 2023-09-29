@@ -108,19 +108,20 @@ class TeamsScreen extends Component {
     ) {
       if (this.props.sessionScreen.region === "IFC") {
         this.setState({
-          teamsRegion: data.filter((value) => value.Region.match("IFC-SF")),
+          teamsRegion: data.filter((value) => value?.Region?.match("IFC-SF")),
           selectedData: data,
         }); //saving sessions without filtering
       } else if (this.props.sessionScreen.region === "OGSC") {
         this.setState({
-          teamsRegion: data.filter((value) => value.Region.match("Genesis")),
+          teamsRegion: data.filter((value) => value?.Region?.match("Genesis")),
           selectedData: data,
         }); //saving sessions without filtering
       } else {
         this.setState({
           teamsRegion: data.filter(
             (value) =>
-              !value.Region.match("Genesis") && !value.Region.match("IFC-SF")
+              !value?.Region?.match("Genesis") &&
+              !value?.Region?.match("IFC-SF")
           ),
           selectedData: data,
         }); //saving sessions without filtering
@@ -128,12 +129,12 @@ class TeamsScreen extends Component {
     } else {
       this.setState({
         selectedData: data.filter((value) =>
-          value.Region.match(this.state.RegionSelected)
+          value?.Region?.match(this.state.RegionSelected)
         ),
       });
       this.setState({
         teamsRegion: data.filter((value) =>
-          value.Region.match(this.state.RegionSelected)
+          value?.Region?.match(this.state.RegionSelected)
         ),
       });
     }
@@ -182,20 +183,21 @@ class TeamsScreen extends Component {
       if (this.props.sessionScreen.region === "IFC") {
         this.setState({
           teamsRegion: this.state.data.filter((value) =>
-            value.Region.match("IFC-SF")
+            value?.Region?.match("IFC-SF")
           ),
         }); //saving sessions without filtering
       } else if (this.props.sessionScreen.region === "OGSC") {
         this.setState({
           teamsRegion: this.state.data.filter((value) =>
-            value.Region.match("Genesis")
+            value?.Region?.match("Genesis")
           ),
         }); //saving sessions without filtering
       } else {
         this.setState({
           teamsRegion: this.state.data.filter(
             (value) =>
-              !value.Region.match("Genesis") && !value.Region.match("IFC-SF")
+              !value?.Region?.match("Genesis") &&
+              !value?.Region?.match("IFC-SF")
           ),
         }); //saving sessions without filtering
       }
@@ -242,17 +244,18 @@ class TeamsScreen extends Component {
       this.setState({ nomatchModalVisibility: false });
       if (this.props.sessionScreen.region === "IFC") {
         this.setState({
-          teamsRegion: data.filter((value) => value.Region.match("IFC-SF")),
+          teamsRegion: data.filter((value) => value?.Region?.match("IFC-SF")),
         }); //saving sessions without filtering
       } else if (this.props.sessionScreen.region === "OGSC") {
         this.setState({
-          teamsRegion: data.filter((value) => value.Region.match("Genesis")),
+          teamsRegion: data.filter((value) => value?.Region?.match("Genesis")),
         }); //saving sessions without filtering
       } else {
         this.setState({
           teamsRegion: data.filter(
             (value) =>
-              !value.Region.match("Genesis") && !value.Region.match("IFC-SF")
+              !value?.Region?.match("Genesis") &&
+              !value?.Region?.match("IFC-SF")
           ),
         });
       }

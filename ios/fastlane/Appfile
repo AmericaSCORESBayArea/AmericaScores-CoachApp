@@ -1,0 +1,8 @@
+app_identifier("com.americaScores.app") # The bundle identifier of your app
+apple_id("lautirozen@gmail.com") # Your Apple Developer Portal username
+
+itc_team_id("121948586") # App Store Connect Team ID
+team_id("946F7TCJW5") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

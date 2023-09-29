@@ -73,7 +73,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
       else
         Alert.alert(
           "SMS Not sent",
-          "Check the example phone number or contact your Salesforce administrator."
+          "Check the example phone number and try again. If the issue persists contact your Salesforce administrator."
         );
     } catch (error) {
       console.log(error);
