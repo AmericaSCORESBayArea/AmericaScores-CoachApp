@@ -65,31 +65,6 @@ target 'AmericanScoresApp' do
     rescue => e
       Pod::UI.warn e
     end
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
-    begin
-      expo_patch_react_imports!(installer)
-    rescue => e
-      Pod::UI.warn e
-    end
   end
   config = use_native_modules!
 #  use_unimodules!
@@ -106,7 +81,7 @@ target 'AmericanScoresApp' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+#    :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -118,7 +93,8 @@ target 'AmericanScoresApp' do
   # you should disable these next few lines.
 #  add_flipper_pods!
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
-
+  pod 'GoogleUtilities', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
 
   pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
 

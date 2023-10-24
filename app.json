@@ -23,6 +23,16 @@
     "android": {
       "package": "com.americaScores.app",
       "googleServicesFile": "./google-services.json"
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
   }
 }
