@@ -1,57 +1,117 @@
-  platform :ios, '14.1'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-$RNFirebaseAnalyticsWithoutAdIdSupport=true
-#def add_flipper_pods!(versions = {})
-#  versions['Flipper'] ||= '~> 0.33.1'
-#  versions['DoubleConversion'] ||= '1.1.7'
-##  versions['Flipper-Folly'] ||= '~> 2.1'
-#  versions['Flipper-Glog'] ||= '0.3.6'
-#  versions['Flipper-PeerTalk'] ||= '~> 0.0.4'
-#  versions['Flipper-RSocket'] ||= '~> 1.0'
-#
-#  pod 'FlipperKit', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitLayoutPlugin', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/SKIOSNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitUserDefaultsPlugin', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitReactPlugin', versions['Flipper'], :configuration => 'Debug'
-#
-#  # List all transitive dependencies for FlipperKit pods
-#  # to avoid them being linked in Release builds
-#  pod 'Flipper', versions['Flipper'], :configuration => 'Debug'
-#  pod 'Flipper-DoubleConversion', versions['DoubleConversion'], :configuration => 'Debug'
-#  pod 'Flipper-Folly', versions['Flipper-Folly'], :configuration => 'Debug'
-#  pod 'Flipper-Glog', versions['Flipper-Glog'], :configuration => 'Debug'
-#  pod 'Flipper-PeerTalk', versions['Flipper-PeerTalk'], :configuration => 'Debug'
-#  pod 'Flipper-RSocket', versions['Flipper-RSocket'], :configuration => 'Debug'
-#  pod 'FlipperKit/Core', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/CppBridge', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FBCxxFollyDynamicConvert', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FBDefines', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FKPortForwarding', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitHighlightOverlay', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitLayoutTextSearchable', versions['Flipper'], :configuration => 'Debug'
-#  pod 'FlipperKit/FlipperKitNetworkPlugin', versions['Flipper'], :configuration => 'Debug'
-#end
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
+#require Pod::Executable.execute_command('node', ['-p',
+#  'require.resolve(
+#    "react-native/scripts/react_native_pods.rb",
+#    {paths: [process.argv[1]]},
+#  )', __dir__]).strip
 
-## Post Install processing for Flipper
-#def flipper_post_install(installer)
-#  installer.pods_project.targets.each do |target|
-#    if target.name == 'YogaKit'
-#      target.build_configurations.each do |config|
-#        config.build_settings['SWIFT_VERSION'] = '4.1'
-#      end
-#    end
-#  end
-#end
+def node_require(script)
+  # Resolve script with node to allow for hoisting
+  require Pod::Executable.execute_command('node', ['-p',
+    "require.resolve(
+      '#{script}',
+      {paths: [process.argv[1]]},
+    )", __dir__]).strip
+end
+
+node_require('react-native/scripts/react_native_pods.rb')
+node_require('react-native-permissions/scripts/setup.rb')
+
+
+platform :ios, '13.0'
+prepare_react_native_project!
+
+#require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
+require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+#require_relative '../node_modules/react-native/scripts/react_native_pods'
+$RNFirebaseAnalyticsWithoutAdIdSupport=true
+
+setup_permissions([
+  # 'AppTrackingTransparency',
+  # 'BluetoothPeripheral',
+  # 'Calendars',
+   'Camera',
+  # 'Contacts',
+  # 'FaceID',
+  # 'LocationAccuracy',
+  # 'LocationAlways',
+  # 'LocationWhenInUse',
+  # 'MediaLibrary',
+  # 'Microphone',
+  # 'Motion',
+  # 'Notifications',
+  # 'PhotoLibrary',
+  # 'PhotoLibraryAddOnly',
+  # 'Reminders',
+  # 'Siri',
+  # 'SpeechRecognition',
+  # 'StoreKit',
+])
+
+flipper_config = ENV['NO_FLIPPER'] == "1" ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
+linkage = ENV['USE_FRAMEWORKS']
+if linkage != nil
+  Pod::UI.puts "Configuring Pod with #{linkage}ally linked Frameworks".green
+  use_frameworks! :linkage => linkage.to_sym
+end
+
 
 target 'AmericanScoresApp' do
-  # Pods for AmericanScoresApp
-
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
   config = use_native_modules!
-  use_unimodules!
-  use_react_native!(:path => config["reactNativePath"])
+#  use_unimodules!
+  
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    # Hermes is now enabled by default. Disable by setting this flag to false.
+    :hermes_enabled => flags[:hermes_enabled],
+    :fabric_enabled => flags[:fabric_enabled],
+    # Enables Flipper.
+    #
+    # Note that if you have use_frameworks! enabled, Flipper will not work and
+    # you should disable the next line.
+    :flipper_configuration => flipper_config,
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
+  )
+  
+  
   # Enables Flipper.
   #
   # Note that if you have use_frameworks! enabled, Flipper will not work and
@@ -59,8 +119,6 @@ target 'AmericanScoresApp' do
 #  add_flipper_pods!
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
-  permissions_path = '../node_modules/react-native-permissions/ios'
-  pod 'Permission-Camera', :path => "#{permissions_path}/Camera.podspec"
 
   pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
 
@@ -68,19 +126,14 @@ target 'AmericanScoresApp' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
 
-#  use_flipper!({ 'Flipper-Folly' => '2.3.0' })
-#  post_install do |installer|
-#    flipper_post_install(installer)
-#  end
-
   post_install do |installer|
-    installer.pods_project.build_configurations.each do |config|
-      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
-    end
-    installer.pods_project.targets.each do |target|
-        target.build_configurations.each do |config|
-          config.build_settings["ONLY_ACTIVE_ARCH"] = "NO"
-        end
-    end
+    # https://github.com/facebook/react-native/blob/main/packages/react-native/scripts/react_native_pods.rb#L197-L202
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      :mac_catalyst_enabled => false
+    )
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
   end
+
 end
