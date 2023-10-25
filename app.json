@@ -11,6 +11,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "updates": {
+      "enabled": false
+    },
     "ios": {
       "bundleIdentifier": "America-Scores-Ios",
       "config": {
