@@ -3,7 +3,7 @@ import { ApiConfig } from "../config/ApiConfig";
 import DeviceInfo from "react-native-device-info";
 import axios from "axios";
 import auth from "@react-native-firebase/auth";
-import * as GoogleSignIn from "expo-google-sign-in";
+import * as GoogleSignIn from "@react-native-google-signin/google-signin";
 
 export async function RequestDeleteAccount(
   closeModal,

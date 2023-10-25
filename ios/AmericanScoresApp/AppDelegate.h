@@ -1,11 +1,6 @@
-#import <Foundation/Foundation.h>
-#import <Expo/Expo.h>
-#import <EXUpdates/EXUpdatesAppController.h>
-#import <React/RCTBridgeDelegate.h>
 #import <UIKit/UIKit.h>
+#import <Expo/Expo.h>
 
-#import <UMCore/UMAppDelegateWrapper.h>
-
-@interface AppDelegate : UMAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
+@interface AppDelegate : EXAppDelegateWrapper
 
 @end
