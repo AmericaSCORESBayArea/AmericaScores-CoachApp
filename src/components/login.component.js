@@ -20,7 +20,7 @@ import {
 import { View } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { ApiConfig } from "../config/ApiConfig";
-import * as GoogleSignIn from "expo-google-sign-in";
+import * as GoogleSignIn from '@react-native-google-signin/google-signin';
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import {

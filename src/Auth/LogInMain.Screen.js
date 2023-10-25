@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import moment from "moment";
 
-import * as GoogleSignIn from "expo-google-sign-in";
+import * as GoogleSignIn from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import appleAuth, {
   AppleButton,
