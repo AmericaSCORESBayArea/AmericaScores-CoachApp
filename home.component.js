@@ -432,11 +432,11 @@ export default OptionOverflowMenu = (navigation) => {
         onPress={() => profileScreen()}
         accessoryLeft={profileicon}
       />
-      <MenuItem
+      {/* <MenuItem //Ivan: temporary disabled
         title="Change affiliation"
         onPress={() => changeAfflitiation()}
         accessoryLeft={changeaffiliateicon}
-      />
+      /> */}
       <MenuItem
         title="User guide"
         onPress={() => menuItemOnPress("userGuideModal")}
