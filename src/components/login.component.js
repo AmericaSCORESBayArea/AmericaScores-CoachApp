@@ -20,7 +20,7 @@ import {
 import { View } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { ApiConfig } from "../config/ApiConfig";
-import * as GoogleSignIn from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -228,7 +228,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
   }
 
   const _rollbackSetupUser = async () => {
-    await GoogleSignIn.signOutAsync();
+    await GoogleSignin.signOut();
     dispatch(logOutUser());
   };
 
