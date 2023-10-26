@@ -23,7 +23,7 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^6.2.0",
-    "@ui-kitten/components": "^5.3.1",
+    "@ui-kitten/components": "https://gitpkg.now.sh/AnsonT/react-native-ui-kitten/src/components?master",
     "@ui-kitten/eva-icons": "^5.3.1",
     "@ui-kitten/moment": "^5.3.1",
     "axios": "^1.5.1",
