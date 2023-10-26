@@ -1038,7 +1038,7 @@ class ActivitiesScreen extends Component {
         // var date = moment();
 
         // const minDatePickerDate = moment("20190101", "YYYYMMDD").toDate();
-
+        
         const searchBox = () => (
             <Datepicker
                 label="Select a Date"
@@ -1060,8 +1060,12 @@ class ActivitiesScreen extends Component {
                 size='large'
                 placement="bottom"
                 range={this.state.range}
-                min={new Date('01/01/2020')}
-                max={this.state.EndSeason}
+                // min={new Date('01/01/2020')}
+                // max={this.state.EndSeason}
+                
+                min={new Date(2020,1,1)}
+                max={(this.state.EndSeason === undefined || this.state.EndSeason === '' )? undefined: this.state.EndSeason} // Ivan: it appear EndSeason is never populated properly
+
                 onSelect={range => this.selectRange(range)}
                 dateService={formatDateService}
                 style={{margin: "2%",minWidth:"90%"}}
