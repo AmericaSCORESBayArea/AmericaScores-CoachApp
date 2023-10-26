@@ -26,7 +26,7 @@ import Profile from "./src/Profile.Screen";
 import { ApiConfig } from "./src/config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 import auth from "@react-native-firebase/auth";
-import * as GoogleSignIn from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { Linking, Platform } from "react-native";
@@ -396,7 +396,7 @@ export default OptionOverflowMenu = (navigation) => {
         item_id: "log-out",
       });
       setOverflowMenuVisible(false);
-      await GoogleSignIn.signOutAsync();
+      await GoogleSignin.signOut();
       await auth().signOut();
       await dispatch(logOutUser());
       await dispatch(changeRegion(null));

@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import moment from "moment";
 
-import * as GoogleSignIn from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from "@react-native-firebase/auth";
 import appleAuth, {
   AppleButton,
@@ -103,9 +103,13 @@ class LogInScreen_Google extends Component {
       Platform.OS === "ios"
         ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
         : "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com";
-    await GoogleSignIn.initAsync({
-      clientId: id,
+    GoogleSignin.configure({
+      scopes: ["email"],
+      webClientId: id, 
     });
+    // await GoogleSignin.initAsync({
+    //   clientId: id,
+    // });
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
@@ -120,7 +124,7 @@ class LogInScreen_Google extends Component {
   };
 
   _syncUserWithStateAsync = async () => {
-    const loggedUser = await GoogleSignIn.signInSilentlyAsync();
+    const loggedUser = await GoogleSignin.signInSilently();
     if (loggedUser !== null) this._setupUser(loggedUser.email, "google");
   };
 
@@ -161,18 +165,19 @@ class LogInScreen_Google extends Component {
 
   _rollbackSetupUser = async () => {
     const { actions } = this.props;
-    await GoogleSignIn.signOutAsync();
+    await GoogleSignin.signOut();
     actions.logOutUser();
   };
 
   signInAsync = async () => {
     try {
-      await GoogleSignIn.askForPlayServicesAsync();
-      const { type, user } = await GoogleSignIn.signInAsync();
-      if (type === "success") this._syncUserWithStateAsync();
+      await GoogleSignin.hasPlayServices();
+      await GoogleSignin.signIn();;
     } catch ({ message }) {
       alert("login: Error:" + message);
+      return;
     }
+    this._syncUserWithStateAsync();
   };
 
   signInGoogle = () => {
