@@ -138,6 +138,7 @@ class LogInScreen_Google extends Component {
       },
     })
       .then((response) => {
+        console.log("setupUser", response);
         const userProfile = response.data;
         if (userProfile.ContactId) {
           console.log(userProfile);
@@ -159,6 +160,7 @@ class LogInScreen_Google extends Component {
         }
       })
       .catch((error) => {
+        console.log("setupUser error", error);
         this.setState({ responseStatusModal: true }), console.log(error);
       });
   };
@@ -216,13 +218,13 @@ class LogInScreen_Google extends Component {
         this._setupUser(this.state.email, "email");
       } else {
         const appleAuthRequestResponse = await appleAuth.performRequest({
-          requestedOperation: AppleAuthRequestOperation.LOGIN,
+          requestedOperation: appleAuth.Operation.LOGIN,
           requestedScopes: [
-            AppleAuthRequestScope.EMAIL,
-            AppleAuthRequestScope.FULL_NAME,
+            appleAuth.Scope.FULL_NAME,
+            appleAuth.Scope.EMAIL,
           ],
         });
-
+        console.log(appleAuthRequestResponse);
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken)
           this.setState({ responseStatusModal: true });
@@ -255,9 +257,11 @@ class LogInScreen_Google extends Component {
           );
           throw "[APPLE LOGIN | ERROR] in appleCredential";
         } else console.log("[APPLE LOGIN] got appleCredential ");
+        console.log(appleCredential);
 
         // Sign the user in with the credential
-        const response = auth().signInWithCredential(appleCredential);
+        const response = await auth().signInWithCredential(appleCredential);
+        console.log(response);
         if (!response) {
           Alert.alert(
             "Log in error",
