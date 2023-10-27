@@ -1,4 +1,5 @@
 #import <Firebase.h>
+#import <FirebaseAuth/FirebaseAuth.h>
 #import "AppDelegate.h"
 #import <React/RCTBundleURLProvider.h>
 
@@ -17,7 +18,7 @@
 //  }
   self.moduleName = @"main";
 //  self.launchOptions = launchOptions;
-  self.initialProps = @{};
+//  self.initialProps = @{};
 
   return [super application:application didFinishLaunchingWithOptions:launchOptions];
 }

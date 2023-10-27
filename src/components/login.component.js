@@ -219,6 +219,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
       newPhoneNumber = newPhoneNumber.replace("+1", "");
       _setupUser(newPhoneNumber, "Phone");
     } catch (error) {
+      console.log(error);
       setLoading(false);
       Alert.alert(
         "Login error: Invalid code",
