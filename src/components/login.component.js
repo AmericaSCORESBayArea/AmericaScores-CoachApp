@@ -171,11 +171,15 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
           //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
           _syncUserSessions(userProfile)
             .then(async (userSessions) => {
+              console.log("set userProfile", userProfile);
+              await AsyncStorage.setItem("authServiceType", serviceProvider);
+              await AsyncStorage.setItem("authIdentifier", userIdentifier);
+    
               dispatch(loginUser(userProfile));
               dispatch(syncSessions(userSessions));
               setLoading(false);
               const notifications = await AsyncStorage.getItem(
-                "appNotifications"
+                "appNotifications" 
               );
               if (notifications === null || notifications === "true") {
                 await analytics().logEvent("main_activity_ready");

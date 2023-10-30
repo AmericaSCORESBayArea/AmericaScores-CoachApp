@@ -33,6 +33,7 @@ import { bindActionCreators } from "redux";
 class LogInScreen_Google extends Component {
   constructor(props) {
     super(props);
+    console.log("LogInScreen_Google", this.props, this.state);
     this.state = {
       logged: "false",
       email: "",
@@ -45,16 +46,20 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    if (user && user.phoneNumber) {
-      const number = user.phoneNumber.replace("+1", "");
+    console.log("currentUser", user);
+    const authType = await AsyncStorage.getItem("authServiceType");
+    const authIdentifier = await AsyncStorage.getItem("authIdentifier");
+    console.log("auth", authType, authIdentifier);
+
+    if (authType && authIdentifier && user) {
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
-          useridentifier: number,
-          serviceprovider: "Phone",
-        },
+          useridentifier: authIdentifier.toLowerCase() == "phone" ? authIdentifier.replace("+1", ""): authIdentifier,
+          serviceprovider: authType,
+        }, 
       })
         .then(async (res) => {
-          console.log(res);
+          console.log("/auth/login", res);
           if (res.status === 200)
             console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
           const userProfile = res.data;
@@ -67,6 +72,7 @@ class LogInScreen_Google extends Component {
               //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
               //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
               // dispatch(loginUser(userProfile));
+              console.log("actions", actions);
               await actions.loginUser(userProfile);
               this.setState({ logged: "true" });
               await analytics().logEvent("main_activity_ready");
@@ -76,7 +82,7 @@ class LogInScreen_Google extends Component {
           }
         })
         .catch((error) => {
-          console.log(error);
+          console.log("/auth/login", error);
           this.setState({ loadingModalstate: false });
         });
     } else {
@@ -99,6 +105,7 @@ class LogInScreen_Google extends Component {
   };
 
   initAsync = async () => {
+    console.log("initAsync");
     const id =
       Platform.OS === "ios"
         ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
@@ -113,11 +120,13 @@ class LogInScreen_Google extends Component {
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
+      console.log("loggedStat", loggedStat, email);
       if (loggedStat) {
         this.setState({ logged: loggedStat });
         this.setState({ email: email });
       }
     } catch (e) {
+      console.log("loggedStatus error", e);
       this.setState({ loadingModalstate: false });
       // error reading value
     }
@@ -137,21 +146,24 @@ class LogInScreen_Google extends Component {
         serviceprovider: serviceProvider,
       },
     })
-      .then((response) => {
+      .then(async (response) => {
         console.log("setupUser", response);
         const userProfile = response.data;
         if (userProfile.ContactId) {
-          console.log(userProfile);
+          console.log("userProfile", userProfile);
+          await AsyncStorage.setItem("authServiceType", serviceProvider);
+          await AsyncStorage.setItem("authIdentifier", userIdentifier);
+
           this.setState({ logged: "true" });
           this._syncUserSessions(userProfile)
             .then((userSessions) => {
-              console.log(userSessions);
+              console.log("userSessions", userSessions);
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
               navigation.navigate("Select_Club");
             })
             .catch((error) => {
-              console.log(error);
+              console.log("_setupUser", error);
               this._rollbackSetupUser();
             });
         } else {
@@ -159,7 +171,8 @@ class LogInScreen_Google extends Component {
           return this._rollbackSetupUser();
         }
       })
-      .catch((error) => {
+      .catch(async (error) => {
+        await AsyncStorage.removeItem("authServiceType");
         console.log("setupUser error", error);
         this.setState({ responseStatusModal: true }), console.log(error);
       });
@@ -168,6 +181,7 @@ class LogInScreen_Google extends Component {
   _rollbackSetupUser = async () => {
     const { actions } = this.props;
     await GoogleSignin.signOut();
+    console.log("rollback setup user");
     actions.logOutUser();
   };
 
@@ -192,6 +206,7 @@ class LogInScreen_Google extends Component {
 
   appleAlert = () => {
     if (this.state.logged === "true" && this.state.email !== null) {
+      console.log("apple auth route", this.state.email);
       this._setupUser(this.state.email, "email");
     } else {
       console.log(this.state.email, this.state.logged);
@@ -228,20 +243,20 @@ class LogInScreen_Google extends Component {
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken)
           this.setState({ responseStatusModal: true });
+        
+        // if (!appleAuthRequestResponse.email) {
+        //   Alert.alert(
+        //     "Log in error",
+        //     `We need your email to log you in. Do NOT press "Hide email" please.`
+        //   );
+        // } else {
+        //   console.log("email: " + appleAuthRequestResponse.email);
+        //   this.setState({ email: appleAuthRequestResponse.email });
 
-        if (!appleAuthRequestResponse.email) {
-          Alert.alert(
-            "Log in error",
-            `We need your email to log you in. Do NOT press "Hide email" please.`
-          );
-        } else {
-          console.log("email: " + appleAuthRequestResponse.email);
-          this.setState({ email: appleAuthRequestResponse.email });
+        //   await AsyncStorage.setItem("userAppleEmail", this.state.email);
 
-          await AsyncStorage.setItem("userAppleEmail", this.state.email);
-
-          console.log("[APPLE LOGIN] Successful request");
-        }
+        //   console.log("[APPLE LOGIN] Successful request");
+        // }
 
         // Create a Firebase credential from the response
         const { identityToken, nonce } = appleAuthRequestResponse;
@@ -270,8 +285,30 @@ class LogInScreen_Google extends Component {
           throw "[APPLE LOGIN | ERROR] in signInWithCredentials";
         } else console.log("[APPLE LOGIN] signed In with credentials");
 
+        let fbUser = auth().currentUser;
+        if (!fbUser || !fbUser.email || fbUser.email.length === 0) {
+          Alert.alert(
+            "Log in error",
+            `We need your email to log you in. Do NOT press "Hide email" please.`
+          );
+          try {
+            await auth().signOut();
+            console.log("[APPLE LOGIN] signed out");
+          } catch (error) {
+            console.log("[APPLE LOGIN] error signing out", error);
+          }
+          return;
+        } else {
+          console.log("email: " + fbUser.email);
+          this.setState({ email: fbUser.email });
+
+          await AsyncStorage.setItem("userAppleEmail", this.state.email);
+
+          console.log("[APPLE LOGIN] Successful request");
+        }
+
         //TODO Change the gmail for email in backend
-        this._setupUser(appleAuthRequestResponse.email, "email");
+        this._setupUser(fbUser.email, "email");
       }
     } catch (error) {
       this.setState({ responseStatusModal: true });
