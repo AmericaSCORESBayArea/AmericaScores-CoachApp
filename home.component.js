@@ -396,8 +396,17 @@ export default OptionOverflowMenu = (navigation) => {
         item_id: "log-out",
       });
       setOverflowMenuVisible(false);
+      try {
+        await AsyncStorage.clear();
+      } catch (sError) {
+        console.log("storage error", sError);
+      }
       await GoogleSignin.signOut();
-      await auth().signOut();
+      try {
+        await auth().signOut();
+      } catch (aError) {
+        console.log("auth error", aError);
+      }
       await dispatch(logOutUser());
       await dispatch(changeRegion(null));
       navigation.navigate("Login");
