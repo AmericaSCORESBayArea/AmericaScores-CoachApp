@@ -139,7 +139,8 @@ class LogInScreen_Google extends Component {
 
   _setupUser = async (userIdentifier, serviceProvider) => {
     const { actions, navigation } = this.props;
-
+    console.log("setupUser", userIdentifier, serviceProvider);
+    
     Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
         useridentifier: userIdentifier,
