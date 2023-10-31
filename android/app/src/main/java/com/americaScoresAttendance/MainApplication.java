@@ -10,22 +10,12 @@ import androidx.multidex.MultiDex;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.reactnativecommunity.asyncstorage.AsyncStoragePackage;
-import com.imagepicker.ImagePickerPackage;
-import com.reactnativedocumentpicker.DocumentPickerPackage;
-import io.invertase.firebase.fiam.ReactNativeFirebaseFiamPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
+
 
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
-import com.americaScoresAttendance.generated.BasePackageList;
-
-import org.unimodules.adapters.react.ModuleRegistryAdapter;
-import org.unimodules.adapters.react.ReactModuleRegistryProvider;
-
-import expo.modules.updates.UpdatesController;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -40,11 +30,6 @@ public class MainApplication extends Application implements ReactApplication {
       MultiDex.install(this);
     }
 
-
-  private final ReactModuleRegistryProvider mModuleRegistryProvider = new ReactModuleRegistryProvider(
-    new BasePackageList().getPackageList()
-  );
-
   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(this, new ReactNativeHost(this) {
     @Override
     public boolean getUseDeveloperSupport() {
@@ -54,7 +39,6 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       List<ReactPackage> packages = new PackageList(this).getPackages();
-      packages.add(new ModuleRegistryAdapter(mModuleRegistryProvider));
       return packages;
     }
 
@@ -63,23 +47,6 @@ public class MainApplication extends Application implements ReactApplication {
       return "index";
     }
 
-    @Override
-    protected @Nullable String getJSBundleFile() {
-      if (BuildConfig.DEBUG) {
-        return super.getJSBundleFile();
-      } else {
-        return UpdatesController.getInstance().getLaunchAssetFile();
-      }
-    }
-
-    @Override
-    protected @Nullable String getBundleAssetName() {
-      if (BuildConfig.DEBUG) {
-        return super.getBundleAssetName();
-      } else {
-        return UpdatesController.getInstance().getBundleAssetName();
-      }
-    }
   });
 
   @Override
@@ -91,10 +58,6 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     SoLoader.init(this, /* native exopackage */ false);
-
-    if (!BuildConfig.DEBUG) {
-      UpdatesController.initialize(this);
-    }
 
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
     ApplicationLifecycleDispatcher.onApplicationCreate(this);
