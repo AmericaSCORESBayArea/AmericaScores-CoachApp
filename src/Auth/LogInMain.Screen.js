@@ -109,7 +109,7 @@ class LogInScreen_Google extends Component {
     const id =
       Platform.OS === "ios"
         ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
-        : "688897090799-99bi882h4pkc3vkksl71mm387lgvd2lp.apps.googleusercontent.com";
+        : "688897090799-bjjppfthi3oac16o523ht01h63lnaout.apps.googleusercontent.com";
     GoogleSignin.configure({
       scopes: ["email"],
       webClientId: id, 
@@ -130,11 +130,6 @@ class LogInScreen_Google extends Component {
       this.setState({ loadingModalstate: false });
       // error reading value
     }
-  };
-
-  _syncUserWithStateAsync = async () => {
-    const loggedUser = await GoogleSignin.signInSilently();
-    if (loggedUser !== null) this._setupUser(loggedUser.email, "google");
   };
 
   _setupUser = async (userIdentifier, serviceProvider) => {
@@ -188,13 +183,21 @@ class LogInScreen_Google extends Component {
 
   signInAsync = async () => {
     try {
-      await GoogleSignin.hasPlayServices();
-      await GoogleSignin.signIn();;
+      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      const { idToken } = await GoogleSignin.signIn();
+
+      const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+      const { user } = await auth().signInWithCredential(googleCredential);
+      
+      this._setupUser(user.email, "google");
+
     } catch ({ message }) {
       alert("login: Error:" + message);
       return;
     }
-    this._syncUserWithStateAsync();
+    
+    
+
   };
 
   signInGoogle = () => {

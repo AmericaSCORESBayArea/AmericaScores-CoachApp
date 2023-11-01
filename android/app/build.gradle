@@ -77,12 +77,12 @@ apply plugin: "com.facebook.react"
  * ]
  */
 
-project.ext.react = [
-    enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
-    cliPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/cli.js",
-//    hermesCommand: new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/%OS-BIN%/hermesc",
-    composeSourceMapsPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/scripts/compose-source-maps.js",
-]
+//project.ext.react = [
+//    enableHermes: (findProperty('expo.jsEngine') ?: "jsc") == "hermes",
+//    cliPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/cli.js",
+////    hermesCommand: new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/%OS-BIN%/hermesc",
+//    composeSourceMapsPath: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/scripts/compose-source-maps.js",
+//]
 
 //apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
 
@@ -121,32 +121,34 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get("enableHermes", false);
+//def enableHermes = project.ext.react.get("enableHermes", false);
+
 
 android {
     ndkVersion rootProject.ext.ndkVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace "com.americaScoresAttendance.app"
 
     defaultConfig {
         applicationId "com.americaScoresAttendance.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 42
-        versionName '2.81'
+        versionCode 1
+        versionName '20'
 
         missingDimensionStrategy 'react-native-camera', 'general'
         manifestPlaceholders = [appAuthRedirectScheme: 'com.redirectScheme.comm']
         multiDexEnabled true
     }
-    splits {
-        abi {
+   splits {
+       abi {
 
-            reset()
-            enable enableSeparateBuildPerCPUArchitecture
-            universalApk false  // If true, also generate a universal APK
-            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
-        }
-    }
+           reset()
+           enable enableSeparateBuildPerCPUArchitecture
+           universalApk true  // If true, also generate a universal APK
+           include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
+       }
+   }
     signingConfigs {
         release {
             if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
@@ -182,50 +184,70 @@ android {
     //     pickFirst "lib/x86/libc++_shared.so"
     //     pickFirst "lib/x86_64/libc++_shared.so"
     // }
+    
+    
 
     // applicationVariants are e.g. debug, release
-    // applicationVariants.all { variant ->
-    //     variant.outputs.each { output ->
-    //         // For each separate APK per architecture, set a unique version code as described here:
-    //         // https://developer.android.com/studio/build/configure-apk-splits.html
-    //         def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
-    //         def abi = output.getFilter(OutputFile.ABI)
-    //         if (abi != null) {  // null for the universal-debug, universal-release variants
-    //             output.versionCodeOverride =
-    //                     versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
-    //         }
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            // For each separate APK per architecture, set a unique version code as described here:
+            // https://developer.android.com/studio/build/configure-apk-splits.html
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
+            def abi = output.getFilter(com.android.build.OutputFile.ABI)
+            if (abi != null) {  // null for the universal-debug, universal-release variants
+                output.versionCodeOverride =
+                        versionCodes.get(abi) * 1048576 + defaultConfig.versionCode
+            }
 
-    //     }
-    // }
+        }
+    }
 }
 
 dependencies {
+//    implementation("com.facebook.soloader:soloader:0.10.5")
+
+//    implementation("com.facebook.react:react-android")
+//
+//    implementation 'com.google.android.play:core:1.10.0'
+//    implementation fileTree(dir: "libs", include: ["*.jar"])
+////    //noinspection GradleDynamicVersion
+//    implementation "com.facebook.react:react-native:+"  // From node_modules
+////    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+////    implementation 'com.facebook.fresco:fresco:2.0.0'//gif support
+////    implementation 'com.facebook.fresco:animated-gif:2.0.0'//gif support
+////    implementation platform('com.google.firebase:firebase-bom:26.4.0')
+////    // implementation 'com.android.support:multidex:1.0.3'
+//    implementation 'com.android.support:multidex:1.0.3'
+////    implementation project(path: ":@react-native-firebase_inAppMessaging")
+//
+//    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
+//      exclude group:'com.facebook.fbjni'
+//    }
+//    debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
+//        exclude group:'com.facebook.flipper'
+//    }
+//    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
+//        exclude group:'com.facebook.flipper'
+//    }
+//
+//    if (enableHermes) {
+//        debugImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-debug.aar"))
+//        releaseImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-release.aar"))
+//    } else {
+//        implementation jscFlavor
+//    }
+
+    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
-    implementation 'com.google.android.play:core:1.10.0'
-    implementation fileTree(dir: "libs", include: ["*.jar"])
-    //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
-    implementation 'com.facebook.fresco:fresco:2.0.0'//gif support
-    implementation 'com.facebook.fresco:animated-gif:2.0.0'//gif support
-    implementation platform('com.google.firebase:firebase-bom:26.4.0')
-    // implementation 'com.android.support:multidex:1.0.3'
-    implementation 'com.android.support:multidex:1.0.1'
-    implementation project(path: ":@react-native-firebase_inAppMessaging")
-    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.fbjni'
-    }
+    debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}")
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
-    }
-    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
+        exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
 
-    if (enableHermes) {
-        debugImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-debug.aar"))
-        releaseImplementation files(new File(["node", "--print", "require.resolve('hermes-engine/package.json')"].execute(null, rootDir).text.trim(), "../android/hermes-release.aar"))
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }

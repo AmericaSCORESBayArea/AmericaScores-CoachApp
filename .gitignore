@@ -70,3 +70,5 @@ GoogleService-info.plist
 *.hprof
 *.apk
 *.apb
+
+android/app/src/release/
