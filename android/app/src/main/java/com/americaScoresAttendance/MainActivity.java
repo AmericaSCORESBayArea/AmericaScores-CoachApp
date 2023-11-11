@@ -5,8 +5,16 @@ import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
 import com.facebook.react.defaults.DefaultReactActivityDelegate;
+import android.os.Bundle;
+
+import androidx.annotation.Nullable;
 
 public class MainActivity extends ReactActivity {
+    //react-native-screens override
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(null);
+    }
 
     /**
      * Returns the name of the main component registered from JavaScript. This is used to schedule
@@ -29,5 +37,12 @@ public class MainActivity extends ReactActivity {
                 getMainComponentName(),
                 // If you opted-in for the New Architecture, we enable the Fabric Renderer.
                 DefaultNewArchitectureEntryPoint.getFabricEnabled()));
+    }
+
+    public static class MainActivityDelegate extends ReactActivityDelegate {
+        public MainActivityDelegate(ReactActivity activity, @Nullable String mainComponentName) {
+            super(activity, mainComponentName);
+        }
+        //...code
     }
 }
