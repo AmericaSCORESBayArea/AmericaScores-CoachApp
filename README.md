@@ -51,7 +51,7 @@ verify everything is ok with echo $ANDROID_HOME. Make sure it outputs something 
 
 To build apk for Google Play release:
 1. cd android
-2. ./gradlew bundleRelease
+2. ./gradlew assembleRelease
 3. cd app/build/outputs/bundle/release
 4. open .
 5. upload apk to Google Play
