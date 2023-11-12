@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>aps-environment</key>
-	<string>unknown</string>
+	<string>release</string>
 	<key>com.apple.developer.applesignin</key>
 	<array>
 		<string>Default</string>

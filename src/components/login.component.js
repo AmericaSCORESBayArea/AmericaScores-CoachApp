@@ -20,7 +20,7 @@ import {
 import { View } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { ApiConfig } from "../config/ApiConfig";
-import * as GoogleSignIn from "expo-google-sign-in";
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -171,11 +171,15 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
           //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
           _syncUserSessions(userProfile)
             .then(async (userSessions) => {
+              console.log("set userProfile", userProfile);
+              await AsyncStorage.setItem("authServiceType", serviceProvider);
+              await AsyncStorage.setItem("authIdentifier", userIdentifier);
+    
               dispatch(loginUser(userProfile));
               dispatch(syncSessions(userSessions));
               setLoading(false);
               const notifications = await AsyncStorage.getItem(
-                "appNotifications"
+                "appNotifications" 
               );
               if (notifications === null || notifications === "true") {
                 await analytics().logEvent("main_activity_ready");
@@ -219,6 +223,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
       newPhoneNumber = newPhoneNumber.replace("+1", "");
       _setupUser(newPhoneNumber, "Phone");
     } catch (error) {
+      console.log(error);
       setLoading(false);
       Alert.alert(
         "Login error: Invalid code",
@@ -228,7 +233,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
   }
 
   const _rollbackSetupUser = async () => {
-    await GoogleSignIn.signOutAsync();
+    await GoogleSignin.signOut();
     dispatch(logOutUser());
   };
 

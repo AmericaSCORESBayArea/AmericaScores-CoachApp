@@ -3,7 +3,6 @@ import * as eva from "@eva-design/eva";
 import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import AppNavigator from "./src/AppNavigator.Screen";
-import * as AppAuth from "expo-app-auth";
 import { Provider } from "react-redux";
 import inAppMessaging from "@react-native-firebase/in-app-messaging";
 import { default as theme } from "./assets/ASBA_Theme_Light_v1.json"; // <-- Import app theme
@@ -13,7 +12,6 @@ import configureStore from "./src/config/ConfigureStore";
 import Axios from "axios";
 
 // When configured correctly, URLSchemes should contain your REVERSED_CLIENT_ID
-const { URLSchemes } = AppAuth;
 const store = configureStore();
 
 export default function App() {
@@ -25,6 +23,7 @@ export default function App() {
     };
     dismissFirebaseModal();
   }, []);
+  console.log("store", store.getState());
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
