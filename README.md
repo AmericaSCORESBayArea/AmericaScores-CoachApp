@@ -2,11 +2,13 @@
 
 React native based mobile app for Americas scores attendance control.
 
+
 ## Pre-install required tools
 
 The project requires the following apps running over the project. You can follow the steps in the [Official React-Native guide](https://reactnative.dev/docs/environment-setup). Or install them by yourself.
+Please stick to the verified versions of the dependencies unless you are prepared to perform a full smoke test and have a qualified engineer ready to review and test your Pull Request.
 
-- [Node](https://nodejs.org/en/) (see below for verififed version)
+- [Node](https://nodejs.org/en/) (see below for verified version)
 - [For IOS][cocoa pods](https://cocoapods.org/)
 - **Physical device** connected to your computer with USB debugging enabled or an **Emulator** `(**IOS** download XCode from your appstore | **Android** Download android studio)`
 - Text editor of your choice `[XCode | Android studio | Visual studio Code ]` (Make sure that whatever editor you use is running as administrator)
@@ -66,3 +68,19 @@ To build apk for Google Play release:
 6. pod install
 7. cd ..
 8. open ios/AmericanScoresApp.xcworkspace
+
+# Release History #
+## In Store ##
+### Apple App Store: v 20.1 ###
+### Google Play Store: v 60.0 ###
+| **Release** | **Date** | **Platform** | **Commit** |     **Notes**     |
+|-------------|----------|--------------|------------|-------------------|
+|60.0         | 11-8-23  |   Android    |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/5d50a6c3b358dea718e45baa9a8a3fb3c1a2e3cc) |  Android Crash Fix |
+|20.1         | 11-3-23  |     iOS      |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b) |  Replaced Slack Connect (private)    |
+|20           | 10-31-23 |     iOS      |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b)  |  Update React+Pods to fix multiple Firebase Auth issues and get dependencies to newer LTS  |
+|3.95         | 8-22-23  |     iOS      |            | Reapply Creds     |
+|3.9          | 6-4-23   |     iOS      |            | new Firebase Project ID   |
+|3.8          | 6-3-23   |     iOS      |  [7a1e5b3](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/7a1e5b31b8f5f65580508f8f686ab3a227ae7a8a)  |  https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/pull/378  iOS Firebase Auth bug |
+|             |          |              |            |                   |
+|             |          |              |            |                   |
+
