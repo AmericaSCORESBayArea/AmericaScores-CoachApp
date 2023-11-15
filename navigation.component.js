@@ -20,11 +20,11 @@ import {
   AddSessionHeadcountModal,
   EditHeadCountSessionModal,
 } from "./src/components/SessionModal.component";
+import { AssessmentModal } from "./src/components/AssessmentModal.component";
 import {
-  userGuideModal,
-  userGuideModalLogin,
-} from "./src/components/userGuideModal.component";
-import { assessmentModal } from "./src/components/assessmentModal.component";
+  UserGuideModal,
+  UserGuideModalLogin,
+} from "./src/components/UserGuideModal.component";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -88,10 +88,10 @@ export const HomeRootStackScreen = () => {
         name="StudentInfoModal"
         component={StudentInfoModal}
       />
-      <HomeRootStack.Screen name="userGuideModal" component={userGuideModal} />
+      <HomeRootStack.Screen name="UserGuideModal" component={UserGuideModal} />
       <HomeRootStack.Screen
-        name="assessmentModal"
-        component={assessmentModal}
+        name="AssessmentModal"
+        component={AssessmentModal}
       />
     </HomeRootStack.Navigator>
   );
@@ -100,7 +100,7 @@ export const HomeRootStackScreen = () => {
 const LoginStack = createStackNavigator();
 export const LoginStackScreen = () => {
   return (
-    <LoginStack.Navigator headerMode="none" mode="card">
+    <LoginStack.Navigator headerMode="none" presentation="card">
       <LoginStack.Screen name="MainLogin" component={LogInScreen_Google} />
       <LoginStack.Screen
         name="PhoneLogin_phone"
@@ -111,8 +111,8 @@ export const LoginStackScreen = () => {
         component={LogInScreen_PhoneAuth_Code}
       />
       <LoginStack.Screen
-        name="userGuideModalLogin"
-        component={userGuideModalLogin}
+        name="UserGuideModalLogin"
+        component={UserGuideModalLogin}
       />
       <LoginStack.Screen
         name="Select_Club"
