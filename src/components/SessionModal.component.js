@@ -35,7 +35,7 @@ export const EditSessionModal = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
   const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
     route.params;
-  const [date, setDate] = React.useState(moment(oldDate));
+  const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
   const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];
@@ -1030,7 +1030,6 @@ export const AddSessionModal = ({ route, navigation }) => {
   const [date, setDate] = React.useState(moment(oldDate));
   const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
-  const [responseSuccess, setResponseSuccess] = React.useState(false);
   const actualRegion = useSelector((state) => state.sessionScreen.region);
   const [timePickerOptions, setTimePickerOptions] = React.useState({
     type: "start",
@@ -1167,6 +1166,7 @@ export const AddSessionModal = ({ route, navigation }) => {
       sessionStart: changes.SessionStart,
       sessionEnd: changes.SessionEnd,
     });
+    console.log("changes", changes);
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
       .then((res) => {
         Alert.alert(
