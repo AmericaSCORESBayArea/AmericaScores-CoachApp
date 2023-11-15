@@ -429,8 +429,8 @@ export const EditSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -448,8 +448,8 @@ export const EditSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -920,8 +920,8 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -939,8 +939,8 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1328,8 +1328,8 @@ export const AddSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1347,8 +1347,8 @@ export const AddSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1739,8 +1739,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1758,8 +1758,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>

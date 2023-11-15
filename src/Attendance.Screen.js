@@ -1750,7 +1750,7 @@ class AttendanceScreen extends Component {
                           ).getHours() + 3
                         )
                       )
-                    ).format("HH:mm")
+                    ).format("LT")
                   : ""
               )}
               {descriptionRowTextDate(
@@ -1766,7 +1766,7 @@ class AttendanceScreen extends Component {
                           ).getHours() + 3
                         )
                       )
-                    ).format("HH:mm")
+                    ).format("LT")
                   : ""
               )}
               {descriptionRowText("Students:", this.state.numberOfStudents)}
