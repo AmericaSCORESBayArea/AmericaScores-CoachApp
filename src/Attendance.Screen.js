@@ -1177,7 +1177,7 @@ class AttendanceScreen extends Component {
               size={25}
               color={"#4f5c63"}
               onPress={() =>
-                this.props.navigation.navigate("assessmentModal", {
+                this.props.navigation.navigate("AssessmentModal", {
                   Student: item,
                   User: user,
                   Session: currentSessionData,
@@ -1723,6 +1723,7 @@ class AttendanceScreen extends Component {
         </KeyboardAvoidingView>
       </Modal>
     );
+
     const descriptionArea = () => (
       <Layout style={{ padding: 5 }} level="2">
         <ScrollView
