@@ -20,7 +20,7 @@ import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 
-export const AssessmentModal = (props) => {
+export const assessmentModal = (props) => {
   const [visible, setVisible] = React.useState(true);
   const [assessmentValue, setAssessmentValue] = React.useState();
   const [selectedIndex, setSelectedIndex] = React.useState();

@@ -20,11 +20,11 @@ import {
   AddSessionHeadcountModal,
   EditHeadCountSessionModal,
 } from "./src/components/SessionModal.component";
-import { AssessmentModal } from "./src/components/AssessmentModal.component";
+import { assessmentModal } from "./src/components/assessmentModal.component";
 import {
-  UserGuideModal,
-  UserGuideModalLogin,
-} from "./src/components/UserGuideModal.component";
+  userGuideModal,
+  userGuideModalLogin,
+} from "./src/components/userGuideModal.component";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -88,10 +88,10 @@ export const HomeRootStackScreen = () => {
         name="StudentInfoModal"
         component={StudentInfoModal}
       />
-      <HomeRootStack.Screen name="UserGuideModal" component={UserGuideModal} />
+      <HomeRootStack.Screen name="userGuideModal" component={userGuideModal} />
       <HomeRootStack.Screen
-        name="AssessmentModal"
-        component={AssessmentModal}
+        name="assessmentModal"
+        component={assessmentModal}
       />
     </HomeRootStack.Navigator>
   );
@@ -111,8 +111,8 @@ export const LoginStackScreen = () => {
         component={LogInScreen_PhoneAuth_Code}
       />
       <LoginStack.Screen
-        name="UserGuideModalLogin"
-        component={UserGuideModalLogin}
+        name="userGuideModalLogin"
+        component={userGuideModalLogin}
       />
       <LoginStack.Screen
         name="Select_Club"
