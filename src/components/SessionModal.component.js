@@ -526,7 +526,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
   const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
     route.params;
-  const [date, setDate] = React.useState(moment(oldDate));
+  const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
   const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];

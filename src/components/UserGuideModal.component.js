@@ -8,7 +8,7 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import analytics from "@react-native-firebase/analytics";
 import { useSelector } from "react-redux";
 
-export const UserGuideModal = ({ navigation }) => {
+export const userGuideModal = ({ navigation }) => {
   const user = useSelector((state) => state.user.user);
   useEffect(async () => {
     getYoutubeVideos();
@@ -175,7 +175,7 @@ export const UserGuideModal = ({ navigation }) => {
     </React.Fragment>
   );
 };
-export const UserGuideModalLogin = ({ navigation }) => {
+export const userGuideModalLogin = ({ navigation }) => {
   useEffect(() => {
     getYoutubeVideos();
   }, []);

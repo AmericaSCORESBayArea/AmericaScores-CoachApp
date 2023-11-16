@@ -449,7 +449,7 @@ export default OptionOverflowMenu = (navigation) => {
       />
       <MenuItem
         title="User guide"
-        onPress={() => menuItemOnPress("UserGuideModal")}
+        onPress={() => menuItemOnPress("userGuideModal")}
         accessoryLeft={howtouseicon}
       />
       <MenuItem

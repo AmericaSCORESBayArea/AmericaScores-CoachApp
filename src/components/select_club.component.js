@@ -66,7 +66,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
     async function fetchMyAsyncStorage() {
       let aux = await AsyncStorage.getItem("userFirstTime");
       if (!aux) {
-        navigation.navigate("UserGuideModalLogin");
+        navigation.navigate("userGuideModalLogin");
       }
     }
     fetchMyAsyncStorage();

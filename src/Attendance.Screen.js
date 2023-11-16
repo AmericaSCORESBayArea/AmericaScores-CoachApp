@@ -1177,7 +1177,7 @@ class AttendanceScreen extends Component {
               size={25}
               color={"#4f5c63"}
               onPress={() =>
-                this.props.navigation.navigate("AssessmentModal", {
+                this.props.navigation.navigate("assessmentModal", {
                   Student: item,
                   User: user,
                   Session: currentSessionData,
