@@ -70,6 +70,7 @@ class AttendanceScreen extends Component {
       duplicateRecordsList: [],
       showHeadcounts: false,
       showNullSessionsError: false,
+      keyboardIsActive: false,
     };
   }
 
@@ -79,6 +80,20 @@ class AttendanceScreen extends Component {
   componentDidMount() {
     this.setState({ auxRedux: [] });
     this._setCurrentSessionData();
+  }
+
+  componentWillMount() {
+    this.keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", () =>
+      this.setState({ keyboardIsActive: true })
+    );
+    this.keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () =>
+      this.setState({ keyboardIsActive: false })
+    );
+  }
+
+  componentWillUnmount() {
+    this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
   }
 
   ForwardArrow() {
@@ -1264,12 +1279,16 @@ class AttendanceScreen extends Component {
     );
 
     const updateButton = () => {
-      if (this.state.isUpdated) {
+      if (this.state.isUpdated || this.state.showHeadcounts) {
         return (
           <View style={{ justifyContent: "center", alignItems: "center" }}>
             <Button
               style={{ width: "70%" }}
-              onPress={() => this.toogleUpdate()}
+              onPress={() =>
+                this.state.showHeadcounts
+                  ? this.updateHeadcountAttendance()
+                  : this.toogleUpdate()
+              }
               size="large"
               appearance="filled"
               status="success"
@@ -1502,7 +1521,7 @@ class AttendanceScreen extends Component {
         return "#001541";
       }
     };
-    const headCountHeader = () => (
+    const descriptionAreaHeadcount = () => (
       <Layout style={{ padding: 5 }} level="2">
         <ScrollView
           contentContainerStyle={styles.scrollView}
@@ -1510,15 +1529,6 @@ class AttendanceScreen extends Component {
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
         >
-          <Icon
-            fill={buttonColor()}
-            name="arrow-back-outline"
-            style={styles.icon}
-            onPress={() => {
-              this.setState({ headCountModalStatus: false }),
-                this.props.navigation.goBack();
-            }}
-          />
           <View style={styles.row}>
             <View style={styles.column}>
               {descriptionRowText("Team:", this.state.teamName)}
@@ -1565,78 +1575,41 @@ class AttendanceScreen extends Component {
         </ScrollView>
       </Layout>
     );
-    const headCountFooter = (props) => (
-      <Layout {...props}>
-        <View style={styles.row}>
-          <Button
-            style={{
-              width: "17%",
-              backgroundColor: buttonColor(),
-              marginRight: "2%",
-            }}
-            status="primary"
-            accessoryLeft={backIcon}
-            onPress={() => this.backArrow()}
-          ></Button>
-          <Button
-            style={{
-              width: "62%",
-              alignSelf: "center",
-              backgroundColor: buttonColor(),
-            }}
-            status="primary"
-            accessoryLeft={editIcon}
-            onPress={() =>
-              this.editHeadCountSession("EditHeadCountSessionModal")
-            }
-          >
-            EDIT SESSION
-          </Button>
-          <Button
-            style={{
-              width: "17%",
-              backgroundColor: buttonColor(),
-              marginLeft: "2%",
-            }}
-            status="primary"
-            accessoryLeft={forwardIcon}
-            onPress={() => this.ForwardArrow()}
-          ></Button>
-        </View>
-      </Layout>
-    );
+
     const headCountModal = () => (
-      <Modal
-        style={styles.popOverContent}
-        visible={this.state.headCountModalStatus}
-        backdropStyle={styles.backdrop}
+      <View
+        style={{
+          height: "100%",
+          justifyContent: "center",
+          alignSelf: "center",
+          margin: "auto",
+        }}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "position" : null}
-          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+          behavior={Platform.OS === "ios" ? "padding" : "padding"}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 60}
         >
-          <Card
-            disabled={true}
-            header={headCountHeader}
-            footer={headCountFooter}
-          >
-            <Text category="s1">Number of:</Text>
+          <ScrollView>
+            <Text style={{ marginTop: "5%" }} category="s1">
+              Number of:
+            </Text>
             <View
               style={{
                 flex: 1,
                 flexDirection: "row",
-                justifyContent: "space-between",
+                justifyContent: "center",
                 alignItems: "center",
                 flexWrap: "wrap",
-                width: "70%",
+                width: "100%",
                 alignSelf: "center",
+                marginTop: "5%",
               }}
             >
               <Input
                 keyboardType="numeric"
                 status="primary"
                 label="Boys"
-                style={{ width: "40%" }}
+                style={{ width: "40%", marginRight: "3%" }}
                 value={this.state.headCount.toString()}
                 onChangeText={(nextValue) =>
                   this.setState({
@@ -1653,7 +1626,7 @@ class AttendanceScreen extends Component {
                 keyboardType="numeric"
                 status="primary"
                 label="Girls"
-                style={{ width: "40%" }}
+                style={{ width: "40%", marginRight: "3%" }}
                 value={this.state.headCountFemale.toString()}
                 onChangeText={(nextValue) =>
                   this.setState({
@@ -1670,7 +1643,7 @@ class AttendanceScreen extends Component {
                 keyboardType="numeric"
                 status="primary"
                 label="Non binary"
-                style={{ width: "40%", marginTop: "2%" }}
+                style={{ width: "40%", marginTop: "4%", marginRight: "3%" }}
                 value={this.state.headCountNonBinary.toString()}
                 onChangeText={(nextValue) =>
                   this.setState({
@@ -1687,7 +1660,7 @@ class AttendanceScreen extends Component {
                 keyboardType="numeric"
                 status="primary"
                 label="Unknown"
-                style={{ width: "40%", marginTop: "2%" }}
+                style={{ width: "40%", marginTop: "4%", marginRight: "3%" }}
                 value={this.state.headCountUnknown.toString()}
                 onChangeText={(nextValue) => {
                   this.setState({
@@ -1701,27 +1674,9 @@ class AttendanceScreen extends Component {
                 }}
               />
             </View>
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "5%",
-              }}
-            >
-              <Button
-                style={{ width: "70%" }}
-                size="medium"
-                appearance="filled"
-                status="success"
-                onPress={() => this.updateHeadcountAttendance()}
-              >
-                {" "}
-                Save Attendance{" "}
-              </Button>
-            </View>
-          </Card>
+          </ScrollView>
         </KeyboardAvoidingView>
-      </Modal>
+      </View>
     );
 
     const descriptionArea = () => (
@@ -1779,41 +1734,34 @@ class AttendanceScreen extends Component {
 
     return (
       <Layout style={{ flex: 1 }} level="1">
-        {this.state.showHeadcounts ? (
-          <React.Fragment>
-            {loadingModal()}
-            {updateModal()}
-            {headCountModal()}
-          </React.Fragment>
-        ) : (
-          <React.Fragment>
-            <Button
-              style={{ width: "100%" }}
-              appearance="ghost"
-              status="primary"
-              accessoryLeft={cameraIcon}
-              onPress={sessionPhotographLayout}
-            >
-              Session Photograph
-            </Button>
-            <Divider />
-            {descriptionArea()}
-            {updateModal()}
-            {loadingModal()}
-            {duplicatesRecordsModal()}
-            {loadingModalRecords()}
-            {updateButton()}
-            {updatingModal()}
-            {noMatch("basic")}
-            {nullSessionsError("basic")}
-            <Divider />
-            <List
-              style={{ width: "100%" }}
-              data={this.state.enrollments}
-              ItemSeparatorComponent={Divider}
-              renderItem={studentAttendanceItem}
-            />
-            <View style={styles.row}>
+        <React.Fragment>
+          {this.state.showHeadcounts
+            ? descriptionAreaHeadcount()
+            : descriptionArea()}
+          {updateButton()}
+          {this.state.headCountModalStatus && headCountModal()}
+          {updateModal()}
+          {loadingModal()}
+          {!this.state.showHeadcounts ? (
+            <React.Fragment>
+              <View>
+                {duplicatesRecordsModal()}
+                {loadingModalRecords()}
+                {updatingModal()}
+                {noMatch("basic")}
+                {nullSessionsError("basic")}
+              </View>
+              <Divider />
+              <List
+                style={{ width: "100%" }}
+                data={this.state.enrollments}
+                ItemSeparatorComponent={Divider}
+                renderItem={studentAttendanceItem}
+              />
+            </React.Fragment>
+          ) : null}
+          {!this.state.keyboardIsActive && (
+            <View style={styles.rowBottom}>
               <Button
                 style={{
                   width: "17%",
@@ -1832,7 +1780,11 @@ class AttendanceScreen extends Component {
                 }}
                 status="primary"
                 accessoryLeft={editIcon}
-                onPress={() => this.editSession("EditSessionModal")}
+                onPress={() =>
+                  this.state.showHeadcounts
+                    ? this.editHeadCountSession("EditHeadCountSessionModal")
+                    : this.editSession("EditSessionModal")
+                }
               >
                 EDIT SESSION
               </Button>
@@ -1847,8 +1799,8 @@ class AttendanceScreen extends Component {
                 onPress={() => this.ForwardArrow()}
               ></Button>
             </View>
-          </React.Fragment>
-        )}
+          )}
+        </React.Fragment>
       </Layout>
     );
   }
