@@ -3,9 +3,9 @@ export const ApiConfig = {
   baseUrl: "https://salesforce-auth-api-prod.us-e2.cloudhub.io/api",
   dataApi: "https://salesforce-data-api-proxy-prod.us-e2.cloudhub.io/api",
   clientId: "", //Keep it blank and only add them when compiling / testing, but DO NOT commit the keys as part of the code
+  slackWebHookDeleteUser: "", //token for slack delete user integration
   clientSecret: "",
   slackWebHook: "", //token for slack integration
-  slackWebHookDeleteUser: "", //token for slack delete user integration
   cloudName: "", //cloud name on cloudinary
   cloudinaryURL: "", //url for cloudinary
   appVersion: "Version: " + DeviceInfo.getVersion(), //add the app version
@@ -13,4 +13,11 @@ export const ApiConfig = {
     "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2C+id&playlistId=PLKLW4r_wa4rzyKrXbXGkv7J5dLY6q-guC", //youtube api url with the playlistID
   youtubeSecretKey: "", //token for youtube integration
   scoresuURL: "https://scoresu.org/intro-to-america-scores", //url for scoresU
+  apiKey: "", //firebase api key
+  authDomain: "", //firebase auth domain
+  databaseURL: "", //firebase base url
+  projectId: "", //firebase project id
+  storageBucket: "", //firebase bucket
+  messagingSenderId: "", //firebase messaging sender id
+  appId: "", //firebase app id
 };

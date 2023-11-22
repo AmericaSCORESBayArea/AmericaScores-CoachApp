@@ -7,11 +7,6 @@ import {
   Button,
   OverflowMenu,
   MenuItem,
-  TopNavigationAction,
-  TabBar,
-  Tab,
-  Layout,
-  Text,
   CheckBox,
 } from "@ui-kitten/components";
 import TeamsScreen from "./src/TeamsScreen.component";
@@ -26,17 +21,15 @@ import Profile from "./src/Profile.Screen";
 import { ApiConfig } from "./src/config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 import auth from "@react-native-firebase/auth";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
-import { Linking, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useSelector, useDispatch } from "react-redux";
 import { logOutUser } from "./src/Redux/actions/user.actions";
 import { changeRegion } from "./src/Redux/actions/SessionScreen.actions";
 
-const SchoolIcon = (props) => <Icon {...props} name="home-outline" />;
 const TodayIcon = (props) => <Icon {...props} name="calendar-outline" />;
 const StudentsIcon = (props) => <Icon {...props} name="people-outline" />;
 
@@ -261,6 +254,10 @@ const TabNavigator = (navigation) => {
   );
   return customHomeProps === 0 ? (
     <Navigator
+      screenOptions={{
+        tabBarShowLabel: true,
+        headerShown: false,
+      }}
       tabBar={(props) => <BottomTabBar {...props} data={customHomeProps} />}
     >
       <Screen name="ActivitiesStack" component={Stack_Activities_Navigation} />
@@ -270,6 +267,10 @@ const TabNavigator = (navigation) => {
     </Navigator>
   ) : customHomeProps === 1 ? (
     <Navigator
+      screenOptions={{
+        tabBarShowLabel: true,
+        headerShown: false,
+      }}
       tabBar={(props) => <BottomTabBar {...props} data={customHomeProps} />}
     >
       <Screen name="TeamsStack" component={Stack_Teams_Navigation} />

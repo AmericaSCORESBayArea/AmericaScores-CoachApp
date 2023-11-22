@@ -281,15 +281,14 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
                   }}
                 >
                   {updateModal()}
-                  
-                    <FlatList
-                      data={Clubs}
-                      renderItem={renderItems}
-                      keyExtractor={(item) => item.id}
-                      numColumns={2}
-                      scrollEnabled={false}
-                    />
-                  
+
+                  <FlatList
+                    data={Clubs}
+                    renderItem={renderItems}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    scrollEnabled={false}
+                  />
                 </Layout>
               </Card>
             </Layout>
