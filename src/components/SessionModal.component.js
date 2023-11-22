@@ -35,7 +35,7 @@ export const EditSessionModal = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
   const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
     route.params;
-  const [date, setDate] = React.useState(moment(oldDate));
+  const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
   const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];
@@ -429,8 +429,8 @@ export const EditSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -448,8 +448,8 @@ export const EditSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -526,7 +526,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
   const { session, oldDate, oldTopic, topicId, sessionStart, sessionEnd } =
     route.params;
-  const [date, setDate] = React.useState(moment(oldDate));
+  const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
   const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];
@@ -920,8 +920,8 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -939,8 +939,8 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1030,7 +1030,6 @@ export const AddSessionModal = ({ route, navigation }) => {
   const [date, setDate] = React.useState(moment(oldDate));
   const [selectedIndex, setSelectedIndex] = React.useState(new IndexPath(0));
   const [updatingModalstate, setupdatingModalstate] = React.useState(false);
-  const [responseSuccess, setResponseSuccess] = React.useState(false);
   const actualRegion = useSelector((state) => state.sessionScreen.region);
   const [timePickerOptions, setTimePickerOptions] = React.useState({
     type: "start",
@@ -1167,6 +1166,7 @@ export const AddSessionModal = ({ route, navigation }) => {
       sessionStart: changes.SessionStart,
       sessionEnd: changes.SessionEnd,
     });
+    console.log("changes", changes);
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
       .then((res) => {
         Alert.alert(
@@ -1328,8 +1328,8 @@ export const AddSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1347,8 +1347,8 @@ export const AddSessionModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1739,8 +1739,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.startDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.startDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
@@ -1758,8 +1758,8 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
               <Input
                 style={styles.input}
                 editable={false}
-                placeholder="17:00"
-                value={moment(timePickerOptions.endDate).format("HH:mm")}
+                placeholder="5:00 PM"
+                value={moment(timePickerOptions.endDate).format("LT")}
               />
             </View>
           </TouchableOpacity>
