@@ -13,7 +13,8 @@ Please stick to the verified versions of the dependencies unless you are prepare
 - **Physical device** connected to your computer with USB debugging enabled or an **Emulator** `(**IOS** download XCode from your appstore | **Android** Download android studio)`
 - Text editor of your choice `[XCode | Android studio | Visual studio Code ]` (Make sure that whatever editor you use is running as administrator)
 
-### Verified configuration for MacOS on M1
+### Verified configuration for building 
+Tested on: MacOS on M1
 ```
 node --version
 v20.9.0
@@ -68,6 +69,12 @@ To build apk for Google Play release:
 6. pod install
 7. cd ..
 8. open ios/AmericanScoresApp.xcworkspace
+9. If pods do not build completely, try pod update
+
+### If you upgrade Node, React, or Pods, please test and help us maintain dependencies!
+- Make a branch
+- Invite some recent contributors to test your update with you
+- make sure to note the new versions in the section above: [Verified configuration for building](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/tree/master#verified-configuration-for-building)
 
 # Release History #
 ## In Store ##
@@ -75,6 +82,7 @@ To build apk for Google Play release:
 ### Google Play Store: v 60.0 ###
 | **Release** | **Date** | **Platform** | **Commit** |     **Notes**     |
 |-------------|----------|--------------|------------|-------------------|
+|20.2 (61)    | 11-21-23 |   Android+iOS    |  [Master:beec5a0](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/beec5a0b1afe658d4599bb83c2cad97a884dd7e6) | Fix/upate a few things affected by v20 dependency updates |
 |60.0         | 11-8-23  |   Android    |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/5d50a6c3b358dea718e45baa9a8a3fb3c1a2e3cc) |  Android Crash Fix |
 |20.1         | 11-3-23  |     iOS      |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b) |  Replaced Slack Connect (private)    |
 |20           | 10-31-23 |     iOS      |  [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b)  |  Update React+Pods to fix multiple Firebase Auth issues and get dependencies to newer LTS  |
