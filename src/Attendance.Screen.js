@@ -1753,7 +1753,7 @@ class AttendanceScreen extends Component {
               </View>
               <Divider />
               <List
-                style={{ width: "100%" }}
+                style={{ width: "100%", marginBottom: "15%" }}
                 data={this.state.enrollments}
                 ItemSeparatorComponent={Divider}
                 renderItem={studentAttendanceItem}
