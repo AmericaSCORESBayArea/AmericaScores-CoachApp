@@ -20,7 +20,7 @@ import {
 import { View } from "react-native";
 import auth from "@react-native-firebase/auth";
 import { ApiConfig } from "../config/ApiConfig";
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import moment from "moment";
 import { useSelector, useDispatch } from "react-redux";
 import {
@@ -34,7 +34,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import analytics from "@react-native-firebase/analytics";
 
 const useInputState = (initialValue = "") => {
-  const [value, setValue] = React.useState(initialValue);
+  const [value, setValue] = useState(initialValue);
   return { value, onChangeText: setValue };
 };
 
@@ -60,22 +60,28 @@ const LoadingIndicator = (props) => (
 export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
   const dispatch = useDispatch();
   const loginPhoneNumber = useInputState("");
+  const [loading, setLoading] = useState(false);
   //Auth
   // Handle the button press
   async function loginWithPhoneNumber() {
     try {
+      setLoading(true);
       const confirmation = await auth()
         .signInWithPhoneNumber("+1" + loginPhoneNumber.value)
         .catch((e) => console.log(e));
       console.log("Tryed to log in", confirmation);
       dispatch(setPhoneAuthConfirmation(confirmation));
+      setLoading(false);
       if (confirmation) navigation.navigate("PhoneLogin_code");
-      else
+      else {
+        setLoading(false);
         Alert.alert(
           "SMS Not sent",
           "Check the example phone number and try again. If the issue persists contact your Salesforce administrator."
         );
+      }
     } catch (error) {
+      setLoading(false);
       console.log(error);
     }
   }
@@ -136,7 +142,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
                     status="primary"
                     onPress={() => loginWithPhoneNumber(navigation)}
                   >
-                    SIGN IN WITH PHONE
+                    {loading ? "LOADING" : "SIGN IN WITH PHONE"}
                   </Button>
                 </Layout>
               </KeyboardAvoidingView>
@@ -174,12 +180,12 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
               console.log("set userProfile", userProfile);
               await AsyncStorage.setItem("authServiceType", serviceProvider);
               await AsyncStorage.setItem("authIdentifier", userIdentifier);
-    
+
               dispatch(loginUser(userProfile));
               dispatch(syncSessions(userSessions));
               setLoading(false);
               const notifications = await AsyncStorage.getItem(
-                "appNotifications" 
+                "appNotifications"
               );
               if (notifications === null || notifications === "true") {
                 await analytics().logEvent("main_activity_ready");
@@ -217,6 +223,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
 
   async function confirmCode() {
     try {
+      Keyboard.dismiss();
       setLoading(true);
       const res = await state.confirmation.confirm(loginCode.value);
       let newPhoneNumber = res.user.phoneNumber;
