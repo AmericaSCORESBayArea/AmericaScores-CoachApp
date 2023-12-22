@@ -70,6 +70,11 @@ To build apk for Google Play release:
 7. cd ..
 8. open ios/AmericanScoresApp.xcworkspace
 9. If pods do not build completely, try pod update
+10. from the project directory build and run with react-native run-ios --simulator="iPhone 14 Pro" (or whatever you have installed)
+### When the app launches, the sign-in screen should look something like this:<br>
+![image](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/assets/1458369/51bd374c-b671-4fca-b2ea-4d2a50ed6586)
+
+
 
 ### If you upgrade Node, React, or Pods, please test and help us maintain dependencies!
 - Make a branch
