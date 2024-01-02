@@ -91,12 +91,31 @@ To build apk for Google Play release:
 1. Fix src/config/ApiConfig.js
 2. put GoogleService-Info.plist into ios folder
 3. remove package-lock.json and node_modules folder
-4. npm install
+4. npm install (If npm install does not run, try sudo 'npm install -g npm@latest' before running 'npm install')
 5. cd ios
 6. pod install
-7. cd ..
-8. open ios/AmericanScoresApp.xcworkspace
-9. If pods do not build completely, try pod update
+7. If pods do not build completely, try pod update
+8. cd ..
+9. open ios/AmericanScoresApp.xcworkspace
+10. from the project directory build and run with react-native run-ios --simulator="iPhone 14 Pro" (or whatever you have installed)
+
+### When the app launches, the sign-in screen should look something like this:<br>
+
+![image](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/assets/1458369/51bd374c-b671-4fca-b2ea-4d2a50ed6586)
+
+### A Step-by-Step Guide to build and run the app on iOS (verified on MacOS w/ Intel Chip)
+
+1. Fix src/config/ApiConfig.js
+2. put GoogleService-Info.plist into ios folder
+3. put debug.keystore into android/app
+4. remove package-lock.json and node_modules folder
+5. npm install (If npm install does not work, try to run 'sudo npm install -g npm@latest' before running 'npm install')
+6. cd ios
+7. pod install
+8. If pods do not build completely, try pod update
+9. cd ..
+10. npm run android
+11. If build is successful but an error occurs with Metro, try 'npx react-native start'
 
 ### If you upgrade Node, React, or Pods, please test and help us maintain dependencies!
 
