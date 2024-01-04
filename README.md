@@ -62,6 +62,30 @@ To build apk for Google Play release:
 4. open .
 5. upload apk to Google Play
 
+## Guide to build and run the app on Android (verified on Windows 10 and 11)
+
+**YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
+
+1. Fix src/config/ApiConfig.js
+2. put google-services.json, debug.keystore, america-scores-keystore.jks into android/app
+3. remove package-lock.json and node_modules folder
+4. create local.properties inside /android and put sdk.dir=C:\\Users\\{YOUR_USER}\\AppData\\Local\\Android\\sdk
+5. npm install
+6. Make sure User Variables contains:
+
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk\platform-tools
+
+7. Make sure System Variables contains:
+
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk\platform-tools\adb.exe
+
+8. In Android Studio, open Settings->Languages & Frameworks->Android SDK, select 'Android 14.0 ("UpsideDownCake") API Level 34' as the SDK version.
+9. In Device Manager, create a virtual device with API level 34+.
+10. To build on a connected physical device, ensure that USB debugging is turned on via developer mode
+11. connect device or start emulator by adding it in 'Running Devices'
+12. npm run android
+
 ### A Step-by-Step Guide to build and run the app on iOS (verified on MacOS with M1)
 
 1. Fix src/config/ApiConfig.js
