@@ -1524,7 +1524,6 @@ class AttendanceScreen extends Component {
     const descriptionAreaHeadcount = () => (
       <Layout style={{ padding: 5 }} level="2">
         <ScrollView
-          contentContainerStyle={styles.scrollView}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -1682,7 +1681,6 @@ class AttendanceScreen extends Component {
     const descriptionArea = () => (
       <Layout style={{ padding: 5 }} level="2">
         <ScrollView
-          contentContainerStyle={styles.scrollView}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
@@ -1852,7 +1850,6 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
   },
   popOverContentModal: {
-    // flexDirection: 'row',
     alignItems: "center",
     alignSelf: "center",
     shadowRadius: 10,
@@ -1867,10 +1864,6 @@ const styles = StyleSheet.create({
   },
   backdropModal: {
     backgroundColor: "rgba(0, 0, 0, 0.0)",
-  },
-  scrollView: {
-    // flex: 1,
-    // backgroundColor: 'pink',
   },
   icon: {
     width: 25,

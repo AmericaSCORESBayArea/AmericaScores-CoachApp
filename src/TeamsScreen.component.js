@@ -26,6 +26,7 @@ import {
   Select,
   SelectItem,
   Modal,
+  Input,
 } from "@ui-kitten/components";
 import BottomSheet from "react-native-simple-bottom-sheet";
 import Axios from "axios";
@@ -542,7 +543,7 @@ class TeamsScreen extends Component {
               sliderMinHeight={28}
               lineStyle={{ marginTop: "3%" }}
             >
-              <Autocomplete
+              <Input
                 style={{ margin: "2%" }}
                 label="Search a Team"
                 placeholder="Search by Team name"
@@ -551,7 +552,7 @@ class TeamsScreen extends Component {
                 onSelect={this.onSelect}
                 size="large"
                 onChangeText={this.onChangeText}
-              ></Autocomplete>
+              />
               {selectBox()}
             </BottomSheet>
           </KeyboardAvoidingView>
@@ -563,7 +564,7 @@ class TeamsScreen extends Component {
           >
             {this.state.teamsRegion.length > 10 ||
             this.state.value.length !== 0 ? (
-              <Autocomplete
+              <Input
                 style={{ margin: "2%" }}
                 label="Search a Team"
                 placeholder="Search by Team name"
@@ -572,7 +573,7 @@ class TeamsScreen extends Component {
                 onSelect={this.onSelect}
                 size="large"
                 onChangeText={this.onChangeText}
-              ></Autocomplete>
+              ></Input>
             ) : (
               <></>
             )}
