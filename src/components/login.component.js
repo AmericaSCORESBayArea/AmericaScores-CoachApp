@@ -188,7 +188,11 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
                 "appNotifications"
               );
               if (notifications === null || notifications === "true") {
-                await analytics().logEvent("main_activity_ready");
+                await analytics().logEvent("successfulLogin", {
+                  coach_Id: userProfile.ContactId,
+                  club_Selected: region,
+                  application: "Coach App"
+                });
               }
               navigation.navigate("Select_Club");
             })
