@@ -172,6 +172,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
     await analytics().logEvent("AffiliationSelect", {
       coach_Id: user.ContactId,
       club_Selected: region,
+      application: "Coach App"
     });
   }
   const renderItems = ({ item }) => (
