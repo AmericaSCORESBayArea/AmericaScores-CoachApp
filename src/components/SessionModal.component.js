@@ -272,8 +272,11 @@ export const EditSessionModal = ({ route, navigation }) => {
   async function pushChanges(changes) {
     setupdatingModalstate(true);
     await analytics().logEvent("EditSession", {
+      application: "Coach App",
       coach_Id: user.ContactId,
       session_Id: session,
+      
+
     });
     Axios.patch(`${ApiConfig.dataApi}/sessions/${session}`, changes)
       .then((res) => {
@@ -1577,6 +1580,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
       SessionEnd: changes.SessionEnd,
       sessionTopic: displayValue.replace(/\s/g, "_"),
       teamSeasonId: changes.TeamSeasonId,
+      application: "Coach App",
     });
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
       .then((res) => {

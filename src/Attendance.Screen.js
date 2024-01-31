@@ -206,6 +206,7 @@ class AttendanceScreen extends Component {
       unknownPresent: this.state.headCountUnknown,
       teamSeasonId: this.state.teamSeasonId,
       sessionId: this.state.sessionId,
+      application: "Coach App",
     });
     let headCountObject = {
       BoysPresent: this.state.headCount.length === 0 ? 0 : this.state.headCount,
