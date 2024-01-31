@@ -109,6 +109,7 @@ export const assessmentModal = (props) => {
       student_Id: assessment.StudentId,
       assessment_Type: assessment.AssessmentType,
       assessment_Response: assessment.AssessmentResponse,
+      application: "Coach App"
     });
     await Axios.post(
       `${ApiConfig.dataApi}/coach/${props.route.params.User.ContactId}/teamseasons/${props.route.params.Session.TeamSeasonId}/sessions/${props.route.params.Session.SessionId}/assessments`,
