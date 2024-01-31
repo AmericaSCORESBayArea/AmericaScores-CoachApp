@@ -75,9 +75,7 @@ class LogInScreen_Google extends Component {
               console.log("actions", actions);
               await actions.loginUser(userProfile);
               this.setState({ logged: "true" });
-              await analytics().logEvent("main_activity_ready", {
-                application: "Coach App" 
-              });
+              await analytics().logEvent("main_activity_ready");
               navigation.navigate("Select_Club");
               this.setState({ loadingModalstate: false });
             }

@@ -274,7 +274,6 @@ export const EditSessionModal = ({ route, navigation }) => {
     await analytics().logEvent("EditSession", {
       coach_Id: user.ContactId,
       session_Id: session,
-      application: "Coach App"
     });
     Axios.patch(`${ApiConfig.dataApi}/sessions/${session}`, changes)
       .then((res) => {
