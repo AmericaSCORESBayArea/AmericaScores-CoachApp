@@ -1,4 +1,4 @@
-# AmericaScores-attendanceApp
+# AmericaScores Coach Application for Tracking Participation and Experiences
 
 React native based mobile app for Americas scores attendance control.
 
