@@ -4,3 +4,5 @@ Verifying and improving the program burdens coaches with the work of taking atte
 Coaches needed help, so the Attendance App is intended to provide them more time focused on students and less time with bookkeeping.
 ![](attendance_before_app.png)
 The present reality of a scores coach is improvised paperwork that then has to be hand-entered into the Salesforce-based record system, later in the day. This is a big cost of quality coach time for both Students and Program.
+## Product Management Topics
+[Analytics Help Track Coach UX and Usability](analytics.md)
