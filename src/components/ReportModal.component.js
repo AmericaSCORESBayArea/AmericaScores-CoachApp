@@ -182,19 +182,26 @@ export const CreateReportModal = ({ navigation }) => {
     ],
   };
   const postMessageToChannel = () => {
-    axios
-      .post(ApiConfig.slackWebHook, message)
-      .then(function (response) {
-        console.log(response);
-        closeModal();
-      })
-      .catch(function (error) {
-        console.log(error);
-        setVisible(false);
-        setSubmit(false);
-        setResponseStatusModal(false);
-        setReponseStatusUnsuccessModal(true);
-      });
+    //axios
+      //.post(ApiConfig.slackWebHook, message) <-not posting
+      //.then(function (response) {
+      //  console.log(response);
+        analytics().logEvent("HelpMessagePosted", {
+                coach_Id: user.ContactId,
+                MessageType: Option,
+                application: "Coach App"
+                  });
+         // );
+
+        //closeModal();
+//      })
+//      .catch(function (error) {
+//        console.log(error);
+//        setVisible(false);
+//        setSubmit(false);
+//        setResponseStatusModal(false);
+//        setReponseStatusUnsuccessModal(true);
+//      });
   };
   const LoadingIndicator = (props) => (
     <View
