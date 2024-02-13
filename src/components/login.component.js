@@ -190,7 +190,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
               if (notifications === null || notifications === "true") {
                 await analytics().logEvent("successfulLogin", {
                   coach_Id: userProfile.ContactId,
-                  club_Selected: region,
+                  //club_Selected: region, -- not assigned yet?
                   application: "Coach App"
                 });
               }
