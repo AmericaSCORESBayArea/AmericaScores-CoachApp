@@ -6,7 +6,7 @@ import { MomentDateService } from '@ui-kitten/moment';
 import Axios from "axios";
 import moment from "moment";
 
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 import {ApiConfig} from "./config/ApiConfig";

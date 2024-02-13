@@ -1,136 +1,144 @@
-# AmericaScores-attendanceApp
+# AmericaScores Coach Application for Tracking Participation and Experiences
 
-React native based mobile app for Americas scores attendance controll.
+React native based mobile app for Americas scores attendance control.
 
-## Set up
-
-The following steps are needed in order to run the project.
-
-### Pre-installed tools
+## Pre-install required tools
 
 The project requires the following apps running over the project. You can follow the steps in the [Official React-Native guide](https://reactnative.dev/docs/environment-setup). Or install them by yourself.
+Please stick to the verified versions of the dependencies unless you are prepared to perform a full smoke test and have a qualified engineer ready to review and test your Pull Request.
 
-- [Node](https://nodejs.org/en/) or if using mac `brew install node && brew install watchman`
-- React-native-cli by running `npm install -g expo-cli` and `npm install -g react-native-cli`
-- [For IOS][cocoa pods](https://cocoapods.org/) || If any errors while installing cocoa pods please follow this link (https://stackoverflow.com/questions/20939568/error-error-installing-cocoapods-error-failed-to-build-gem-native-extension)
+- [Node](https://nodejs.org/en/) (see below for verified version)
+- [For IOS][cocoa pods](https://cocoapods.org/)
 - **Physical device** connected to your computer with USB debugging enabled or an **Emulator** `(**IOS** download XCode from your appstore | **Android** Download android studio)`
 - Text editor of your choice `[XCode | Android studio | Visual studio Code ]` (Make sure that whatever editor you use is running as administrator)
 
-Check if everything was installed propertly.
+### Verified configuration for building
 
-- Check if **node** is installed: `node --version` it should return something like `Vxx.x.x`
-- Check if **npm** is installed: `npm --version` it should return something like `x.xx.x`
+Tested on: MacOS on M1
 
-### Install the project.
+```
+node --version
+v20.9.0
+pod --version
+1.13.0
+java --version
+java 17.0.2 2022-01-18 LTS
+Java(TM) SE Runtime Environment (build 17.0.2+8-LTS-86)
+Java HotSpot(TM) 64-Bit Server VM (build 17.0.2+8-LTS-86, mixed mode, sharing)
+```
 
-Clone the project from github into your local machine.
-`cd AmericaScores-attendanceApp`npm install` -> Installs the dependencies for the project
+### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1)
 
-- If running in IOS `cd ios && pod install && cd ..` and then `react-native run-ios`
-- If running on Android
-  `react-native run-android`
-- Once the build is finished and the app installed, just open it in your emulator/device.
+**YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
 
-### Frequent errors
+1. Fix src/config/ApiConfig.js
+2. put google-services.json, debug.keystore, america-scores-keystore.jks into android/app
+3. remove package-lock.json and node_modules folder
+4. npm install
+5. Make sure PATH contains ANDROID_HOME with `echo $ANDROID_HOME` if result is empty fix PATH with:
 
-Here are a list of errors that may occur when installing the project and how to handle them.
+```
+nano ~/.zprofile
 
-- **ERROR: JAVA_HOME is set to an invalid directory..**. Search for "enviroment variables" in your computers search bar and open "Edit the System Enviroment Variables", click "Enviroment Variables" and check that `JAVA_HOME` variable is referencing your jdk package path, and that it is also being referenced in your "Path" system variable. You can also set the variable from the terminal by typing `JAVA_HOME = C:\YourJDKPath`.
+add 3 lines somewhere at the end of the file:
 
-- **adb is not recognized as a command**. Check your system enviroment variables to see if adb exists, if not, create it and set the adb's path in value, it should be in `C:\Users\YourUser\AppData\Local\Android\Sdk\platform-tools`. You can check this yourself by typing `%appdata%` in the windows search bar, this will give you acces to your AppData folder.
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
 
-- **Keystore file '/Project-Folder/android/app/debug.keystore' not found for signing config 'debug'**. Search for your keytools.exe file, it should be in C:\Program Files\Java\jdk.x.x.xx\bin. Copy the path of the file's folder. Open a terminal and type `cd C:\"yourkeytoolsfolderpath"`. Once you are in your keytools folder, copy and execute the following: `keytool -genkey -v -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000`. This will create a file called **debug.keystore** in the same path as the keytools.exe file. Copy the new file and paste it in AmericaScores-attendanceApp\android\app
+close terminal and open it again
+verify everything is ok with echo $ANDROID_HOME. Make sure it outputs something like "/Users/Pete/Library/Android/sdk"
 
-### Dependencies
+```
 
-- [UI Kitten](https://akveo.github.io/react-native-ui-kitten/) Built in UI components used over the app frontend development
-- [React Navigation](https://reactnavigation.org/) This library is used for navigating between screens over the app.
-- [QR-Scanner](https://www.npmjs.com/package/react-native-qrcode-scanner) Library used for QR Camera scan function
+6. connect device or start emulator
+7. ./build_and_run_android_release.sh
 
-**Miscellaneous**
+To build apk for Google Play release:
 
-- [React permissions](https://github.com/react-native-community/react-native-permissions) permissions for using device hardware like camera or bluetooth
+1. cd android
+2. ./gradlew assembleRelease
+3. cd app/build/outputs/bundle/release
+4. open .
+5. upload apk to Google Play
 
-- [Eva Icons](https://akveo.github.io/eva-icons/) Selected Icons Pack
+## Guide to build and run the app on Android (verified on Windows 10 and 11)
 
-### Before Running
-ApiConfig.js needs to be updated with valid clientId and clientSecret so firebase can connect to the API's.
+**YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
 
-## Additional iOS Configuration Details
-The following files appear to contain important version information to getting the build to complete:
-ios/AmericanScoresApp.xcodeproj/project.pbxproj
-ios/Podfile
-ios/Podfile.lock
-This guide is useful to understanding how and when to use pod install, update, outdate.
-### A Step-by-Step Troubleshooting Record
-starting iOS build from scratch...
-- [x] npm install warning
-``Successfully installed react-native-unimodules. This package contains core unimodules that are commonly depended on by other unimodules. You will need to configure your project before using other unimodules like expo-camera, expo-media-library and others.
-See configuration guide:
-  https://www.npmjs.com/package/react-native-unimodules/v/0.10.1``
-  
-- [x] pod install has this warning
-``[!] CocoaPods could not find compatible versions for pod "Firebase/DynamicLinks":
-  In snapshot (Podfile.lock):
-    Firebase/DynamicLinks (= 6.30.0, ~> 6.30.0)
-  In Podfile:
-    RNFBDynamicLinks (from `../node_modules/@react-native-firebase/dynamic-links`) was resolved to 7.5.13, which depends on
-      Firebase/DynamicLinks (~> 6.34.0)
-You have either:
- * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.
- * changed the constraints of dependency `Firebase/DynamicLinks` inside your development pod `RNFBDynamicLinks`.
-   You should run `pod update Firebase/DynamicLinks` to apply changes you've made.``
-   
-- [x] additional warnings
-``[!] NPM package '@react-native-firebase/auth' depends on '@react-native-firebase/app' v8.3.1 but found v8.4.7, this might cause build issues or runtime crashes.
-[!] NPM package '@react-native-firebase/dynamic-links' depends on '@react-native-firebase/app' v9.0.0 but found v8.4.7, this might cause build issues or runtime crashes.
-[!] NPM package '@react-native-firebase/auth' depends on '@react-native-firebase/app' v8.3.1 but found v8.4.7, this might cause build issues or runtime crashes.
-[!] NPM package '@react-native-firebase/dynamic-links' depends on '@react-native-firebase/app' v9.0.0 but found v8.4.7, this might cause build issues or runtime crashes.``
-- [x] pod update then
-- [x] pod update Firebase/DynamicLinks
-this clears the red warnings leaving only the version warnings above.
+1. Fix src/config/ApiConfig.js
+2. put google-services.json, debug.keystore, america-scores-keystore.jks into android/app
+3. remove package-lock.json and node_modules folder
+4. create local.properties inside /android and put sdk.dir=C:\\Users\\{YOUR_USER}\\AppData\\Local\\Android\\sdk
+5. npm install
+6. Make sure User Variables contains:
 
-- [x] npm outdated
-``Package                                       Current   Wanted  Latest  Location
-@invertase/react-native-apple-authentication    1.1.2    1.1.2   2.1.0  global
-@react-native-community/eslint-config           0.0.5    0.0.5   2.0.0  global
-@react-native-community/google-signin           4.0.3    4.0.3   5.0.0  global
-@react-native-firebase/app                      8.4.7    8.4.7  10.8.1  global
-@react-native-firebase/auth                     8.3.3    8.3.3  10.8.1  global
-@react-native-firebase/dynamic-links           7.5.13   7.5.13  10.8.1  global
-babel-jest                                     24.9.0   24.9.0  26.6.3  global
-expo                                          38.0.11  38.0.11  40.0.1  global
-expo-app-auth                                   9.1.1    9.1.1  10.0.0  global
-expo-google-sign-in                             8.2.1    8.2.1   9.0.0  global
-expo-updates                                   0.2.14   0.2.14   0.4.2  global
-firebase                                        7.9.0    7.9.0   8.2.9  global
-jest                                           25.2.7   25.2.7  26.6.3  global
-metro-react-native-babel-preset                0.58.0   0.58.0  0.65.1  global
-react                                         16.13.1  16.13.1  17.0.1  global
-react-dom                                     16.11.0  16.11.0  17.0.1  global
-react-native                                   0.63.3   0.63.3  0.63.4  global
-react-native-permissions                        2.2.2    2.2.2   3.0.1  global
-react-native-safe-area-context                  3.0.2    3.0.2   3.1.9  global
-react-native-unimodules                        0.10.1   0.10.1  0.12.0  global
-react-native-web                               0.11.7   0.11.7  0.15.0  global
-react-test-renderer                           16.11.0  16.11.0  17.0.1  global``
-- [x] running react-native ios fails:
-``ld: warning: directory not found for option '-L-L/Users/retep/Library/Developer/Xcode/DerivedData/AmericanScoresApp-ekggsecaraotjqaswejufbfltlnu/Build/Products/Debug-iphonesimulator/AppAuth'
-ld: library not found for -lAppAuth
-clang: error: linker command failed with exit code 1 (use -v to see invocation)``
-- [x] load workspace in xcode
-- [x] bump iOS target to iOS 14.1
-- [x] bump project format to xcode 12.0
-- [x] bump Pods project from iOS 8.0 to 14.1.
-- [x] perform a first-time build in xcode
-Warnings that may be addressed in later builds
-``Conversion to Swift 5 is available
-Legacy build system will be removed in a future release.``
-Issue 'A':
-``Error: AppDelegame.m ... 'EXSplashScreen/EXSplashScreenService.h' file not found``
-- [x] Run the build again. 
-Issue 'B':
-``AmericaScores-attendanceApp/src/config/ios/GoogleService-Info.plist:0: Reading data: The file GoogleService-Info.plist couldn't be opened because there is no such file.``
-- [x] Verify the file is present in the project and build target selected. Re-Add it to the Project. Also add it to the Build Phases: Compile Sources list.
-Check and remove any incorrect references ``example../src/config/..``
-- [x] Select an appropriate build target and build again
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk\platform-tools
+
+7. Make sure System Variables contains:
+
+- C:\Users\{YOUR_USER}\AppData\Local\Android\Sdk\platform-tools\adb.exe
+
+8. In Android Studio, open Settings->Languages & Frameworks->Android SDK, select 'Android 14.0 ("UpsideDownCake") API Level 34' as the SDK version.
+9. In Device Manager, create a virtual device with API level 34+.
+10. To build on a connected physical device, ensure that USB debugging is turned on via developer mode
+11. connect device or start emulator by adding it in 'Running Devices'
+12. npm run android
+
+### A Step-by-Step Guide to build and run the app on iOS (verified on MacOS with M1)
+
+1. Fix src/config/ApiConfig.js
+2. put GoogleService-Info.plist into ios folder
+3. remove package-lock.json and node_modules folder
+4. npm install (If npm install does not run, try sudo 'npm install -g npm@latest' before running 'npm install')
+5. cd ios
+6. pod install
+7. If pods do not build completely, try pod update
+8. cd ..
+9. open ios/AmericanScoresApp.xcworkspace
+10. from the project directory build and run with react-native run-ios --simulator="iPhone 14 Pro" (or whatever you have installed)
+
+### When the app launches, the sign-in screen should look something like this:<br>
+
+![image](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/assets/1458369/51bd374c-b671-4fca-b2ea-4d2a50ed6586)
+
+### A Step-by-Step Guide to build and run the app on iOS (verified on MacOS w/ Intel Chip)
+
+1. Fix src/config/ApiConfig.js
+2. put GoogleService-Info.plist into ios folder
+3. put debug.keystore into android/app
+4. remove package-lock.json and node_modules folder
+5. npm install (If npm install does not work, try to run 'sudo npm install -g npm@latest' before running 'npm install')
+6. cd ios
+7. pod install
+8. If pods do not build completely, try pod update
+9. cd ..
+10. npm run android
+11. If build is successful but an error occurs with Metro, try 'npx react-native start'
+
+### If you upgrade Node, React, or Pods, please test and help us maintain dependencies!
+
+- Make a branch
+- Invite some recent contributors to test your update with you
+- make sure to note the new versions in the section above: [Verified configuration for building](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/tree/master#verified-configuration-for-building)
+
+# Release History
+
+## In Store
+
+### Apple App Store: v 20.1
+
+### Google Play Store: v 60.0
+
+| **Release** | **Date** | **Platform** | **Commit**                                                                                                                                 | **Notes**                                                                                     |
+| ----------- | -------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------- |
+| 20.2 (61)   | 11-21-23 | Android+iOS  | [Master:beec5a0](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/beec5a0b1afe658d4599bb83c2cad97a884dd7e6)           | Fix/upate a few things affected by v20 dependency updates                                     |
+| 60.0        | 11-8-23  | Android      | [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/5d50a6c3b358dea718e45baa9a8a3fb3c1a2e3cc) | Android Crash Fix                                                                             |
+| 20.1        | 11-3-23  | iOS          | [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b) | Replaced Slack Connect (private)                                                              |
+| 20          | 10-31-23 | iOS          | [Branch:react-native-0.72](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/ba89891699a8765a7df8d354c6a9109e60b7f53b) | Update React+Pods to fix multiple Firebase Auth issues and get dependencies to newer LTS      |
+| 3.95        | 8-22-23  | iOS          |                                                                                                                                            | Reapply Creds                                                                                 |
+| 3.9         | 6-4-23   | iOS          |                                                                                                                                            | new Firebase Project ID                                                                       |
+| 3.8         | 6-3-23   | iOS          | [7a1e5b3](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/7a1e5b31b8f5f65580508f8f686ab3a227ae7a8a)                  | https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/pull/378 iOS Firebase Auth bug |
+|             |          |              |                                                                                                                                            |                                                                                               |
+|             |          |              |                                                                                                                                            |                                                                                               |
