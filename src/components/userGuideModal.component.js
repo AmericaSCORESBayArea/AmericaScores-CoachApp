@@ -14,6 +14,7 @@ export const userGuideModal = ({ navigation }) => {
     getYoutubeVideos();
     await analytics().logEvent("userGuide", {
       coach_Id: user.ContactId,
+      application: "Coach App",
     });
   }, []);
   const [visible, setVisible] = React.useState(true);
