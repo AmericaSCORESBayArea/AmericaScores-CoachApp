@@ -31,7 +31,14 @@ react-native --version
 react-native-cli: 2.0.1
 react-native: 0.72.10
 ```
+#### Commands for installing and updating dependencies
+##### Node
+```(install n)
+sudo npm install -g n
 
+(install LTS version of node)
+sudo n lts
+```
 ### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1)
 
 **YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
