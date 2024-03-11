@@ -189,7 +189,7 @@ export const userGuideModalLogin = ({ navigation }) => {
     const data = await res.json();
     setVideoData(data.items[0].snippet.resourceId.videoId);
   }
-
+// Todo: Add Analytics event for Async storage: first time(T/F). We should also track when it is updated or read/write fails
   function closeModal() {
     fetchMyAsyncStorage();
     setVisible(false);

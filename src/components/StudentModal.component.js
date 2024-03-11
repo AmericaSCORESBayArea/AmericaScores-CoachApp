@@ -416,7 +416,7 @@ export const CreateStudentModal = ({ navigation, route }) => {
             <Input
               style={{ marginTop: "2%", marginBottom: "2%" }}
               keyboardType="numeric"
-              placeholder="646 660 0404" //America scores phone
+              placeholder="6466600404 (numbers only)" //America scores phone
               {...studentHomePhone}
             />
             <Divider
@@ -599,7 +599,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
       Alert.alert("Error", "You have to select a student first");
     }
   }
-
+// Todo: Add Analytics event for Create Student Record (coachID, Region)
   async function createStudent() {
     let student = {
       TeamSeasonId: teamSeasonId,
@@ -665,6 +665,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
   //     setTimeout(filterData, 3000);
   //     // console.log()
   // };
+  // ToDo : Make an option for minimum fields FName, LName, Birthday or Grade (aka. "Stub Record")
   const fieldsToCheck = [
     "FirstName",
     "LastName",
