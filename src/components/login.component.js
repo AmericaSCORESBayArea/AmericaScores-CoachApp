@@ -70,6 +70,9 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
         .signInWithPhoneNumber("+1" + loginPhoneNumber.value)
         .catch((e) => console.log(e));
       console.log("Tryed to log in", confirmation);
+      await analytics().logEvent("LoginByPhone", {
+                        application: "Coach App"
+                      });
       dispatch(setPhoneAuthConfirmation(confirmation));
       setLoading(false);
       if (confirmation) navigation.navigate("PhoneLogin_code");
@@ -116,7 +119,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
                   keyboardType="numeric"
                   status="primary"
                   label="Phone number"
-                  placeholder="646 660 0404" //America scores phone
+                  placeholder="6466600404 (numbers only)" //America scores phone
                   {...loginPhoneNumber}
                 />
               </Card>
