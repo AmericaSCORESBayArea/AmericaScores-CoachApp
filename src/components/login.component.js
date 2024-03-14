@@ -82,6 +82,9 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
           "SMS Not sent",
           "Check the example phone number and try again. If the issue persists contact your Salesforce administrator."
         );
+        await analytics().logEvent("SMSFailed", {
+            application: "Coach App"
+        });
       }
     } catch (error) {
       setLoading(false);
@@ -317,12 +320,12 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
-
+// making the default dqtes relative to today
 const _syncUserSessions = async (user) => {
   Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
     params: {
-      firstDate: moment("20210416", "YYYYMMDD").format("YYYY-MM-DD"),
-      secondDate: moment("20210426", "YYYYMMDD").format("YYYY-MM-DD"),
+      firstDate: moment().subtract(21, 'days').calendar(), //("20210416", "YYYYMMDD")
+      secondDate: moment().add(7, 'days').calendar(), //("20210426", "YYYYMMDD")
     },
   })
     .then((res) => res.data)
