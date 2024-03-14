@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
 import DeviceInfo from "react-native-device-info";
+import analytics from "@react-native-firebase/analytics";
 
 export const CreateReportModal = ({ navigation }) => {
   const useInputState = (initialValue = "") => {
@@ -33,11 +34,12 @@ export const CreateReportModal = ({ navigation }) => {
       React.useState(initialValue);
     return { descriptionvalue, onChangeText: setDescriptionValue };
   };
+  const user = useSelector((state) => state.user.user);
   const data = ["Report a problem", "Suggest an improvement", "Ask a question"];
   const [visible, setVisible] = React.useState(true);
   const multilineInputState = useInputState();
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
-  const [reponseStatusUnsuccessModal, setReponseStatusUnsuccessModal] =
+  const [responseStatusUnsuccessModal, setResponseStatusUnsuccessModal] =
     React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState();
   const [displayedValue, setDisplayedValue] = React.useState(data[0]);
@@ -181,27 +183,28 @@ export const CreateReportModal = ({ navigation }) => {
       },
     ],
   };
-  const postMessageToChannel = () => {
-    //axios
-      //.post(ApiConfig.slackWebHook, message) <-not posting
-      //.then(function (response) {
-      //  console.log(response);
-        analytics().logEvent("HelpMessagePosted", {
-                coach_Id: user.ContactId,
-                MessageType: Option,
-                application: "Coach App"
-                  });
-         // );
+  const postMessageToChannel = async () => {
 
-        //closeModal();
-//      })
-//      .catch(function (error) {
-//        console.log(error);
-//        setVisible(false);
-//        setSubmit(false);
-//        setResponseStatusModal(false);
-//        setReponseStatusUnsuccessModal(true);
-//      });
+        await analytics().logEvent("HelpMessagePosted", {
+            coach_Id: user.ContactId,
+            club_Selected: user.region,
+            application: "Coach App",
+            });
+
+        axios
+        .post(ApiConfig.slackWebHook, message)
+        .then(function (response) {
+              console.log(response);
+          closeModal();
+        })
+        .catch(function (error) {
+          console.log(error);
+          setVisible(false);
+          setSubmit(false);
+          setResponseStatusModal(false);
+          setResponseStatusUnsuccessModal(true);
+        });
+
   };
   const LoadingIndicator = (props) => (
     <View
@@ -225,7 +228,7 @@ export const CreateReportModal = ({ navigation }) => {
           setVisible(false);
           setSubmit(false);
           setResponseStatusModal(false);
-          setReponseStatusUnsuccessModal(true);
+          setResponseStatusUnsuccessModal(true);
         });
   };
 
@@ -240,7 +243,7 @@ export const CreateReportModal = ({ navigation }) => {
   }
 
   function toggleUnsuccessNotificationOff() {
-    setReponseStatusUnsuccessModal(false);
+    setResponseStatusUnsuccessModal(false);
     setVisible(true);
   }
   async function asyncCall() {
@@ -269,7 +272,7 @@ export const CreateReportModal = ({ navigation }) => {
         setSubmit(false);
         Alert.alert(
           "Oops",
-          "An Error occured while uploading the Image. Please try again."
+          "An Error occurred while uploading the Image. Please try again."
         );
       });
   }
@@ -284,7 +287,7 @@ export const CreateReportModal = ({ navigation }) => {
         { cancelable: false }
       );
     } else {
-      setReponseStatusUnsuccessModal(false);
+      setResponseStatusUnsuccessModal(false);
       if (uploadUrl !== null) {
         asyncCall();
       } else {
@@ -476,7 +479,7 @@ export const CreateReportModal = ({ navigation }) => {
         </Card>
       </Modal>
       <Modal
-        visible={reponseStatusUnsuccessModal}
+        visible={responseStatusUnsuccessModal}
         style={{ width: "80%" }}
         onBackdropPress={() => toggleNotificationOff()}
       >
