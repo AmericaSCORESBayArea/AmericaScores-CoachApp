@@ -41,7 +41,7 @@ const useInputState = (initialValue = "") => {
 const Header = (props) => (
   <View {...props}>
     <Text category="h6">Log in</Text>
-    <Text category="s1">America Scores Attendance</Text>
+    <Text category="s1">America SCORES Attendance</Text>
   </View>
 );
 
@@ -69,7 +69,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
       const confirmation = await auth()
         .signInWithPhoneNumber("+1" + loginPhoneNumber.value)
         .catch((e) => console.log(e));
-      console.log("Tryed to log in", confirmation);
+      console.log("Tried to log in", confirmation);
       await analytics().logEvent("LoginByPhone", {
                         application: "Coach App"
                       });
@@ -79,8 +79,8 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
       else {
         setLoading(false);
         Alert.alert(
-          "SMS Not sent",
-          "Check the example phone number and try again. If the issue persists contact your Salesforce administrator."
+          "Verification Code Not sent",
+          "Check the example phone number and try again. If the issue persists contact your SCORES Program Manager."
         );
         await analytics().logEvent("SMSFailed", {
             application: "Coach App"
@@ -114,8 +114,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
                 onPress={Keyboard.dismiss}
               >
                 <Text style={{ paddingBottom: "5%" }}>
-                  We will send verification SMS code to the following phone
-                  number.
+                  If your phone number is registered with SCORES, we will send a verification verification code to that number for you to use in the next step.
                 </Text>
                 <Input
                   // style={styles.input}
@@ -209,8 +208,8 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
             });
         } else {
           Alert.alert(
-            "Not an America Scores account",
-            "This account apparently does not exist, please contact your Salesforce administrator."
+            "Not an America SCORES account",
+            "This account apparently does not exist, please contact your SCORES Program Manager."
           );
           console.log("[AUTH FETCH ISSUE NO userProfile", res.data);
           return _rollbackSetupUser();
@@ -320,12 +319,11 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
     </TouchableWithoutFeedback>
   );
 };
-// making the default dqtes relative to today
 const _syncUserSessions = async (user) => {
   Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
     params: {
-      firstDate: moment().subtract(21, 'days').calendar(), //("20210416", "YYYYMMDD")
-      secondDate: moment().add(7, 'days').calendar(), //("20210426", "YYYYMMDD")
+    firstDate: moment("20230101", "YYYYMMDD").format("YYYY-MM-DD"),
+    secondDate: moment("20250615", "YYYYMMDD").format("YYYY-MM-DD"),
     },
   })
     .then((res) => res.data)
