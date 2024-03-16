@@ -5,7 +5,7 @@
     "splash": {
       "image": "./assets/splash.png"
     },
-    "name": "American Scores Attendance",
+    "name": "American SCORES Attendance",
     "slug": "AmericanScoresApp",
     "version": "1.0.0",
     "assetBundlePatterns": [
