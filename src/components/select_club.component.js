@@ -110,19 +110,20 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       dispatch(
         changeRegionList([
           "All ASBA",
-          "San Francisco",
+          "San Francisco Civic Center",
+          "San Francisco Crocker",
           "San Jose",
           "San Rafael",
           "Oakland",
-          "Daly City",
-          "Hayward",
+          "Pajaro Valley Unified",
           "Redwood City",
-          "San Francisco Civic Center",
-          "San Francisco Crocker",
-          "Alameda",
-          "Marin",
+          "Hayward",
+          "West Contra Costa",
+          "Santa Cruz",
           "San Mateo",
-          "Unrestricted",
+          "Daly City",
+          "Marin",
+          "Alameda",
         ])
       );
     } else if (region === "IFC") {
@@ -144,8 +145,8 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       var start = null;
       var end = null;
       if (value === "T") {
-        start = new Date(moment());
-        end = new Date(moment());
+        start = new Date(moment().subtract(7,'days'));
+        end = new Date(moment().add(7,'days'));
       } else if (value === "M") {
         start = new Date(moment().startOf("month"));
         end = new Date(moment().endOf("month"));
@@ -172,7 +173,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
     await analytics().logEvent("AffiliationSelect", {
       coach_Id: user.ContactId,
       club_Selected: region,
-      application: "Coach App"
+      application: "Coach App",
     });
   }
   const renderItems = ({ item }) => (
