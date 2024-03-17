@@ -114,7 +114,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
                 onPress={Keyboard.dismiss}
               >
                 <Text style={{ paddingBottom: "5%" }}>
-                  If your phone number is registered with SCORES, we will send a verification verification code to that number for you to use in the next step.
+                  If your phone number is registered with SCORES, we will send a verification code to that number for you to use in the next step.
                 </Text>
                 <Input
                   // style={styles.input}
