@@ -82,6 +82,7 @@ export default class SessionPhotograph extends React.Component {
         console.warn(err);
       }
     };
+    // Todo: Add Analytics event for photoUploaded
     const asyncCall = async () => {
       const data = new FormData();
       const uri = this.state.image.assets[0].uri;
