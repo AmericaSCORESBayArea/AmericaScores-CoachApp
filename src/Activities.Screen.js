@@ -83,8 +83,8 @@ class ActivitiesScreen extends Component {
       visibleMenu: false,
       //range: {startDate: moment(), endDate: moment().add(10, 'days')},
       range: {
-        startDate: new Date(moment().subtract(5, "days")),
-        endDate: new Date(moment()),
+        startDate: new Date(moment().subtract(7, "days")),
+        endDate: new Date(moment().add(7, "days")),
       },
       StartSeason: "",
       EndSeason: "",
@@ -182,7 +182,7 @@ class ActivitiesScreen extends Component {
             await this.fetchStudents();
           }
           await this.filterActivitiesByTeamSeasonId(
-            route.params.teamSeasonId,
+            //route.params.teamSeasonId,
             route.params.region,
             route.params.teamName
           ); // filter the activities for a specific team
@@ -349,8 +349,8 @@ class ActivitiesScreen extends Component {
           if (this.state.isUpdated !== true) {
             this.setState({
               range: {
-                startDate: new Date(moment().subtract(5, "days")),
-                endDate: new Date(moment()),
+                startDate: new Date(moment().subtract(14, "days")),
+                endDate: new Date(moment().add(7,"days")),
               },
             }); //change
           }
@@ -459,8 +459,8 @@ class ActivitiesScreen extends Component {
       if (this.state.isUpdated !== true) {
         await this.setState({
           range: {
-            startDate: new Date(moment().subtract(5, "days")),
-            endDate: new Date(moment()),
+            startDate: new Date(moment().subtract(7, "days")),
+            endDate: new Date(moment().add(7, "days")),
           },
         });
       }
@@ -476,7 +476,7 @@ class ActivitiesScreen extends Component {
                 "YYYY-MM-DD"
               ),
               endDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-              limit: 15,
+              limit: 30,
               regions: `'${route.params.region.toString()}'`,
               teamseasonId: route.params.teamSeasonId,
               offset: this.state.offset,
@@ -498,7 +498,7 @@ class ActivitiesScreen extends Component {
                 "YYYY-MM-DD"
               ),
               endDate: moment(this.state.range.endDate).format("YYYY-MM-DD"),
-              limit: 15,
+              limit: 30,
               regions: regionsArray.toString(),
               offset: this.state.offset,
             },
@@ -522,7 +522,7 @@ class ActivitiesScreen extends Component {
                 .toString()
                 .replace(String.fromCharCode(34), "'"),
               teamseasonId: route.params.teamSeasonId,
-              limit: 15,
+              limit: 30,
               offset: this.state.offset,
             },
           }
@@ -543,7 +543,7 @@ class ActivitiesScreen extends Component {
               ),
               endDate: moment(this.state.range.startDate).format("YYYY-MM-DD"),
               regions: regionsArray.toString(),
-              limit: 15,
+              limit: 30,
               offset: this.state.offset,
             },
           }
