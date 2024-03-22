@@ -32,7 +32,7 @@ react-native-cli: 2.0.1
 react-native: 0.72.10
 ```
 
-### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1)
+### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1 and M3)
 
 **YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
 
@@ -148,3 +148,19 @@ To build apk for Google Play release:
 | 3.8         | 6-3-23   | iOS          | [7a1e5b3](https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/commit/7a1e5b31b8f5f65580508f8f686ab3a227ae7a8a)                  | https://github.com/AmericaSCORESBayArea/AmericaScores-CoachApp/pull/378 iOS Firebase Auth bug |
 |             |          |              |                                                                                                                                            |                                                                                               |
 |             |          |              |                                                                                                                                            |                                                                                               |
+# Build Troubleshooting
+The depdencies on Node, React, and Cocoapods often result in issues blocking builds. This section is intended to collect notes from developers as well as useful things to try in resolving it yourself.
+| **Category** | **Issue/Error** | **Observed Fix** | **Notes** |
+|--------------|-----------------|------------------|-----------|
+|*Node*|                 |                  |           |
+|              |npm doctor says npm ERR! checkFilesPermission Missing permissions on .../[app_dir]/node_modules/.bin/. |chmod +x /Users/Pete/Coach-App-Branch/AmericaScores-CoachApp/node_modules/.bin/.packager.env| Mac M1/3  |
+|              |React Native Start  Error: - Port 8081 already in use|sudo lsof -i :8081 then kill -9 {pid}| MacOS (also check if Metro is already running somewhere. McAfee seems to want this port sometimes also :(|
+|*React-Native*|                 |                  |           |
+|              |  |  |
+|              |                 |                  |           |
+|*Pods*|                 |                  |           |
+|              | CocoaPods could not find compatible versions for pod "hermes-engine" | pod update hermes-engine| recommended --no-repo-update did not seem to work|
+|              | Pod install/updates fail on Mac M1/M3 | arch -x86_64 pod update | deleting pod folder and podfile.lock may also be necessary|
+|*XCode*              |                 |                  |           |
+|              |*XCode build can't find main.jsbundle   |react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios|                  |
+
