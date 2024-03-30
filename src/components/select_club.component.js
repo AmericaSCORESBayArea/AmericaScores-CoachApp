@@ -104,7 +104,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       );
     }
   }
-    /TODO: Check if alpha sort or another ranking is needed
+    //TODO: Check if alpha sort or another ranking is needed
   async function clubSelected(region) {
     dispatch(changeRegion(region));
     if (region === "ASBA") {
