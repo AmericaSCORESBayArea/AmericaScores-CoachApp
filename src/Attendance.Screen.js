@@ -657,7 +657,13 @@ class AttendanceScreen extends Component {
         parsedEnrollments.push(enrollmentStudent);
       }
     });
-
+      await analytics().logEvent("AttendanceViewPopulated", {
+        coach_Id: user.ContactId,
+        teamSeasonId: this.state.teamSeasonId,
+        sessionId: this.state.sessionId,
+        StudentsFound: numberOfStudents,
+        application: "Coach App",
+       });
     console.log(parsedAttendance, parsedEnrollments);
     return parsedEnrollments;
   }
@@ -919,6 +925,7 @@ class AttendanceScreen extends Component {
             `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`
         );
       });
+      
   }
 
   async _fetchSessionInfo() {

@@ -104,26 +104,27 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       );
     }
   }
+    /TODO: Check if alpha sort or another ranking is needed
   async function clubSelected(region) {
     dispatch(changeRegion(region));
     if (region === "ASBA") {
       dispatch(
         changeRegionList([
           "All ASBA",
-          "San Francisco Civic Center",
-          "San Francisco Crocker",
-          "San Jose",
-          "San Rafael",
+          "Alameda",
+          "Daly City",
+          "Hayward",
+          "Marin",
           "Oakland",
           "Pajaro Valley Unified",
           "Redwood City",
-          "Hayward",
-          "West Contra Costa",
-          "Santa Cruz",
+          "San Francisco Civic Center",
+          "San Francisco Crocker",
+          "San Jose",
           "San Mateo",
-          "Daly City",
-          "Marin",
-          "Alameda",
+          "San Rafael",
+          "Santa Cruz",
+          "West Contra Costa",
         ])
       );
     } else if (region === "IFC") {
