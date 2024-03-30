@@ -17,6 +17,7 @@
 		A6E81B30693F01C6E7495B47 /* libPods-AmericanScoresApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38CB6D42DD3F23B5BAA5F7E8 /* libPods-AmericanScoresApp.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 		C1E75CD62B9A888D001310B6 /* main.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = C1E75CD52B9A888D001310B6 /* main.jsbundle */; };
+		C1F815682BB7C24C0095D546 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = C1F815672BB7C24C0095D546 /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = AmericanScoresApp/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		C1E75CD52B9A888D001310B6 /* main.jsbundle */ = {isa = PBXFileReference; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
+		C1F815672BB7C24C0095D546 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = assets; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -88,6 +90,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				C1F815672BB7C24C0095D546 /* assets */,
 				C1E75CD52B9A888D001310B6 /* main.jsbundle */,
 				2C42573F2ADAE593005E1EA5 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* AmericanScoresApp */,
@@ -208,6 +211,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1F815682BB7C24C0095D546 /* assets in Resources */,
 				C1E75CD62B9A888D001310B6 /* main.jsbundle in Resources */,
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
@@ -392,7 +396,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 20.81;
+				MARKETING_VERSION = 20.82;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -428,7 +432,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 20.81;
+				MARKETING_VERSION = 20.82;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
