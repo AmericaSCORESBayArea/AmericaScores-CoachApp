@@ -38,7 +38,7 @@ export const EditSessionModal = ({ route, navigation }) => {
   const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
-  const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing"];
+  const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing","Service Learning"];
   const [selectedIndex, setSelectedIndex] = React.useState(
     new IndexPath(topicId)
   );

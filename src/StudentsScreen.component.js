@@ -60,7 +60,7 @@ export default class StudentsScreen extends Component {
         this.setSearchBarValue(query);
         this.setFilteredStudentsList(this.state.studentsList.filter(item => this.filter(item, query)))
     };
-
+// To-do: Somewhere we need to detect and change the ListItem colors when participant is a coach (easy way is to match ID with the user but this wont cover all cases.)
     render() {
         const {navigation} = this.props;
 
@@ -71,7 +71,7 @@ export default class StudentsScreen extends Component {
             if (item.Enrollments === null) return ;
             else {
                 let name = "NN"
-                if (item.Enrrolments[0].FirstName) name = item.Enrrolments[0].FirstName;
+                if (item.Enrrolments[0].FirstName) name = item.Enrrolments[0].FirstName; //to-do: typo makes one wonder if any bugs might exist related to "Enrrolments" vs "Enrollments"
 
                 return <ListItem
                     title={name}
