@@ -4,6 +4,7 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "ios:dev": "react-native run-ios --configuration Debug",
+    "build:ios": "react-native bundle --entry-file='index.js' --bundle-output='./ios/main.jsbundle' --dev=false --platform='ios'",
     "web": "expo start --web",
     "start": "react-native start",
     "test": "jest"
@@ -22,7 +23,7 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.0.8",
     "@react-navigation/stack": "^6.2.0",
-    "@ui-kitten/components": "https://gitpkg.now.sh/AnsonT/react-native-ui-kitten/src/components?master",
+    "@ui-kitten/components": "^5.3.1",
     "@ui-kitten/eva-icons": "^5.3.1",
     "@ui-kitten/moment": "^5.3.1",
     "axios": "^1.5.1",
