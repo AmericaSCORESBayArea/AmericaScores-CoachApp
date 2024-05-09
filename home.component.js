@@ -123,7 +123,7 @@ const Stack_Profile_Navigation = () => {
     region === "ASBA" ? headerOptions : headerOptionsIFC;
 
   const profileName = user
-    ? `${user.FirstName} ${user.LastName}`
+    ? `My Profile: ${user.FirstName} ${user.LastName}`
     : "My Profile";
 
   return (
