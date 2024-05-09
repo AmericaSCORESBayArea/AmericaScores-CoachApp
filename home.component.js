@@ -116,24 +116,26 @@ const Stack_Activities_Navigation = () =>
   );
 
 const Stack_Profile = createStackNavigator();
-const Stack_Profile_Navigation = () =>
-  useSelector((state) => state.sessionScreen.region) === "ASBA" ? (
+const Stack_Profile_Navigation = () => {
+  const user = useSelector((state) => state.user.user);
+  const region = useSelector((state) => state.sessionScreen.region);
+  const headerOptionsToUse =
+    region === "ASBA" ? headerOptions : headerOptionsIFC;
+
+  const profileName = user
+    ? `${user.FirstName} ${user.LastName}`
+    : "My Profile";
+
+  return (
     <Stack_Profile.Navigator>
       <Stack_Profile.Screen
-        options={headerOptions}
-        name="My Profile"
-        component={Profile}
-      />
-    </Stack_Profile.Navigator>
-  ) : (
-    <Stack_Profile.Navigator>
-      <Stack_Profile.Screen
-        options={headerOptionsIFC}
-        name="My Profile"
+        options={headerOptionsToUse}
+        name={profileName}
         component={Profile}
       />
     </Stack_Profile.Navigator>
   );
+};
 
 const Stack_Teams = createStackNavigator();
 const Stack_Teams_Navigation = ({ navigation }) =>
