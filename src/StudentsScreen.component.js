@@ -1,115 +1,131 @@
-import React, { Component } from 'react';
-import { Layout, AutocompleteItem, Autocomplete, Divider, Icon, List, ListItem } from '@ui-kitten/components';
+import React, { Component } from "react";
+import {
+  Layout,
+  AutocompleteItem,
+  Autocomplete,
+  Divider,
+  Icon,
+  List,
+  ListItem,
+} from "@ui-kitten/components";
 
 import Axios from "axios";
 import moment from "moment";
 
-import {ApiConfig} from "./config/ApiConfig";
+import { ApiConfig } from "./config/ApiConfig";
 
-import { connect } from 'react-redux';
+import { connect } from "react-redux";
 import { syncSessions } from "./Redux/actions/Session.actions";
 import { updateFirstTimeLoggedIn } from "./Redux/actions/user.actions";
-import { bindActionCreators } from 'redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { bindActionCreators } from "redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default class StudentsScreen extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            studentsList: [],
-            selectedStudents: [],
-            value: "",
-        }
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      studentsList: [],
+      selectedStudents: [],
+      value: "",
+    };
+  }
 
-    async componentDidMount() {
-        const user = await this.getData();
-        console.log(user);
-        await Axios.get(`${ApiConfig.dataApi}/coach/${user}/all`, {
-            params: {
-                // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
-                date: moment().format("YYYY-MM-DD")
-            }
-          })
-          .then(res => this.setState({studentsList: res.data, selectedStudents: res.data}))
-          .catch(e => console.log(e));
-        
-    }
+  async componentDidMount() {
+    const user = await this.getData();
+    // console.log(user);
+    await Axios.get(`${ApiConfig.dataApi}/coach/${user}/all`, {
+      params: {
+        // Hardcoded value, change the "2019-08-21" for this.state.date for getting the result in a specific date
+        date: moment().format("YYYY-MM-DD"),
+      },
+    })
+      .then((res) =>
+        this.setState({ studentsList: res.data, selectedStudents: res.data })
+      )
+      .catch((e) => console.log(e));
+  }
 
-    async getData(){
-        try {
-          const loginData = await AsyncStorage.getItem('loginData');
-          console.log(loginData);
-          return loginData != null ? loginData : null;
-        } catch(e) {
-          // error reading value
-        }
+  async getData() {
+    try {
+      const loginData = await AsyncStorage.getItem("loginData");
+      //   console.log(loginData);
+      return loginData != null ? loginData : null;
+    } catch (e) {
+      // error reading value
+    }
+  }
+
+  setSearchBarValue(value) {
+    this.setState({ value: value });
+  }
+  onSelect = (index) => {
+    this.setSearchBarValue(this.state.selectedStudents[index].title);
+  };
+  filter(item, query) {
+    return item.title.toLowerCase().includes(query.toLowerCase());
+  }
+
+  setFilteredStudentsList(data) {
+    this.setState({ selectedStudents: data });
+  }
+
+  onChangeText = (query) => {
+    this.setSearchBarValue(query);
+    this.setFilteredStudentsList(
+      this.state.studentsList.filter((item) => this.filter(item, query))
+    );
+  };
+  // To-do: Somewhere we need to detect and change the ListItem colors when participant is a coach (easy way is to match ID with the user but this wont cover all cases.)
+  render() {
+    const { navigation } = this.props;
+
+    const studentIcon = (props) => <Icon {...props} name="person" />;
+
+    let studentItem = ({ item, index }) => {
+      if (item.Enrollments === null) return;
+      else {
+        let name = "NN";
+        if (item.Enrrolments[0].FirstName) name = item.Enrrolments[0].FirstName; //to-do: typo makes one wonder if any bugs might exist related to "Enrrolments" vs "Enrollments"
+
+        return (
+          <ListItem
+            title={name}
+            // description={`${item.TeamSeasonName}`}
+            accessoryRight={studentIcon}
+            onPress={() => {}}
+          />
+        );
       }
-      
-      
-
-    setSearchBarValue(value) { this.setState({value: value}); }
-    onSelect = (index) => { this.setSearchBarValue(this.state.selectedStudents[index].title)};
-    filter(item, query) { return item.title.toLowerCase().includes(query.toLowerCase()) };
-
-    setFilteredStudentsList(data) { 
-        this.setState({ selectedStudents: data})
     };
-    
-    onChangeText = (query) => {
-        this.setSearchBarValue(query);
-        this.setFilteredStudentsList(this.state.studentsList.filter(item => this.filter(item, query)))
-    };
-// To-do: Somewhere we need to detect and change the ListItem colors when participant is a coach (easy way is to match ID with the user but this wont cover all cases.)
-    render() {
-        const {navigation} = this.props;
 
-        const studentIcon = (props) => ( <Icon {...props} name='person'/> );
-       
+    return (
+      <Layout style={{ flex: 1 }}>
+        <Autocomplete
+          style={{ margin: "2%" }}
+          placeholder="Place your Text"
+          ItemSeparatorComponent={Divider}
+          value={this.state.value}
+          onSelect={this.onSelect}
+          onChangeText={this.onChangeText}
+        >
+          {/* {this.state.selectedStudents.map(renderStudent)} */}
+        </Autocomplete>
+        <Divider />
 
-        let studentItem = ({ item, index }) => {
-            if (item.Enrollments === null) return ;
-            else {
-                let name = "NN"
-                if (item.Enrrolments[0].FirstName) name = item.Enrrolments[0].FirstName; //to-do: typo makes one wonder if any bugs might exist related to "Enrrolments" vs "Enrollments"
-
-                return <ListItem
-                    title={name}
-                    // description={`${item.TeamSeasonName}`}
-                    accessoryRight={studentIcon}
-                    onPress={() => {}}
-            />
-            }
-        }
-
-        return(
-            <Layout style={{ flex: 1}}>
-                <Autocomplete style={{margin:"2%"}}
-                    placeholder='Place your Text'
-                    ItemSeparatorComponent={Divider}
-                    value={this.state.value}
-                    onSelect={this.onSelect}
-                    onChangeText={this.onChangeText}
-                >
-                    {/* {this.state.selectedStudents.map(renderStudent)} */}
-                </Autocomplete>
-                <Divider/>
-            
-                <Divider/>
-                <List
-                    style={{width: "100%"}}
-                    data={this.state.selectedStudents}
-                    ItemSeparatorComponent={Divider}
-                    renderItem={studentItem}
-                    />
-            </Layout>
-        )
-    }
+        <Divider />
+        <List
+          style={{ width: "100%" }}
+          data={this.state.selectedStudents}
+          ItemSeparatorComponent={Divider}
+          renderItem={studentItem}
+        />
+      </Layout>
+    );
+  }
 }
 
 // const mapStateToProps = state => ({ user: state.user });
-  
+
 // // const mapDispatchToProps = dispatch => ({ actions: bindActionCreators(ActionCreators, dispatch) });
 
 // export default connect(mapStateToProps)(StudentsScreen);
-

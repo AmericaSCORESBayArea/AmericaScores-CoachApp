@@ -69,7 +69,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
       const confirmation = await auth()
         .signInWithPhoneNumber("+1" + loginPhoneNumber.value)
         .catch((e) => console.log(e));
-      console.log("Tried to log in", confirmation);
+      // console.log("Tried to log in", confirmation);
       await analytics().logEvent("LoginByPhone", {
         application: "Coach App",
       });
@@ -184,7 +184,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
           //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
           _syncUserSessions(userProfile)
             .then(async (userSessions) => {
-              console.log("set userProfile", userProfile);
+              // console.log("set userProfile", userProfile);
               await AsyncStorage.setItem("authServiceType", serviceProvider);
               await AsyncStorage.setItem("authIdentifier", userIdentifier);
 

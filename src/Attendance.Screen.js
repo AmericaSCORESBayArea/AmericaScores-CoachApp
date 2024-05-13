@@ -108,14 +108,14 @@ class AttendanceScreen extends Component {
               JSON.stringify(route.params.activitiesRegion[posAc]).length >= 1
             ) {
               var aclong = route.params.activitiesRegion.length;
-              console.log(posAc, aclong - 1);
+              // console.log(posAc, aclong - 1);
               if (posAc == aclong - 1) {
                 Alert.alert(
                   "",
                   "No following sessions found.\nTry adjusting the date range in the Sessions Calendar."
                 );
               } else {
-                console.log("entered", posAc, aclong - 1);
+                // console.log("entered", posAc, aclong - 1);
                 this.setState({ auxRedux: [] });
                 this.setState({
                   arrowSession: route.params.activitiesRegion[posAc + 1],
@@ -170,7 +170,7 @@ class AttendanceScreen extends Component {
     enrollments.forEach((student) => {
       let attendance = false;
       let attendanceId = "";
-      console.log(student);
+      // console.log(student);
       if (student.AttendanceId) attendanceId = student.AttendanceId;
       if (student.Attended) attendance = true;
 
@@ -223,7 +223,7 @@ class AttendanceScreen extends Component {
           ? 0
           : this.state.headCountUnknown,
     };
-    console.log(headCountObject);
+    // console.log(headCountObject);
     await Axios.patch(
       `${ApiConfig.dataApi}/sessions/${this.state.sessionId}`,
       headCountObject
@@ -242,7 +242,7 @@ class AttendanceScreen extends Component {
           responseSuccess: false,
           responseStatusModal: true,
         });
-        console.log("SOMETHING HAPPENED");
+        // console.log("SOMETHING HAPPENED");
         throw error;
       });
   }
@@ -291,7 +291,7 @@ class AttendanceScreen extends Component {
       let sessionStartTime = "";
       let sessionEndTime = "";
       if (currentSession) {
-        console.log("[Attendance.Screen.js] : FETCH SESSION");
+        // console.log("[Attendance.Screen.js] : FETCH SESSION");
         await Axios.get(
           `${ApiConfig.dataApi}/sessions/${currentSessionData.SessionId}`
         )
@@ -526,7 +526,7 @@ class AttendanceScreen extends Component {
         }
       });
     if (this.state.duplicateRecordsList.length > 0) {
-      console.log("duplicates found");
+      // console.log("duplicates found");
       this.setState({
         loadingModalRecords: false,
         duplicatesRecordsModal: true,
@@ -545,7 +545,7 @@ class AttendanceScreen extends Component {
         })
         .catch((error) => {
           this.setState({ loadingModalRecords: false });
-          console.log("SOMETHING HAPPENED");
+          // console.log("SOMETHING HAPPENED");
           throw error;
         });
     }
@@ -553,7 +553,7 @@ class AttendanceScreen extends Component {
 
   async verifyAttendance() {
     const { user } = this.props.user;
-    console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
+    // console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
     await Axios.get(
       `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`
     )
@@ -657,13 +657,13 @@ class AttendanceScreen extends Component {
         parsedEnrollments.push(enrollmentStudent);
       }
     });
-      await analytics().logEvent("AttendanceViewPopulated", {
-        coach_Id: user.ContactId,
-        teamSeasonId: this.state.teamSeasonId,
-        sessionId: this.state.sessionId,
-        StudentsFound: numberOfStudents,
-        application: "Coach App",
-       });
+    await analytics().logEvent("AttendanceViewPopulated", {
+      coach_Id: user.ContactId,
+      teamSeasonId: this.state.teamSeasonId,
+      sessionId: this.state.sessionId,
+      StudentsFound: numberOfStudents,
+      application: "Coach App",
+    });
     console.log(parsedAttendance, parsedEnrollments);
     return parsedEnrollments;
   }
@@ -925,7 +925,6 @@ class AttendanceScreen extends Component {
             `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/sessions/${this.state.sessionId}/attendances`
         );
       });
-      
   }
 
   async _fetchSessionInfo() {
