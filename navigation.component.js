@@ -4,9 +4,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import {
   LogInScreen_PhoneAuth_Code,
   LogInScreen_PhoneAuth_Phone,
-} from "./src/components/login.component";
-import { LogInScreen_Select_Club } from "./src/components/select_club.component";
-import { HomeScreen } from "./home.component";
+} from "./src/components/Login.component";
+import { LogInScreen_Select_Club } from "./src/components/Select_club.component";
+import {
+  HomeScreen,
+  OptionsOverflowMenu,
+  Stack_Profile_Navigation,
+} from "./home.component";
 import {
   CreateStudentModal,
   AddStudentToTeamModal,
@@ -20,11 +24,11 @@ import {
   AddSessionHeadcountModal,
   EditHeadCountSessionModal,
 } from "./src/components/SessionModal.component";
-import { assessmentModal } from "./src/components/assessmentModal.component";
+import { AssessmentModal } from "./src/components/AssessmentModal.component";
 import {
-  userGuideModal,
-  userGuideModalLogin,
-} from "./src/components/userGuideModal.component";
+  UserGuideModal,
+  UserGuideModalLogin,
+} from "./src/components/UserGuideModal.component";
 
 const { Navigator, Screen } = createStackNavigator();
 
@@ -32,9 +36,8 @@ const HomeRootStack = createStackNavigator();
 export const HomeRootStackScreen = () => {
   return (
     <HomeRootStack.Navigator
-      headerMode="none"
-      mode="modal"
       screenOptions={{
+        presentation: "modal",
         headerShown: false,
         cardStyle: { backgroundColor: "transparent" },
         cardOverlayEnabled: true,
@@ -88,19 +91,37 @@ export const HomeRootStackScreen = () => {
         name="StudentInfoModal"
         component={StudentInfoModal}
       />
-      <HomeRootStack.Screen name="userGuideModal" component={userGuideModal} />
+      <HomeRootStack.Screen name="userGuideModal" component={UserGuideModal} />
       <HomeRootStack.Screen
         name="assessmentModal"
-        component={assessmentModal}
+        component={AssessmentModal}
       />
     </HomeRootStack.Navigator>
   );
 };
 
+const headerOptions = ({ navigation }) => ({
+  headerStyle: {
+    backgroundColor: "#00467F",
+  },
+  headerShown: true,
+  headerTitle: "Select Club",
+  headerTintColor: "#fff",
+  headerTitleStyle: { fontWeight: "bold" },
+  headerBackVisible: false,
+  headerLeft: () => <></>,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
+});
+
 const LoginStack = createStackNavigator();
 export const LoginStackScreen = () => {
   return (
-    <LoginStack.Navigator headerMode="none" presentation="card">
+    <LoginStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        presentation: "card",
+      }}
+    >
       <LoginStack.Screen name="MainLogin" component={LogInScreen_Google} />
       <LoginStack.Screen
         name="PhoneLogin_phone"
@@ -112,11 +133,18 @@ export const LoginStackScreen = () => {
       />
       <LoginStack.Screen
         name="userGuideModalLogin"
-        component={userGuideModalLogin}
+        component={UserGuideModalLogin}
       />
       <LoginStack.Screen
         name="Select_Club"
         component={LogInScreen_Select_Club}
+        options={headerOptions}
+      />
+      <LoginStack.Screen name="userGuideModal" component={UserGuideModal} />
+      <LoginStack.Screen name="profile" component={Stack_Profile_Navigation} />
+      <LoginStack.Screen
+        name="CreateReportModal"
+        component={CreateReportModal}
       />
     </LoginStack.Navigator>
   );

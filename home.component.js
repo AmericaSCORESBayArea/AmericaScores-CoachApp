@@ -17,7 +17,7 @@ import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from "@react-navigation/stack";
 import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
-import Profile from "./src/Profile.Screen";
+import ProfileScreen from "./src/Profile.Screen";
 import { ApiConfig } from "./src/config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 import auth from "@react-native-firebase/auth";
@@ -116,7 +116,7 @@ const Stack_Activities_Navigation = () =>
   );
 
 const Stack_Profile = createStackNavigator();
-const Stack_Profile_Navigation = () => {
+export const Stack_Profile_Navigation = () => {
   const user = useSelector((state) => state.user.user);
   const region = useSelector((state) => state.sessionScreen.region);
   const headerOptionsToUse =
@@ -131,7 +131,7 @@ const Stack_Profile_Navigation = () => {
       <Stack_Profile.Screen
         options={headerOptionsToUse}
         name={profileName}
-        component={Profile}
+        component={ProfileScreen}
       />
     </Stack_Profile.Navigator>
   );
@@ -157,7 +157,7 @@ const Stack_Teams_Navigation = ({ navigation }) =>
           },
           headerTintColor: "#fff",
           headerTitleStyle: { fontWeight: "bold" },
-          headerRight: () => <OptionOverflowMenu {...navigation} />,
+          headerRight: () => <OptionsOverflowMenu {...navigation} />,
         }}
         navigation={navigation}
       />
@@ -200,7 +200,7 @@ const Stack_Teams_Navigation = ({ navigation }) =>
           },
           headerTintColor: "#fff",
           headerTitleStyle: { fontWeight: "bold" },
-          headerRight: () => <OptionOverflowMenu {...navigation} />,
+          headerRight: () => <OptionsOverflowMenu {...navigation} />,
         }}
         navigation={navigation}
       />
@@ -294,7 +294,7 @@ export const HomeScreen = ({ navigation }) => {
   );
 };
 
-export default OptionOverflowMenu = (navigation) => {
+export const OptionsOverflowMenu = (navigation) => {
   const state = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [checked, setChecked] = React.useState(false);
@@ -484,7 +484,7 @@ const headerOptions = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsIFC = ({ navigation }) => ({
   headerStyle: {
@@ -492,7 +492,7 @@ const headerOptionsIFC = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsParams = ({ navigation }) => ({
   title: useSelector((state) => state.sessionScreen.title),
@@ -501,7 +501,7 @@ const headerOptionsParams = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsParamsIFC = ({ navigation }) => ({
   title: useSelector((state) => state.sessionScreen.title),
@@ -510,5 +510,5 @@ const headerOptionsParamsIFC = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });

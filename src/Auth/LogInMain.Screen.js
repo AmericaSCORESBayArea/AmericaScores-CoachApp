@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import moment from "moment";
 
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import appleAuth, {
   AppleButton,
@@ -33,7 +33,7 @@ import { bindActionCreators } from "redux";
 class LogInScreen_Google extends Component {
   constructor(props) {
     super(props);
-    console.log("LogInScreen_Google", this.props, this.state);
+    // console.log("LogInScreen_Google", this.props, this.state);
     this.state = {
       logged: "false",
       email: "",
@@ -46,7 +46,7 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    console.log("currentUser", user);
+    // console.log("currentUser", user);
     const authType = await AsyncStorage.getItem("authServiceType");
     const authIdentifier = await AsyncStorage.getItem("authIdentifier");
     console.log("auth", authType, authIdentifier);
@@ -54,12 +54,15 @@ class LogInScreen_Google extends Component {
     if (authType && authIdentifier && user) {
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
-          useridentifier: authIdentifier.toLowerCase() == "phone" ? authIdentifier.replace("+1", ""): authIdentifier,
+          useridentifier:
+            authIdentifier.toLowerCase() == "phone"
+              ? authIdentifier.replace("+1", "")
+              : authIdentifier,
           serviceprovider: authType,
-        }, 
+        },
       })
         .then(async (res) => {
-          console.log("/auth/login", res);
+          // console.log("/auth/login", res);
           if (res.status === 200)
             console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
           const userProfile = res.data;
@@ -112,7 +115,7 @@ class LogInScreen_Google extends Component {
         : "688897090799-bjjppfthi3oac16o523ht01h63lnaout.apps.googleusercontent.com";
     GoogleSignin.configure({
       scopes: ["email"],
-      webClientId: id, 
+      webClientId: id,
     });
     // await GoogleSignin.initAsync({
     //   clientId: id,
@@ -135,7 +138,7 @@ class LogInScreen_Google extends Component {
   _setupUser = async (userIdentifier, serviceProvider) => {
     const { actions, navigation } = this.props;
     console.log("setupUser", userIdentifier, serviceProvider);
-    
+
     Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
         useridentifier: userIdentifier,
@@ -183,21 +186,19 @@ class LogInScreen_Google extends Component {
 
   signInAsync = async () => {
     try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
       const { idToken } = await GoogleSignin.signIn();
 
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const { user } = await auth().signInWithCredential(googleCredential);
-      
-      this._setupUser(user.email, "google");
 
+      this._setupUser(user.email, "google");
     } catch ({ message }) {
       alert("login: Error:" + message);
       return;
     }
-    
-    
-
   };
 
   signInGoogle = () => {
@@ -238,16 +239,13 @@ class LogInScreen_Google extends Component {
       } else {
         const appleAuthRequestResponse = await appleAuth.performRequest({
           requestedOperation: appleAuth.Operation.LOGIN,
-          requestedScopes: [
-            appleAuth.Scope.FULL_NAME,
-            appleAuth.Scope.EMAIL,
-          ],
+          requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
         });
         console.log(appleAuthRequestResponse);
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken)
           this.setState({ responseStatusModal: true });
-        
+
         // if (!appleAuthRequestResponse.email) {
         //   Alert.alert(
         //     "Log in error",
