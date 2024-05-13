@@ -8,15 +8,26 @@ import Carousel, { Pagination } from "react-native-snap-carousel";
 import analytics from "@react-native-firebase/analytics";
 import { useSelector } from "react-redux";
 
-export const userGuideModal = ({ navigation }) => {
+export const UserGuideModal = ({ navigation }) => {
   const user = useSelector((state) => state.user.user);
-  useEffect(async () => {
-    getYoutubeVideos();
-    await analytics().logEvent("userGuide", {
-      coach_Id: user.ContactId,
-      application: "Coach App",
-    });
+  // useEffect(async () => {
+  //   getYoutubeVideos();
+  //   await analytics().logEvent("userGuide", {
+  //     coach_Id: user.ContactId,
+  //     application: "Coach App",
+  //   });
+  // }, []);
+  useEffect(() => {
+    async function fetchData() {
+      getYoutubeVideos();
+      await analytics().logEvent("userGuide", {
+        coach_Id: user.ContactId,
+        application: "Coach App",
+      });
+    }
+    fetchData();
   }, []);
+
   const [visible, setVisible] = React.useState(true);
   const [slider1ActiveSlide, setSlider1ActiveSlide] = React.useState(0);
   const carouselRef = useRef(null);
@@ -176,10 +187,7 @@ export const userGuideModal = ({ navigation }) => {
     </React.Fragment>
   );
 };
-export const userGuideModalLogin = ({ navigation }) => {
-  useEffect(() => {
-    getYoutubeVideos();
-  }, []);
+export const UserGuideModalLogin = ({ navigation }) => {
   const [visible, setVisible] = React.useState(true);
   const [videoData, setVideoData] = React.useState([]);
   async function getYoutubeVideos() {
@@ -189,7 +197,11 @@ export const userGuideModalLogin = ({ navigation }) => {
     const data = await res.json();
     setVideoData(data.items[0].snippet.resourceId.videoId);
   }
-// Todo: Add Analytics event for Async storage: first time(T/F). We should also track when it is updated or read/write fails
+
+  useEffect(() => {
+    getYoutubeVideos();
+  }, []);
+  // Todo: Add Analytics event for Async storage: first time(T/F). We should also track when it is updated or read/write fails
   function closeModal() {
     fetchMyAsyncStorage();
     setVisible(false);

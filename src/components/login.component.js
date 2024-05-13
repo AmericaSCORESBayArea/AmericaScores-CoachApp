@@ -71,8 +71,8 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
         .catch((e) => console.log(e));
       console.log("Tried to log in", confirmation);
       await analytics().logEvent("LoginByPhone", {
-                        application: "Coach App"
-                      });
+        application: "Coach App",
+      });
       dispatch(setPhoneAuthConfirmation(confirmation));
       setLoading(false);
       if (confirmation) navigation.navigate("PhoneLogin_code");
@@ -83,7 +83,7 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
           "Check the example phone number and try again. If the issue persists contact your SCORES Program Manager."
         );
         await analytics().logEvent("SMSFailed", {
-            application: "Coach App"
+          application: "Coach App",
         });
       }
     } catch (error) {
@@ -114,7 +114,9 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
                 onPress={Keyboard.dismiss}
               >
                 <Text style={{ paddingBottom: "5%" }}>
-                  If your phone number is registered with SCORES, we will send a verification code to that number for you to use in the next step.
+                  If your phone number is registered with SCORES, we will send a
+                  verification code to that number for you to use in the next
+                  step.
                 </Text>
                 <Input
                   // style={styles.input}
@@ -196,7 +198,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
                 await analytics().logEvent("successfulLogin", {
                   coach_Id: userProfile.ContactId,
                   //club_Selected: region, -- not assigned yet?
-                  application: "Coach App"
+                  application: "Coach App",
                 });
               }
               navigation.navigate("Select_Club");
@@ -322,8 +324,8 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
 const _syncUserSessions = async (user) => {
   Axios.get(`${ApiConfig.dataApi}/coach/${user.ContactId}/all`, {
     params: {
-    firstDate: moment("20230101", "YYYYMMDD").format("YYYY-MM-DD"),
-    secondDate: moment("20250615", "YYYYMMDD").format("YYYY-MM-DD"),
+      firstDate: moment("20230101", "YYYYMMDD").format("YYYY-MM-DD"),
+      secondDate: moment("20250615", "YYYYMMDD").format("YYYY-MM-DD"),
     },
   })
     .then((res) => res.data)
