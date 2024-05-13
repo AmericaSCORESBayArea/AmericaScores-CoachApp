@@ -686,6 +686,15 @@ class ProfileScreen extends Component {
             >
               Remove My Account
             </Button>
+            <Text
+              style={{
+                color: "white",
+                alignSelf: "center",
+                marginTop: "4%",
+              }}
+            >
+              {this.state.firstName} {this.state.lastName}
+            </Text>
           </View>
           {ModalDeleteAccount()}
           {ModalEditCalendar()}

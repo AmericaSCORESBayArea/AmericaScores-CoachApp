@@ -160,7 +160,7 @@ class ActivitiesScreen extends Component {
         });
       }, 3500);
     }
-    console.log(this.props.user);
+    // console.log(this.props.user);
   }
 
   async _syncActivities() {
@@ -350,7 +350,7 @@ class ActivitiesScreen extends Component {
             this.setState({
               range: {
                 startDate: new Date(moment().subtract(14, "days")),
-                endDate: new Date(moment().add(7,"days")),
+                endDate: new Date(moment().add(7, "days")),
               },
             }); //change
           }
@@ -561,7 +561,7 @@ class ActivitiesScreen extends Component {
   }
   async selectRange(dates) {
     const { route } = this.props;
-    console.log(this.state.dateCont, dates.endDate);
+    // console.log(this.state.dateCont, dates.endDate);
     this.setState({ offset: 0, endReached: false });
     if (dates.endDate === null && this.state.dateCont < 1) {
       this.setState({ dateCont: this.state.dateCont + 1 });
@@ -575,7 +575,7 @@ class ActivitiesScreen extends Component {
       this._syncReduxActivities(activitiesList);
       this.setState({ loadingModalstate: false });
     }
-    console.log(this.state.RangeDatepickerVisibility);
+    // console.log(this.state.RangeDatepickerVisibility);
   }
 
   unEnrollStudents() {

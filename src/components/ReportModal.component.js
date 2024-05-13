@@ -63,7 +63,7 @@ export const CreateReportModal = ({ navigation }) => {
     };
   }, []);
   useEffect(() => {
-    console.log(url);
+    // console.log(url);
     if (url !== undefined && url.length !== 0) {
       setSubmit(true);
       postMessageToChannelWithImage();
@@ -184,27 +184,25 @@ export const CreateReportModal = ({ navigation }) => {
     ],
   };
   const postMessageToChannel = async () => {
+    await analytics().logEvent("HelpMessagePosted", {
+      coach_Id: user.ContactId,
+      club_Selected: user.region,
+      application: "Coach App",
+    });
 
-        await analytics().logEvent("HelpMessagePosted", {
-            coach_Id: user.ContactId,
-            club_Selected: user.region,
-            application: "Coach App",
-            });
-
-        axios
-        .post(ApiConfig.slackWebHook, message)
-        .then(function (response) {
-              console.log(response);
-          closeModal();
-        })
-        .catch(function (error) {
-          console.log(error);
-          setVisible(false);
-          setSubmit(false);
-          setResponseStatusModal(false);
-          setResponseStatusUnsuccessModal(true);
-        });
-
+    axios
+      .post(ApiConfig.slackWebHook, message)
+      .then(function (response) {
+        // console.log(response);
+        closeModal();
+      })
+      .catch(function (error) {
+        console.log(error);
+        setVisible(false);
+        setSubmit(false);
+        setResponseStatusModal(false);
+        setResponseStatusUnsuccessModal(true);
+      });
   };
   const LoadingIndicator = (props) => (
     <View

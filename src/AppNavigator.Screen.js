@@ -15,16 +15,16 @@ import { bindActionCreators } from "redux";
 class AppNavigator extends Component {
   constructor(props) {
     super(props);
-    console.log("AppNavigator.constructor", this.props);
+    // console.log("AppNavigator.constructor", this.props);
   }
 
-  componentDidMount() {
-    console.log(
-      "AppNavigator.componentDidMount",
-      this.props.user.logged,
-      this.props.sessionScreen.region
-    );
-  }
+  //   componentDidMount() {
+  //     console.log(
+  //       "AppNavigator.componentDidMount",
+  //       this.props.user.logged,
+  //       this.props.sessionScreen.region
+  //     );
+  //   }
 
   render() {
     const { Navigator, Screen } = createStackNavigator();

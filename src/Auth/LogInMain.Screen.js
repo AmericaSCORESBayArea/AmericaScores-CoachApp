@@ -49,7 +49,7 @@ class LogInScreen_Google extends Component {
     // console.log("currentUser", user);
     const authType = await AsyncStorage.getItem("authServiceType");
     const authIdentifier = await AsyncStorage.getItem("authIdentifier");
-    console.log("auth", authType, authIdentifier);
+    // console.log("auth", authType, authIdentifier);
 
     if (authType && authIdentifier && user) {
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
@@ -75,7 +75,7 @@ class LogInScreen_Google extends Component {
               //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
               //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
               // dispatch(loginUser(userProfile));
-              console.log("actions", actions);
+              // console.log("actions", actions);
               await actions.loginUser(userProfile);
               this.setState({ logged: "true" });
               await analytics().logEvent("main_activity_ready");
@@ -108,7 +108,7 @@ class LogInScreen_Google extends Component {
   };
 
   initAsync = async () => {
-    console.log("initAsync");
+    // console.log("initAsync");
     const id =
       Platform.OS === "ios"
         ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
@@ -123,7 +123,7 @@ class LogInScreen_Google extends Component {
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
-      console.log("loggedStat", loggedStat, email);
+      // console.log("loggedStat", loggedStat, email);
       if (loggedStat) {
         this.setState({ logged: loggedStat });
         this.setState({ email: email });
@@ -137,7 +137,7 @@ class LogInScreen_Google extends Component {
 
   _setupUser = async (userIdentifier, serviceProvider) => {
     const { actions, navigation } = this.props;
-    console.log("setupUser", userIdentifier, serviceProvider);
+    // console.log("setupUser", userIdentifier, serviceProvider);
 
     Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
@@ -146,17 +146,17 @@ class LogInScreen_Google extends Component {
       },
     })
       .then(async (response) => {
-        console.log("setupUser", response);
+        // console.log("setupUser", response);
         const userProfile = response.data;
         if (userProfile.ContactId) {
-          console.log("userProfile", userProfile);
+          // console.log("userProfile", userProfile);
           await AsyncStorage.setItem("authServiceType", serviceProvider);
           await AsyncStorage.setItem("authIdentifier", userIdentifier);
 
           this.setState({ logged: "true" });
           this._syncUserSessions(userProfile)
             .then((userSessions) => {
-              console.log("userSessions", userSessions);
+              // console.log("userSessions", userSessions);
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
               navigation.navigate("Select_Club");
@@ -180,7 +180,7 @@ class LogInScreen_Google extends Component {
   _rollbackSetupUser = async () => {
     const { actions } = this.props;
     await GoogleSignin.signOut();
-    console.log("rollback setup user");
+    // console.log("rollback setup user");
     actions.logOutUser();
   };
 
@@ -211,10 +211,10 @@ class LogInScreen_Google extends Component {
 
   appleAlert = () => {
     if (this.state.logged === "true" && this.state.email !== null) {
-      console.log("apple auth route", this.state.email);
+      // console.log("apple auth route", this.state.email);
       this._setupUser(this.state.email, "email");
     } else {
-      console.log(this.state.email, this.state.logged);
+      // console.log(this.state.email, this.state.logged);
       Alert.alert(
         "Alert Title",
         "An America Scores account is not found linked to this Apple ID. Choose [Continue] to proceed and link or create your America Scores account. Your Apple ID will remain anonymous",
@@ -295,18 +295,18 @@ class LogInScreen_Google extends Component {
           );
           try {
             await auth().signOut();
-            console.log("[APPLE LOGIN] signed out");
+            // console.log("[APPLE LOGIN] signed out");
           } catch (error) {
             console.log("[APPLE LOGIN] error signing out", error);
           }
           return;
         } else {
-          console.log("email: " + fbUser.email);
+          // console.log("email: " + fbUser.email);
           this.setState({ email: fbUser.email });
 
           await AsyncStorage.setItem("userAppleEmail", this.state.email);
 
-          console.log("[APPLE LOGIN] Successful request");
+          // console.log("[APPLE LOGIN] Successful request");
         }
 
         //TODO Change the gmail for email in backend

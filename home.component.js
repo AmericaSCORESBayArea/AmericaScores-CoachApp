@@ -301,7 +301,7 @@ export const OptionsOverflowMenu = (navigation) => {
   useEffect(() => {
     const dismissFirebaseModal = async () => {
       const notifications = await AsyncStorage.getItem("appNotifications");
-      console.log(notifications);
+      // console.log(notifications);
       if (notifications === null || notifications === "true") {
         setChecked(true);
       } else {
@@ -420,11 +420,11 @@ export const OptionsOverflowMenu = (navigation) => {
 
   async function checkNotifications(checkProps) {
     if (checkProps) {
-      console.log(checkProps);
+      // console.log(checkProps);
       await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
       setChecked(checkProps);
     } else {
-      console.log(!checked);
+      // console.log(!checked);
       await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
       setChecked(!checked);
     }

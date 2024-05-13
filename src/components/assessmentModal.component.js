@@ -103,7 +103,7 @@ export const AssessmentModal = (props) => {
       StudentId: props.route.params.Student.StudentId,
       AssessmentType: fieldValue.replace(" ", "_"),
     };
-    console.log(assessment);
+    // console.log(assessment);
     await analytics().logEvent("CreateAssessment", {
       coach_Id: props.route.params.User.ContactId,
       student_Id: assessment.StudentId,
@@ -115,7 +115,7 @@ export const AssessmentModal = (props) => {
       assessment
     )
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setUpdatingModalstate(false);
         setResponseStatusModal(true);
         setResponseSuccess(true);
