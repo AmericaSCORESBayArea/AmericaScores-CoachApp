@@ -1,16 +1,15 @@
-import React, { useEffect } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-import {
-  LogInScreen_PhoneAuth_Code,
-  LogInScreen_PhoneAuth_Phone,
-} from "./src/components/Login.component";
 import { LogInScreen_Select_Club } from "./src/components/Select_club.component";
 import {
   HomeScreen,
   OptionsOverflowMenu,
   Stack_Profile_Navigation,
 } from "./home.component";
+import {
+  LogInScreen_PhoneAuth_Code,
+  LogInScreen_PhoneAuth_Phone,
+} from "./src/components/Login.component";
 import {
   CreateStudentModal,
   AddStudentToTeamModal,
@@ -30,9 +29,21 @@ import {
   UserGuideModalLogin,
 } from "./src/components/UserGuideModal.component";
 
-const { Navigator, Screen } = createStackNavigator();
-
 const HomeRootStack = createStackNavigator();
+const LoginStack = createStackNavigator();
+
+const headerOptions = ({ navigation }) => ({
+  headerStyle: {
+    backgroundColor: "#00467F",
+  },
+  headerShown: true,
+  headerTitle: "Select Club",
+  headerTintColor: "#fff",
+  headerTitleStyle: { fontWeight: "bold" },
+  headerBackVisible: false,
+  headerLeft: () => <></>,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
+});
 export const HomeRootStackScreen = () => {
   return (
     <HomeRootStack.Navigator
@@ -100,20 +111,6 @@ export const HomeRootStackScreen = () => {
   );
 };
 
-const headerOptions = ({ navigation }) => ({
-  headerStyle: {
-    backgroundColor: "#00467F",
-  },
-  headerShown: true,
-  headerTitle: "Select Club",
-  headerTintColor: "#fff",
-  headerTitleStyle: { fontWeight: "bold" },
-  headerBackVisible: false,
-  headerLeft: () => <></>,
-  headerRight: () => <OptionsOverflowMenu {...navigation} />,
-});
-
-const LoginStack = createStackNavigator();
 export const LoginStackScreen = () => {
   return (
     <LoginStack.Navigator
