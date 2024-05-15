@@ -6,6 +6,7 @@ import AppNavigator from "./src/AppNavigator.Screen";
 import { Provider } from "react-redux";
 import inAppMessaging from "@react-native-firebase/in-app-messaging";
 import { default as theme } from "./assets/ASBA_Theme_Light_v1.json"; // <-- Import app theme
+import { default as mapping } from "./mapping.json";
 import { ApiConfig } from "./src/config/ApiConfig";
 
 import configureStore from "./src/config/ConfigureStore";
@@ -31,6 +32,7 @@ export default function App() {
         store={configureStore}
         {...eva}
         theme={{ ...eva.light, ...theme }}
+        customMapping={mapping}
       >
         <Provider store={store}>
           <AppNavigator />
