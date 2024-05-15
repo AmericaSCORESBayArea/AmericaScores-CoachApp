@@ -20,7 +20,7 @@ import Axios from "axios";
 import { ApiConfig } from "../config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 
-export const assessmentModal = (props) => {
+export const AssessmentModal = (props) => {
   const [visible, setVisible] = React.useState(true);
   const [assessmentValue, setAssessmentValue] = React.useState();
   const [selectedIndex, setSelectedIndex] = React.useState();
@@ -103,7 +103,7 @@ export const assessmentModal = (props) => {
       StudentId: props.route.params.Student.StudentId,
       AssessmentType: fieldValue.replace(" ", "_"),
     };
-    console.log(assessment);
+    // console.log(assessment);
     await analytics().logEvent("CreateAssessment", {
       coach_Id: props.route.params.User.ContactId,
       student_Id: assessment.StudentId,
@@ -115,7 +115,7 @@ export const assessmentModal = (props) => {
       assessment
     )
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         setUpdatingModalstate(false);
         setResponseStatusModal(true);
         setResponseSuccess(true);

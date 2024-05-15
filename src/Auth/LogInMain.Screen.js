@@ -15,7 +15,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import moment from "moment";
 
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import appleAuth, {
   AppleButton,
@@ -33,7 +33,7 @@ import { bindActionCreators } from "redux";
 class LogInScreen_Google extends Component {
   constructor(props) {
     super(props);
-    console.log("LogInScreen_Google", this.props, this.state);
+    // console.log("LogInScreen_Google", this.props, this.state);
     this.state = {
       logged: "false",
       email: "",
@@ -46,20 +46,23 @@ class LogInScreen_Google extends Component {
     this.setState({ loadingModalstate: true });
     const { actions, navigation } = this.props;
     const user = await auth().currentUser;
-    console.log("currentUser", user);
+    // console.log("currentUser", user);
     const authType = await AsyncStorage.getItem("authServiceType");
     const authIdentifier = await AsyncStorage.getItem("authIdentifier");
-    console.log("auth", authType, authIdentifier);
+    // console.log("auth", authType, authIdentifier);
 
     if (authType && authIdentifier && user) {
       await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
         params: {
-          useridentifier: authIdentifier.toLowerCase() == "phone" ? authIdentifier.replace("+1", ""): authIdentifier,
+          useridentifier:
+            authIdentifier.toLowerCase() == "phone"
+              ? authIdentifier.replace("+1", "")
+              : authIdentifier,
           serviceprovider: authType,
-        }, 
+        },
       })
         .then(async (res) => {
-          console.log("/auth/login", res);
+          // console.log("/auth/login", res);
           if (res.status === 200)
             console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
           const userProfile = res.data;
@@ -72,7 +75,7 @@ class LogInScreen_Google extends Component {
               //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
               //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
               // dispatch(loginUser(userProfile));
-              console.log("actions", actions);
+              // console.log("actions", actions);
               await actions.loginUser(userProfile);
               this.setState({ logged: "true" });
               await analytics().logEvent("main_activity_ready");
@@ -105,14 +108,14 @@ class LogInScreen_Google extends Component {
   };
 
   initAsync = async () => {
-    console.log("initAsync");
+    // console.log("initAsync");
     const id =
       Platform.OS === "ios"
         ? "688897090799-n7llvrfrib6aalpr149vttvbuigs49r5.apps.googleusercontent.com"
         : "688897090799-bjjppfthi3oac16o523ht01h63lnaout.apps.googleusercontent.com";
     GoogleSignin.configure({
       scopes: ["email"],
-      webClientId: id, 
+      webClientId: id,
     });
     // await GoogleSignin.initAsync({
     //   clientId: id,
@@ -120,7 +123,7 @@ class LogInScreen_Google extends Component {
     try {
       const loggedStat = await AsyncStorage.getItem("loggedStatus");
       const email = await AsyncStorage.getItem("userAppleEmail");
-      console.log("loggedStat", loggedStat, email);
+      // console.log("loggedStat", loggedStat, email);
       if (loggedStat) {
         this.setState({ logged: loggedStat });
         this.setState({ email: email });
@@ -134,8 +137,8 @@ class LogInScreen_Google extends Component {
 
   _setupUser = async (userIdentifier, serviceProvider) => {
     const { actions, navigation } = this.props;
-    console.log("setupUser", userIdentifier, serviceProvider);
-    
+    // console.log("setupUser", userIdentifier, serviceProvider);
+
     Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
       params: {
         useridentifier: userIdentifier,
@@ -143,17 +146,17 @@ class LogInScreen_Google extends Component {
       },
     })
       .then(async (response) => {
-        console.log("setupUser", response);
+        // console.log("setupUser", response);
         const userProfile = response.data;
         if (userProfile.ContactId) {
-          console.log("userProfile", userProfile);
+          // console.log("userProfile", userProfile);
           await AsyncStorage.setItem("authServiceType", serviceProvider);
           await AsyncStorage.setItem("authIdentifier", userIdentifier);
 
           this.setState({ logged: "true" });
           this._syncUserSessions(userProfile)
             .then((userSessions) => {
-              console.log("userSessions", userSessions);
+              // console.log("userSessions", userSessions);
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
               navigation.navigate("Select_Club");
@@ -177,27 +180,25 @@ class LogInScreen_Google extends Component {
   _rollbackSetupUser = async () => {
     const { actions } = this.props;
     await GoogleSignin.signOut();
-    console.log("rollback setup user");
+    // console.log("rollback setup user");
     actions.logOutUser();
   };
 
   signInAsync = async () => {
     try {
-      await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+      await GoogleSignin.hasPlayServices({
+        showPlayServicesUpdateDialog: true,
+      });
       const { idToken } = await GoogleSignin.signIn();
 
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const { user } = await auth().signInWithCredential(googleCredential);
-      
-      this._setupUser(user.email, "google");
 
+      this._setupUser(user.email, "google");
     } catch ({ message }) {
       alert("login: Error:" + message);
       return;
     }
-    
-    
-
   };
 
   signInGoogle = () => {
@@ -210,10 +211,10 @@ class LogInScreen_Google extends Component {
 
   appleAlert = () => {
     if (this.state.logged === "true" && this.state.email !== null) {
-      console.log("apple auth route", this.state.email);
+      // console.log("apple auth route", this.state.email);
       this._setupUser(this.state.email, "email");
     } else {
-      console.log(this.state.email, this.state.logged);
+      // console.log(this.state.email, this.state.logged);
       Alert.alert(
         "Alert Title",
         "An America Scores account is not found linked to this Apple ID. Choose [Continue] to proceed and link or create your America Scores account. Your Apple ID will remain anonymous",
@@ -238,16 +239,13 @@ class LogInScreen_Google extends Component {
       } else {
         const appleAuthRequestResponse = await appleAuth.performRequest({
           requestedOperation: appleAuth.Operation.LOGIN,
-          requestedScopes: [
-            appleAuth.Scope.FULL_NAME,
-            appleAuth.Scope.EMAIL,
-          ],
+          requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
         });
         console.log(appleAuthRequestResponse);
         // Ensure Apple returned a user identityToken
         if (!appleAuthRequestResponse.identityToken)
           this.setState({ responseStatusModal: true });
-        
+
         // if (!appleAuthRequestResponse.email) {
         //   Alert.alert(
         //     "Log in error",
@@ -297,18 +295,18 @@ class LogInScreen_Google extends Component {
           );
           try {
             await auth().signOut();
-            console.log("[APPLE LOGIN] signed out");
+            // console.log("[APPLE LOGIN] signed out");
           } catch (error) {
             console.log("[APPLE LOGIN] error signing out", error);
           }
           return;
         } else {
-          console.log("email: " + fbUser.email);
+          // console.log("email: " + fbUser.email);
           this.setState({ email: fbUser.email });
 
           await AsyncStorage.setItem("userAppleEmail", this.state.email);
 
-          console.log("[APPLE LOGIN] Successful request");
+          // console.log("[APPLE LOGIN] Successful request");
         }
 
         //TODO Change the gmail for email in backend

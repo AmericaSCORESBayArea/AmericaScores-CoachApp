@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   BottomNavigationTab,
@@ -15,9 +15,8 @@ import AttendanceScreen from "./src/Attendance.Screen";
 import SessionPhotograph from "./src/components/SessionPhotograph.component";
 import QRScanScreen from "./src/components/QRScanner.component";
 import { createStackNavigator } from "@react-navigation/stack";
-import StudentsScreen from "./src/StudentsScreen.component";
 import StudentSearchScreen from "./src/StudentSearch.Screen";
-import Profile from "./src/Profile.Screen";
+import ProfileScreen from "./src/Profile.Screen";
 import { ApiConfig } from "./src/config/ApiConfig";
 import analytics from "@react-native-firebase/analytics";
 import auth from "@react-native-firebase/auth";
@@ -25,10 +24,14 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
 import { useSelector, useDispatch } from "react-redux";
 import { logOutUser } from "./src/Redux/actions/user.actions";
 import { changeRegion } from "./src/Redux/actions/SessionScreen.actions";
+
+const Stack_Activities = createStackNavigator();
+const Stack_Profile = createStackNavigator();
+const Stack_Teams = createStackNavigator();
+const { Navigator, Screen } = createBottomTabNavigator();
 
 const TodayIcon = (props) => <Icon {...props} name="calendar-outline" />;
 const StudentsIcon = (props) => <Icon {...props} name="people-outline" />;
@@ -65,84 +68,70 @@ const BottomTabBar = ({ navigation, state, data }) =>
     </BottomNavigation>
   );
 
-const Stack_Activities = createStackNavigator();
-const Stack_Activities_Navigation = () =>
-  useSelector((state) => state.sessionScreen.region) === "ASBA" ? (
+const Stack_Activities_Navigation = () => {
+  const region = useSelector((state) => state.sessionScreen.region);
+  const headerOptionsToUse =
+    region === "ASBA" ? headerOptions : headerOptionsIFC;
+
+  return (
     <Stack_Activities.Navigator>
       <Stack_Activities.Screen
-        options={headerOptionsParams}
+        options={
+          region === "ASBA" ? headerOptionsParams : headerOptionsParamsIFC
+        }
         name="Sessions"
         component={ActivitiesScreen}
       />
       <Stack_Activities.Screen
-        options={headerOptions}
+        options={headerOptionsToUse}
         name="Attendance"
         component={AttendanceScreen}
       />
       <Stack_Activities.Screen
         name="Session Photograph"
         component={SessionPhotograph}
-        options={headerOptions}
+        options={headerOptionsToUse}
       />
       <Stack_Activities.Screen
-        options={headerOptions}
-        name="Scan students QR"
-        component={QRScanScreen}
-      />
-    </Stack_Activities.Navigator>
-  ) : (
-    <Stack_Activities.Navigator>
-      <Stack_Activities.Screen
-        options={headerOptionsParamsIFC}
-        name="Sessions"
-        component={ActivitiesScreen}
-      />
-      <Stack_Activities.Screen
-        options={headerOptionsIFC}
-        name="Attendance"
-        component={AttendanceScreen}
-      />
-      <Stack_Activities.Screen
-        name="Session Photograph"
-        component={SessionPhotograph}
-        options={headerOptionsIFC}
-      />
-      <Stack_Activities.Screen
-        options={headerOptionsIFC}
+        options={headerOptionsToUse}
         name="Scan students QR"
         component={QRScanScreen}
       />
     </Stack_Activities.Navigator>
   );
+};
 
-const Stack_Profile = createStackNavigator();
-const Stack_Profile_Navigation = () =>
-  useSelector((state) => state.sessionScreen.region) === "ASBA" ? (
+export const Stack_Profile_Navigation = () => {
+  const user = useSelector((state) => state.user.user);
+  const region = useSelector((state) => state.sessionScreen.region);
+  const headerOptionsToUse =
+    region === "ASBA" ? headerOptions : headerOptionsIFC;
+
+  const profileName = user
+    ? `My Profile: ${user.FirstName} ${user.LastName}`
+    : "My Profile";
+
+  return (
     <Stack_Profile.Navigator>
       <Stack_Profile.Screen
-        options={headerOptions}
-        name="My Profile"
-        component={Profile}
-      />
-    </Stack_Profile.Navigator>
-  ) : (
-    <Stack_Profile.Navigator>
-      <Stack_Profile.Screen
-        options={headerOptionsIFC}
-        name="My Profile"
-        component={Profile}
+        options={headerOptionsToUse}
+        name={profileName}
+        component={ProfileScreen}
       />
     </Stack_Profile.Navigator>
   );
+};
 
-const Stack_Teams = createStackNavigator();
-const Stack_Teams_Navigation = ({ navigation }) =>
-  useSelector((state) => state.sessionScreen.region) === "ASBA" ? (
+const Stack_Teams_Navigation = ({ navigation }) => {
+  const region = useSelector((state) => state.sessionScreen.region);
+  const headerOptionsToUse =
+    region === "ASBA" ? headerOptions : headerOptionsIFC;
+  return (
     <Stack_Teams.Navigator>
       <Stack_Teams.Screen
         name="Teams"
         component={TeamsScreen}
-        options={headerOptions}
+        options={headerOptionsToUse}
         initialParams={{ teamSeasonId: null }}
       />
       <Stack_Teams.Screen
@@ -151,82 +140,38 @@ const Stack_Teams_Navigation = ({ navigation }) =>
         options={{
           title: useSelector((state) => state.sessionScreen.teamname),
           headerStyle: {
-            backgroundColor: "#00467F",
+            backgroundColor: colorList(),
           },
           headerTintColor: "#fff",
           headerTitleStyle: { fontWeight: "bold" },
-          headerRight: () => <OptionOverflowMenu {...navigation} />,
+          headerRight: () => <OptionsOverflowMenu {...navigation} />,
         }}
         navigation={navigation}
       />
       <Stack_Teams.Screen
         name="StudentSearch"
         component={StudentSearchScreen}
-        options={headerOptions}
+        options={headerOptionsToUse}
       />
       <Stack_Teams.Screen
         name="Attendance"
         component={AttendanceScreen}
-        options={headerOptions}
+        options={headerOptionsToUse}
       />
       <Stack_Teams.Screen
         name="Scan students QR"
         component={QRScanScreen}
-        options={headerOptions}
+        options={headerOptionsToUse}
       />
       <Stack_Teams.Screen
         name="Session Photograph"
         component={SessionPhotograph}
         options={headerOptions}
-      />
-    </Stack_Teams.Navigator>
-  ) : (
-    <Stack_Teams.Navigator>
-      <Stack_Teams.Screen
-        name="Teams"
-        component={TeamsScreen}
-        options={headerOptionsIFC}
-        initialParams={{ teamSeasonId: null }}
-      />
-      <Stack_Teams.Screen
-        name="Team Sessions"
-        component={ActivitiesScreen}
-        options={{
-          title: useSelector((state) => state.sessionScreen.teamname),
-          headerStyle: {
-            backgroundColor: "#001541",
-          },
-          headerTintColor: "#fff",
-          headerTitleStyle: { fontWeight: "bold" },
-          headerRight: () => <OptionOverflowMenu {...navigation} />,
-        }}
-        navigation={navigation}
-      />
-      <Stack_Teams.Screen
-        name="StudentSearch"
-        component={StudentSearchScreen}
-        options={headerOptionsIFC}
-      />
-      <Stack_Teams.Screen
-        name="Attendance"
-        component={AttendanceScreen}
-        options={headerOptionsIFC}
-      />
-      <Stack_Teams.Screen
-        name="Session Photograph"
-        component={SessionPhotograph}
-        options={headerOptions}
-      />
-      <Stack_Teams.Screen
-        name="Scan students QR"
-        component={QRScanScreen}
-        options={headerOptionsIFC}
       />
     </Stack_Teams.Navigator>
   );
-const Stack_Affiliation = createStackNavigator();
+};
 
-const { Navigator, Screen } = createBottomTabNavigator();
 const TabNavigator = (navigation) => {
   const [customHomeProps, setCustomHomeProps] = React.useState();
   useFocusEffect(
@@ -292,14 +237,14 @@ export const HomeScreen = ({ navigation }) => {
   );
 };
 
-export default OptionOverflowMenu = (navigation) => {
+export const OptionsOverflowMenu = (navigation) => {
   const state = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [checked, setChecked] = React.useState(false);
   useEffect(() => {
     const dismissFirebaseModal = async () => {
       const notifications = await AsyncStorage.getItem("appNotifications");
-      console.log(notifications);
+      // console.log(notifications);
       if (notifications === null || notifications === "true") {
         setChecked(true);
       } else {
@@ -308,8 +253,7 @@ export default OptionOverflowMenu = (navigation) => {
     };
     dismissFirebaseModal();
   }, []);
-  const [visoverflowMenuVisibleble, setOverflowMenuVisible] =
-    React.useState(false);
+  const [visoverflowMenuVisibleble, setOverflowMenuVisible] = useState(false);
   const coloroverflow = () => {
     if (useSelector((state) => state.sessionScreen.region) === "ASBA") {
       return "#00467F";
@@ -317,7 +261,6 @@ export default OptionOverflowMenu = (navigation) => {
       return "#001541";
     }
   };
-
   const OptionsIcon = (props) => (
     <Icon {...props} fill="#FFFFFF" name="more-vertical-outline" />
   );
@@ -337,7 +280,6 @@ export default OptionOverflowMenu = (navigation) => {
   const howtouseicon = (props) => (
     <Icon {...props} name="play-circle-outline" />
   );
-
   const toggle = (props) => (
     <CheckBox
       {...props}
@@ -346,7 +288,6 @@ export default OptionOverflowMenu = (navigation) => {
       onChange={(nextChecked) => checkNotifications(nextChecked)}
     />
   );
-
   const OptionButtons = () => (
     <Button
       style={{ flex: 1, backgroundColor: coloroverflow }}
@@ -355,7 +296,6 @@ export default OptionOverflowMenu = (navigation) => {
       onPress={() => setOverflowMenuVisible(true)}
     />
   );
-
   async function menuItemOnPress(modalScreen) {
     await analytics().logSelectContent({
       content_type: `Pressed ${modalScreen}`,
@@ -364,7 +304,6 @@ export default OptionOverflowMenu = (navigation) => {
     setOverflowMenuVisible(false);
     navigation.navigate(modalScreen);
   }
-
   async function changeAfflitiation() {
     try {
       await analytics().logSelectContent({
@@ -410,19 +349,18 @@ export default OptionOverflowMenu = (navigation) => {
       }
       await dispatch(logOutUser());
       await dispatch(changeRegion(null));
-      navigation.navigate("Login");
+      navigation.navigate("MainLogin");
     } catch (error) {
       console.log(error);
     }
   }
-
   async function checkNotifications(checkProps) {
     if (checkProps) {
-      console.log(checkProps);
+      // console.log(checkProps);
       await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
       setChecked(checkProps);
     } else {
-      console.log(!checked);
+      // console.log(!checked);
       await AsyncStorage.setItem("appNotifications", JSON.stringify(!checked));
       setChecked(!checked);
     }
@@ -475,14 +413,14 @@ export default OptionOverflowMenu = (navigation) => {
     </OverflowMenu>
   );
 };
-//this.menuItemOnPress("AddStudentToTeamModal")
+
 const headerOptions = ({ navigation }) => ({
   headerStyle: {
     backgroundColor: "#00467F",
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsIFC = ({ navigation }) => ({
   headerStyle: {
@@ -490,7 +428,7 @@ const headerOptionsIFC = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsParams = ({ navigation }) => ({
   title: useSelector((state) => state.sessionScreen.title),
@@ -499,7 +437,7 @@ const headerOptionsParams = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
 const headerOptionsParamsIFC = ({ navigation }) => ({
   title: useSelector((state) => state.sessionScreen.title),
@@ -508,5 +446,5 @@ const headerOptionsParamsIFC = ({ navigation }) => ({
   },
   headerTintColor: "#fff",
   headerTitleStyle: { fontWeight: "bold" },
-  headerRight: () => <OptionOverflowMenu {...navigation} />,
+  headerRight: () => <OptionsOverflowMenu {...navigation} />,
 });
