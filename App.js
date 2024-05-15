@@ -23,7 +23,7 @@ export default function App() {
     };
     dismissFirebaseModal();
   }, []);
-  console.log("store", store.getState());
+  // console.log("store", store.getState());
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />

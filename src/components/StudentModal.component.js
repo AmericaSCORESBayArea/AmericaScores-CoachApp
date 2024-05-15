@@ -108,7 +108,7 @@ export const CreateStudentModal = ({ navigation, route }) => {
   const [date, setDate] = React.useState(moment());
 
   useEffect(() => {
-    console.log("test");
+    // console.log("test");
     Keyboard.addListener("keyboardDidShow", (e) => {
       setKeyboardSize(e.endCoordinates.height);
     });
@@ -599,7 +599,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
       Alert.alert("Error", "You have to select a student first");
     }
   }
-// Todo: Add Analytics event for Create Student Record (coachID, Region)
+  // Todo: Add Analytics event for Create Student Record (coachID, Region)
   async function createStudent() {
     let student = {
       TeamSeasonId: teamSeasonId,
@@ -689,7 +689,7 @@ export const AddStudentToTeamModal = ({ navigation, route }) => {
     setSearchingStudents(true);
     setShowWarn(false);
     const unfiltered = await fetchStudents(value);
-    console.log(unfiltered);
+    // console.log(unfiltered);
     if (unfiltered.length > 0) {
       setData(unfiltered);
       setSearchingStudents(false);

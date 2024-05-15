@@ -38,7 +38,13 @@ export const EditSessionModal = ({ route, navigation }) => {
   const [date, setDate] = React.useState(moment(oldDate, "MMM-DD-YYYY"));
   const [warningStatusModal, setWarningStatusModal] = React.useState(false);
   const [responseStatusModal, setResponseStatusModal] = React.useState(false);
-  const data = ["Soccer", "Writing", "Game Day", "Soccer and Writing","Service Learning"];
+  const data = [
+    "Soccer",
+    "Writing",
+    "Game Day",
+    "Soccer and Writing",
+    "Service Learning",
+  ];
   const [selectedIndex, setSelectedIndex] = React.useState(
     new IndexPath(topicId)
   );
@@ -85,7 +91,7 @@ export const EditSessionModal = ({ route, navigation }) => {
     setupdatingModalstate(true);
     Axios.delete(`${ApiConfig.dataApi}/sessions/${session}`)
       .then((res) => {
-        console.log(res.data);
+        // console.log(res.data);
         if (res.data.success === false) {
           setupdatingModalstate(false);
           setResponseSuccessDelete(false);
@@ -110,7 +116,7 @@ export const EditSessionModal = ({ route, navigation }) => {
       SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
       SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
     };
-    console.log("change", changes);
+    // console.log("change", changes);
     await pushChanges(changes);
   }
 
@@ -275,8 +281,6 @@ export const EditSessionModal = ({ route, navigation }) => {
       application: "Coach App",
       coach_Id: user.ContactId,
       session_Id: session,
-      
-
     });
     Axios.patch(`${ApiConfig.dataApi}/sessions/${session}`, changes)
       .then((res) => {
@@ -299,7 +303,7 @@ export const EditSessionModal = ({ route, navigation }) => {
             "\n\nPull down on the session description to refresh.",
           [{ text: "OK", onPress: () => navigation.navigate("Home") }]
         );
-        console.log(changes);
+        // console.log(changes);
         setupdatingModalstate(false);
       })
       .catch((error) => {
@@ -509,9 +513,9 @@ export const EditSessionModal = ({ route, navigation }) => {
             placeholder="Select a type"
             // label='Scores Program Type'
             onSelect={(index) => {
-              setSelectedIndex(index),
-                console.log(index),
-                console.log(index.equals);
+              setSelectedIndex(index);
+              // console.log(index),
+              // console.log(index.equals);
             }}
           >
             {data.map(renderOption)}
@@ -604,7 +608,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
       SessionStart: moment(timePickerOptions.startDate).format("HH:mm"),
       SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
     };
-    console.log("change", changes);
+    // console.log("change", changes);
     await pushChanges(changes);
   }
 
@@ -790,7 +794,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
             "\n\nPull down on the session description to refresh.",
           [{ text: "OK", onPress: () => navigation.navigate("Home") }]
         );
-        console.log(changes);
+        // console.log(changes);
         setupdatingModalstate(false);
       })
       .catch((error) => {
@@ -805,7 +809,7 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
   async function selectDate(date) {
     await setDate(date);
     const activitiesList = await this.fetchActivities();
-    console.log(activitiesList);
+    // console.log(activitiesList);
     this._syncReduxActivities(activitiesList);
   }
 
@@ -1000,9 +1004,9 @@ export const EditHeadCountSessionModal = ({ route, navigation }) => {
             placeholder="Select a type"
             // label='Scores Program Type'
             onSelect={(index) => {
-              setSelectedIndex(index),
-                console.log(index),
-                console.log(index.equals);
+              setSelectedIndex(index);
+              // console.log(index),
+              // console.log(index.equals);
             }}
           >
             {data.map(renderOption)}
@@ -1104,7 +1108,7 @@ export const AddSessionModal = ({ route, navigation }) => {
         sessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamsId[selectedTeamIndex.row],
       };
-      console.log(changes);
+      // console.log(changes);
       await pushChanges(changes);
     } else {
       let changes = {
@@ -1114,7 +1118,7 @@ export const AddSessionModal = ({ route, navigation }) => {
         sessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamSeasonId,
       };
-      console.log(changes);
+      // console.log(changes);
       await pushChanges(changes);
     }
   }
@@ -1169,7 +1173,7 @@ export const AddSessionModal = ({ route, navigation }) => {
       sessionStart: changes.SessionStart,
       sessionEnd: changes.SessionEnd,
     });
-    console.log("changes", changes);
+    // console.log("changes", changes);
     Axios.post(`${ApiConfig.dataApi}/sessions`, changes)
       .then((res) => {
         Alert.alert(
@@ -1177,7 +1181,7 @@ export const AddSessionModal = ({ route, navigation }) => {
           "Pull down on the sessions list to refresh, or select a new date in the calendar.",
           [{ text: "OK", onPress: () => navigation.goBack() }]
         );
-        console.log(changes);
+        // console.log(changes);
         setupdatingModalstate(false);
       })
       .catch((error) => {
@@ -1192,7 +1196,7 @@ export const AddSessionModal = ({ route, navigation }) => {
   async function selectDate(date) {
     await setDate(date);
     const activitiesList = await this.fetchActivities();
-    console.log(activitiesList);
+    // console.log(activitiesList);
     this._syncReduxActivities(activitiesList);
   }
 
@@ -1507,7 +1511,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamsId[selectedTeamIndex.row],
       };
-      console.log(changes);
+      // console.log(changes);
       await pushChanges(changes);
     } else {
       let changes = {
@@ -1517,7 +1521,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
         SessionEnd: moment(timePickerOptions.endDate).format("HH:mm"),
         TeamSeasonId: teamSeasonId,
       };
-      console.log(changes);
+      // console.log(changes);
       await pushChanges(changes);
     }
   }
@@ -1589,7 +1593,7 @@ export const AddSessionHeadcountModal = ({ route, navigation }) => {
           "Pull down on the sessions list to refresh, or select a new date in the calendar.",
           [{ text: "OK", onPress: () => navigation.goBack() }]
         );
-        console.log(changes);
+        // console.log(changes);
         setupdatingModalstate(false);
       })
       .catch((error) => {
