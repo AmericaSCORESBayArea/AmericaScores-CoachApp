@@ -833,6 +833,7 @@ class ProfileScreen extends Component {
               <View style={{ flexDirection: "row", marginTop: "15%" }}>
                 {this.state.homeScreenOptions.map((value, index) => (
                   <View
+                    key={value.id}
                     style={
                       value.id === this.state.homeScreenOptionSelected
                         ? styles.selectedItem
