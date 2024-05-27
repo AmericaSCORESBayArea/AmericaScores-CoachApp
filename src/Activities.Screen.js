@@ -120,7 +120,7 @@ class ActivitiesScreen extends Component {
           startDate: new Date(JSON.parse(auxCalendar).startDate),
           endDate: new Date(JSON.parse(auxCalendar).endDate),
         },
-      }); //change
+      });
     }
     if (aux === null) {
       this.setState({ selected: paletteColors[0] });
@@ -129,17 +129,30 @@ class ActivitiesScreen extends Component {
     }
     const { route } = this.props;
     const { actions } = this.props;
-    if (route.name !== "Team Sessions") {
-      // this.setState({loadingModalstate:false});
-    } else {
+    if (route.name === "Team Sessions") {
       actions.changeTitleTeam(route.params.SeasonName);
-      if (route.params.UsesHeadcount === "true") {
-        this.setState({ showStudents: false });
-      } else {
-        this.setState({ showStudents: true });
-      }
+      this.setState({
+        showStudents: route.params.UsesHeadcount !== "true",
+        range: {
+          startDate: new Date(route.params.seasonStart),
+          endDate: new Date(route.params.seasonEnd),
+        },
+        isUpdated: true,
+        teamSeasonId: route.params.teamSeasonId,
+        region: route.params.region,
+        teamName: route.params.teamName,
+        StartSeason: new Date(route.params.seasonStart),
+        EndSeason: new Date(route.params.seasonEnd),
+      });
+    } else {
+      this.setState({
+        range: {
+          startDate: new Date(moment().subtract(7, "days")),
+          endDate: new Date(moment().add(7, "days")),
+        },
+      });
     }
-    this.setState({ displayedValue: this.state.regions[0] }); //setting "basic" region filter with All
+    this.setState({ displayedValue: this.state.regions[0] });
     if (this.props.sessionScreen.region === "IFC") {
       this.setState({ RegionSelected: "All IFC" });
     } else if (this.props.sessionScreen.region === "ASBA") {
@@ -148,7 +161,6 @@ class ActivitiesScreen extends Component {
       this.setState({ RegionSelected: "All OGSC" });
     }
 
-    //this.__syncCoachRegions(); call a function that returns coach regions
     await this._syncActivities();
     await AsyncStorage.setItem("loggedStatus", "true");
     if (this.props.user.firstTimeLoggedIn) {
@@ -160,7 +172,27 @@ class ActivitiesScreen extends Component {
         });
       }, 3500);
     }
-    // console.log(this.props.user);
+  }
+
+  async initializeDataLoad() {
+    try {
+      await this._syncActivities();
+      await AsyncStorage.setItem("loggedStatus", "true");
+      if (this.props.user.firstTimeLoggedIn) {
+        this.setState({ welcomeModalVisibility: true });
+        setTimeout(() => {
+          this.setState({
+            welcomeModalVisibility: false,
+            loadingModalstate: false,
+          });
+        }, 500);
+      } else {
+        this.setState({ loadingModalstate: false });
+      }
+    } catch (error) {
+      console.error("Failed to initialize data:", error);
+      this.setState({ loadingModalstate: false });
+    }
   }
 
   async _syncActivities() {
