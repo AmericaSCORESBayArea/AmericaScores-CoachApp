@@ -81,11 +81,7 @@ class ActivitiesScreen extends Component {
       isTeamSessions: false,
       displayMessage: "",
       visibleMenu: false,
-      //range: {startDate: moment(), endDate: moment().add(10, 'days')},
-      range: {
-        startDate: new Date(moment().subtract(7, "days")),
-        endDate: new Date(moment().add(7, "days")),
-      },
+      range: {},
       StartSeason: "",
       EndSeason: "",
       dateCont: 0,
@@ -114,19 +110,7 @@ class ActivitiesScreen extends Component {
   async componentDidMount() {
     let aux = await AsyncStorage.getItem("customTheme");
     let auxCalendar = await AsyncStorage.getItem("customCalendar");
-    if (auxCalendar !== null) {
-      this.setState({
-        range: {
-          startDate: new Date(JSON.parse(auxCalendar).startDate),
-          endDate: new Date(JSON.parse(auxCalendar).endDate),
-        },
-      });
-    }
-    if (aux === null) {
-      this.setState({ selected: paletteColors[0] });
-    } else {
-      this.setState({ selected: JSON.parse(aux) });
-    }
+
     const { route } = this.props;
     const { actions } = this.props;
     if (route.name === "Team Sessions") {
@@ -134,8 +118,8 @@ class ActivitiesScreen extends Component {
       this.setState({
         showStudents: route.params.UsesHeadcount !== "true",
         range: {
-          startDate: new Date(route.params.seasonStart),
-          endDate: new Date(route.params.seasonEnd),
+          startDate: new Date(moment().subtract(14, "days")),
+          endDate: new Date(moment().add(7, "days")),
         },
         isUpdated: true,
         teamSeasonId: route.params.teamSeasonId,
@@ -159,6 +143,20 @@ class ActivitiesScreen extends Component {
       this.setState({ RegionSelected: "All ASBA" });
     } else if (this.props.sessionScreen.region === "OGSC") {
       this.setState({ RegionSelected: "All OGSC" });
+    }
+
+    if (auxCalendar !== null) {
+      this.setState({
+        range: {
+          startDate: new Date(JSON.parse(auxCalendar).startDate),
+          endDate: new Date(JSON.parse(auxCalendar).endDate),
+        },
+      });
+    }
+    if (aux === null) {
+      this.setState({ selected: paletteColors[0] });
+    } else {
+      this.setState({ selected: JSON.parse(aux) });
     }
 
     await this._syncActivities();
@@ -461,16 +459,6 @@ class ActivitiesScreen extends Component {
       selectedIndex: this.state.regions.indexOf(region),
       disabledbox: true,
     });
-    //this.setState({listofSessions: null});
-    /*const activities = await this.state.activities.filter(
-            activity => { if (activity) return activity.TeamSeasonId === teamSeasonId;});
-        this.setState({activities: activities});
-        this.setState({activitiesRegion:this.state.activities.filter((value) =>(region.match(value.Region)))})
-        await activities.map(value => {
-            if(value !== null || value.length !==0){
-                this.setState({ listofSessions: value})
-            }
-        });*/
     if (this.state.activitiesRegion.length === 0) {
       this.setState({ nomatchModalVisibility: true });
     } else {
@@ -482,11 +470,6 @@ class ActivitiesScreen extends Component {
     const { user } = this.props;
     const { route } = this.props;
     const regionsArray = [];
-    /*delete Axios.defaults.headers.common['client_id'];
-        delete Axios.defaults.headers.common['client_secret'];
-        Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-        Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
-        console.log(Axios.defaults.headers)*/
     if (route.name === "Team Sessions") {
       if (this.state.isUpdated !== true) {
         await this.setState({
