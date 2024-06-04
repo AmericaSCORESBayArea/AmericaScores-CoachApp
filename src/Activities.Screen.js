@@ -110,9 +110,23 @@ class ActivitiesScreen extends Component {
   async componentDidMount() {
     let aux = await AsyncStorage.getItem("customTheme");
     let auxCalendar = await AsyncStorage.getItem("customCalendar");
+    if (auxCalendar !== null) {
+      this.setState({
+        range: {
+          startDate: new Date(JSON.parse(auxCalendar).startDate),
+          endDate: new Date(JSON.parse(auxCalendar).endDate),
+        },
+      });
+    }
+    if (aux === null) {
+      this.setState({ selected: paletteColors[0] });
+    } else {
+      this.setState({ selected: JSON.parse(aux) });
+    }
 
     const { route } = this.props;
     const { actions } = this.props;
+
     if (route.name === "Team Sessions") {
       actions.changeTitleTeam(route.params.SeasonName);
       this.setState({
@@ -121,12 +135,6 @@ class ActivitiesScreen extends Component {
           startDate: new Date(moment().subtract(14, "days")),
           endDate: new Date(moment().add(7, "days")),
         },
-        isUpdated: true,
-        teamSeasonId: route.params.teamSeasonId,
-        region: route.params.region,
-        teamName: route.params.teamName,
-        StartSeason: new Date(route.params.seasonStart),
-        EndSeason: new Date(route.params.seasonEnd),
       });
     } else {
       this.setState({
@@ -145,20 +153,6 @@ class ActivitiesScreen extends Component {
       this.setState({ RegionSelected: "All OGSC" });
     }
 
-    if (auxCalendar !== null) {
-      this.setState({
-        range: {
-          startDate: new Date(JSON.parse(auxCalendar).startDate),
-          endDate: new Date(JSON.parse(auxCalendar).endDate),
-        },
-      });
-    }
-    if (aux === null) {
-      this.setState({ selected: paletteColors[0] });
-    } else {
-      this.setState({ selected: JSON.parse(aux) });
-    }
-
     await this._syncActivities();
     await AsyncStorage.setItem("loggedStatus", "true");
     if (this.props.user.firstTimeLoggedIn) {
@@ -169,27 +163,6 @@ class ActivitiesScreen extends Component {
           loadingModalstate: false,
         });
       }, 3500);
-    }
-  }
-
-  async initializeDataLoad() {
-    try {
-      await this._syncActivities();
-      await AsyncStorage.setItem("loggedStatus", "true");
-      if (this.props.user.firstTimeLoggedIn) {
-        this.setState({ welcomeModalVisibility: true });
-        setTimeout(() => {
-          this.setState({
-            welcomeModalVisibility: false,
-            loadingModalstate: false,
-          });
-        }, 500);
-      } else {
-        this.setState({ loadingModalstate: false });
-      }
-    } catch (error) {
-      console.error("Failed to initialize data:", error);
-      this.setState({ loadingModalstate: false });
     }
   }
 
