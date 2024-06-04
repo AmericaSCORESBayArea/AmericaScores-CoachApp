@@ -154,7 +154,7 @@ The depdencies on Node, React, and Cocoapods often result in issues blocking bui
 | **Category** | **Issue/Error** | **Observed Fix** | **Notes** |
 |--------------|-----------------|------------------|-----------|
 |*Node*|                 |                  |           |
-|              |npm doctor says npm ERR! checkFilesPermission Missing permissions on .../[app_dir]/node_modules/.bin/. |chmod +x /Users/Pete/Coach-App-Branch/AmericaScores-CoachApp/node_modules/.bin/.packager.env| Mac M1/3  |
+|              |npm doctor says npm ERR! checkFilesPermission Missing permissions on .../[app_dir]/node_modules/.bin/. |chmod +x /Users/<user>/<path>/AmericaScores-CoachApp/node_modules/.bin/.packager.env| Mac M1/3  |
 |              |React Native Start  Error: - Port 8081 already in use|sudo lsof -i :8081 then kill -9 {pid}| MacOS (also check if Metro is already running somewhere. McAfee seems to want this port sometimes also :(|
 |*React-Native*|                 |                  |           |
 |              |  |  |
