@@ -104,7 +104,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       );
     }
   }
-    //TODO: Check if alpha sort or another ranking is needed
+    //TODO: Hey we need to make this dynamic!!! The API will provide the active/relevant regions. There is an endpoint for this.
   async function clubSelected(region) {
     dispatch(changeRegion(region));
     if (region === "ASBA") {
