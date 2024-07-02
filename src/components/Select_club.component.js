@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   ImageBackground,
@@ -6,6 +6,7 @@ import {
   ScrollView,
   Linking,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Layout, Text, Card, Modal, Button } from "@ui-kitten/components";
 import { View } from "react-native";
@@ -58,18 +59,23 @@ const Headerr = (props) => (
   </View>
 );
 export const LogInScreen_Select_Club = ({ navigation }) => {
-  const [updatedModal, setUpdatedModal] = React.useState(false);
+  const [updatedModal, setUpdatedModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
+
   const dispatch = useDispatch();
   const state = useSelector((state) => state.sessionScreen.updateapp);
   const user = useSelector((state) => state.user.user);
+
   useEffect(() => {
-    async function fetchMyAsyncStorage() {
-      let aux = await AsyncStorage.getItem("userFirstTime");
-      if (!aux) {
-        navigation.navigate("userGuideModalLogin");
+    async function checkFirstTimeUser() {
+      const aux = await AsyncStorage.getItem("userFirstTime");
+      if (aux === null) {
+        setShowGuide(true);
       }
     }
-    fetchMyAsyncStorage();
+    checkFirstTimeUser();
+
     const init = async () => {
       try {
         const check = await checkVersion({
@@ -89,6 +95,25 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
     };
     init();
   }, []);
+
+  // Callback function to be called when the modal is closed
+  const onGuideModalClose = () => {
+    setShowGuide(false);
+    setLoading(true);
+    setTimeout(() => {
+      clubSelected("ASBA");
+      setLoading(false);
+    }, 2000);
+  };
+
+  useEffect(() => {
+    if (showGuide) {
+      navigation.navigate("userGuideModalLogin", {
+        onModalClose: onGuideModalClose,
+      });
+    }
+  }, [showGuide, navigation]);
+
   /*function toggleNotificationOff() {
       setUpdatedModal(false);
     }*/
@@ -146,8 +171,8 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       var start = null;
       var end = null;
       if (value === "T") {
-        start = new Date(moment().subtract(7,'days'));
-        end = new Date(moment().add(7,'days'));
+        start = new Date(moment().subtract(7, "days"));
+        end = new Date(moment().add(7, "days"));
       } else if (value === "M") {
         start = new Date(moment().startOf("month"));
         end = new Date(moment().endOf("month"));
@@ -284,14 +309,38 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
                   }}
                 >
                   {updateModal()}
+                  {loading ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                      }}
+                    >
+                      <Text style={{ fontSize: 15 }}>
+                        Selecting
+                        <Text style={{ fontWeight: "bold", color: "#2179ad" }}>
+                          {" "}
+                          ASBA{" "}
+                        </Text>
+                        region as default
+                      </Text>
 
-                  <FlatList
-                    data={Clubs}
-                    renderItem={renderItems}
-                    keyExtractor={(item) => item.id}
-                    numColumns={2}
-                    scrollEnabled={false}
-                  />
+                      <ActivityIndicator
+                        size="large"
+                        style={{ marginTop: 20 }}
+                      />
+                    </View>
+                  ) : (
+                    <FlatList
+                      data={Clubs}
+                      renderItem={renderItems}
+                      keyExtractor={(item) => item.id}
+                      numColumns={2}
+                      scrollEnabled={false}
+                    />
+                  )}
                 </Layout>
               </Card>
             </Layout>

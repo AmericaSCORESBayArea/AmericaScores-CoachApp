@@ -187,9 +187,10 @@ export const UserGuideModal = ({ navigation }) => {
     </React.Fragment>
   );
 };
-export const UserGuideModalLogin = ({ navigation }) => {
+export const UserGuideModalLogin = ({ navigation, route }) => {
   const [visible, setVisible] = React.useState(true);
   const [videoData, setVideoData] = React.useState([]);
+  const onModalClose = route.params?.onModalClose;
   async function getYoutubeVideos() {
     const res = await fetch(
       `${ApiConfig.youtubeApi}&key=${ApiConfig.youtubeSecretKey}`
@@ -206,6 +207,7 @@ export const UserGuideModalLogin = ({ navigation }) => {
     fetchMyAsyncStorage();
     setVisible(false);
     navigation.goBack();
+    if (onModalClose) onModalClose();
   }
   async function fetchMyAsyncStorage() {
     let aux = await AsyncStorage.getItem("userFirstTime");
