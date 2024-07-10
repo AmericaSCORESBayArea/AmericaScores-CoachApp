@@ -26,69 +26,123 @@ import analytics from "@react-native-firebase/analytics";
 
 import { connect } from "react-redux";
 import { loginUser, logOutUser } from "../Redux/actions/user.actions";
-import { useDispatch } from "react-redux";
 import { syncSessions } from "../Redux/actions/Session.actions";
 import { bindActionCreators } from "redux";
-
+import {
+  changeRegion,
+  changeRegionList,
+} from "../Redux/actions/SessionScreen.actions";
+import { paletteColors } from "../components/paletteColors";
 class LogInScreen_Google extends Component {
   constructor(props) {
     super(props);
-    // console.log("LogInScreen_Google", this.props, this.state);
     this.state = {
       logged: "false",
       email: "",
       loadingModalstate: false,
       responseStatusModal: false,
+      region: this.props.sessionScreen.region || "ASBA",
+      isUserFirstTime: this.props.sessionScreen.isUserFirstTime,
     };
   }
 
+  clubSelected = async (region) => {
+    this.props.actions.changeRegion(this.state.region);
+    if (region === "ASBA") {
+      this.props.actions.changeRegionList([
+        "All ASBA",
+        "Alameda",
+        "Daly City",
+        "Hayward",
+        "Marin",
+        "Oakland",
+        "Pajaro Valley Unified",
+        "Redwood City",
+        "San Francisco Civic Center",
+        "San Francisco Crocker",
+        "San Jose",
+        "San Mateo",
+        "San Rafael",
+        "Santa Cruz",
+        "West Contra Costa",
+      ]);
+    } else if (region === "IFC") {
+      this.props.actions.dispatch(changeRegionList(["All IFC", "IFC-SF"]));
+    } else if (region === "OGSC") {
+      this.props.actions.dispatch(changeRegionList(["All OGSC", "Genesis"]));
+    }
+    // setTimeout(() => {
+    //   console.log("region", this.props.sessionScreen.region);
+    //   if (this.props.sessionScreen.region === null) {
+    //     this.setState({ region: "ASBA" });
+    //   } else {
+    //     this.setState({ region: this.props.sessionScreen.region });
+    //   }
+    // }, 0);
+    const customTheme = await AsyncStorage.getItem("customTheme");
+    if (customTheme === null) {
+      await AsyncStorage.setItem(
+        "customTheme",
+        JSON.stringify(paletteColors[0])
+      );
+    }
+  };
+
   async componentDidMount() {
     this.setState({ loadingModalstate: true });
-    const { actions, navigation } = this.props;
-    const user = await auth().currentUser;
-    // console.log("currentUser", user);
-    const authType = await AsyncStorage.getItem("authServiceType");
-    const authIdentifier = await AsyncStorage.getItem("authIdentifier");
-    // console.log("auth", authType, authIdentifier);
 
-    if (authType && authIdentifier && user) {
-      await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
-        params: {
-          useridentifier:
-            authIdentifier.toLowerCase() == "phone"
-              ? authIdentifier.replace("+1", "")
-              : authIdentifier,
-          serviceprovider: authType,
-        },
-      })
-        .then(async (res) => {
-          // console.log("/auth/login", res);
-          if (res.status === 200)
-            console.log("[AUTH FETCH MOBILE LOGIN | 200]", res.data);
-          const userProfile = res.data;
-          if (res.data.ContactId === null) {
-            this.setState({ loadingModalstate: false });
-            this.initAsync();
-          } else {
-            await this.setLoginLocal(userProfile.ContactId);
-            if (userProfile.ContactId) {
-              //Axios.defaults.headers.common['client_id'] = ApiConfig.clientIdSandbox;
-              //Axios.defaults.headers.common['client_secret'] = ApiConfig.clientSecretSandbox;
-              // dispatch(loginUser(userProfile));
-              // console.log("actions", actions);
-              await actions.loginUser(userProfile);
-              this.setState({ logged: "true" });
-              await analytics().logEvent("main_activity_ready");
-              navigation.navigate("Select_Club");
-              this.setState({ loadingModalstate: false });
-            }
-          }
-        })
-        .catch((error) => {
-          console.log("/auth/login", error);
-          this.setState({ loadingModalstate: false });
-        });
-    } else {
+    try {
+      const { actions, navigation } = this.props;
+      const user = auth().currentUser;
+
+      if (!user) {
+        this.setState({ loadingModalstate: false, logged: "false" });
+        navigation.navigate("MainLogin");
+        return;
+      }
+
+      const authType = await AsyncStorage.getItem("authServiceType");
+      const authIdentifier = await AsyncStorage.getItem("authIdentifier");
+
+      if (!authType || !authIdentifier) {
+        throw new Error("Authentication details are incomplete");
+      }
+      const identifier =
+        authIdentifier.toLowerCase() === "phone"
+          ? authIdentifier.replace("+1", "")
+          : authIdentifier;
+
+      const response = await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
+        params: { useridentifier: identifier, serviceprovider: authType },
+      });
+
+      if (!response.data.ContactId) {
+        throw new Error("No contact ID found");
+      }
+
+      await this.setLoginLocal(response.data.ContactId);
+      await actions.loginUser(response.data);
+      await analytics().logEvent("main_activity_ready");
+      this.setState({
+        logged: "true",
+        loadingModalstate: false,
+      });
+
+      setTimeout(() => {
+        this.setState({ region: this.props.sessionScreen.region });
+      }, 0);
+
+      if (this.state.isUserFirstTime === false) {
+        await this.clubSelected(this.state.region);
+        navigation.navigate("HomeRoot", { screen: "Home" });
+      } else if (
+        this.state.region === ("ASBA" || "IFC" || "OGSC") &&
+        this.state.isUserFirstTime === true
+      ) {
+        navigation.navigate("Select_Club");
+      }
+    } catch (error) {
+      console.error(error);
       this.setState({ loadingModalstate: false });
       this.initAsync();
     }
@@ -146,20 +200,18 @@ class LogInScreen_Google extends Component {
       },
     })
       .then(async (response) => {
-        // console.log("setupUser", response);
         const userProfile = response.data;
         if (userProfile.ContactId) {
-          // console.log("userProfile", userProfile);
           await AsyncStorage.setItem("authServiceType", serviceProvider);
           await AsyncStorage.setItem("authIdentifier", userIdentifier);
 
           this.setState({ logged: "true" });
           this._syncUserSessions(userProfile)
-            .then((userSessions) => {
-              // console.log("userSessions", userSessions);
+            .then(async (userSessions) => {
               actions.loginUser(userProfile);
               actions.syncSessions(userSessions);
-              navigation.navigate("Select_Club");
+              await this.clubSelected("ASBA");
+              navigation.navigate("HomeRoot", { screen: "Home" });
             })
             .catch((error) => {
               console.log("_setupUser", error);
@@ -490,15 +542,21 @@ class LogInScreen_Google extends Component {
 const mapStateToProps = (state) => ({
   user: state.user,
   sessions: state.sessions,
+  sessionScreen: state.sessionScreen,
 });
 
-const ActionCreators = Object.assign(
-  {},
-  { loginUser, logOutUser, syncSessions }
-);
-
 const mapDispatchToProps = (dispatch) => ({
-  actions: bindActionCreators(ActionCreators, dispatch),
+  actions: bindActionCreators(
+    {
+      loginUser,
+      logOutUser,
+      syncSessions,
+      changeRegion,
+      changeRegionList,
+    },
+    dispatch
+  ),
+  dispatch,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LogInScreen_Google);

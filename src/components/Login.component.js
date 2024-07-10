@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   SafeAreaView,
   Alert,
   Keyboard,
   TouchableWithoutFeedback,
-  ImageBackground,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -32,6 +31,13 @@ import { syncSessions } from "../Redux/actions/Session.actions";
 import Axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import analytics from "@react-native-firebase/analytics";
+import {
+  changeRegion,
+  changeRegionList,
+  showFirstTimeModal,
+} from "../Redux/actions/SessionScreen.actions";
+import inAppMessaging from "@react-native-firebase/in-app-messaging";
+import { paletteColors } from "./paletteColors";
 
 const useInputState = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -163,9 +169,88 @@ export const LogInScreen_PhoneAuth_Phone = ({ navigation }) => {
 
 export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
   const state = useSelector((state) => state.user);
+  const showFirstTimeModal = useSelector(
+    (state) => state.sessionScreen.showFirstTimeModal
+  );
   const dispatch = useDispatch();
   const loginCode = useInputState();
   const [loading, setLoading] = useState(false);
+  const [firstTimeModal, setFirstTimeModal] = useState(showFirstTimeModal);
+  const clubSelected = async () => {
+    dispatch(changeRegion("ASBA"));
+    dispatch(
+      changeRegionList([
+        "All ASBA",
+        "Alameda",
+        "Daly City",
+        "Hayward",
+        "Marin",
+        "Oakland",
+        "Pajaro Valley Unified",
+        "Redwood City",
+        "San Francisco Civic Center",
+        "San Francisco Crocker",
+        "San Jose",
+        "San Mateo",
+        "San Rafael",
+        "Santa Cruz",
+        "West Contra Costa",
+      ])
+    );
+    const aux = await AsyncStorage.getItem("customTheme");
+    if (aux === null) {
+      await AsyncStorage.setItem(
+        "customTheme",
+        JSON.stringify(paletteColors[0])
+      );
+    }
+    let auxCalendar = await AsyncStorage.getItem("customCalendar");
+    if (auxCalendar !== null) {
+      //changing customCalendar value to the actual date/month/week
+      let value = JSON.parse(auxCalendar).optionSelected;
+      var start = null;
+      var end = null;
+      if (value === "T") {
+        start = new Date(moment().subtract(7, "days"));
+        end = new Date(moment().add(7, "days"));
+      } else if (value === "M") {
+        start = new Date(moment().startOf("month"));
+        end = new Date(moment().endOf("month"));
+      } else {
+        start = new Date(moment().startOf("week"));
+        end = new Date(moment().endOf("week"));
+      }
+      let calendarEdited = {
+        optionSelected: value,
+        startDate: start,
+        endDate: end,
+        textCalendar: JSON.parse(auxCalendar).textCalendar,
+      };
+      await AsyncStorage.setItem(
+        "customCalendar",
+        JSON.stringify(calendarEdited)
+      );
+    }
+    const notifications = await AsyncStorage.getItem("appNotifications");
+    if (notifications === null || notifications === "true") {
+      inAppMessaging().setMessagesDisplaySuppressed(false);
+      await inAppMessaging().triggerEvent("main_activity_ready");
+    }
+  };
+
+  const onGuideModalClose = async () => {
+    setFirstTimeModal(false);
+    await clubSelected();
+    navigation.navigate("HomeRoot", { screen: "Home" });
+  };
+
+  useEffect(() => {
+    if (firstTimeModal) {
+      navigation.navigate("userGuideModalLogin", {
+        onModalClose: onGuideModalClose,
+      });
+    }
+  }, [firstTimeModal, navigation]);
 
   async function _setupUser(userIdentifier, serviceProvider) {
     await Axios.get(`${ApiConfig.baseUrl}/auth/login`, {
@@ -201,7 +286,7 @@ export const LogInScreen_PhoneAuth_Code = ({ navigation }) => {
                   application: "Coach App",
                 });
               }
-              navigation.navigate("Select_Club");
+              setFirstTimeModal(true);
             })
             .catch((error) => {
               console.log(error);

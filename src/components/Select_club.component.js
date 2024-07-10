@@ -6,7 +6,6 @@ import {
   ScrollView,
   Linking,
   Platform,
-  ActivityIndicator,
 } from "react-native";
 import { Layout, Text, Card, Modal, Button } from "@ui-kitten/components";
 import { View } from "react-native";
@@ -60,22 +59,11 @@ const Headerr = (props) => (
 );
 export const LogInScreen_Select_Club = ({ navigation }) => {
   const [updatedModal, setUpdatedModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [showGuide, setShowGuide] = useState(false);
-
   const dispatch = useDispatch();
   const state = useSelector((state) => state.sessionScreen.updateapp);
   const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
-    async function checkFirstTimeUser() {
-      const aux = await AsyncStorage.getItem("userFirstTime");
-      if (aux === null) {
-        setShowGuide(true);
-      }
-    }
-    checkFirstTimeUser();
-
     const init = async () => {
       try {
         const check = await checkVersion({
@@ -96,24 +84,6 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
     init();
   }, []);
 
-  // Callback function to be called when the modal is closed
-  const onGuideModalClose = () => {
-    setShowGuide(false);
-    setLoading(true);
-    setTimeout(() => {
-      clubSelected("ASBA");
-      setLoading(false);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    if (showGuide) {
-      navigation.navigate("userGuideModalLogin", {
-        onModalClose: onGuideModalClose,
-      });
-    }
-  }, [showGuide, navigation]);
-
   /*function toggleNotificationOff() {
       setUpdatedModal(false);
     }*/
@@ -129,7 +99,7 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
       );
     }
   }
-    //TODO: Hey we need to make this dynamic!!! The API will provide the active/relevant regions. There is an endpoint for this.
+  //TODO: Hey we need to make this dynamic!!! The API will provide the active/relevant regions. There is an endpoint for this.
   async function clubSelected(region) {
     dispatch(changeRegion(region));
     if (region === "ASBA") {
@@ -309,38 +279,14 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
                   }}
                 >
                   {updateModal()}
-                  {loading ? (
-                    <View
-                      style={{
-                        flex: 1,
-                        justifyContent: "center",
-                        alignItems: "center",
-                        height: "100%",
-                      }}
-                    >
-                      <Text style={{ fontSize: 15 }}>
-                        Selecting
-                        <Text style={{ fontWeight: "bold", color: "#2179ad" }}>
-                          {" "}
-                          ASBA{" "}
-                        </Text>
-                        region as default
-                      </Text>
 
-                      <ActivityIndicator
-                        size="large"
-                        style={{ marginTop: 20 }}
-                      />
-                    </View>
-                  ) : (
-                    <FlatList
-                      data={Clubs}
-                      renderItem={renderItems}
-                      keyExtractor={(item) => item.id}
-                      numColumns={2}
-                      scrollEnabled={false}
-                    />
-                  )}
+                  <FlatList
+                    data={Clubs}
+                    renderItem={renderItems}
+                    keyExtractor={(item) => item.id}
+                    numColumns={2}
+                    scrollEnabled={false}
+                  />
                 </Layout>
               </Card>
             </Layout>
