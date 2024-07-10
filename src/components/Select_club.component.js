@@ -6,6 +6,7 @@ import {
   ScrollView,
   Linking,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Layout, Text, Card, Modal, Button } from "@ui-kitten/components";
 import { View } from "react-native";
@@ -279,14 +280,38 @@ export const LogInScreen_Select_Club = ({ navigation }) => {
                   }}
                 >
                   {updateModal()}
+                  {loading ? (
+                    <View
+                      style={{
+                        flex: 1,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "100%",
+                      }}
+                    >
+                      <Text style={{ fontSize: 15 }}>
+                        Selecting
+                        <Text style={{ fontWeight: "bold", color: "#2179ad" }}>
+                          {" "}
+                          ASBA{" "}
+                        </Text>
+                        region as default
+                      </Text>
 
-                  <FlatList
-                    data={Clubs}
-                    renderItem={renderItems}
-                    keyExtractor={(item) => item.id}
-                    numColumns={2}
-                    scrollEnabled={false}
-                  />
+                      <ActivityIndicator
+                        size="large"
+                        style={{ marginTop: 20 }}
+                      />
+                    </View>
+                  ) : (
+                    <FlatList
+                      data={Clubs}
+                      renderItem={renderItems}
+                      keyExtractor={(item) => item.id}
+                      numColumns={2}
+                      scrollEnabled={false}
+                    />
+                  )}
                 </Layout>
               </Card>
             </Layout>

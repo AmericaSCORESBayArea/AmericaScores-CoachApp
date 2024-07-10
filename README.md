@@ -18,18 +18,18 @@ Tested on: MacOS on M1
 As of Feb 13, 2024
 ```
 npm --version
-10.4.0
+10.8.1
 node --version
-v20.11.0
+v22.4.0
 pod --version
-1.13.0
+1.15.2
 java --version
 java 17.0.9 2023-10-17 LTS
 Java(TM) SE Runtime Environment (build 17.0.9+11-LTS-201)
 Java HotSpot(TM) 64-Bit Server VM (build 17.0.9+11-LTS-201, mixed mode, sharing)
 react-native --version
 react-native-cli: 2.0.1
-react-native: 0.72.10
+react-native: 0.72.14
 ```
 
 ### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1 and M3)
@@ -156,6 +156,7 @@ The depdencies on Node, React, and Cocoapods often result in issues blocking bui
 |*Node*|                 |                  |           |
 |              |npm doctor says npm ERR! checkFilesPermission Missing permissions on .../[app_dir]/node_modules/.bin/. |chmod +x /Users/<user>/<path>/AmericaScores-CoachApp/node_modules/.bin/.packager.env| Mac M1/3  |
 |              |React Native Start  Error: - Port 8081 already in use|sudo lsof -i :8081 then kill -9 {pid}| MacOS (also check if Metro is already running somewhere. McAfee seems to want this port sometimes also :(|
+|              |An error occurred while processing the post-install hook of the Podfile. undefined method `new_file' for an instance of Xcodeproj::Project::Object::PBXFileReference | sudo gem uninstall cocoapods && sudo gem install cocoapods |
 |*React-Native*|                 |                  |           |
 |              |  |  |
 |              |                 |                  |           |
