@@ -18,7 +18,7 @@ Tested on: MacOS on M1
 As of Feb 13, 2024
 ```
 npm --version
-10.8.1
+10.8.2
 node --version
 v22.4.0
 pod --version
