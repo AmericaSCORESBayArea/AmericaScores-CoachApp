@@ -164,5 +164,11 @@ The depdencies on Node, React, and Cocoapods often result in issues blocking bui
 |              | CocoaPods could not find compatible versions for pod "hermes-engine" | pod update hermes-engine| recommended --no-repo-update did not seem to work|
 |              | Pod install/updates fail on Mac M1/M3 | arch -x86_64 pod update | deleting pod folder and podfile.lock may also be necessary|
 |*XCode*              |                 |                  |           |
-|              |*XCode build can't find main.jsbundle   |react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios|                  |
-
+|              |Multiple Instances of Pods Project in Hierarchy   |select and delete in XCode. Delete Pods folder and do pod install|                  |
+|*General Setup Issues*|                 |                  |           |
+|              |Build Process build can't find **main.jsbundle**   |react-native bundle --entry-file index.js --platform ios --dev false --bundle-output ios/main.jsbundle --assets-dest ios|                  |
+|              |Pod Install Fails Repeatedly. Example:  An error occurred while processing the post-install hook of the Podfile. undefined method `new_file' for <PBXFileReference path=`assets` UUID=`################`>:Xcodeproj::Project::Object::PBXFileReference|                  |           |
+|              |                 |use n to check and manage node versions|           |
+|              |                 |gem uninstall cocoapods && gem install cocoapods|           |
+|              |                 |trash the folder and clone again (if you have changes, then commit to your branch so you can cherry pick and test later and not lose your work |                  |
+|              |                 |                  |           |
