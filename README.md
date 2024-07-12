@@ -15,12 +15,12 @@ Please stick to the verified versions of the dependencies unless you are prepare
 ### Verified configuration for building
 
 Tested on: MacOS on M1
-As of Feb 13, 2024
+As of July 12, 2024
 ```
 npm --version
-10.8.1
+10.8.2
 node --version
-v22.4.0
+v22.4.1
 pod --version
 1.15.2
 java --version
