@@ -13,9 +13,10 @@ Please stick to the verified versions of the dependencies unless you are prepare
 - Text editor of your choice `[XCode | Android studio | Visual studio Code ]` (Make sure that whatever editor you use is running as administrator)
 
 ### Verified configuration for building
-
+#### iOS 17.5.1
+#### Android 14 (API 34)
 Tested on: MacOS on M1
-As of July 12, 2024
+As of July 15, 2024 on V 21.01
 ```
 npm --version
 10.8.2
