@@ -157,13 +157,13 @@ The depdencies on Node, React, and Cocoapods often result in issues blocking bui
 |*Node*|                 |                  |           |
 |              |npm doctor says npm ERR! checkFilesPermission Missing permissions on .../[app_dir]/node_modules/.bin/. |chmod +x /Users/<user>/<path>/AmericaScores-CoachApp/node_modules/.bin/.packager.env| Mac M1/3  |
 |              |React Native Start  Error: - Port 8081 already in use|sudo lsof -i :8081 then kill -9 {pid}| MacOS (also check if Metro is already running somewhere. McAfee seems to want this port sometimes also :(|
-|              |An error occurred while processing the post-install hook of the Podfile. undefined method `new_file' for an instance of Xcodeproj::Project::Object::PBXFileReference | sudo gem uninstall cocoapods && sudo gem install cocoapods |
 |*React-Native*|                 |                  |           |
 |              |  |  |
 |              |                 |                  |           |
 |*Pods*|                 |                  |           |
 |              | CocoaPods could not find compatible versions for pod "hermes-engine" | pod update hermes-engine| recommended --no-repo-update did not seem to work|
 |              | Pod install/updates fail on Mac M1/M3 | arch -x86_64 pod update | deleting pod folder and podfile.lock may also be necessary|
+|              |An error occurred while processing the post-install hook of the Podfile. undefined method `new_file' for an instance of Xcodeproj::Project::Object::PBXFileReference | sudo gem uninstall cocoapods && sudo gem install cocoapods |
 |*XCode*              |                 |                  |           |
 |              |Multiple Instances of Pods Project in Hierarchy   |select and delete in XCode. Delete Pods folder and do pod install|                  |
 |*General Setup Issues*|                 |                  |           |
