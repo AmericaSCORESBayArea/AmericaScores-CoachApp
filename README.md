@@ -32,11 +32,19 @@ react-native --version
 react-native-cli: 2.0.1
 react-native: 0.72.14
 ```
+# Recommended Additions:
+#### use n to manage NPM versions (highly useful during dependency upgrades and testing)
+_We recommend using n instead of nvm on MacOS, presently. Don't use both or you'll wind up with competing installs. Also let n install npm._
+npm install -g n
+#### Use emulators that include our current minspec and also App Store/Play Store requirements
+##### **iOS Minspec: iOS 15.5, iPhone SE (gen1), iPhone 7**
+##### ***Android Minspec: API 34, OS 14***   Galaxy S3 seems to be the oldest on record supporting OS 14
 
-### A Step-by-Step Guide to build and run the app on Android (verified on MacOS with M1 and M3)
+# A Step-by-Step Guide to build and run the app on Android
+(verified on MacOS with M1 and M3)
 
-**YOU SHOULD HAVE JDK 17 INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
-
+**YOU SHOULD HAVE JDK 21 (latest LTS) INSTALLED IN ORDER TO BUILD THE APP ON ANDROID**
+[Download JDK from Oracle](https://www.oracle.com/java/technologies/downloads/)
 1. Fix src/config/ApiConfig.js
 2. put google-services.json, debug.keystore, america-scores-keystore.jks into android/app
 3. remove package-lock.json and node_modules folder
@@ -58,7 +66,8 @@ verify everything is ok with echo $ANDROID_HOME. Make sure it outputs something 
 ```
 
 6. connect device or start emulator
-7. ./build_and_run_android_release.sh
+7. e.g. emulator -list-avds && emulator -avd "%foo%" ([android developer reference](https://developer.android.com/studio/run/emulator-commandline))
+8. ./build_and_run_android_release.sh
 
 To build apk for Google Play release:
 

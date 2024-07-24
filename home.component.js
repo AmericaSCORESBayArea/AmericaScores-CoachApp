@@ -26,7 +26,10 @@ import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { logOutUser } from "./src/Redux/actions/user.actions";
-import { changeRegion } from "./src/Redux/actions/SessionScreen.actions";
+import {
+  changeRegion,
+  isUserFirstTime,
+} from "./src/Redux/actions/SessionScreen.actions";
 
 const Stack_Activities = createStackNavigator();
 const Stack_Profile = createStackNavigator();
@@ -311,6 +314,7 @@ export const OptionsOverflowMenu = (navigation) => {
         item_id: "affiliation-change",
       });
       setOverflowMenuVisible(false);
+      dispatch(isUserFirstTime(true));
       await dispatch(changeRegion(null));
       navigation.navigate("Login", { screen: "Select_Club" });
     } catch (error) {

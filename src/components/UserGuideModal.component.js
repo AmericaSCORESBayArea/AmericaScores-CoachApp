@@ -6,7 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ApiConfig } from "../config/ApiConfig";
 import Carousel, { Pagination } from "react-native-snap-carousel";
 import analytics from "@react-native-firebase/analytics";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { showFirstTimeModal } from "../Redux/actions/SessionScreen.actions";
 
 export const UserGuideModal = ({ navigation }) => {
   const user = useSelector((state) => state.user.user);
@@ -188,6 +189,7 @@ export const UserGuideModal = ({ navigation }) => {
   );
 };
 export const UserGuideModalLogin = ({ navigation, route }) => {
+  const dispatch = useDispatch();
   const [visible, setVisible] = React.useState(true);
   const [videoData, setVideoData] = React.useState([]);
   const onModalClose = route.params?.onModalClose;
@@ -206,6 +208,7 @@ export const UserGuideModalLogin = ({ navigation, route }) => {
   function closeModal() {
     fetchMyAsyncStorage();
     setVisible(false);
+    dispatch(showFirstTimeModal(false));
     navigation.goBack();
     if (onModalClose) onModalClose();
   }
