@@ -33,6 +33,7 @@ react-native: 0.72.14
 ```
 # Recommended Additions:
 #### use n to manage NPM versions (highly useful during dependency upgrades and testing)
+_We recommend using n instead of nvm on MacOS, presently. Don't use both or you'll wind up with competing installs. Also let n install npm._
 npm install -g n
 #### Use emulators that include our current minspec and also App Store/Play Store requirements
 ##### **iOS Minspec: iOS 15.5, iPhone SE (gen1), iPhone 7**
@@ -64,7 +65,8 @@ verify everything is ok with echo $ANDROID_HOME. Make sure it outputs something 
 ```
 
 6. connect device or start emulator
-7. ./build_and_run_android_release.sh
+7. e.g. emulator -list-avds && emulator -avd "%foo%" ([android developer reference](https://developer.android.com/studio/run/emulator-commandline))
+8. ./build_and_run_android_release.sh
 
 To build apk for Google Play release:
 
