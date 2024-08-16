@@ -6,13 +6,10 @@ import {
   Button,
   Layout,
   Input,
-  Autocomplete,
-  AutocompleteItem,
   Icon,
   List,
   Divider,
   ListItem,
-  IndexPath,
   Select,
   SelectItem,
   Datepicker,
@@ -40,7 +37,7 @@ import { ApiConfig } from "../config/ApiConfig";
 import { Root, Popup, Toast } from "popup-ui";
 
 export const CreateStudentModal = ({ navigation, route }) => {
-  const data = ["Male", "Female", "Non-binary", "Prefer not to say"];
+  const data = ["Male", "Female", "Non-binary", "Prefer not to say", "Unknown"];
   const relations = [
     "Parent",
     "Legal guardian",
@@ -359,8 +356,8 @@ export const CreateStudentModal = ({ navigation, route }) => {
               selectedIndex={selectedIndex}
               onSelect={(index) => selectIndex(index)}
             >
-              <SelectItem title="Female" />
               <SelectItem title="Male" />
+              <SelectItem title="Female" />
               <SelectItem title="Non-binary" />
               <SelectItem title="Prefer not to say" />
               <SelectItem title="Unknown" />
