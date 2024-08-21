@@ -1,25 +1,17 @@
-/* eslint-disable react/react-in-jsx-scope */
-import { Env } from '@env';
-import { useColorScheme } from 'nativewind';
+import React from 'react';
 
-import { Item } from '@/components/settings/item';
-import { ItemsContainer } from '@/components/settings/items-container';
-import { LanguageItem } from '@/components/settings/language-item';
-import { ThemeItem } from '@/components/settings/theme-item';
-import { translate, useAuth } from '@/core';
-import { colors, FocusAwareStatusBar, ScrollView, Text, View } from '@/ui';
-import { Github, Rate, Share, Support, Website } from '@/ui/icons';
+import { FocusAwareStatusBar, Text, View } from '@/ui';
 
-export default function Settings() {
-  const signOut = useAuth.use.signOut();
-  const { colorScheme } = useColorScheme();
-  const iconColor =
-    colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
+export default function Sessions() {
+  // const signOut = useAuth.use.signOut();
+  // const { colorScheme } = useColorScheme();
+  // const iconColor =
+  //   colorScheme === 'dark' ? colors.neutral[400] : colors.neutral[500];
   return (
-    <>
+    <View className="flex-1 ">
       <FocusAwareStatusBar />
-
-      <ScrollView>
+      <Text className="text-center text-2xl font-bold">Sessions</Text>
+      {/* <ScrollView>
         <View className="flex-1 px-4 pt-16 ">
           <Text className="text-xl font-bold">
             {translate('settings.title')}
@@ -73,7 +65,7 @@ export default function Settings() {
             </ItemsContainer>
           </View>
         </View>
-      </ScrollView>
-    </>
+      </ScrollView> */}
+    </View>
   );
 }
