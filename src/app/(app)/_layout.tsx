@@ -1,11 +1,11 @@
 /* eslint-disable react/no-unstable-nested-components */
+import Feather from '@expo/vector-icons/Feather';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
-import CreateNewPostLink from '@/components/header/header-option';
 import { useAuth, useIsFirstTime } from '@/core';
-import { Feed as FeedIcon, Settings as SettingsIcon } from '@/ui/icons';
-
 export default function TabLayout() {
   const status = useAuth.use.status();
   const [isFirstTime] = useIsFirstTime();
@@ -32,8 +32,10 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <FeedIcon color={color} />,
-          headerRight: () => <CreateNewPostLink />,
+          tabBarIcon: ({ color }) => (
+            <Feather name="home" size={24} color={color} />
+          ),
+          // headerRight: () => <CreateNewPostLink />,
           tabBarTestID: 'home-tab',
         }}
       />
@@ -41,23 +43,20 @@ export default function TabLayout() {
         name="sessions"
         options={{
           title: 'Sessions',
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="calendar-outline" size={24} color={color} />
+          ),
           tabBarTestID: 'settings-tab',
         }}
       />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
-          tabBarTestID: 'profile-tab',
-        }}
-      />
+
       <Tabs.Screen
         name="tasks"
         options={{
           title: 'Tasks',
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="tasks" size={24} color={color} />
+          ),
           tabBarTestID: 'tasks-tab',
         }}
       />
@@ -65,8 +64,20 @@ export default function TabLayout() {
         name="teams"
         options={{
           title: 'Teams',
-          tabBarIcon: ({ color }) => <SettingsIcon color={color} />,
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="people-outline" size={24} color={color} />
+          ),
           tabBarTestID: 'teams-tab',
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-outline" size={24} color={color} />
+          ),
+          tabBarTestID: 'profile-tab',
         }}
       />
     </Tabs>

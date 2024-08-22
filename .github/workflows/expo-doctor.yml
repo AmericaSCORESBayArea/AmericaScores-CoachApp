@@ -1,6 +1,3 @@
-# 🔗 Links:
-# Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/expo-doctor.yml
-
 # ✍️ Description:
 # This workflow runs the expo doctor command to check if your project dependencies are aligned with the expo sdk version you are using.
 # Can be triggered manually from the Actions tab in your project.

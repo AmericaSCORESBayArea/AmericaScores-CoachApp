@@ -1,6 +1,3 @@
-# 🔗 Links:
-# Source file: https://github.com/obytes/react-native-template-obytes/blob/master/.github/workflows/test.yml
-
 # ✍️ Description:
 # This action is used to run unit tests
 # Runs on pull requests and pushes to  the main/master branches
