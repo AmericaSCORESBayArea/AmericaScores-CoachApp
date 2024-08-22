@@ -26,11 +26,7 @@ export const translate = memoize(
 
 export const changeLanguage = (lang: Language) => {
   i18n.changeLanguage(lang);
-  if (lang === 'ar') {
-    I18nManager.forceRTL(true);
-  } else {
-    I18nManager.forceRTL(false);
-  }
+  I18nManager.forceRTL(false);
   if (Platform.OS === 'ios' || Platform.OS === 'android') {
     if (__DEV__) NativeModules.DevSettings.reload();
     else RNRestart.restart();
