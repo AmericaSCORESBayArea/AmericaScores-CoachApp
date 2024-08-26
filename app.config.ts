@@ -25,6 +25,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     bundleIdentifier: Env.BUNDLE_ID,
+    googleServicesFile: './GoogleService-Info.plist',
   },
   experiments: {
     typedRoutes: true,
@@ -34,6 +35,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#2E3C4B',
     },
+    googleServicesFile: './google-services.json',
     package: Env.PACKAGE,
   },
   web: {
@@ -49,11 +51,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     'expo-localization',
     'expo-router',
+    '@react-native-firebase/app',
+    '@react-native-firebase/auth',
     [
       'expo-build-properties',
       {
         android: {
           kotlinVersion: '1.7.22', // this is for softinput package
+        },
+        ios: {
+          useFrameworks: 'static',
         },
       },
     ],

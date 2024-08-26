@@ -14,3 +14,18 @@ export const usePosts = createQuery<Response, Variables, AxiosError>({
     return response.data.posts;
   },
 });
+
+export const getStudent = createQuery<Response, Variables, AxiosError>({
+  queryKey: ['coach'],
+  fetcher: async (variables) => {
+    const response = await client.get(
+      '/003U8000008dKdNIAU/teamseasons/a0qHs00000BvrIUIAZ/sessions/a0pHs00000TqrmUIAR/assessments'
+    );
+    console.log('response', response);
+    return response.data;
+  },
+});
+
+// return await Axios.get(
+//   //     // `${ApiConfig.dataApi}/coach/${user.user.ContactId}/teamseasons/${route.params.teamSeasonId}/enrollments`
+//   //   )
