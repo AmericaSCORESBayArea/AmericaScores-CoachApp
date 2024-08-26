@@ -90,6 +90,7 @@ interface Props extends ButtonVariants, Omit<PressableProps, 'disabled'> {
   loading?: boolean;
   className?: string;
   textClassName?: string;
+  icon?: JSX.Element;
 }
 
 export const Button = React.forwardRef<View, Props>(
@@ -103,6 +104,7 @@ export const Button = React.forwardRef<View, Props>(
       className = '',
       testID,
       textClassName = '',
+      icon,
       ...props
     },
     ref
@@ -124,6 +126,8 @@ export const Button = React.forwardRef<View, Props>(
           props.children
         ) : (
           <>
+            {icon && !loading && icon}
+            {/* Render the icon if present and not loading */}
             {loading ? (
               <ActivityIndicator
                 size="small"
