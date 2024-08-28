@@ -553,7 +553,7 @@ class AttendanceScreen extends Component {
 
   async verifyAttendance() {
     const { user } = this.props.user;
-    // console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
+    console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS",user.ContactId);
     await Axios.get(
       `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`
     )
@@ -567,11 +567,11 @@ class AttendanceScreen extends Component {
             console.log(
               "[Attendance.Screen.js | FETCH ENROLLMENTS | GET status = 200 ] -> Students found, updated state"
             );
-            // console.log(res.data);
+             console.log(res.data);
             const verifiedEnrollments =
               await this.parseFetchedAttendanceToObject(res.data);
-            // console.log(verifiedEnrollments);
-            // this.setState({missingEnrollments: verifiedEnrollments});
+             console.log(verifiedEnrollments);
+             this.setState({missingEnrollments: verifiedEnrollments});
             if (this.state.duplicatedRecords === false) {
               if (verifiedEnrollments.length > 0) {
                 this.setState({
@@ -601,7 +601,7 @@ class AttendanceScreen extends Component {
                   missingEnrollments,
                   enrollmentsDuplicate
                 );
-                //Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
+                Alert.alert("Attendance records missing",`The following attendance records are missing ${verifiedEnrollments.map((value) => {return value.StudentName})}, touch "OK" to create them`,[{ text: "OK", onPress: () => this.createMissingAttendance(missingEnrollments) }]);
               }
             }
           }
@@ -1550,7 +1550,7 @@ class AttendanceScreen extends Component {
                         ).setHours(
                           new Date(
                             `2023-08-26T${this.state.sessionStart}`
-                          ).getHours() + 3
+                          ).getHours()
                         )
                       )
                     ).format("HH:mm")
@@ -1566,7 +1566,7 @@ class AttendanceScreen extends Component {
                         ).setHours(
                           new Date(
                             `2023-08-26T${this.state.sessionEnd}`
-                          ).getHours() + 3
+                          ).getHours()
                         )
                       )
                     ).format("HH:mm")
@@ -1703,11 +1703,11 @@ class AttendanceScreen extends Component {
                   ? moment(
                       new Date(
                         new Date(
-                          `2023-08-26T${this.state.sessionStart}`
+                          `2024-08-01T${this.state.sessionStart}`
                         ).setHours(
                           new Date(
-                            `2023-08-26T${this.state.sessionStart}`
-                          ).getHours() + 3
+                            `2024-08-01T${this.state.sessionStart}`
+                          ).getHours()
                         )
                       )
                     ).format("LT")
@@ -1719,11 +1719,11 @@ class AttendanceScreen extends Component {
                   ? moment(
                       new Date(
                         new Date(
-                          `2023-08-26T${this.state.sessionEnd}`
+                          `2024-08-01T${this.state.sessionEnd}`
                         ).setHours(
                           new Date(
-                            `2023-08-26T${this.state.sessionEnd}`
-                          ).getHours() + 3
+                            `2024-08-01T${this.state.sessionEnd}`
+                          ).getHours()
                         )
                       )
                     ).format("LT")
