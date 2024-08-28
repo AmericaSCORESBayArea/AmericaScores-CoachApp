@@ -553,7 +553,7 @@ class AttendanceScreen extends Component {
 
   async verifyAttendance() {
     const { user } = this.props.user;
-    console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS",user.ContactId);
+    console.log("[Attendance.Screen.js] : FETCH ENROLLMENTS");
     await Axios.get(
       `${ApiConfig.dataApi}/coach/${user.ContactId}/teamseasons/${this.state.teamSeasonId}/enrollments`
     )
