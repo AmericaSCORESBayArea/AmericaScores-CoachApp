@@ -621,6 +621,7 @@ class AttendanceScreen extends Component {
   }
 
   async parseFetchedAttendanceToObject(enrollmentData) {
+    const { user } = this.props.user;
     let parsedEnrollments = [];
     let parsedAttendance = [];
     const attendanceList = await this.state.enrollments;
@@ -658,10 +659,10 @@ class AttendanceScreen extends Component {
       }
     });
     await analytics().logEvent("AttendanceViewPopulated", {
-      coach_Id: user.ContactId,
+      coach_Id: user?.ContactId,
       teamSeasonId: this.state.teamSeasonId,
       sessionId: this.state.sessionId,
-      StudentsFound: numberOfStudents,
+      StudentsFound: attendanceList.length,
       application: "Coach App",
     });
     console.log(parsedAttendance, parsedEnrollments);
