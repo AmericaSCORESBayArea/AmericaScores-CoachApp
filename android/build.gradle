@@ -1,13 +1,16 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext {
-        buildToolsVersion = "33.0.0"
-        minSdkVersion = 28
-        compileSdkVersion = 33
-        targetSdkVersion = 33
 
-        // googlePlayServicesAuthVersion = "16.0.1"
+
+
+    ext {
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 28
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+
+
 
         // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
         ndkVersion = "23.1.7779620"
@@ -17,8 +20,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle")
-        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.facebook.react:react-native-gradle-plugin:7.4.2")
         classpath 'com.google.gms:google-services:4.4.0'
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -29,13 +32,11 @@ buildscript {
 // def REACT_NATIVE_VERSION = new File(['node', '--print', "JSON.parse(require('fs').readFileSync(require.resolve('react-native/package.json'), 'utf-8')).version"].execute(null, rootDir).text.trim())
 
  allprojects {
-//     configurations.all {
-//         resolutionStrategy {
-//             force "com.facebook.react:react-native:" + REACT_NATIVE_VERSION
-//         }
+
 //     }
      repositories {
-         mavenLocal()
+        // mavenLocal()
+         google()
          maven {
              // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
              url(new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../android"))
@@ -45,7 +46,6 @@ buildscript {
              url(new File(["node", "--print", "require.resolve('jsc-android/package.json')"].execute(null, rootDir).text.trim(), "../dist"))
          }
 
-         google()
          mavenCentral()
          maven { url 'https://www.jitpack.io' }
      }
