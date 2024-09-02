@@ -78,7 +78,7 @@ export const LoginForm = ({ onSubmit = () => {} }: LoginFormProps) => {
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ flex: 1 }}>
       <FocusAwareStatusBar />
 
       <ImageBackground

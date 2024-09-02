@@ -23,17 +23,22 @@ export default function TabLayout() {
   if (isFirstTime) {
     return <Redirect href="/onboarding" />;
   }
-  if (status === 'signOut') {
-    return <Redirect href="/login" />;
-  }
+
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: {
+          backgroundColor: '#EEF0F8',
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={24} color={color} />
+            // <Home color={color} />
           ),
           // headerRight: () => <CreateNewPostLink />,
           tabBarTestID: 'home-tab',
