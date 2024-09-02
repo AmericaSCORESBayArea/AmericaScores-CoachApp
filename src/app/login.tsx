@@ -15,6 +15,7 @@ export default function Login() {
   const onSubmit: LoginFormProps['onSubmit'] = (data) => {
     console.log(data);
     signIn({ access: 'access-token', refresh: 'refresh-token' });
+
     router.push('/');
   };
   return (
