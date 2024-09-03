@@ -36,13 +36,13 @@ export default function Sessions() {
   const pastHandlePress = () => {
     setIsPastPressed(!isPastPressed);
     setIsUpComingPressed(false);
-    sessionEventHandler('UpComing');
+    sessionEventHandler('Past');
   };
 
   const upcomingHandlePress = () => {
     setIsUpComingPressed(!isUpComingPressed);
     setIsPastPressed(false);
-    sessionEventHandler('Past');
+    sessionEventHandler('UpComing');
   };
 
   return (
@@ -112,7 +112,7 @@ export default function Sessions() {
               borderBottomWidth: isPastPressed ? 2 : 0,
             }}
           >
-            <Text className="my-3 self-center font-robotoBlackItalic text-2xl text-[#004680]">
+            <Text className="my-3 self-center font-robotoBlackItalic text-xl text-[#004680]">
               Upcoming
             </Text>
           </Pressable>
@@ -126,7 +126,7 @@ export default function Sessions() {
               borderBottomWidth: isUpComingPressed ? 2 : 0,
             }}
           >
-            <Text className="my-3 self-center font-sFDISPLAYREGULAR text-2xl text-[#004680] ">
+            <Text className="my-3 self-center font-sFDISPLAYREGULAR text-xl text-[#004680] ">
               Past
             </Text>
           </Pressable>

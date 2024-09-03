@@ -41,6 +41,14 @@ type pastSessionType = {
   attendence: string;
   hobby: string[];
 };
+
+type studentRecordType = {
+  id: number;
+  name: string;
+  attendence: string;
+  image: string;
+  notes: string;
+};
 export const sessionSingleData: sessionType[] = [
   {
     id: 1,
@@ -199,6 +207,7 @@ export const laterTaskData: laterTaskType[] = [
     date: '2024/08/12',
   },
 ];
+
 export const pastSessionData: pastSessionType[] = [
   {
     id: 1,
@@ -231,5 +240,36 @@ export const pastSessionData: pastSessionType[] = [
     time: '12:00 PM',
     attendence: '12/24',
     hobby: ['Soccer', 'Poetry'],
+  },
+];
+
+export const studentRecordData: studentRecordType[] = [
+  {
+    id: 1,
+    name: 'Little Joe smith Alias Johnson',
+    attendence: 'Attended',
+    image: 'Photo',
+    notes: 'Survey/Notes',
+  },
+  {
+    id: 2,
+    name: 'Fast Thomas Running Passer',
+    attendence: 'Absent',
+    image: 'Photo',
+    notes: 'Survey/Notes',
+  },
+  {
+    id: 3,
+    name: 'Little Joe smith Alias Johnson',
+    attendence: 'Absent',
+    image: 'Photo',
+    notes: 'Survey/Notes',
+  },
+  {
+    id: 4,
+    name: 'Little Joe smith Alias Johnson',
+    attendence: 'Attended',
+    image: 'Photo',
+    notes: 'Survey/Notes',
   },
 ];

@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import Index from '@/components/task';
 import { taskData } from '@/data/data-base';
-import { ScrollView, View } from '@/ui';
+import { ScrollView, Text, View } from '@/ui';
 
 export default function Tasks() {
   const navigation = useNavigation();
@@ -23,6 +23,9 @@ export default function Tasks() {
 
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
+      <View className="ml-6">
+        <Text className="my-3 text-lg font-bold text-[#000] ">Task</Text>
+      </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlashList
           data={taskData}
@@ -32,7 +35,7 @@ export default function Tasks() {
           contentContainerStyle={{
             paddingVertical: 8,
           }}
-          key={expandedSessionItem}
+          // key={expandedSessionItem}
         />
       </View>
     </ScrollView>
