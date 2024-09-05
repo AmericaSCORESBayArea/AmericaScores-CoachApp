@@ -49,6 +49,10 @@ type studentRecordType = {
   image: string;
   notes: string;
 };
+type takeAttendenceType = {
+  id: number;
+  name: string;
+};
 export const sessionSingleData: sessionType[] = [
   {
     id: 1,
@@ -59,29 +63,29 @@ export const sessionSingleData: sessionType[] = [
   },
 ];
 export const sessionData: sessionType[] = [
+  // {
+  //   id: 1,
+  //   title: 'Developer Test Soccer Poets',
+  //   location: 'Albhany High',
+  //   time: '12:00 PM',
+  //   hobby: ['Soccer', 'Poetry'],
+  // },
   {
     id: 1,
-    title: 'Developer Test Soccer Poets',
-    location: 'Albhany High',
-    time: '12:00 PM',
-    hobby: ['Soccer', 'Poetry'],
-  },
-  {
-    id: 2,
     title: 'Take Attendance',
     location: 'Albhany High',
     time: '12:00 PM',
     hobby: ['Soccer', 'Poetry'],
   },
   {
-    id: 3,
+    id: 2,
     title: 'Record Video',
     location: 'Albhany High',
     time: '12:00 PM',
     hobby: ['Soccer', 'Poetry'],
   },
   {
-    id: 4,
+    id: 3,
     title: 'Record Pacer Score',
     location: 'Albhany High',
     time: '12:00 PM',
@@ -271,5 +275,67 @@ export const studentRecordData: studentRecordType[] = [
     attendence: 'Attended',
     image: 'Photo',
     notes: 'Survey/Notes',
+  },
+];
+export const takeAttendence: takeAttendenceType[] = [
+  {
+    id: 1,
+    name: 'Little Joe smith Alias Johnson',
+  },
+  {
+    id: 2,
+    name: 'Fast Thomas Running Passer',
+  },
+  {
+    id: 3,
+    name: 'John Joe smith Alias Johnson',
+  },
+  {
+    id: 4,
+    name: 'Andrew Joe smith Alias Johnson',
+  },
+  {
+    id: 5,
+    name: 'Michael Fast Runner Smith',
+  },
+  {
+    id: 6,
+    name: 'Sally Quick Hands Johnson',
+  },
+  {
+    id: 7,
+    name: 'Jessica Long Legs Thomas',
+  },
+  {
+    id: 8,
+    name: 'Paul Short Smith Alias Johnson',
+  },
+  {
+    id: 9,
+    name: 'Tina Speedy Thomas',
+  },
+  {
+    id: 10,
+    name: 'George Joe smith Alias Johnson',
+  },
+  {
+    id: 11,
+    name: 'Rebecca Fleet Runner',
+  },
+  {
+    id: 12,
+    name: 'Samuel Sharp Eyes Johnson',
+  },
+  {
+    id: 13,
+    name: 'Nancy Quick Feet Smith',
+  },
+  {
+    id: 14,
+    name: 'Harry Fast Fingers Thomas',
+  },
+  {
+    id: 15,
+    name: 'Betty Quick Runner Johnson',
   },
 ];

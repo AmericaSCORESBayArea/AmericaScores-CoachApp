@@ -1,11 +1,12 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable unused-imports/no-unused-vars */
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 
-import StudentsRecord from '@/components/teams/students';
-import TeamsRecord from '@/components/teams/teams';
+import StudentsRecord from '@/components/teams/students-record';
+import TeamsRecord from '@/components/teams/teams-record';
 import { studentRecordData } from '@/data/data-base';
 import { Pressable, Text, View } from '@/ui';
 

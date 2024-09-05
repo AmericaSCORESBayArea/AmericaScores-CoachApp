@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable unused-imports/no-unused-vars */
 import {
   AntDesign,
@@ -53,7 +54,7 @@ export default function Sessions() {
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-white">
           <View className="mb-2 w-full rounded-sm">
-            <Pressable className="flex-row justify-between p-4">
+            <Pressable className="flex-row  justify-between p-4">
               <Text className="font-bold">{sessionSingleData[0].title}</Text>
               <Ionicons
                 name="chevron-forward-sharp"

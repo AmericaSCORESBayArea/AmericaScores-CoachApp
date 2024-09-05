@@ -85,6 +85,16 @@ export default function TabLayout() {
           tabBarTestID: 'profile-tab',
         }}
       />
+      <Tabs.Screen
+        name="take-attendence"
+        options={{
+          title: 'Take Attendence',
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person-outline" size={24} color={color} />
+          ),
+          tabBarTestID: 'test-tab',
+        }}
+      />
     </Tabs>
   );
 }

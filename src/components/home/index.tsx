@@ -1,7 +1,8 @@
-import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
+/* eslint-disable unused-imports/no-unused-vars */
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 
-import { colors, Pressable, Text, View } from '@/ui';
+import { colors, Text, View } from '@/ui';
 
 interface HomeItem {
   id: number;
@@ -24,8 +25,8 @@ const HomeTask: React.FC<HomeTaskProps> = ({
 }) => {
   return (
     <View className="mb-0.5 w-full rounded-sm bg-white">
-      <Pressable
-        onPress={() => toggleSessionExpand(item.id)}
+      <View
+        // onPress={() => toggleSessionExpand(item.id)}
         className="flex-row justify-between p-4"
       >
         <Text className="font-bold">{item.title}</Text>
@@ -34,9 +35,9 @@ const HomeTask: React.FC<HomeTaskProps> = ({
           size={24}
           color={colors.neutral[600]}
         />
-      </Pressable>
+      </View>
 
-      {expandedSessionItem === item.id && (
+      {/* {expandedSessionItem === item.id && (
         <View className="px-4">
           <View className="my-1 flex-row">
             <EvilIcons name="location" size={24} color={colors.neutral[600]} />
@@ -68,7 +69,7 @@ const HomeTask: React.FC<HomeTaskProps> = ({
             ))}
           </View>
         </View>
-      )}
+      )} */}
     </View>
   );
 };

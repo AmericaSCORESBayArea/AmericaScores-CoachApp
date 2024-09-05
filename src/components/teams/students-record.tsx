@@ -3,7 +3,7 @@ import React from 'react';
 
 import { colors, Pressable, Text, View } from '@/ui';
 
-interface TeamItem {
+interface StudentItem {
   id: number;
   name: string;
   attendence: string;
@@ -11,10 +11,10 @@ interface TeamItem {
   notes: string;
 }
 
-interface TeamProps {
-  item: TeamItem;
+interface StudentsProps {
+  item: StudentItem;
 }
-const TeamsRecord: React.FC<TeamProps> = ({ item }) => {
+const StudentsRecord: React.FC<StudentsProps> = ({ item }) => {
   return (
     <View className="mb-4 w-full  rounded-sm bg-white">
       <Pressable
@@ -22,11 +22,11 @@ const TeamsRecord: React.FC<TeamProps> = ({ item }) => {
         className="flex-row justify-between p-4"
       >
         <Text className="font-bold">{item.name}</Text>
-        <Ionicons
+        {/* <Ionicons
           name="chevron-forward-sharp"
           size={24}
           color={colors.neutral[600]}
-        />
+        /> */}
       </Pressable>
 
       <View className="flex-row justify-evenly px-4 pb-2 ">
@@ -55,4 +55,4 @@ const TeamsRecord: React.FC<TeamProps> = ({ item }) => {
   );
 };
 
-export default TeamsRecord;
+export default StudentsRecord;

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 /* eslint-disable unused-imports/no-unused-vars */
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from 'expo-router';
