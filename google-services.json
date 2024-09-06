@@ -1,0 +1,72 @@
+{
+  "project_info": {
+    "project_number": "688897090799",
+    "firebase_url": "https://america-scores.firebaseio.com",
+    "project_id": "america-scores",
+    "storage_bucket": "america-scores.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688897090799:android:861b320f37bf1c34f6e71a",
+        "android_client_info": {
+          "package_name": "com.americaScoresAttendance.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "688897090799-7n66i05udst0cppljndal8l0dh0s63bn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.americaScoresAttendance.app",
+            "certificate_hash": "7967401ba763c0de4306d5a27583763434819259"
+          }
+        },
+        {
+          "client_id": "688897090799-p3tj0kq3ia1sud7ljhhm7331frlhaubl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.americaScoresAttendance.app",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "688897090799-tdvrr69ebd9ig6s8fhbciab61t3q9q0b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.americaScoresAttendance.app",
+            "certificate_hash": "eb0c0ef008725debc48d5ba62953b32dea0e700a"
+          }
+        },
+        {
+          "client_id": "688897090799-bjjppfthi3oac16o523ht01h63lnaout.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpDm1Vnqd29uRbGq7XHBoTRDkCRCso2N8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "688897090799-bjjppfthi3oac16o523ht01h63lnaout.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "688897090799-2pb11jo43rthacbq0itb7p5fpaukli7k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "America-Scores-Ios",
+                "app_store_id": "1527435979"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

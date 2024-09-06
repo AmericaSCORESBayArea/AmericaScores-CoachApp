@@ -16,7 +16,7 @@ const z = require('zod');
 
 const packageJSON = require('./package.json');
 const path = require('path');
-const APP_ENV = process.env.APP_ENV ?? 'development';
+const APP_ENV = process.env.APP_ENV ?? 'staging';
 const envPath = path.resolve(__dirname, `.env.${APP_ENV}`);
 
 require('dotenv').config({
@@ -30,8 +30,6 @@ require('dotenv').config({
  * You can add them to the .env file but we think it's better to keep them here as as we use prefix to generate this values based on the APP_ENV
  * for example: if the APP_ENV is staging, the bundle id will be com.americascorescoachapp.staging
  */
-
-// TODO: Replace these values with your own
 
 const BUNDLE_ID = 'com.americascorescoachapp'; // ios bundle id
 const PACKAGE = 'com.americascorescoachapp'; // android package name
@@ -79,15 +77,14 @@ const client = z.object({
 
   // ADD YOUR CLIENT ENV VARS HERE
   API_URL: z.string(),
-  VAR_NUMBER: z.number(),
-  VAR_BOOL: z.boolean(),
+  AUTH_URL: z.string(),
+  CLIENT_ID: z.string(),
+  CLIENT_SECRET: z.string(),
 });
 
 const buildTime = z.object({
   EXPO_ACCOUNT_OWNER: z.string(),
   EAS_PROJECT_ID: z.string(),
-  // ADD YOUR BUILD TIME ENV VARS HERE
-  SECRET_KEY: z.string(),
 });
 
 /**
@@ -103,8 +100,9 @@ const _clientEnv = {
 
   // ADD YOUR ENV VARS HERE TOO
   API_URL: process.env.API_URL,
-  VAR_NUMBER: Number(process.env.VAR_NUMBER),
-  VAR_BOOL: process.env.VAR_BOOL === 'true',
+  AUTH_URL: process.env.AUTH_URL,
+  CLIENT_ID: process.env.CLIENT_ID,
+  CLIENT_SECRET: process.env.CLIENT_SECRET,
 };
 
 /**
@@ -113,8 +111,6 @@ const _clientEnv = {
 const _buildTimeEnv = {
   EXPO_ACCOUNT_OWNER,
   EAS_PROJECT_ID,
-  // ADD YOUR ENV VARS HERE TOO
-  SECRET_KEY: process.env.SECRET_KEY,
 };
 
 /**
