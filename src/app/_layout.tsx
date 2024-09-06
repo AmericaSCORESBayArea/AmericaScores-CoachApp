@@ -34,7 +34,17 @@ export default function RootLayout() {
 function RootLayoutNav() {
   return (
     <Providers>
-      <Stack>
+      <Stack
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#660101',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      >
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />

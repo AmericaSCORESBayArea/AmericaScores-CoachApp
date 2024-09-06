@@ -1,23 +1,24 @@
 /* eslint-disable react-native/no-inline-styles */
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable unused-imports/no-unused-vars */
 // import { Soccer } from '@/ui/icons/soccer';
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
-import HomeTask from '@/components/home';
-import SoonTask from '@/components/sessions/soon-task';
-import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
+import CheckAttendence from '@/components/home/check-attendence';
+import { sessionSingleData, takeAttendence } from '@/data/data-base';
 import { colors, ScrollView, Text, View } from '@/ui';
 
-export default function Feed() {
+const attendence = () => {
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: '#EEF0F8',
       },
-      headerTitle: '',
+      headerTitle: 'Take Attendence',
     });
   }, [navigation]);
   // const [expandedTaskItem, setExpandedTaskItem] = useState<number | null>(null);
@@ -28,16 +29,8 @@ export default function Feed() {
   const toggleSessionExpand = (id: number) => {
     setExpandedSessionItem((prev) => (prev === id ? null : id));
   };
-
-  // const toggleTaskExpand = (id: number) => {
-  //   setExpandedTaskItem((prev) => (prev === id ? null : id));
-  // };
-
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
-      <View className="ml-6">
-        <Text className="my-3 text-lg font-bold text-[#000] ">Hi Joe,</Text>
-      </View>
       <View className=" mx-6  w-[90%] justify-center rounded-sm bg-white">
         <View
           // onPress={() => toggleSessionExpand(item.id)}
@@ -88,15 +81,9 @@ export default function Feed() {
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlashList
-          data={sessionData}
+          data={takeAttendence}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <HomeTask
-              item={item}
-              expandedSessionItem={expandedSessionItem}
-              toggleSessionExpand={toggleSessionExpand}
-            />
-          )}
+          renderItem={({ item }) => <CheckAttendence item={item} />}
           estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
@@ -104,24 +91,8 @@ export default function Feed() {
           key={expandedSessionItem}
         />
       </View>
-
-      <View className="ml-6">
-        <Text className="my-3 text-base font-[800] text-[#737373]  ">
-          Due Soon Task
-        </Text>
-      </View>
-      <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
-          data={soonTaskData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <SoonTask item={item} />}
-          estimatedItemSize={80}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
-          // key={expandedTaskItem}
-        />
-      </View>
     </ScrollView>
   );
-}
+};
+
+export default attendence;
