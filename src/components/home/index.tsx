@@ -1,8 +1,8 @@
-/* eslint-disable unused-imports/no-unused-vars */
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 
-import { colors, Text, View } from '@/ui';
+import { colors, Pressable, Text, View } from '@/ui';
+import { useRouter } from 'expo-router';
 
 interface HomeItem {
   id: number;
@@ -10,6 +10,7 @@ interface HomeItem {
   location: string;
   time: string;
   hobby: string[];
+  navigation: string;
 }
 
 interface HomeTaskProps {
@@ -23,12 +24,18 @@ const HomeTask: React.FC<HomeTaskProps> = ({
   expandedSessionItem,
   toggleSessionExpand,
 }) => {
+  const router = useRouter();
+
+  const navigationHandler = () => {
+    router.push(item.navigation);
+  };
+
   return (
-    <View className="mb-0.5 w-full rounded-sm bg-white">
-      <View
-        // onPress={() => toggleSessionExpand(item.id)}
-        className="flex-row justify-between p-4"
-      >
+    <Pressable
+      className="mb-0.5 w-full rounded-sm bg-white"
+      onPress={navigationHandler}
+    >
+      <View className="flex-row justify-between p-4">
         <Text className="font-bold">{item.title}</Text>
         <Ionicons
           name="chevron-forward-sharp"
@@ -37,10 +44,14 @@ const HomeTask: React.FC<HomeTaskProps> = ({
         />
       </View>
 
-      {/* {expandedSessionItem === item.id && (
+      {expandedSessionItem === item.id && (
         <View className="px-4">
           <View className="my-1 flex-row">
-            <EvilIcons name="location" size={24} color={colors.neutral[600]} />
+            <Ionicons
+              name="location-outline"
+              size={24}
+              color={colors.neutral[600]}
+            />
             <Text className="color-neutral-600">{item.location}</Text>
           </View>
 
@@ -59,8 +70,8 @@ const HomeTask: React.FC<HomeTaskProps> = ({
                 key={index}
                 className="mx-2 flex-row items-center rounded-2xl bg-slate-200 px-3"
               >
-                <FontAwesome
-                  name="soccer-ball-o"
+                <Ionicons
+                  name="football-outline" // Use appropriate icon here
                   size={24}
                   color={colors.neutral[600]}
                 />
@@ -69,8 +80,8 @@ const HomeTask: React.FC<HomeTaskProps> = ({
             ))}
           </View>
         </View>
-      )} */}
-    </View>
+      )}
+    </Pressable>
   );
 };
 

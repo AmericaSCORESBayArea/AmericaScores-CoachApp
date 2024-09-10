@@ -2,16 +2,17 @@
 // import { Soccer } from '@/ui/icons/soccer';
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
 import HomeTask from '@/components/home';
 import SoonTask from '@/components/sessions/soon-task';
 import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
-import { colors, ScrollView, Text, View } from '@/ui';
+import { colors, Pressable, ScrollView, Text, View } from '@/ui';
 
 export default function Feed() {
   const navigation = useNavigation();
+  const router = useRouter();
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -32,24 +33,34 @@ export default function Feed() {
   // const toggleTaskExpand = (id: number) => {
   //   setExpandedTaskItem((prev) => (prev === id ? null : id));
   // };
-
+  const navigationHandler = (item: string) => {
+    if (item === 'session-details') {
+      router.push('session-details');
+    } else if (item === 'team-season') {
+      router.push('team-season');
+    }
+  };
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="ml-6">
         <Text className="my-3 text-lg font-bold text-[#000] ">Hi Joe,</Text>
       </View>
-      <View className=" mx-6  w-[90%] justify-center rounded-sm bg-white">
-        <View
+      <Pressable
+        className=" mx-6  w-[90%] justify-center rounded-sm bg-white"
+        onPress={() => navigationHandler('session-details')}
+      >
+        <Pressable
           // onPress={() => toggleSessionExpand(item.id)}
           className="flex-row justify-between p-4"
+          onPress={() => navigationHandler('team-season')}
         >
           <Text className="font-bold">{sessionSingleData[0].title}</Text>
-          <Ionicons
+          {/* <Ionicons
             name="chevron-forward-sharp"
             size={18}
             color={colors.neutral[600]}
-          />
-        </View>
+          /> */}
+        </Pressable>
         <View className="px-4">
           <View className="my-1 flex-row">
             <EvilIcons name="location" size={24} color={colors.neutral[600]} />
@@ -85,7 +96,7 @@ export default function Feed() {
             ))}
           </View>
         </View>
-      </View>
+      </Pressable>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlashList
           data={sessionData}

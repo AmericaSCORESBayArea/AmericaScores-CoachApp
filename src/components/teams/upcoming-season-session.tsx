@@ -4,25 +4,22 @@ import React from 'react';
 import { colors, Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
 
-interface PastSessionItem {
+interface UpComingSeasonSessionType {
   id: number;
   title: string;
   location: string;
   time: string;
-  attendence: string;
   hobby: string[];
   navigation: string;
 }
 
-interface PastSessionTaskProps {
-  item: PastSessionItem;
+interface UpComingSeasonSessionProps {
+  item: UpComingSeasonSessionType;
 }
-
-const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
-  const router = useRouter();
-  const navigationHandler = () => {
-    router.push(item.navigation);
-  };
+const UpComingSeasonSession: React.FC<UpComingSeasonSessionProps> = ({
+  item,
+}) => {
+  const navigationHandler = () => {};
   return (
     <Pressable
       className="my-2 w-full rounded-sm  bg-white"
@@ -30,11 +27,11 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
     >
       <View className="flex-row justify-between p-4">
         <Text className="font-bold">{item.title}</Text>
-        <Ionicons
+        {/* <Ionicons
           name="chevron-forward-sharp"
           size={24}
           color={colors.neutral[600]}
-        />
+        /> */}
       </View>
 
       <View className="px-4">
@@ -45,15 +42,6 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
         <View className="my-1 flex-row">
           <Ionicons name="time-outline" size={24} color={colors.neutral[600]} />
           <Text className="color-neutral-600">{item.time}</Text>
-        </View>
-
-        <View className="my-1 flex-row">
-          <Ionicons
-            name="people-outline"
-            size={24}
-            color={colors.neutral[600]}
-          />
-          <Text className="color-neutral-600">{item.attendence}</Text>
         </View>
 
         <View className="my-1 flex-row">
@@ -75,4 +63,4 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
   );
 };
 
-export default PastSession;
+export default UpComingSeasonSession;

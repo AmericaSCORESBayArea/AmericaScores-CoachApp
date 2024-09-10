@@ -2,12 +2,14 @@ import { EvilIcons, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 
 import { colors, Pressable, Text, View } from '@/ui';
+import { useRouter } from 'expo-router';
 
 interface LaterItem {
   id: number;
   title: string;
   location: string;
   date: string;
+  navigation: string;
 }
 
 interface LaterTaskProps {
@@ -15,9 +17,16 @@ interface LaterTaskProps {
 }
 
 const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
+  const router = useRouter();
+  const navigationHandler = () => {
+    router.push(item.navigation);
+  };
   return (
-    <View className="mb-0.5 w-full rounded-sm  bg-white">
-      <Pressable
+    <Pressable
+      className="mb-0.5 w-full rounded-sm  bg-white"
+      onPress={navigationHandler}
+    >
+      <View
         // onPress={() => toggleTaskExpand(item.id)}
         className="flex-row justify-between p-4"
       >
@@ -27,7 +36,7 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
           size={24}
           color={colors.neutral[600]}
         />
-      </Pressable>
+      </View>
 
       <View className="px-4">
         <View className="my-1 flex-row">
@@ -42,7 +51,7 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
 
         {/* <View className="w-full border-b-2 border-b-gray-400" /> */}
       </View>
-    </View>
+    </Pressable>
   );
 };
 

@@ -1,5 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable unused-imports/no-unused-vars */
+
 import {
   AntDesign,
   EvilIcons,
@@ -7,16 +7,19 @@ import {
   Ionicons,
 } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
-import { useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
 import { pastSessionData, sessionSingleData } from '@/data/data-base';
 import { colors, Pressable, ScrollView, Text, View } from '@/ui';
 
 import PastSession from '../../components/sessions/past-session';
+import { Item } from '@/components/settings/item';
+import UpComingSession from '@/components/sessions/upcoming-session';
 
 export default function Sessions() {
   const navigation = useNavigation();
+  const router = useRouter();
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -37,30 +40,35 @@ export default function Sessions() {
   const pastHandlePress = () => {
     setIsPastPressed(!isPastPressed);
     setIsUpComingPressed(false);
-    sessionEventHandler('Past');
+    sessionEventHandler('UpComing');
   };
 
   const upcomingHandlePress = () => {
     setIsUpComingPressed(!isUpComingPressed);
     setIsPastPressed(false);
-    sessionEventHandler('UpComing');
+    sessionEventHandler('Past');
   };
-
+  const navigationHandler = () => {
+    router.push(sessionSingleData[0].navigation);
+  };
   return (
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
           <Text className="my-3  text-2xl">Next Session</Text>
         </View>
-        <View className="mx-6 flex-1 rounded-sm bg-white">
+        <Pressable
+          className="mx-6 flex-1 rounded-sm bg-white"
+          onPress={navigationHandler}
+        >
           <View className="mb-2 w-full rounded-sm">
             <Pressable className="flex-row  justify-between p-4">
               <Text className="font-bold">{sessionSingleData[0].title}</Text>
-              <Ionicons
+              {/* <Ionicons
                 name="chevron-forward-sharp"
                 size={24}
                 color={colors.neutral[600]}
-              />
+              /> */}
             </Pressable>
             <View className="px-4">
               <View className="my-1 flex-row">
@@ -100,7 +108,7 @@ export default function Sessions() {
               </View>
             </View>
           </View>
-        </View>
+        </Pressable>
         <View className="ml-6 w-[90%]  flex-row justify-between ">
           <Pressable
             className="w-[45%] justify-center  "
@@ -152,7 +160,7 @@ export default function Sessions() {
             <FlashList
               data={pastSessionData}
               keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <PastSession item={item} />}
+              renderItem={({ item }) => <UpComingSession item={item} />}
               estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,

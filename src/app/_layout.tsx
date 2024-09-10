@@ -48,6 +48,14 @@ function RootLayoutNav() {
         <Stack.Screen name="(app)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="take-attendence" options={{ headerShown: true }} />
+        <Stack.Screen name="record-video" options={{ headerShown: true }} />
+        <Stack.Screen name="session-details" options={{ headerShown: true }} />
+        <Stack.Screen name="team-season" options={{ headerShown: true }} />
+        <Stack.Screen
+          name="record-pacer-score"
+          options={{ headerShown: true }}
+        />
       </Stack>
     </Providers>
   );
