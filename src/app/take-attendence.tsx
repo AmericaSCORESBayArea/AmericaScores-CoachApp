@@ -31,7 +31,7 @@ const TakeAttendence = () => {
       },
       headerTitle: 'Take Attendence',
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()} className="ml-4">
+        <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
       ),

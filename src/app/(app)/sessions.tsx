@@ -48,8 +48,12 @@ export default function Sessions() {
     setIsPastPressed(false);
     sessionEventHandler('Past');
   };
-  const navigationHandler = () => {
-    router.push(sessionSingleData[0].navigation);
+  const navigationHandler = (item: string) => {
+    if (item === 'session-details') {
+      router.push('session-details');
+    } else if (item === 'team-season') {
+      router.push('team-season');
+    }
   };
   return (
     <>
@@ -59,10 +63,13 @@ export default function Sessions() {
         </View>
         <Pressable
           className="mx-6 flex-1 rounded-sm bg-white"
-          onPress={navigationHandler}
+          onPress={() => navigationHandler('session-details')}
         >
           <View className="mb-2 w-full rounded-sm">
-            <Pressable className="flex-row  justify-between p-4">
+            <Pressable
+              className="flex-row  justify-between p-4"
+              onPress={() => navigationHandler('team-season')}
+            >
               <Text className="font-bold">{sessionSingleData[0].title}</Text>
               {/* <Ionicons
                 name="chevron-forward-sharp"

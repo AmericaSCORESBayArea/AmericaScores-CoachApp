@@ -102,6 +102,16 @@ type takeAttendenceType = {
   id: number;
   name: string;
 };
+type sessionCreationType = {
+  id: number;
+  name: string;
+  icon: string;
+};
+type createSessionTaskType = {
+  id: number;
+  name: string;
+  icon: string;
+};
 type currentSeasonType = {
   id: number;
   name: string;
@@ -115,6 +125,10 @@ type previousSeasonType = {
   startDate: string;
   endDate: string;
   attendence: number;
+};
+type teamOption = {
+  value: string;
+  label: string;
 };
 export const sessionSingleData: sessionType[] = [
   {
@@ -508,6 +522,7 @@ export const studentRecordData: studentRecordType[] = [
     notes: 'Survey/Notes',
   },
 ];
+
 export const takeAttendence: takeAttendenceType[] = [
   {
     id: 1,
@@ -631,4 +646,51 @@ export const SeasonStudentData: SeasonStudentType[] = [
     id: 15,
     name: 'Betty Quick Runner Johnson',
   },
+];
+
+export const sessionCreation: sessionCreationType[] = [
+  {
+    id: 1,
+    name: 'Soccer',
+    icon: 'Soccer',
+  },
+  {
+    id: 2,
+    name: 'Poetry',
+    icon: 'Poetry',
+  },
+  {
+    id: 3,
+    name: 'GameDay',
+    icon: 'GameDay',
+  },
+];
+export const createSessionTask: createSessionTaskType[] = [
+  {
+    id: 1,
+    name: 'Take Attendence',
+    icon: 'TakeAttendence',
+  },
+  {
+    id: 2,
+    name: 'Record a video',
+    icon: 'RecordVideo',
+  },
+  {
+    id: 3,
+    name: 'Record pacer',
+    icon: 'RecordPacer',
+  },
+];
+export const teamOptions: teamOption[] = [
+  { value: 'Emerson COED', label: 'Emerson COED' },
+  { value: 'Prescott Coed', label: 'Prescott Coed' },
+  {
+    value: 'Selecta Meta - Crocker Saturdays',
+    label: 'Selecta Meta - Crocker Saturdays',
+  },
+  { value: 'La Escuelita Coed', label: 'La Escuelita Coed' },
+  { value: 'Bessie Carmichael Juniors', label: 'Bessie Carmichael Juniors' },
+  { value: 'Hillcrest Juniors', label: 'Hillcrest Juniors' },
+  { value: 'Hillcrest Select', label: 'Hillcrest Select' },
 ];

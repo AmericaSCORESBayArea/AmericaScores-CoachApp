@@ -6,12 +6,12 @@ import colors from '../colors';
 
 export const Soccer = ({ color = colors.neutral[500], ...props }: SvgProps) => (
   <Svg
-    width={30}
-    height={30}
+    width={props.width}
+    height={props.height}
     fill="none"
-    viewBox="0 0 24 24"
+    viewBox="0 -1 18 18"
     {...props}
-    // className="bg-red-400 justify-center items-center "
+    className="ml-4  "
   >
     <G id="icons">
       <Path
