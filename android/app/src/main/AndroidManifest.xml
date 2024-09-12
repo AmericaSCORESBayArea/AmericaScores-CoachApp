@@ -25,7 +25,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="AmericaScoresCoachApp"/>
-        <data android:scheme="com.americascorescoachapp.development"/>
+        <data android:scheme="com.americaScoresAttendance.app"/>
         <data android:scheme="exp+americascorescoachapp"/>
       </intent-filter>
     </activity>

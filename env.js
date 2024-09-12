@@ -31,8 +31,8 @@ require('dotenv').config({
  * for example: if the APP_ENV is staging, the bundle id will be com.americascorescoachapp.staging
  */
 
-const BUNDLE_ID = 'com.americascorescoachapp'; // ios bundle id
-const PACKAGE = 'com.americascorescoachapp'; // android package name
+const BUNDLE_ID = 'com.americaScores.app'; // ios bundle id
+const PACKAGE = 'com.americaScoresAttendance.app'; // android package name
 const NAME = 'AmericaScoresCoachApp'; // app name
 const EXPO_ACCOUNT_OWNER = 'expo-owner'; // expo account owner
 const EAS_PROJECT_ID = 'c3e1075b-6fe7-4686-aa49-35b46a229044'; // eas project id
@@ -80,6 +80,14 @@ const client = z.object({
   AUTH_URL: z.string(),
   CLIENT_ID: z.string(),
   CLIENT_SECRET: z.string(),
+
+  // Other variables
+  SLACK_WEBHOOK: z.string(),
+  CLOUD_NAME: z.string(),
+  CLOUDINARY_URL: z.string(),
+  YOUTUBE_API: z.string(),
+  YOUTUBE_SECRET_KEY: z.string(),
+  SCORESU_URL: z.string(),
 });
 
 const buildTime = z.object({
@@ -103,6 +111,13 @@ const _clientEnv = {
   AUTH_URL: process.env.AUTH_URL,
   CLIENT_ID: process.env.CLIENT_ID,
   CLIENT_SECRET: process.env.CLIENT_SECRET,
+  //Other Variables
+  SLACK_WEBHOOK: process.env.SLACK_WEBHOOK,
+  CLOUD_NAME: process.env.CLOUD_NAME,
+  CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+  YOUTUBE_API: process.env.YOUTUBE_API,
+  YOUTUBE_SECRET_KEY: process.env.YOUTUBE_SECRET_KEY,
+  SCORESU_URL: process.env.SCORESU_URL,
 };
 
 /**

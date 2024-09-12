@@ -1,4 +1,4 @@
-package com.americascorescoachapp.development
+package com.americaScoresAttendance.app
 
 import android.app.Application
 import android.content.res.Configuration
