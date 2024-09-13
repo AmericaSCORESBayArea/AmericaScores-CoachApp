@@ -1,32 +1,37 @@
 import { Checkbox, CheckboxIcon, colors } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
-
+import { Ionicons } from '@expo/vector-icons';
+import { SoccerSVG } from '@/ui/icons/soccer';
+import { PoetrySVG } from '@/ui/icons/poety';
+import { GameDaySVG } from '@/ui/icons/game-day';
 import { TakeAttendenceSVG } from '@/ui/icons/take-attendence';
 import { RecordVideoSVG } from '@/ui/icons/record-video';
 import { RecordPacerSVG } from '@/ui/icons/record-pacer';
 
-interface CreateSessionTaskType {
+interface CreatePersonalAddDetailType {
   id: number;
   name: string;
-  icon: string;
+  // icon: string;
 }
 
-interface CreateSessionTaskProps {
-  item: CreateSessionTaskType;
-  setSessionTask: React.Dispatch<React.SetStateAction<number>>; // Function to update attendance count
+interface CreatePersonalAddDetailProps {
+  item: CreatePersonalAddDetailType;
+  setPersonalTaskAddDetail: React.Dispatch<React.SetStateAction<number>>; // Function to update attendance count
 }
 
-const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
+const CreatePersonalAddDetail: React.FC<CreatePersonalAddDetailProps> = ({
   item,
-  setSessionTask,
+  setPersonalTaskAddDetail,
 }) => {
   const [checked, setChecked] = useState<boolean>(false);
 
   const handleToggle = () => {
     setChecked((prevChecked) => {
       const newChecked = !prevChecked;
-      setSessionTask((prevCount) => prevCount + (newChecked ? 1 : -1)); // Increment or decrement the count
+      setPersonalTaskAddDetail(
+        (prevCount) => prevCount + (newChecked ? 1 : -1)
+      ); // Increment or decrement the count
       return newChecked;
     });
   };
@@ -39,7 +44,7 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
         checked={checked}
       >
         <Checkbox.Icon checked={checked} />
-        {item.icon === 'TakeAttendence' && (
+        {/* {item.icon === 'TakeAttendence' && (
           <TakeAttendenceSVG height={24} width={24} />
         )}
         {item.icon === 'RecordVideo' && (
@@ -47,7 +52,7 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
         )}
         {item.icon === 'RecordPacer' && (
           <RecordPacerSVG height={24} width={24} />
-        )}
+        )} */}
 
         <Checkbox.Label text={item.name} />
       </Checkbox.Root>
@@ -55,4 +60,4 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
   );
 };
 
-export default CreateSessionTask;
+export default CreatePersonalAddDetail;

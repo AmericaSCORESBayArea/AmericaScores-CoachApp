@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import {
   BottomSheetFlatList,
   type BottomSheetModal,
@@ -27,7 +26,7 @@ const selectTv = tv({
     container: 'mb-4',
     label: 'text-grey-100 mb-1 text-lg dark:text-neutral-100',
     input:
-      'border-grey-50 mt-0 flex-row items-center justify-center rounded-xl border-[0.5px] p-3  dark:border-neutral-500 dark:bg-neutral-800',
+      'border-grey-50 mt-0 flex-row items-center justify-center rounded-md border-[0.5px] p-3  dark:border-neutral-500 dark:bg-neutral-800',
     inputValue: 'dark:text-neutral-100',
   },
 

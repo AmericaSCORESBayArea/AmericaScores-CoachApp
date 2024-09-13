@@ -4,7 +4,10 @@ import Svg, { G, Path } from 'react-native-svg';
 
 import colors from '../colors';
 
-export const Soccer = ({ color = colors.neutral[500], ...props }: SvgProps) => (
+export const SoccerSVG = ({
+  color = colors.neutral[500],
+  ...props
+}: SvgProps) => (
   <Svg
     width={props.width}
     height={props.height}

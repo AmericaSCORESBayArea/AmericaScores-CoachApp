@@ -17,7 +17,7 @@ import {
   TouchableOpacity,
   View,
 } from '@/ui';
-import TakeAttendenceSubmitBtn from '@/components/buttons/take-attendence-submit-btn';
+import TakeAttendenceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
 
 const TakeAttendence = () => {
   const navigation = useNavigation();

@@ -52,6 +52,7 @@ function RootLayoutNav() {
         <Stack.Screen name="record-video" options={{ headerShown: true }} />
         <Stack.Screen name="session-details" options={{ headerShown: true }} />
         <Stack.Screen name="team-season" options={{ headerShown: true }} />
+        <Stack.Screen name="create-session" options={{ headerShown: true }} />
         <Stack.Screen
           name="record-pacer-score"
           options={{ headerShown: true }}

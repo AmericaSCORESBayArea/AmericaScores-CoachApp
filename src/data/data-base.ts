@@ -112,6 +112,16 @@ type createSessionTaskType = {
   name: string;
   icon: string;
 };
+type personalTaskCreationType = {
+  id: number;
+  name: string;
+  icon: string;
+};
+type personalTaskAddDetailType = {
+  id: number;
+  name: string;
+  // icon:string;
+};
 type currentSeasonType = {
   id: number;
   name: string;
@@ -127,6 +137,12 @@ type previousSeasonType = {
   attendence: number;
 };
 type teamOption = {
+  id: number;
+  value: string;
+  label: string;
+};
+type sessionOption = {
+  id: number;
   value: string;
   label: string;
 };
@@ -682,15 +698,76 @@ export const createSessionTask: createSessionTaskType[] = [
     icon: 'RecordPacer',
   },
 ];
-export const teamOptions: teamOption[] = [
-  { value: 'Emerson COED', label: 'Emerson COED' },
-  { value: 'Prescott Coed', label: 'Prescott Coed' },
+export const personalTaskCreation: personalTaskCreationType[] = [
   {
+    id: 1,
+    name: 'Coaching & Training',
+    icon: 'Coaching & Training',
+  },
+  {
+    id: 2,
+    name: 'SCORES Human Resources',
+    icon: 'SCORES Human Resources',
+  },
+  {
+    id: 3,
+    name: 'Personal',
+    icon: 'Personal',
+  },
+];
+export const personalTaskAddDetailTask: personalTaskAddDetailType[] = [
+  {
+    id: 1,
+    name: 'Add a Link',
+    // icon: 'Coaching & Training',
+  },
+  {
+    id: 2,
+    name: 'Make it Recurring',
+    // icon: 'Coaching & Training',
+  },
+  {
+    id: 3,
+    name: 'Require Phote or Video',
+    // icon: 'Coaching & Training',
+  },
+];
+export const teamOptions: teamOption[] = [
+  { id: 1, value: 'Emerson COED', label: 'Emerson COED' },
+  { id: 2, value: 'Prescott Coed', label: 'Prescott Coed' },
+  {
+    id: 3,
     value: 'Selecta Meta - Crocker Saturdays',
     label: 'Selecta Meta - Crocker Saturdays',
   },
-  { value: 'La Escuelita Coed', label: 'La Escuelita Coed' },
-  { value: 'Bessie Carmichael Juniors', label: 'Bessie Carmichael Juniors' },
-  { value: 'Hillcrest Juniors', label: 'Hillcrest Juniors' },
-  { value: 'Hillcrest Select', label: 'Hillcrest Select' },
+  { id: 4, value: 'La Escuelita Coed', label: 'La Escuelita Coed' },
+  {
+    id: 5,
+    value: 'Bessie Carmichael Juniors',
+    label: 'Bessie Carmichael Juniors',
+  },
+  { id: 6, value: 'Hillcrest Juniors', label: 'Hillcrest Juniors' },
+  { id: 7, value: 'Hillcrest Select', label: 'Hillcrest Select' },
+];
+export const sessionOptions: sessionOption[] = [
+  {
+    id: 1,
+    value: 'Developer Test Soccer Poets',
+    label: 'Developer Test Soccer Poets',
+  },
+  {
+    id: 2,
+    value: 'Developer Test Soccer Poets',
+    label: 'Developer Test Soccer Poets',
+  },
+  {
+    id: 3,
+    value: 'Developer Test Soccer Poets',
+    label: 'Developer Test Soccer Poets',
+  },
+  {
+    id: 4,
+    value: 'Developer Test Soccer Poets',
+    label: 'Developer Test Soccer Poets',
+  },
 ];

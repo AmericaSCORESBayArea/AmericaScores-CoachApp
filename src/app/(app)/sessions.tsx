@@ -49,11 +49,9 @@ export default function Sessions() {
     sessionEventHandler('Past');
   };
   const navigationHandler = (item: string) => {
-    if (item === 'session-details') {
-      router.push('session-details');
-    } else if (item === 'team-season') {
-      router.push('team-season');
-    }
+    if (item === 'session-details') router.push('session-details');
+    else if (item === 'team-season') router.push('team-season');
+    else if (item === 'create-session') router.push('create-session');
   };
   return (
     <>
@@ -186,6 +184,7 @@ export default function Sessions() {
           bottom: 20, // Adjust the distance from the bottom
           right: 20, // Adjust the distance from the right
         }}
+        onPress={() => navigationHandler('create-session')}
       />
     </>
   );

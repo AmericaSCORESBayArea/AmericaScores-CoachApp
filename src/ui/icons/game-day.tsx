@@ -4,7 +4,7 @@ import Svg, { G, Path } from 'react-native-svg';
 
 import colors from '../colors';
 
-export const GameDay = ({
+export const GameDaySVG = ({
   color = colors.neutral[500],
   ...props
 }: SvgProps) => (
