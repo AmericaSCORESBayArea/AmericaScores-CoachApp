@@ -18,8 +18,8 @@ importers:
         specifier: ^2.9.11
         version: 2.9.11(react-hook-form@7.51.4(react@18.2.0))
       '@react-native-community/datetimepicker':
-        specifier: ^8.2.0
-        version: 8.2.0(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
+        specifier: ^8.0.1
+        version: 8.0.1(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
       '@react-native-firebase/app':
         specifier: ^20.4.0
         version: 20.4.0(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
@@ -1926,16 +1926,13 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@react-native-community/datetimepicker@8.2.0':
-    resolution: {integrity: sha512-qrUPhiBvKGuG9Y+vOqsc56RPFcHa1SU2qbAMT0hfGkoFIj3FodE0VuPVrEa8fgy7kcD5NQmkZIKgHOBLV0+hWg==}
+  '@react-native-community/datetimepicker@8.0.1':
+    resolution: {integrity: sha512-4BO0t3geMNNw9cIIm9p9FNUzwMXexdzD4pAH0AaUAycs3BS71HLrX8jHbrI7nzq/+8O7cLAXn5Gudte+YpTV8Q==}
     peerDependencies:
-      expo: '>=50.0.0'
       react: '*'
       react-native: '*'
       react-native-windows: '*'
     peerDependenciesMeta:
-      expo:
-        optional: true
       react-native-windows:
         optional: true
 
@@ -10413,13 +10410,11 @@ snapshots:
       - supports-color
       - utf-8-validate
 
-  '@react-native-community/datetimepicker@8.2.0(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)':
+  '@react-native-community/datetimepicker@8.0.1(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)':
     dependencies:
       invariant: 2.2.4
       react: 18.2.0
       react-native: 0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)
-    optionalDependencies:
-      expo: 51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))
 
   '@react-native-community/eslint-config@3.2.0(eslint@8.57.0)(jest@29.7.0(@types/node@20.12.12)(ts-node@10.9.2(@types/node@20.12.12)(typescript@5.3.3)))(prettier@2.8.8)(typescript@5.3.3)':
     dependencies:

@@ -1,5 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-import { View, Text, ScrollView, Pressable } from 'react-native';
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Platform,
+  Modal,
+} from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
 import { SimpleLineIcons } from '@expo/vector-icons';
@@ -11,7 +18,6 @@ import {
   createSessionTask,
   personalTaskAddDetailTask,
   personalTaskCreation,
-  sessionCreation,
   sessionOptions,
   teamOptions,
 } from '@/data/data-base';
@@ -31,12 +37,13 @@ const CreatePersonalTask = () => {
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const [personalTaskType, setPersonalTaskType] = useState<number>(0);
   const [personalTaskAddDetail, setPersonalTaskAddDetail] = useState<number>(0);
+
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: '#EEF0F8',
       },
-      headerTitle: 'New Session',
+      headerTitle: 'New Task',
     });
   }, [navigation]);
 
@@ -51,34 +58,34 @@ const CreatePersonalTask = () => {
   };
 
   return (
-    <ScrollView className="flex-1  bg-[#EEF0F8]">
+    <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="mx-6 my-2 flex-1 rounded-md bg-white">
-        <View className="border-grey-50 mx-3  mt-5 items-center  rounded-md border-[0.5px] p-3">
+        <View className=" mx-3 mt-5 items-center rounded-md border border-gray-400 p-3">
           <Text>Task Title</Text>
         </View>
         <View className="mx-3 my-2">
           <Select
-            placeholder="Select a session ( Optional)"
+            placeholder="Select a session (Optional)"
             options={sessionOptions}
             value={value}
             onSelect={(option) => setValue(option)}
           />
         </View>
 
-        <View className="mx-3  flex-row items-center justify-between">
-          <View className=" my-4  w-2/5  ">
+        <View className="mx-3 flex-row items-center justify-between">
+          <View className="my-4 w-2/5">
             <Text className="text-md text-gray-700">Due Date (Optional)</Text>
             <Pressable
               className="flex-row justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={17} color="black" />
+              <SimpleLineIcons name="arrow-down" size={18} color="black" />
             </Pressable>
           </View>
 
-          <View className="mx-3 my-4 w-2/5  ">
-            <Text className="text-md text-gray-700"> Time (Optional)</Text>
+          <View className="mx-3 my-4 w-2/5">
+            <Text className="text-md text-gray-700">Time (Optional)</Text>
             <Pressable
               className="flex-row justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
@@ -89,26 +96,85 @@ const CreatePersonalTask = () => {
           </View>
         </View>
 
-        {showDatePicker && (
-          <DateTimePicker
-            value={date}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-          />
+        {/* Date Picker Modal */}
+        {Platform.OS === 'ios' && showDatePicker && (
+          <Modal
+            transparent={true}
+            visible={showDatePicker}
+            animationType="slide"
+            onRequestClose={() => setShowDatePicker(false)}
+          >
+            <View className="flex-1 items-center justify-center bg-[rgba(0,0,0,0.5)] ">
+              <View className="w-4/5 rounded-lg bg-white p-4">
+                <DateTimePicker
+                  value={date}
+                  mode="date"
+                  display="spinner"
+                  onChange={handleDateChange}
+                />
+                <Pressable
+                  onPress={() => setShowDatePicker(false)}
+                  className="mt-4 rounded bg-red-500 p-2"
+                >
+                  <Text className="text-center text-lg text-white">Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
         )}
 
-        {showTimePicker && (
-          <DateTimePicker
-            value={time}
-            mode="time"
-            display="default"
-            onChange={handleTimeChange}
-          />
+        {/* Time Picker Modal */}
+        {Platform.OS === 'ios' && showTimePicker && (
+          <Modal
+            transparent={true}
+            visible={showTimePicker}
+            animationType="slide"
+            onRequestClose={() => setShowTimePicker(false)}
+          >
+            <View className="flex-1 items-center justify-center bg-black bg-opacity-50">
+              <View className="w-4/5 rounded-lg bg-white p-4">
+                <DateTimePicker
+                  value={time}
+                  mode="time"
+                  display="spinner"
+                  onChange={handleTimeChange}
+                />
+                <Pressable
+                  onPress={() => setShowTimePicker(false)}
+                  className="mt-4 rounded bg-red-500 p-2"
+                >
+                  <Text className="text-center text-lg text-white">Close</Text>
+                </Pressable>
+              </View>
+            </View>
+          </Modal>
+        )}
+
+        {/* Default Date and Time Pickers for Android */}
+        {Platform.OS === 'android' && (
+          <>
+            {showDatePicker && (
+              <DateTimePicker
+                value={date}
+                mode="date"
+                display="default"
+                onChange={handleDateChange}
+              />
+            )}
+            {showTimePicker && (
+              <DateTimePicker
+                value={time}
+                mode="time"
+                display="default"
+                onChange={handleTimeChange}
+              />
+            )}
+          </>
         )}
       </View>
+
       <View className="mx-6 my-2">
-        <Text className="text-sm font-extrabold color-gray-700">TYPES</Text>
+        <Text className="text-sm font-extrabold text-gray-700">TYPES</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlashList
@@ -126,8 +192,9 @@ const CreatePersonalTask = () => {
           }}
         />
       </View>
+
       <View className="mx-6 my-2">
-        <Text className="text-sm font-extrabold color-gray-700">
+        <Text className="text-sm font-extrabold text-gray-700">
           ADD DETAILS
         </Text>
       </View>
@@ -147,6 +214,7 @@ const CreatePersonalTask = () => {
           }}
         />
       </View>
+
       <CreatePersonalCheckBalanceBtn
         typeItem={{ personalTaskType }}
         taskItem={{ personalTaskAddDetail }}

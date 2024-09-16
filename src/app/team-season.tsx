@@ -35,22 +35,35 @@ import PastSeasonSession from '@/components/teams/past-season-session';
 export default function TeamSeason() {
   const navigation = useNavigation();
   const router = useRouter();
+  // useEffect(() => {
+  //   navigation.setOptions({
+  //     headerStyle: {
+  //       backgroundColor: '#EEF0F8',
+  //     },
+  //     headerTitle: () => (
+  //       <View>
+  //         <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'black' }}>
+  //           Developer Test Soccer Poets
+  //         </Text>
+  //         <Text style={{ fontSize: 14, color: 'gray' }}>2024/FA</Text>
+  //       </View>
+  //     ),
+  //     headerLeft: () => (
+  //       <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
+  //         <Ionicons name="arrow-back" size={24} color="black" />
+  //       </TouchableOpacity>
+  //     ),
+  //   });
+  // }, [navigation]);
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
         backgroundColor: '#EEF0F8',
       },
-      headerTitle: () => (
-        <View>
-          <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'black' }}>
-            Developer Test Soccer Poets
-          </Text>
-          <Text style={{ fontSize: 14, color: 'gray' }}>2024/FA</Text>
-        </View>
-      ),
+      headerTitle: 'Developer Test Soccer Poets',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          {/* <Ionicons name="arrow-back" size={24} color="black" /> */}
+          <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
       ),
     });
