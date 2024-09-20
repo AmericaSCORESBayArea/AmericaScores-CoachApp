@@ -18,6 +18,7 @@ import {
   View,
 } from '@/ui';
 import { useRouter } from 'expo-router';
+import { useLogin } from '@/api/auth';
 
 const Head = ({ opacity = 0.6, paddingHorizontal = 0 }) => {
   return (
@@ -43,16 +44,24 @@ const LoginForm = () => {
   const bottomSheetConfirmRef = useRef<BottomSheet>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const loginMutation = useLogin();
 
-  const onAuthStateChanged = useCallback(
-    (user: any) => {
-      if (user) {
-        Alert.alert('Login Successful', `Welcome ${user.phoneNumber}`);
-        router.push('/');
+  const onAuthStateChanged = useCallback(async (user: any) => {
+    if (user) {
+      console.log('Login Successful', `Welcome ${user.phoneNumber}`);
+      const newPhoneNumber = user.phoneNumber.replace('+1', '');
+      try {
+        loginMutation.mutate({
+          useridentifier: newPhoneNumber,
+          serviceprovider: 'Phone',
+        });
+      } catch (error) {
+        console.error('Error during login function call:', error);
+        Alert.alert('Login Error', 'Failed to log in, please try again.');
       }
-    },
-    [router]
-  );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
