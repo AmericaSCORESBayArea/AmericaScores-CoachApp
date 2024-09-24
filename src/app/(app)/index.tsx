@@ -1,5 +1,4 @@
 /* eslint-disable react-native/no-inline-styles */
-// import { Soccer } from '@/ui/icons/soccer';
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { useNavigation, useRouter } from 'expo-router';
@@ -8,12 +7,11 @@ import React, { useEffect, useState } from 'react';
 import HomeTask from '@/components/home';
 import SoonTask from '@/components/sessions/soon-task';
 import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
-import { colors, ScrollView, Text, View } from '@/ui';
+import { colors, Pressable, ScrollView, Text, View } from '@/ui';
 import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
 import { regionAdapter } from '@/api/adaptars/region-adapter';
 import { useGetTeamSeasonQuery } from '@/redux/teamseason/teamseason-endpoints';
 import { teamSeasonsAdapter } from '@/api/adaptars/teamseason-adapter';
-import { colors, Pressable, ScrollView, Text, View } from '@/ui';
 
 export default function Feed() {
   const navigation = useNavigation();
