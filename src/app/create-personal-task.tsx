@@ -131,7 +131,7 @@ const CreatePersonalTask = () => {
             animationType="slide"
             onRequestClose={() => setShowTimePicker(false)}
           >
-            <View className="flex-1 items-center justify-center bg-black bg-opacity-50">
+            <View className="flex-1 items-center justify-center bg-black/50">
               <View className="w-4/5 rounded-lg bg-white p-4">
                 <DateTimePicker
                   value={time}

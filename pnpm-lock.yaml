@@ -17,15 +17,12 @@ importers:
       '@hookform/resolvers':
         specifier: ^2.9.11
         version: 2.9.11(react-hook-form@7.51.4(react@18.2.0))
-<<<<<<< HEAD
       '@react-native-async-storage/async-storage':
         specifier: ^2.0.0
         version: 2.0.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))
-=======
       '@react-native-community/datetimepicker':
         specifier: ^8.0.1
         version: 8.0.1(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)
->>>>>>> origin/feature/home-screen
       '@react-native-firebase/app':
         specifier: ^20.4.0
         version: 20.4.0(@react-native-async-storage/async-storage@2.0.0(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0)))(expo@51.0.19(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5)))(react-native@0.74.3(@babel/core@7.24.5)(@babel/preset-env@7.24.5(@babel/core@7.24.5))(@types/react@18.2.79)(react@18.2.0))(react@18.2.0)

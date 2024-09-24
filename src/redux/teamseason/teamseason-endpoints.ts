@@ -18,10 +18,10 @@ export const brandEndpoints = apiSlice
           url: EndpointPaths.TEAM_SEASON,
           method: 'GET',
         }),
-        transformResponse: (response: { data: TeamSeason[] }) =>
+        transformResponse: (response: TeamSeason[]) =>
           teamSeasonsAdapter.setAll(
             teamSeasonsAdapter.getInitialState(),
-            response?.data.map(teamSeasonSerializer)
+            response.map(teamSeasonSerializer)
           ) as EntityState<TeamSeason, string>,
         providesTags: (result) =>
           providesList(result?.ids, ApiTagTypes.TEAM_SEASON),

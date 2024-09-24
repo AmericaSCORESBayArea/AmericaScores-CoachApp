@@ -19,11 +19,12 @@ export const brandEndpoints = apiSlice
           method: 'GET',
         }),
 
-        transformResponse: (response: { data: Region[] }) =>
-          regionAdapter.setAll(
+        transformResponse: (response: Region[]) => {
+          return regionAdapter.setAll(
             regionAdapter.getInitialState(),
-            response?.data.map(regionSerializer)
-          ) as EntityState<Region, string>,
+            response.map(regionSerializer)
+          ) as EntityState<Region, string>;
+        },
 
         providesTags: (result) =>
           providesList(result?.ids, ApiTagTypes.COACH_REGION),
