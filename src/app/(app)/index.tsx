@@ -9,9 +9,13 @@ import HomeTask from '@/components/home';
 import SoonTask from '@/components/sessions/soon-task';
 import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
 import { colors, ScrollView, Text, View } from '@/ui';
-
+import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
+import { regionAdapter } from '@/api/adaptars/region-adapter';
+import { useGetTeamSeasonQuery } from '@/redux/teamseason/teamseason-endpoints';
+import { teamSeasonsAdapter } from '@/api/adaptars/teamseason-adapter';
 export default function Feed() {
   const navigation = useNavigation();
+
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -33,12 +37,30 @@ export default function Feed() {
   //   setExpandedTaskItem((prev) => (prev === id ? null : id));
   // };
 
+  const { data: regions, isLoading, isError } = useGetCoachRegionsQuery();
+  const {
+    data: teams,
+    isLoading: isLoadingTeams,
+    isError: isErrorTeams,
+  } = useGetTeamSeasonQuery();
+
+  const allTeamSeasons = teams
+    ? teamSeasonsAdapter.getSelectors().selectAll(teams)
+    : [];
+
+  const allCoachRegions = regions
+    ? regionAdapter.getSelectors().selectAll(regions)
+    : [];
+
+  if (isLoading || isLoadingTeams) return <Text>Loading...</Text>;
+  if (isError || isErrorTeams) return <Text>Error loading regions.</Text>;
+
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="ml-6">
         <Text className="my-3 text-lg font-bold text-[#000] ">Hi Joe,</Text>
       </View>
-      <View className=" mx-6  w-[90%] justify-center rounded-sm bg-white">
+      <View className="mx-6  w-[90%] justify-center rounded-sm bg-white">
         <View
           // onPress={() => toggleSessionExpand(item.id)}
           className="flex-row justify-between p-4"

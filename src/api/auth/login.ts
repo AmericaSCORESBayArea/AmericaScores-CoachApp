@@ -2,11 +2,6 @@ import { useMutation } from '@tanstack/react-query';
 import { authClient } from '../common';
 
 export const login = async ({ useridentifier, serviceprovider }: any) => {
-  console.log('Sending login request with:', {
-    useridentifier,
-    serviceprovider,
-  });
-
   const response = await authClient.get('auth/login', {
     params: {
       useridentifier,

@@ -1,9 +1,8 @@
-/* eslint-disable react/react-in-jsx-scope */
 import { useReactNavigationDevTools } from '@dev-plugins/react-navigation';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
-import { StyleSheet } from 'react-native';
+import { ActivityIndicator, StyleSheet } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -15,6 +14,10 @@ export { ErrorBoundary } from 'expo-router';
 
 // Import  global CSS file
 import '../../global.css';
+import { PersistGate } from 'redux-persist/integration/react';
+import { persistor, store } from '@/redux/store';
+import React from 'react';
+import { Provider } from 'react-redux';
 
 export const unstable_settings = {
   initialRouteName: '(app)',
@@ -56,19 +59,26 @@ function RootLayoutNav() {
 function Providers({ children }: { children: React.ReactNode }) {
   const theme = useThemeConfig();
   return (
-    <GestureHandlerRootView
-      style={styles.container}
-      className={theme.dark ? `dark` : undefined}
-    >
-      <ThemeProvider value={theme}>
-        <APIProvider>
-          <BottomSheetModalProvider>
-            {children}
-            <FlashMessage position="top" />
-          </BottomSheetModalProvider>
-        </APIProvider>
-      </ThemeProvider>
-    </GestureHandlerRootView>
+    <Provider store={store}>
+      <PersistGate
+        loading={<ActivityIndicator size="large" color="#007AFF" />}
+        persistor={persistor}
+      >
+        <GestureHandlerRootView
+          style={styles.container}
+          className={theme.dark ? `dark` : undefined}
+        >
+          <ThemeProvider value={theme}>
+            <APIProvider>
+              <BottomSheetModalProvider>
+                {children}
+                <FlashMessage position="top" />
+              </BottomSheetModalProvider>
+            </APIProvider>
+          </ThemeProvider>
+        </GestureHandlerRootView>
+      </PersistGate>
+    </Provider>
   );
 }
 
