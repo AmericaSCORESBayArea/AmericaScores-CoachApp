@@ -85,7 +85,7 @@ export default function TabLayout() {
           tabBarTestID: 'profile-tab',
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="take-attendence"
         options={{
           title: 'Take Attendence',
@@ -94,7 +94,7 @@ export default function TabLayout() {
           ),
           tabBarTestID: 'test-tab',
         }}
-      />
+      /> */}
     </Tabs>
   );
 }
