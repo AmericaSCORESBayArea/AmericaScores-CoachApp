@@ -7,7 +7,7 @@ import type {
 } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import type { TextInput, TextInputProps } from 'react-native';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { TextInput as NTextInput } from 'react-native';
 import { tv } from 'tailwind-variants';
 
@@ -104,8 +104,8 @@ export const Input = React.forwardRef<TextInput, NInputProps>((props, ref) => {
         onFocus={onFocus}
         {...inputProps}
         style={StyleSheet.flatten([
-          { writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr' },
-          { textAlign: I18nManager.isRTL ? 'right' : 'left' },
+          { writingDirection: 'ltr' },
+          { textAlign: 'left' },
           inputProps.style,
         ])}
       />

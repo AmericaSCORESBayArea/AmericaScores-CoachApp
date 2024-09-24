@@ -5,24 +5,15 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Redirect, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
-import { useAuth, useIsFirstTime } from '@/core';
 export default function TabLayout() {
-  const status = useAuth.use.status();
-  const [isFirstTime] = useIsFirstTime();
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
   }, []);
   useEffect(() => {
-    if (status !== 'idle') {
-      setTimeout(() => {
-        hideSplash();
-      }, 1000);
-    }
-  }, [hideSplash, status]);
-
-  if (isFirstTime) {
-    return <Redirect href="/onboarding" />;
-  }
+    setTimeout(() => {
+      hideSplash();
+    }, 1000);
+  }, [hideSplash]);
 
   return (
     <Tabs

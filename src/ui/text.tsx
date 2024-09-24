@@ -1,14 +1,11 @@
 import React from 'react';
 import type { TextProps, TextStyle } from 'react-native';
-import { I18nManager, StyleSheet, Text as NNText } from 'react-native';
+import { StyleSheet, Text as NNText, I18nManager } from 'react-native';
 import { twMerge } from 'tailwind-merge';
-
-import type { TxKeyPath } from '@/core/i18n';
-import { translate } from '@/core/i18n';
 
 interface Props extends TextProps {
   className?: string;
-  tx?: TxKeyPath;
+  tx?: any;
 }
 
 export const Text = ({
@@ -31,7 +28,7 @@ export const Text = ({
     () =>
       StyleSheet.flatten([
         {
-          writingDirection: I18nManager.isRTL ? 'rtl' : 'ltr',
+          writingDirection: 'ltr',
         },
         style,
       ]) as TextStyle,
@@ -39,7 +36,7 @@ export const Text = ({
   );
   return (
     <NNText className={textStyle} style={nStyle} {...props}>
-      {tx ? translate(tx) : children}
+      {children}
     </NNText>
   );
 };

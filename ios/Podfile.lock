@@ -370,9 +370,6 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MMKV (1.3.6):
-    - MMKVCore (~> 1.3.6)
-  - MMKVCore (1.3.6)
   - PromisesObjC (2.4.0)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -1302,9 +1299,6 @@ PODS:
   - React-Mapbuffer (0.74.3):
     - glog
     - React-debug
-  - react-native-mmkv (2.6.3):
-    - MMKV (>= 1.2.13)
-    - React-Core
   - react-native-restart (0.0.27):
     - React-Core
   - react-native-safe-area-context (4.10.1):
@@ -1541,11 +1535,10 @@ PODS:
   - ReactNativeAvoidSoftinput (4.0.2):
     - React-Core
   - RecaptchaInterop (100.0.0)
-<<<<<<< HEAD
-=======
+  - RNCAsyncStorage (2.0.0):
+    - React-Core
   - RNDateTimePicker (8.0.1):
     - React-Core
->>>>>>> origin/feature/home-screen
   - RNFBApp (20.4.0):
     - Firebase/CoreOnly (= 10.29.0)
     - React-Core
@@ -1621,9 +1614,9 @@ PODS:
     - Yoga
   - RNSVG (15.2.0):
     - React-Core
-  - SDWebImage (5.19.2):
-    - SDWebImage/Core (= 5.19.2)
-  - SDWebImage/Core (5.19.2)
+  - SDWebImage (5.19.7):
+    - SDWebImage/Core (= 5.19.7)
+  - SDWebImage/Core (5.19.7)
   - SDWebImageAVIFCoder (0.11.0):
     - libavif/core (>= 0.11.0)
     - SDWebImage (~> 5.10)
@@ -1688,7 +1681,6 @@ DEPENDENCIES:
   - React-jsitracing (from `../node_modules/react-native/ReactCommon/hermes/executor/`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
-  - react-native-mmkv (from `../node_modules/react-native-mmkv`)
   - react-native-restart (from `../node_modules/react-native-restart`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
@@ -1715,10 +1707,8 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - ReactNativeAvoidSoftinput (from `../node_modules/react-native-avoid-softinput`)
-<<<<<<< HEAD
-=======
+  - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
->>>>>>> origin/feature/home-screen
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFlashList (from `../node_modules/@shopify/flash-list`)"
@@ -1740,8 +1730,6 @@ SPEC REPOS:
     - libavif
     - libdav1d
     - libwebp
-    - MMKV
-    - MMKVCore
     - PromisesObjC
     - RecaptchaInterop
     - SDWebImage
@@ -1850,8 +1838,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   React-Mapbuffer:
     :path: "../node_modules/react-native/ReactCommon"
-  react-native-mmkv:
-    :path: "../node_modules/react-native-mmkv"
   react-native-restart:
     :path: "../node_modules/react-native-restart"
   react-native-safe-area-context:
@@ -1904,11 +1890,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   ReactNativeAvoidSoftinput:
     :path: "../node_modules/react-native-avoid-softinput"
-<<<<<<< HEAD
-=======
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-async-storage/async-storage"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
->>>>>>> origin/feature/home-screen
   RNFBApp:
     :path: "../node_modules/@react-native-firebase/app"
   RNFBAuth:
@@ -1962,8 +1947,6 @@ SPEC CHECKSUMS:
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MMKV: 6eb512bc4b44d8a1503ec320c66c40c6caf04455
-  MMKVCore: ba7eab451553d6e5eb90431b3de8ac7b4697e7bb
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 4c7eeb42be0b2e95195563c49be08d0b839d22b4
@@ -1989,7 +1972,6 @@ SPEC CHECKSUMS:
   React-jsitracing: 1aa5681c353b41573b03e0e480a5adf5fa1c56d8
   React-logger: fa92ba4d3a5d39ac450f59be2a3cec7b099f0304
   React-Mapbuffer: 70da5955150a58732e9336a0c7e71cd49e909f25
-  react-native-mmkv: 2e5bf67513cc8deed86fcffe87e12b8cc250dfab
   react-native-restart: 7595693413fe3ca15893702f2c8306c62a708162
   react-native-safe-area-context: dcab599c527c2d7de2d76507a523d20a0b83823d
   React-nativeconfig: 84806b820491db30175afbf027e99e8415dc63f0
@@ -2017,30 +1999,22 @@ SPEC CHECKSUMS:
   ReactCommon: 4a09c7d8a06e93c1e2e988a3b9f3db3d2449f2fc
   ReactNativeAvoidSoftinput: b4ec4c8084c397a91800d21170a9949a263d288a
   RecaptchaInterop: 7d1a4a01a6b2cb1610a47ef3f85f0c411434cb21
-<<<<<<< HEAD
-  RNFBApp: 2f83756f4d8be2859af5e2cf54130c20e380119d
-  RNFBAuth: ae6e6195e2cf783f8ad1977186925c61358c8ec9
-=======
+  RNCAsyncStorage: d35c79ffba52c1013013e16b1fc295aec2feabb6
   RNDateTimePicker: b6a9b35a785ecbe12b4e7d6de5439d0aa4614146
   RNFBApp: 10819a4f67d634fe34aa607c6d1e8a8aef019308
   RNFBAuth: 43dea92a17ffa9481029a50df0e8c50943ec495a
->>>>>>> origin/feature/home-screen
   RNFlashList: b521ebdd7f9352673817f1d98e8bdc0c8cf8545b
   RNGestureHandler: 20a4307fd21cbff339abfcfa68192f3f0a6a518b
   RNReanimated: d51431fd3597a8f8320319dce8e42cee82a5445f
   RNScreens: 30249f9331c3b00ae7cb7922e11f58b3ed369c07
   RNSVG: 43b64ed39c14ce830d840903774154ca0c1f27ec
-  SDWebImage: dfe95b2466a9823cf9f0c6d01217c06550d7b29a
+  SDWebImage: 8a6b7b160b4d710e2a22b6900e25301075c34cb3
   SDWebImageAVIFCoder: 00310d246aab3232ce77f1d8f0076f8c4b021d90
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: bd92064a0d558be92786820514d74fc4dddd1233
 
-<<<<<<< HEAD
-PODFILE CHECKSUM: bf1b654b24a3b0f5dc00dbb725ac445b122a3480
-=======
 PODFILE CHECKSUM: 89f78b0f18994119490a36f206572f81fdc926f9
->>>>>>> origin/feature/home-screen
 
 COCOAPODS: 1.15.2

@@ -51,7 +51,7 @@ export default function Feed() {
   const allCoachRegions = regions
     ? regionAdapter.getSelectors().selectAll(regions)
     : [];
-
+  console.log('allTeamSeasons', allCoachRegions);
   if (isLoading || isLoadingTeams) return <Text>Loading...</Text>;
   if (isError || isErrorTeams) return <Text>Error loading regions.</Text>;
 

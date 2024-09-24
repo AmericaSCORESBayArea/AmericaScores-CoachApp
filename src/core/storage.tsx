@@ -1,16 +1,27 @@
-import { MMKV } from 'react-native-mmkv';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const storage = new MMKV();
-
-export function getItem<T>(key: string): T {
-  const value = storage.getString(key);
-  return value ? JSON.parse(value) || null : null;
+export async function getItem<T>(key: string): Promise<T | null> {
+  try {
+    const value = await AsyncStorage.getItem(key);
+    return value ? (JSON.parse(value) as T) : null;
+  } catch (error) {
+    console.error(`Error getting item with key "${key}":`, error);
+    return null;
+  }
 }
 
-export async function setItem<T>(key: string, value: T) {
-  storage.set(key, JSON.stringify(value));
+export async function setItem<T>(key: string, value: T): Promise<void> {
+  try {
+    await AsyncStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Error setting item with key "${key}":`, error);
+  }
 }
 
-export async function removeItem(key: string) {
-  storage.delete(key);
+export async function removeItem(key: string): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(key);
+  } catch (error) {
+    console.error(`Error removing item with key "${key}":`, error);
+  }
 }

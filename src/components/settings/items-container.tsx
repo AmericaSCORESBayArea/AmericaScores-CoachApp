@@ -1,11 +1,10 @@
 import React from 'react';
 
-import type { TxKeyPath } from '@/core';
 import { Text, View } from '@/ui';
 
 type Props = {
   children: React.ReactNode;
-  title?: TxKeyPath;
+  title?: any;
 };
 
 export const ItemsContainer = ({ children, title }: Props) => {

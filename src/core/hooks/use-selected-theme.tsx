@@ -1,38 +1,63 @@
 import { colorScheme, useColorScheme } from 'nativewind';
 import React from 'react';
-import { useMMKVString } from 'react-native-mmkv';
-
-import { storage } from '../storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SELECTED_THEME = 'SELECTED_THEME';
 export type ColorSchemeType = 'light' | 'dark' | 'system';
+
 /**
- * this hooks should only be used while selecting the theme
- * This hooks will return the selected theme which is stored in MMKV
- * selectedTheme should be one of the following values 'light', 'dark' or 'system'
- * don't use this hooks if you want to use it to style your component based on the theme use useColorScheme from nativewind instead
- *
+ * This hook should only be used while selecting the theme.
+ * It returns the selected theme which is stored in AsyncStorage.
+ * selectedTheme should be one of the following values: 'light', 'dark', or 'system'.
+ * Don't use this hook if you want to style your component based on the theme.
+ * Use `useColorScheme` from nativewind instead.
  */
 export const useSelectedTheme = () => {
   const { colorScheme: _color, setColorScheme } = useColorScheme();
-  const [theme, _setTheme] = useMMKVString(SELECTED_THEME, storage);
+  const [theme, setTheme] = React.useState<ColorSchemeType>('system');
+
+  React.useEffect(() => {
+    const loadTheme = async () => {
+      try {
+        const savedTheme = await AsyncStorage.getItem(SELECTED_THEME);
+        if (savedTheme) {
+          setTheme(savedTheme as ColorSchemeType);
+          setColorScheme(savedTheme as ColorSchemeType);
+        }
+      } catch (error) {
+        console.error('Error loading theme from AsyncStorage:', error);
+      }
+    };
+
+    loadTheme();
+  }, [setColorScheme]);
 
   const setSelectedTheme = React.useCallback(
-    (t: ColorSchemeType) => {
-      setColorScheme(t);
-      _setTheme(t);
+    async (t: ColorSchemeType) => {
+      try {
+        await AsyncStorage.setItem(SELECTED_THEME, t);
+        setTheme(t);
+        setColorScheme(t);
+      } catch (error) {
+        console.error('Error saving theme to AsyncStorage:', error);
+      }
     },
-    [setColorScheme, _setTheme]
+    [setColorScheme]
   );
 
-  const selectedTheme = (theme ?? 'system') as ColorSchemeType;
+  const selectedTheme = theme as ColorSchemeType;
   return { selectedTheme, setSelectedTheme } as const;
 };
-// to be used in the root file to load the selected theme from MMKV
-export const loadSelectedTheme = () => {
-  const theme = storage.getString(SELECTED_THEME);
-  if (theme !== undefined) {
-    console.log('theme', theme);
-    colorScheme.set(theme as ColorSchemeType);
+
+// To be used in the root file to load the selected theme from AsyncStorage
+export const loadSelectedTheme = async () => {
+  try {
+    const theme = await AsyncStorage.getItem(SELECTED_THEME);
+    if (theme) {
+      console.log('Theme loaded:', theme);
+      colorScheme.set(theme as ColorSchemeType);
+    }
+  } catch (error) {
+    console.error('Error loading theme from AsyncStorage:', error);
   }
 };
