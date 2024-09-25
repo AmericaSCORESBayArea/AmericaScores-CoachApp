@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
@@ -9,9 +10,11 @@ import SoonTask from '@/components/sessions/soon-task';
 import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
 import { colors, Pressable, ScrollView, Text, View } from '@/ui';
 import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
-import { regionAdapter } from '@/api/adaptars/region-adapter';
-import { useGetTeamSeasonQuery } from '@/redux/teamseason/teamseason-endpoints';
-import { teamSeasonsAdapter } from '@/api/adaptars/teamseason-adapter';
+import { regionAdapter } from '@/api/adaptars/regions/region-adapter';
+import { useGetTeamSeasonQuery } from '@/redux/teamseason/team-season-endpoints';
+import { teamSeasonsAdapter } from '@/api/adaptars/teamSeason/teamseason-adapter';
+import { useGetCoachSessionsQuery } from '@/redux/sessions/sessions-endpoint';
+import { sessionsAdapter } from '@/api/adaptars/sessions/session-adapter';
 
 export default function Feed() {
   const navigation = useNavigation();
@@ -24,25 +27,22 @@ export default function Feed() {
       headerTitle: '',
     });
   }, [navigation]);
-  // const [expandedTaskItem, setExpandedTaskItem] = useState<number | null>(null);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
 
-  const toggleSessionExpand = (id: number) => {
-    setExpandedSessionItem((prev) => (prev === id ? null : id));
-  };
-
-  // const toggleTaskExpand = (id: number) => {
-  //   setExpandedTaskItem((prev) => (prev === id ? null : id));
-  // };
-
-  const { data: regions, isLoading, isError } = useGetCoachRegionsQuery();
+  const {
+    data: regions,
+    isLoading: isLoadingRegions,
+    isError: isErrorRegions,
+  } = useGetCoachRegionsQuery();
   const {
     data: teams,
     isLoading: isLoadingTeams,
     isError: isErrorTeams,
   } = useGetTeamSeasonQuery();
+  const {
+    data: sessions,
+    isLoading: isLoadingSessions,
+    isError: isErrorSession,
+  } = useGetCoachSessionsQuery();
 
   const allTeamSeasons = teams
     ? teamSeasonsAdapter.getSelectors().selectAll(teams)
@@ -51,9 +51,18 @@ export default function Feed() {
   const allCoachRegions = regions
     ? regionAdapter.getSelectors().selectAll(regions)
     : [];
-  console.log('allTeamSeasons', allCoachRegions);
-  if (isLoading || isLoadingTeams) return <Text>Loading...</Text>;
-  if (isError || isErrorTeams) return <Text>Error loading regions.</Text>;
+  const allCoachSessions = sessions
+    ? sessionsAdapter.getSelectors().selectAll(sessions)
+    : [];
+  useEffect(() => {
+    // console.log('allCoachRegions', allCoachRegions);
+    // console.log('allTeamSeasons', allTeamSeasons);
+    console.log('allCoachSessions', allCoachSessions);
+  }, [allTeamSeasons, allCoachRegions, allCoachSessions]);
+  if (isLoadingRegions || isLoadingTeams || isLoadingSessions)
+    return <Text>Loading...</Text>;
+  if (isErrorRegions || isErrorTeams || isErrorSession)
+    return <Text>Error loading regions.</Text>;
 
   const navigationHandler = (item: string) => {
     if (item === 'session-details') {
@@ -123,18 +132,11 @@ export default function Feed() {
         <FlashList
           data={sessionData}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <HomeTask
-              item={item}
-              expandedSessionItem={expandedSessionItem}
-              toggleSessionExpand={toggleSessionExpand}
-            />
-          )}
+          renderItem={({ item }) => <HomeTask item={item} />}
           estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
-          key={expandedSessionItem}
         />
       </View>
 
@@ -152,7 +154,6 @@ export default function Feed() {
           contentContainerStyle={{
             paddingVertical: 8,
           }}
-          // key={expandedTaskItem}
         />
       </View>
     </ScrollView>

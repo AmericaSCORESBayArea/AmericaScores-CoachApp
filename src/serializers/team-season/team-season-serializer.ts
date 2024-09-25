@@ -1,4 +1,4 @@
-import type { TeamSeason } from '@/interfaces/entities/team-season/team-season';
+import type { TeamSeason } from '@/interfaces/entities/team-season/team-season-entities';
 
 export function teamSeasonSerializer(teamseason: TeamSeason): TeamSeason {
   const {
