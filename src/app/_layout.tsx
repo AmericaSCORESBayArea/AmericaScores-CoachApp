@@ -18,6 +18,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from '@/redux/store';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { colors } from '@/ui';
 
 export const unstable_settings = {
   initialRouteName: '(app)',
@@ -37,11 +38,12 @@ function RootLayoutNav() {
   return (
     <Providers>
       <Stack
+        initialRouteName="login"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#f4511e',
+            backgroundColor: colors.primary[800],
           },
-          headerTintColor: '#660101',
+          headerTintColor: colors.primary[300],
           headerTitleStyle: {
             fontWeight: 'bold',
           },

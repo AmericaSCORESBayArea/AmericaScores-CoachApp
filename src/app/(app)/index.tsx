@@ -12,8 +12,22 @@ import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
 import { regionAdapter } from '@/api/adaptars/region-adapter';
 import { useGetTeamSeasonQuery } from '@/redux/teamseason/teamseason-endpoints';
 import { teamSeasonsAdapter } from '@/api/adaptars/teamseason-adapter';
+import { getItem, removeItem } from '@/core/storage';
 
 export default function Feed() {
+  // getItem('user').then((user) => {
+  //   if (user) {
+  //     console.log('user', user);
+  //   }
+  // });
+
+  // useEffect(async () => {
+  //   const user = await getItem('user');
+  //   if (user) {
+  //     console.log('user', user);
+  //   }
+  // }, []);
+  const [user, setUser] = useState<any>(null);
   const navigation = useNavigation();
   const router = useRouter();
   useEffect(() => {
@@ -37,23 +51,25 @@ export default function Feed() {
   //   setExpandedTaskItem((prev) => (prev === id ? null : id));
   // };
 
-  const { data: regions, isLoading, isError } = useGetCoachRegionsQuery();
-  const {
-    data: teams,
-    isLoading: isLoadingTeams,
-    isError: isErrorTeams,
-  } = useGetTeamSeasonQuery();
+  // const { data: regions, isLoading, isError } = useGetCoachRegionsQuery();
+  // const {
+  //   data: teams,
+  //   isLoading: isLoadingTeams,
+  //   isError: isErrorTeams,
+  // } = useGetTeamSeasonQuery();
 
-  const allTeamSeasons = teams
-    ? teamSeasonsAdapter.getSelectors().selectAll(teams)
-    : [];
+  // const allTeamSeasons = teams
+  //   ? teamSeasonsAdapter.getSelectors().selectAll(teams)
+  //   : [];
 
-  const allCoachRegions = regions
-    ? regionAdapter.getSelectors().selectAll(regions)
-    : [];
-  console.log('allTeamSeasons', allCoachRegions);
-  if (isLoading || isLoadingTeams) return <Text>Loading...</Text>;
-  if (isError || isErrorTeams) return <Text>Error loading regions.</Text>;
+  // const allCoachRegions = regions
+  //   ? regionAdapter.getSelectors().selectAll(regions)
+  //   : [];
+  // console.log('allCoachRegions', allCoachRegions);
+  // console.log('allTeamSeasons', allTeamSeasons);
+
+  // if (isLoading || isLoadingTeams) return <Text>Loading...</Text>;
+  // if (isError || isErrorTeams) return <Text>Error loading regions.</Text>;
 
   const navigationHandler = (item: string) => {
     if (item === 'session-details') {
@@ -62,10 +78,22 @@ export default function Feed() {
       router.push('team-season');
     }
   };
+
+  useEffect(() => {
+    async function fetchUser() {
+      const userFromStorage = await getItem('user');
+      setUser(userFromStorage);
+      !userFromStorage ?? router.push('/login');
+    }
+
+    fetchUser();
+  }, [router]);
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="ml-6">
-        <Text className="my-3 text-lg font-bold text-[#000] ">Hi Joe,</Text>
+        <Text className="my-3 text-lg font-bold text-[#000] ">
+          Hi {user?.FirstName},
+        </Text>
       </View>
       <Pressable
         className=" mx-6  w-[90%] justify-center rounded-sm bg-white"

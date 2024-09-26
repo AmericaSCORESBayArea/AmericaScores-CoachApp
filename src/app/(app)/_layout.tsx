@@ -2,7 +2,7 @@
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Redirect, SplashScreen, Tabs } from 'expo-router';
+import { router, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
 
 export default function TabLayout() {
@@ -29,9 +29,7 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color }) => (
             <Feather name="home" size={24} color={color} />
-            // <Home color={color} />
           ),
-          // headerRight: () => <CreateNewPostLink />,
           tabBarTestID: 'home-tab',
         }}
       />
@@ -76,16 +74,6 @@ export default function TabLayout() {
           tabBarTestID: 'profile-tab',
         }}
       />
-      {/* <Tabs.Screen
-        name="take-attendence"
-        options={{
-          title: 'Take Attendence',
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="person-outline" size={24} color={color} />
-          ),
-          tabBarTestID: 'test-tab',
-        }}
-      /> */}
     </Tabs>
   );
 }

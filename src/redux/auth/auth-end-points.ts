@@ -15,7 +15,6 @@ export const authEndpoints = apiSlice.injectEndpoints({
       onQueryStarted: async (args, { queryFulfilled }) => {
         try {
           const { data } = await queryFulfilled;
-          console.log('Login successful:', data);
         } catch (error) {
           if (error instanceof Error) {
             console.error('Error during login function call:', error.message);
