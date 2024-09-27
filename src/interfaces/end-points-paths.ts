@@ -4,4 +4,5 @@ export enum EndpointPaths {
   COACH_REGIONS = 'coach',
   TEAM_SEASON = 'teamSeasons?date=2023-08-05&isWithinDateRange=true',
   COACH_SESSIONS = 'sessions',
+  COACH_ATTENDANCES = 'attendances',
 }

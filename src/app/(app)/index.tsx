@@ -16,8 +16,10 @@ import { useGetTeamSeasonQuery } from '@/redux/teamseason/team-season-endpoints'
 import { teamSeasonsAdapter } from '@/api/adaptars/teamSeason/teamseason-adapter';
 import {
   useCreateCoachSessionMutation,
+  useDeleteCoachSessionMutation,
   useGetCoachSessionIdQuery,
   useGetCoachSessionsQuery,
+  useUpdateCoachSessionMutation,
 } from '@/redux/sessions/sessions-endpoint';
 import {
   sessionsAdapter,
@@ -34,7 +36,7 @@ export default function Feed() {
   const router = useRouter();
 
   useEffect(() => {
-    handleCreateSession();
+    // handleCreateSession();
     navigation.setOptions({
       headerStyle: {
         backgroundColor: '#EEF0F8',
@@ -68,7 +70,7 @@ export default function Feed() {
   } = useGetCoachSessionIdQuery({
     sessionId: 'a0pcX0000004gv7QAA',
   });
-
+  ///////////////////// Post Session//////////////////////////
   const [
     createCoachSession,
     { isLoading: isLoadingPostSession, error: isErrorPostSession },
@@ -82,10 +84,48 @@ export default function Feed() {
         TeamSeasonId: 'a0qcX000000GEggQAG',
       };
 
-      const response = await createCoachSession(sessionData);
+      const response = await createCoachSession(sessionData).unwrap();
       console.log('response :', response);
     } catch (err) {
       console.error('Failed to create session:', err);
+    }
+  };
+  ///////////////////// Patch SessionId//////////////////////////
+  const [
+    updateCoachSession,
+    { isLoading: isLoadingUpdateSession, error: isErrorUpdateSession },
+  ] = useUpdateCoachSessionMutation();
+
+  const handleUpdateSession = async () => {
+    try {
+      const sessionPatchData = {
+        SessionId: 'a0pcX0000004eQHQAY',
+        SessionName: 'New Soccer Session',
+        SessionDate: '2024-08-23',
+        SessionTopic: 'Soccer',
+        TeamSeasonId: 'a0qcX000000GEggQAG',
+        Headcount: 20,
+        FemaleHeadcount: 8,
+      };
+
+      const response = await updateCoachSession(sessionPatchData).unwrap();
+      console.log('Updated session response: ', response);
+    } catch (err) {
+      console.error('Failed to update session:', err);
+    }
+  };
+
+  ///////////////////// Delete SessionId//////////////////////////
+
+  const [deleteCoachSession, { isLoading: isDeleting, error: deleteError }] =
+    useDeleteCoachSessionMutation();
+
+  const handleDeleteSession = async (SessionId: string) => {
+    try {
+      const response = await deleteCoachSession({ SessionId }).unwrap();
+      console.log(response, 'Session deleted successfully');
+    } catch (err) {
+      console.error('Failed to delete session:', err);
     }
   };
 
@@ -102,6 +142,12 @@ export default function Feed() {
   const allCoachSessionsId = sessionsId
     ? sessionsIdAdapter.getSelectors().selectAll(sessionsId)
     : [];
+
+  useEffect(() => {
+    // handleCreateSession();
+    // handleUpdateSession();
+    // handleDeleteSession('a0pcX0000004gqIQAQ');
+  }, []);
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
     // console.log('allTeamSeasons', allTeamSeasons);

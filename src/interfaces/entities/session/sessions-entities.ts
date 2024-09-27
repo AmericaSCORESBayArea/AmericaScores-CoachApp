@@ -7,6 +7,9 @@ export interface Sessions {
   SessionEndTime: string;
   SessionTopic: string;
 }
+export interface SessionsPost {
+  SessionId: string;
+}
 export interface SessionsId {
   SessionId: string;
   SessionName: string;
@@ -22,6 +25,16 @@ export interface SessionsId {
   UsesHeadcount: boolean;
   ProgramType: string;
 }
-export interface SessionsPost {
+
+export interface SessionsIdPatch {
+  SessionId: string;
+  SessionName?: string;
+  SessionDate?: string;
+  SessionTopic?: string;
+  TeamSeasonId?: string;
+  Headcount?: number;
+  FemaleHeadcount?: number;
+}
+export interface SessionsIdDelete {
   SessionId: string;
 }
