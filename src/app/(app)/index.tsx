@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
@@ -13,13 +14,27 @@ import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
 import { regionAdapter } from '@/api/adaptars/regions/region-adapter';
 import { useGetTeamSeasonQuery } from '@/redux/teamseason/team-season-endpoints';
 import { teamSeasonsAdapter } from '@/api/adaptars/teamSeason/teamseason-adapter';
-import { useGetCoachSessionsQuery } from '@/redux/sessions/sessions-endpoint';
-import { sessionsAdapter } from '@/api/adaptars/sessions/session-adapter';
+import {
+  useCreateCoachSessionMutation,
+  useGetCoachSessionIdQuery,
+  useGetCoachSessionsQuery,
+} from '@/redux/sessions/sessions-endpoint';
+import {
+  sessionsAdapter,
+  sessionsIdAdapter,
+} from '@/api/adaptars/sessions/session-adapter';
+interface SessionPostType {
+  SessionDate: string;
+  SessionTopic: string;
+  TeamSeasonId: string;
+}
 
 export default function Feed() {
   const navigation = useNavigation();
   const router = useRouter();
+
   useEffect(() => {
+    handleCreateSession();
     navigation.setOptions({
       headerStyle: {
         backgroundColor: '#EEF0F8',
@@ -32,7 +47,7 @@ export default function Feed() {
     data: regions,
     isLoading: isLoadingRegions,
     isError: isErrorRegions,
-  } = useGetCoachRegionsQuery();
+  } = useGetCoachRegionsQuery({ coachId: '003UQ00000EiAy9YAF' });
   const {
     data: teams,
     isLoading: isLoadingTeams,
@@ -42,7 +57,37 @@ export default function Feed() {
     data: sessions,
     isLoading: isLoadingSessions,
     isError: isErrorSession,
-  } = useGetCoachSessionsQuery();
+  } = useGetCoachSessionsQuery({
+    teamSeasonId: 'a0qcX000000GEggQAG',
+    date: '2024-08-23',
+  });
+  const {
+    data: sessionsId,
+    isLoading: isLoadingSessionsId,
+    isError: isErrorSessionId,
+  } = useGetCoachSessionIdQuery({
+    sessionId: 'a0pcX0000004gv7QAA',
+  });
+
+  const [
+    createCoachSession,
+    { isLoading: isLoadingPostSession, error: isErrorPostSession },
+  ] = useCreateCoachSessionMutation();
+
+  const handleCreateSession = async () => {
+    try {
+      const sessionData: SessionPostType = {
+        SessionDate: '2024-08-23',
+        SessionTopic: 'Soccer',
+        TeamSeasonId: 'a0qcX000000GEggQAG',
+      };
+
+      const response = await createCoachSession(sessionData);
+      console.log('response :', response);
+    } catch (err) {
+      console.error('Failed to create session:', err);
+    }
+  };
 
   const allTeamSeasons = teams
     ? teamSeasonsAdapter.getSelectors().selectAll(teams)
@@ -54,14 +99,23 @@ export default function Feed() {
   const allCoachSessions = sessions
     ? sessionsAdapter.getSelectors().selectAll(sessions)
     : [];
+  const allCoachSessionsId = sessionsId
+    ? sessionsIdAdapter.getSelectors().selectAll(sessionsId)
+    : [];
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
     // console.log('allTeamSeasons', allTeamSeasons);
-    console.log('allCoachSessions', allCoachSessions);
-  }, [allTeamSeasons, allCoachRegions, allCoachSessions]);
-  if (isLoadingRegions || isLoadingTeams || isLoadingSessions)
+    // console.log('allCoachSessions', allCoachSessions);
+    // console.log('allCoachSessionsId', allCoachSessionsId);
+  }, [allTeamSeasons, allCoachRegions, allCoachSessions, allCoachSessionsId]);
+  if (
+    isLoadingRegions ||
+    isLoadingTeams ||
+    isLoadingSessions ||
+    isLoadingSessionsId
+  )
     return <Text>Loading...</Text>;
-  if (isErrorRegions || isErrorTeams || isErrorSession)
+  if (isErrorRegions || isErrorTeams || isErrorSession || isErrorSessionId)
     return <Text>Error loading regions.</Text>;
 
   const navigationHandler = (item: string) => {

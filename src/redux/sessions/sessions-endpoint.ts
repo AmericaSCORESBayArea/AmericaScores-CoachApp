@@ -1,17 +1,22 @@
 import { EndpointPaths } from '@/interfaces/end-points-paths';
 import type { EntityState } from '@reduxjs/toolkit';
 import { ApiTagTypes } from '../api-tag-types';
-import type { Sessions } from '@/interfaces/entities/session/sessions-entities';
+import type {
+  Sessions,
+  SessionsId,
+  SessionsPost,
+} from '@/interfaces/entities/session/sessions-entities';
 
 import { apiSlice, providesList } from '../apiSlice';
-import { sessionsAdapter } from '@/api/adaptars/sessions/session-adapter';
-import { sessionsSerializer } from '@/serializers/sessions/session-serializer';
-import { getSessionsParams } from '@/interfaces/params/sessions/session-material';
-
-// Retrieve session parameters
-const sessionsGetParams = getSessionsParams();
-
-console.log('idd : ', sessionsGetParams);
+import {
+  sessionsAdapter,
+  sessionsIdAdapter,
+} from '@/api/adaptars/sessions/session-adapter';
+import {
+  sessionsSerializer,
+  sessionsIdSerializer,
+  sessionsPostSerializer,
+} from '@/serializers/sessions/session-serializer';
 
 export const brandEndpoints = apiSlice
   .enhanceEndpoints({
@@ -20,15 +25,17 @@ export const brandEndpoints = apiSlice
   .injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-      getCoachSessions: builder.query<EntityState<Sessions, string>, void>({
-        query: () => ({
-          url: `${EndpointPaths.COACH_SESSIONS}?teamSeasonId=${sessionsGetParams.teamSeasonId}&date=${sessionsGetParams.date}`,
-          // url: `${EndpointPaths.COACH_SESSIONS}?teamSeasonId=${teamSeasonId}&date=${date}`,
+      // Get sessions by TeamSeasonId and date
+      getCoachSessions: builder.query<
+        EntityState<Sessions, string>,
+        { teamSeasonId: string; date: string }
+      >({
+        query: ({ teamSeasonId, date }) => ({
+          url: `${EndpointPaths.COACH_SESSIONS}?teamSeasonId=${teamSeasonId}&date=${date}`,
           method: 'GET',
         }),
 
         transformResponse: (response: Sessions[]) => {
-          console.log('sadfgh', response);
           return sessionsAdapter.setAll(
             sessionsAdapter.getInitialState(),
             response.map(sessionsSerializer)
@@ -38,7 +45,59 @@ export const brandEndpoints = apiSlice
         providesTags: (result) =>
           providesList(result?.ids, ApiTagTypes.COACH_SESSIONS),
       }),
+      // Post session by session
+      createCoachSession: builder.mutation<
+        SessionsPost,
+        { SessionDate: string; SessionTopic: string; TeamSeasonId: string }
+      >({
+        query: (newSession) => {
+          console.log('newSession : ', newSession);
+
+          return {
+            url: EndpointPaths.COACH_SESSIONS,
+            method: 'POST',
+            body: newSession,
+          };
+        },
+
+        transformResponse: (response: SessionsPost) => {
+          return sessionsPostSerializer(response);
+        },
+
+        invalidatesTags: [ApiTagTypes.COACH_SESSIONS],
+      }),
+
+      // Get session by sessionId
+      getCoachSessionId: builder.query<
+        EntityState<SessionsId, string>,
+        { sessionId: string }
+      >({
+        query: ({ sessionId }) => ({
+          url: `${EndpointPaths.COACH_SESSIONS}/${sessionId}`,
+          method: 'GET',
+        }),
+
+        transformResponse: (response: SessionsId | null) => {
+          if (!response) {
+            return sessionsIdAdapter.getInitialState();
+          }
+
+          return sessionsIdAdapter.setAll(
+            sessionsIdAdapter.getInitialState(),
+            Array.isArray(response)
+              ? response.map(sessionsIdSerializer)
+              : [sessionsIdSerializer(response)]
+          ) as EntityState<SessionsId, string>;
+        },
+
+        providesTags: (result) =>
+          providesList(result?.ids, ApiTagTypes.COACH_SESSIONS),
+      }),
     }),
   });
 
-export const { useGetCoachSessionsQuery } = brandEndpoints;
+export const {
+  useGetCoachSessionsQuery,
+  useGetCoachSessionIdQuery,
+  useCreateCoachSessionMutation,
+} = brandEndpoints;

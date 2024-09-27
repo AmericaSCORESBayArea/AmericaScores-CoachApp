@@ -13,9 +13,14 @@ export const brandEndpoints = apiSlice
   .injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-      getCoachRegions: builder.query<EntityState<Region, string>, void>({
-        query: () => ({
-          url: EndpointPaths.COACH_REGIONS,
+      getCoachRegions: builder.query<
+        EntityState<Region, string>,
+        { coachId: string }
+      >({
+        query: ({ coachId }) => ({
+          url: `${EndpointPaths.COACH_REGIONS}/${coachId}/regions`,
+          // url: `${EndpointPaths.COACH_REGIONS}`,
+
           method: 'GET',
         }),
 
