@@ -3,9 +3,9 @@ import { EndpointPaths } from '@/interfaces/end-points-paths';
 import { ApiTagTypes } from '../api-tag-types';
 import { apiSlice } from '../apiSlice';
 
-import type { AttendancePost } from '@/interfaces/entities/attendance/attendance-entities';
+import type { PostAttendance } from '@/interfaces/entities/attendance/attendance-entities';
 
-import { AttendancePostSerializer } from '@/serializers/attendance/attendance-serializer';
+import { PostAttendanceSerializer } from '@/serializers/attendance/attendance-serializer';
 
 export const brandEndpoints = apiSlice
   .enhanceEndpoints({
@@ -15,7 +15,7 @@ export const brandEndpoints = apiSlice
     overrideExisting: true,
     endpoints: (builder) => ({
       createCoachAttendance: builder.mutation<
-        AttendancePost,
+        PostAttendance,
         { SessionDate: string; SessionTopic: string; TeamSeasonId: string }
       >({
         query: (newSession) => {
@@ -28,8 +28,8 @@ export const brandEndpoints = apiSlice
           };
         },
 
-        transformResponse: (response: AttendancePost) => {
-          return AttendancePostSerializer(response);
+        transformResponse: (response: PostAttendance) => {
+          return PostAttendanceSerializer(response);
         },
 
         invalidatesTags: [ApiTagTypes.COACH_ATTENDANCES],

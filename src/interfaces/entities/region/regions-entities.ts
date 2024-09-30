@@ -1,3 +1,3 @@
-export interface Region {
+export interface GetRegion {
   Region: string;
 }

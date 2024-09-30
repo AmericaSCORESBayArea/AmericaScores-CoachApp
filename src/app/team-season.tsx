@@ -35,26 +35,7 @@ import PastSeasonSession from '@/components/teams/past-season-session';
 export default function TeamSeason() {
   const navigation = useNavigation();
   const router = useRouter();
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerStyle: {
-  //       backgroundColor: '#EEF0F8',
-  //     },
-  //     headerTitle: () => (
-  //       <View>
-  //         <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'black' }}>
-  //           Developer Test Soccer Poets
-  //         </Text>
-  //         <Text style={{ fontSize: 14, color: 'gray' }}>2024/FA</Text>
-  //       </View>
-  //     ),
-  //     headerLeft: () => (
-  //       <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-  //         <Ionicons name="arrow-back" size={24} color="black" />
-  //       </TouchableOpacity>
-  //     ),
-  //   });
-  // }, [navigation]);
+
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -89,9 +70,7 @@ export default function TeamSeason() {
     setIsSessionPressed(false);
     sessionEventHandler('Students');
   };
-  const navigationHandler = () => {
-    router.push(sessionSingleData[0].navigation);
-  };
+
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="ml-6 w-[90%]  flex-row justify-between ">

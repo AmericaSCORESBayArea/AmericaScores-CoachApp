@@ -1,8 +1,8 @@
-import type { AttendancePost } from '@/interfaces/entities/attendance/attendance-entities';
+import type { PostAttendance } from '@/interfaces/entities/attendance/attendance-entities';
 
-export function AttendancePostSerializer(
-  attendance: AttendancePost
-): AttendancePost {
+export function PostAttendanceSerializer(
+  attendance: PostAttendance
+): PostAttendance {
   const { SessionId, StudentId, Attended } = attendance;
 
   return {

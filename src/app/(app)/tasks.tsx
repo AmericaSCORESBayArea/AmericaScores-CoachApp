@@ -4,9 +4,9 @@ import { FlashList } from '@shopify/flash-list';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
-import LaterTask from '@/components/sessions/later-task';
-import SoonTask from '@/components/sessions/soon-task';
-import WeekTask from '@/components/sessions/week-task';
+import LaterTask from '@/components/task/later-task';
+import SoonTask from '@/components/home/soon-task';
+import WeekTask from '@/components/task/week-task';
 import { laterTaskData, soonTaskData, weekTaskData } from '@/data/data-base';
 import { ScrollView, Text, TouchableOpacity, View } from '@/ui';
 import { AntDesign, Ionicons } from '@expo/vector-icons';

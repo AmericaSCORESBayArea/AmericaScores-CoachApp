@@ -1,4 +1,4 @@
-export interface TeamSeason {
+export interface GetTeamSeason {
   SeasonStartDate: string;
   TotalNoOfSessions: string;
   CoachWriting: string;

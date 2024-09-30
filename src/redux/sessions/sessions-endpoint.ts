@@ -2,22 +2,22 @@ import { EndpointPaths } from '@/interfaces/end-points-paths';
 import type { EntityState } from '@reduxjs/toolkit';
 import { ApiTagTypes } from '../api-tag-types';
 import type {
-  Sessions,
-  SessionsId,
-  SessionsIdPatch,
-  SessionsPost,
+  GetSessionsId,
+  PatchSessionsId,
+  PostSessions,
+  GetSessions,
 } from '@/interfaces/entities/session/sessions-entities';
 
 import { apiSlice, providesList } from '../apiSlice';
 import {
-  sessionsAdapter,
-  sessionsIdAdapter,
+  GetSessionsAdapter,
+  GetSessionsIdAdapter,
 } from '@/api/adaptars/sessions/session-adapter';
 import {
-  sessionsSerializer,
-  sessionsIdSerializer,
-  sessionsPostSerializer,
-  sessionsIdPatchSerializer,
+  GetSessionsSerializer,
+  GetSessionsIdSerializer,
+  PostSessionsSerializer,
+  PatchSessionsIdSerializer,
 } from '@/serializers/sessions/session-serializer';
 import { sessionData } from '@/data/data-base';
 
@@ -31,7 +31,7 @@ export const brandEndpoints = apiSlice
       ////////////////////////////// Get sessions ////////////////////////////////////////////
 
       getCoachSessions: builder.query<
-        EntityState<Sessions, string>,
+        EntityState<GetSessions, string>,
         { teamSeasonId: string; date: string }
       >({
         query: ({ teamSeasonId, date }) => ({
@@ -39,11 +39,11 @@ export const brandEndpoints = apiSlice
           method: 'GET',
         }),
 
-        transformResponse: (response: Sessions[]) => {
-          return sessionsAdapter.setAll(
-            sessionsAdapter.getInitialState(),
-            response.map(sessionsSerializer)
-          ) as EntityState<Sessions, string>;
+        transformResponse: (response: GetSessions[]) => {
+          return GetSessionsAdapter.setAll(
+            GetSessionsAdapter.getInitialState(),
+            response.map(GetSessionsSerializer)
+          ) as EntityState<GetSessions, string>;
         },
 
         providesTags: (result) =>
@@ -52,7 +52,7 @@ export const brandEndpoints = apiSlice
       ////////////////////////////// Post sessions ////////////////////////////////////////////
 
       createCoachSession: builder.mutation<
-        SessionsPost,
+        PostSessions,
         { SessionDate: string; SessionTopic: string; TeamSeasonId: string }
       >({
         query: (newSession) => {
@@ -65,8 +65,8 @@ export const brandEndpoints = apiSlice
           };
         },
 
-        transformResponse: (response: SessionsPost) => {
-          return sessionsPostSerializer(response);
+        transformResponse: (response: PostSessions) => {
+          return PostSessionsSerializer(response);
         },
 
         invalidatesTags: [ApiTagTypes.COACH_SESSIONS],
@@ -74,7 +74,7 @@ export const brandEndpoints = apiSlice
       ////////////////////////////// Get session by sessionId ////////////////////////////////////////////
 
       getCoachSessionId: builder.query<
-        EntityState<SessionsId, string>,
+        EntityState<GetSessionsId, string>,
         { sessionId: string }
       >({
         query: ({ sessionId }) => ({
@@ -82,17 +82,17 @@ export const brandEndpoints = apiSlice
           method: 'GET',
         }),
 
-        transformResponse: (response: SessionsId | null) => {
+        transformResponse: (response: GetSessionsId | null) => {
           if (!response) {
-            return sessionsIdAdapter.getInitialState();
+            return GetSessionsIdAdapter.getInitialState();
           }
 
-          return sessionsIdAdapter.setAll(
-            sessionsIdAdapter.getInitialState(),
+          return GetSessionsIdAdapter.setAll(
+            GetSessionsIdAdapter.getInitialState(),
             Array.isArray(response)
-              ? response.map(sessionsIdSerializer)
-              : [sessionsIdSerializer(response)]
-          ) as EntityState<SessionsId, string>;
+              ? response.map(GetSessionsIdSerializer)
+              : [GetSessionsIdSerializer(response)]
+          ) as EntityState<GetSessionsId, string>;
         },
 
         providesTags: (result) =>
@@ -101,8 +101,8 @@ export const brandEndpoints = apiSlice
 
       ////////////////////////////// Update session by session ID ////////////////////////////////////////////
 
-      updateCoachSession: builder.mutation<
-        SessionsIdPatch,
+      updateCoachSessionId: builder.mutation<
+        PatchSessionsId,
         {
           SessionId: string;
           SessionName?: string;
@@ -114,26 +114,26 @@ export const brandEndpoints = apiSlice
         }
       >({
         query: ({ SessionId, ...sessionPatch }) => {
-          console.log('sessionsIdPatch: ', SessionId, sessionPatch);
+          console.log('PatchSessionsId: ', SessionId, sessionPatch);
 
           return {
             url: `${EndpointPaths.COACH_SESSIONS}/${SessionId}`,
             method: 'PATCH',
             body: {
-              ...sessionData,
+              ...sessionPatch,
             },
           };
         },
 
-        transformResponse: (response: SessionsIdPatch) => {
-          return sessionsIdPatchSerializer(response);
+        transformResponse: (response: PatchSessionsId) => {
+          return PatchSessionsIdSerializer(response);
         },
 
         invalidatesTags: [ApiTagTypes.COACH_SESSIONS],
       }),
       ////////////////////////////// Delete session by session ID ////////////////////////////////////////////
 
-      deleteCoachSession: builder.mutation<
+      deleteCoachSessionId: builder.mutation<
         void, // No return value on delete
         { SessionId: string }
       >({
@@ -150,6 +150,6 @@ export const {
   useGetCoachSessionsQuery,
   useGetCoachSessionIdQuery,
   useCreateCoachSessionMutation,
-  useUpdateCoachSessionMutation,
-  useDeleteCoachSessionMutation,
+  useUpdateCoachSessionIdMutation,
+  useDeleteCoachSessionIdMutation,
 } = brandEndpoints;

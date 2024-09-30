@@ -1,12 +1,12 @@
 import type {
-  Sessions,
-  SessionsId,
-  SessionsIdDelete,
-  SessionsIdPatch,
-  SessionsPost,
+  GetSessions,
+  GetSessionsId,
+  DeleteSessionsId,
+  PatchSessionsId,
+  PostSessions,
 } from '@/interfaces/entities/session/sessions-entities';
 
-export function sessionsSerializer(sessions: Sessions): Sessions {
+export function GetSessionsSerializer(sessions: GetSessions): GetSessions {
   const {
     TeamSeasonId,
     SessionId,
@@ -28,7 +28,9 @@ export function sessionsSerializer(sessions: Sessions): Sessions {
   };
 }
 
-export function sessionsIdSerializer(sessions: SessionsId): SessionsId {
+export function GetSessionsIdSerializer(
+  sessions: GetSessionsId
+): GetSessionsId {
   const {
     SessionId,
     SessionName,
@@ -62,16 +64,16 @@ export function sessionsIdSerializer(sessions: SessionsId): SessionsId {
   };
 }
 
-export function sessionsPostSerializer(sessions: SessionsPost): SessionsPost {
+export function PostSessionsSerializer(sessions: PostSessions): PostSessions {
   const { SessionId } = sessions;
 
   return {
     SessionId,
   };
 }
-export function sessionsIdPatchSerializer(
-  sessions: SessionsIdPatch
-): SessionsIdPatch {
+export function PatchSessionsIdSerializer(
+  sessions: PatchSessionsId
+): PatchSessionsId {
   const {
     SessionId,
     SessionName,
@@ -92,9 +94,9 @@ export function sessionsIdPatchSerializer(
     FemaleHeadcount,
   };
 }
-export function sessionsIdDeleteSerializer(
-  sessions: SessionsIdDelete
-): SessionsIdDelete {
+export function DeleteSessionsIdSerializer(
+  sessions: DeleteSessionsId
+): DeleteSessionsId {
   const { SessionId } = sessions;
 
   return {

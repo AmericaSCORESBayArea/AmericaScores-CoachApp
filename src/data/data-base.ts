@@ -1,9 +1,14 @@
 type sessionType = {
   id: number;
   title: string;
+
+  navigation: string;
+};
+type sessionSingleDataType = {
+  id: number;
+  title: string;
   location: string;
   time: string;
-
   hobby: string[];
   navigation: string;
 };
@@ -146,7 +151,7 @@ type sessionOption = {
   value: string;
   label: string;
 };
-export const sessionSingleData: sessionType[] = [
+export const sessionSingleData: sessionSingleDataType[] = [
   {
     id: 1,
     title: 'Developer Test Soccer Poets',
@@ -182,25 +187,19 @@ export const sessionData: sessionType[] = [
   {
     id: 1,
     title: 'Take Attendance',
-    location: 'Albhany High',
-    time: 'Today, 12:00 PM',
-    hobby: ['Soccer', 'Poetry'],
+
     navigation: 'take-attendence',
   },
   {
     id: 2,
     title: 'Record Video',
-    location: 'Albhany High',
-    time: 'Today, 12:00 PM',
-    hobby: ['Soccer', 'Poetry'],
+
     navigation: 'record-video',
   },
   {
     id: 3,
     title: 'Record Pacer Score',
-    location: 'Albhany High',
-    time: 'Today, 12:00 PM',
-    hobby: ['Soccer', 'Poetry'],
+
     navigation: 'record-pacer-score',
   },
 ];
@@ -386,7 +385,7 @@ export const laterTaskData: laterTaskType[] = [
 export const pastSessionData: pastSessionType[] = [
   {
     id: 1,
-    title: 'Take Attendance',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -395,7 +394,7 @@ export const pastSessionData: pastSessionType[] = [
   },
   {
     id: 2,
-    title: 'Record a video',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -404,7 +403,7 @@ export const pastSessionData: pastSessionType[] = [
   },
   {
     id: 3,
-    title: 'Record Pacer Score',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -413,7 +412,7 @@ export const pastSessionData: pastSessionType[] = [
   },
   {
     id: 4,
-    title: 'Record Pacer Score',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -425,7 +424,7 @@ export const pastSessionData: pastSessionType[] = [
 export const upComingSessionData: upComingSessionType[] = [
   {
     id: 1,
-    title: 'Take Attendance',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -434,7 +433,7 @@ export const upComingSessionData: upComingSessionType[] = [
   },
   {
     id: 2,
-    title: 'Record a video',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -443,7 +442,7 @@ export const upComingSessionData: upComingSessionType[] = [
   },
   {
     id: 3,
-    title: 'Record Pacer Score',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',
@@ -452,7 +451,7 @@ export const upComingSessionData: upComingSessionType[] = [
   },
   {
     id: 4,
-    title: 'Record Pacer Score',
+    title: 'Developer Test Soccer Poets',
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     attendence: '12/24',

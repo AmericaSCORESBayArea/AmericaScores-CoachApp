@@ -1,6 +1,6 @@
-import type { Region } from '@/interfaces/entities/region/regions-entities';
+import type { GetRegion } from '@/interfaces/entities/region/regions-entities';
 
-export function regionSerializer(region: Region): Region {
+export function GetRegionSerializer(region: GetRegion): GetRegion {
   const { Region } = region;
 
   return {

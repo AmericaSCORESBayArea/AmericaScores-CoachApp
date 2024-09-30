@@ -1,4 +1,4 @@
-export interface Sessions {
+export interface GetSessions {
   TeamSeasonId: string;
   SessionId: string;
   SessionName: string;
@@ -7,10 +7,10 @@ export interface Sessions {
   SessionEndTime: string;
   SessionTopic: string;
 }
-export interface SessionsPost {
+export interface PostSessions {
   SessionId: string;
 }
-export interface SessionsId {
+export interface GetSessionsId {
   SessionId: string;
   SessionName: string;
   SessionDate: string;
@@ -26,7 +26,7 @@ export interface SessionsId {
   ProgramType: string;
 }
 
-export interface SessionsIdPatch {
+export interface PatchSessionsId {
   SessionId: string;
   SessionName?: string;
   SessionDate?: string;
@@ -35,6 +35,6 @@ export interface SessionsIdPatch {
   Headcount?: number;
   FemaleHeadcount?: number;
 }
-export interface SessionsIdDelete {
+export interface DeleteSessionsId {
   SessionId: string;
 }
