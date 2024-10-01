@@ -5,7 +5,7 @@ import { AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { pastSessionData, sessionSingleData } from '@/data/data-base';
-import { colors, Pressable, ScrollView, Text, View } from '@/ui';
+import { Pressable, ScrollView, Text, View } from '@/ui';
 import PastSession from '../../components/sessions/past-session';
 import UpComingSession from '@/components/sessions/upcoming-session';
 import SessionsIndex from '@/components/common/sessionsIndex';
@@ -66,7 +66,6 @@ export default function Sessions() {
           <Pressable
             className="w-[45%] justify-center  "
             onPress={() => {
-              // sessionEventHandler('Past');
               pastHandlePress();
             }}
             style={{

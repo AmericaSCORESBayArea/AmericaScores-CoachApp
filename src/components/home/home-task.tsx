@@ -1,8 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-
-import { colors, Pressable, Text, View } from '@/ui';
+import { Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
+import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
 
 interface HomeItem {
   id: number;
@@ -29,11 +28,7 @@ const HomeTask: React.FC<HomeTaskProps> = ({ item }) => {
     >
       <View className="flex-row justify-between p-4">
         <Text className="font-bold">{item.title}</Text>
-        <Ionicons
-          name="chevron-forward-sharp"
-          size={24}
-          color={colors.neutral[600]}
-        />
+        <ArrowForwardSVG height={24} width={24} />
       </View>
     </Pressable>
   );

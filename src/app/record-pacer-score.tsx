@@ -1,9 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Text, TouchableOpacity, View } from 'react-native';
 import React, { useEffect } from 'react';
 import { FocusAwareStatusBar } from '@/ui';
 import { useNavigation } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 const RecordPacerScore = () => {
   const navigation = useNavigation();
@@ -16,7 +16,7 @@ const RecordPacerScore = () => {
       headerTitle: 'Record Pacer Score',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });

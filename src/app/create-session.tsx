@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import { SimpleLineIcons } from '@expo/vector-icons';
 import { Select } from '@/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
@@ -22,6 +21,7 @@ import {
   sessionCreation,
   teamOptions,
 } from '@/data/data-base';
+import { ArrowDownSVG } from '@/ui/icons/arrow-down';
 
 const CreateSession = () => {
   const navigation = useNavigation();
@@ -65,25 +65,25 @@ const CreateSession = () => {
         </View>
 
         <View className="mx-3 flex-row items-center justify-between">
-          <View className="my-4 w-2/5">
+          <View className="my-4  w-2/5">
             <Text className="text-lg text-gray-700"> Date</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400  p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
 
           <View className="mx-3 my-4 w-2/5">
             <Text className="text-lg text-gray-700"> Time</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
             >
               <Text className="text-black">{time.toLocaleTimeString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
         </View>

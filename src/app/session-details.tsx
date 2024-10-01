@@ -3,22 +3,17 @@
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'expo-router';
-import {
-  Ionicons,
-  EvilIcons,
-  FontAwesome,
-  AntDesign,
-} from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
 import {
   pastTaskData,
   sessionSingleData,
   toDoTaskData,
 } from '@/data/data-base';
-import { colors, ScrollView } from '@/ui';
+import { ScrollView } from '@/ui';
 import ToDoTask from '@/components/sessionDetails/to-do-task';
-
 import PastTask from '@/components/sessionDetails/past-task';
 import SessionsIndex from '@/components/common/sessionsIndex';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 const SessionDetails = () => {
   const navigation = useNavigation();
@@ -31,7 +26,7 @@ const SessionDetails = () => {
       headerTitle: 'Session Details',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });

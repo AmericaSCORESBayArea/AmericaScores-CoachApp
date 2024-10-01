@@ -1,17 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
-
 import { useNavigation, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-
+import React, { useEffect } from 'react';
 import LaterTask from '@/components/task/later-task';
-import SoonTask from '@/components/home/soon-task';
 import WeekTask from '@/components/task/week-task';
-import { laterTaskData, soonTaskData, weekTaskData } from '@/data/data-base';
-import { ScrollView, Text, TouchableOpacity, View } from '@/ui';
-import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { laterTaskData, weekTaskData } from '@/data/data-base';
+import { ScrollView, Text, View } from '@/ui';
+import { AntDesign } from '@expo/vector-icons';
 import { FlatList } from 'react-native';
-
-// import { Soccer } from '@/ui/icons/soccer';
 
 export default function Tasks() {
   const router = useRouter();
@@ -34,22 +29,7 @@ export default function Tasks() {
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
           <Text className="my-3 text-base font-[800] text-[#737373]  ">
-            Due Soon Task
-          </Text>
-        </View>
-        <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlatList
-            data={soonTaskData}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <SoonTask item={item} />}
-            contentContainerStyle={{
-              paddingVertical: 8,
-            }}
-          />
-        </View>
-        <View className="ml-6">
-          <Text className="my-3 text-base font-[800] text-[#737373]  ">
-            Due to this week
+            DUE THIS WEEK
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
@@ -64,7 +44,7 @@ export default function Tasks() {
         </View>
         <View className="ml-6">
           <Text className="my-3 text-base font-[800] text-[#737373]  ">
-            Later
+            LATER
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">

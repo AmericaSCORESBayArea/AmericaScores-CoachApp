@@ -10,23 +10,20 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import { SimpleLineIcons } from '@expo/vector-icons';
-
 import { Select } from '@/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {
-  createSessionTask,
   personalTaskAddDetailTask,
   personalTaskCreation,
   sessionOptions,
-  teamOptions,
 } from '@/data/data-base';
 
 import CreatePersonalAddDetail from '@/components/personalTaskCreation/create-personal-add-detail-task';
 import CreatePersonalType from '@/components/personalTaskCreation/create-personal-type';
 import CreatePersonalTaskSaveBtn from '@/components/buttons/personalTaskCreation/create-personal-task-save-btn';
 import CreatePersonalCheckBalanceBtn from '@/components/buttons/personalTaskCreation/create-personal-check-balance';
+import { ArrowDownSVG } from '@/ui/icons/arrow-down';
 
 const CreatePersonalTask = () => {
   const navigation = useNavigation();
@@ -76,22 +73,22 @@ const CreatePersonalTask = () => {
           <View className="my-4 w-2/5">
             <Text className="text-md text-gray-700">Due Date (Optional)</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
 
           <View className="mx-3 my-4 w-2/5">
             <Text className="text-md text-gray-700">Time (Optional)</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
             >
               <Text className="text-black">{time.toLocaleTimeString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={17} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
         </View>

@@ -1,37 +1,18 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-
-import {
-  AntDesign,
-  EvilIcons,
-  FontAwesome,
-  Ionicons,
-} from '@expo/vector-icons';
-
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import {
   pastSeasonSessionData,
-  pastSessionData,
   SeasonStudentData,
-  sessionSingleData,
   upComingSeasonSessionData,
 } from '@/data/data-base';
-import {
-  colors,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from '@/ui';
-
+import { Pressable, ScrollView, Text, TouchableOpacity, View } from '@/ui';
 import SeasonStudent from '@/components/teams/season-student';
-
 import UpComingSeasonsSession from '@/components/teams/upcoming-season-session';
 import PastSeasonSession from '@/components/teams/past-season-session';
 import { FlatList } from 'react-native';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 export default function TeamSeason() {
   const navigation = useNavigation();
@@ -45,7 +26,7 @@ export default function TeamSeason() {
       headerTitle: 'Developer Test Soccer Poets',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });

@@ -1,15 +1,12 @@
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
-import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
-
 import { useNavigation, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-
-import HomeTask from '@/components/home';
+import React, { useEffect } from 'react';
+import HomeTask from '@/components/home/home-task';
 import SoonTask from '@/components/home/soon-task';
 import { sessionData, sessionSingleData, soonTaskData } from '@/data/data-base';
-import { colors, Pressable, ScrollView, Text, View } from '@/ui';
+import { ScrollView, Text, View } from '@/ui';
 import { useGetCoachRegionsQuery } from '@/redux/regions/regions-endpoints';
 import { GetRegionAdapter } from '@/api/adaptars/regions/region-adapter';
 import { useGetTeamSeasonQuery } from '@/redux/teamseason/team-season-endpoints';
@@ -25,7 +22,6 @@ import {
   GetSessionsAdapter,
   GetSessionsIdAdapter,
 } from '@/api/adaptars/sessions/session-adapter';
-import Sessions from './sessions';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import {
   useCreateCoachEnrollmentsMutation,

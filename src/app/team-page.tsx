@@ -3,23 +3,11 @@
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'expo-router';
-import {
-  Ionicons,
-  EvilIcons,
-  FontAwesome,
-  AntDesign,
-} from '@expo/vector-icons';
-import {
-  currentSeasonsData,
-  pastTaskData,
-  previousSeasonsData,
-  sessionSingleData,
-  toDoTaskData,
-} from '@/data/data-base';
-import { colors, ScrollView } from '@/ui';
-
+import { currentSeasonsData, previousSeasonsData } from '@/data/data-base';
+import { ScrollView } from '@/ui';
 import CurrentSeason from '@/components/teams/current-season';
 import PreviousSeason from '@/components/teams/previous-seasons';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 const TeamPage = () => {
   const navigation = useNavigation();
@@ -32,7 +20,7 @@ const TeamPage = () => {
       headerTitle: 'Developer Test Soccer Poets',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });

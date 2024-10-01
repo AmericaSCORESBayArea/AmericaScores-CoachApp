@@ -1,13 +1,6 @@
-import { Checkbox, CheckboxIcon, colors } from '@/ui'; // Ensure this is the correct path for your Checkbox component
+import { Checkbox } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { SoccerSVG } from '@/ui/icons/soccer';
-import { PoetrySVG } from '@/ui/icons/poety';
-import { GameDaySVG } from '@/ui/icons/game-day';
-import { TakeAttendenceSVG } from '@/ui/icons/take-attendence';
-import { RecordVideoSVG } from '@/ui/icons/record-video';
-import { RecordPacerSVG } from '@/ui/icons/record-pacer';
+import { View } from 'react-native';
 
 interface CreatePersonalAddDetailType {
   id: number;
@@ -31,7 +24,7 @@ const CreatePersonalAddDetail: React.FC<CreatePersonalAddDetailProps> = ({
       const newChecked = !prevChecked;
       setPersonalTaskAddDetail(
         (prevCount) => prevCount + (newChecked ? 1 : -1)
-      ); // Increment or decrement the count
+      );
       return newChecked;
     });
   };
@@ -44,16 +37,6 @@ const CreatePersonalAddDetail: React.FC<CreatePersonalAddDetailProps> = ({
         checked={checked}
       >
         <Checkbox.Icon checked={checked} />
-        {/* {item.icon === 'TakeAttendence' && (
-          <TakeAttendenceSVG height={24} width={24} />
-        )}
-        {item.icon === 'RecordVideo' && (
-          <RecordVideoSVG height={24} width={24} />
-        )}
-        {item.icon === 'RecordPacer' && (
-          <RecordPacerSVG height={24} width={24} />
-        )} */}
-
         <Checkbox.Label text={item.name} />
       </Checkbox.Root>
     </View>

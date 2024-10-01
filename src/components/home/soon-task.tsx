@@ -1,8 +1,9 @@
-import { EvilIcons, Ionicons } from '@expo/vector-icons';
 import React from 'react';
-
-import { colors, Pressable, Text, View } from '@/ui';
+import { Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
+import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
+import { LocationSVG } from '@/ui/icons/location';
+import { TimeSVG } from '@/ui/icons/time';
 
 interface SoonItem {
   id: number;
@@ -26,26 +27,19 @@ const SoonTask: React.FC<SoonTaskProps> = ({ item }) => {
       className="mb-0.5 w-full rounded-sm  bg-white "
       onPress={navigationHandler}
     >
-      <View
-        // onPress={() => toggleTaskExpand(item.id)}
-        className="flex-row justify-between p-4"
-      >
+      <View className="flex-row justify-between p-4">
         <Text className="font-bold">{item.title}</Text>
-        <Ionicons
-          name="chevron-forward-sharp"
-          size={24}
-          color={colors.neutral[600]}
-        />
+        <ArrowForwardSVG height={24} width={24} />
       </View>
 
       <View className="px-4">
         <View className="my-1 flex-row">
-          <EvilIcons name="location" size={24} color={colors.neutral[600]} />
+          <LocationSVG height={24} width={24} />
           <Text className="color-neutral-600">{item.location}</Text>
         </View>
 
         <View className="my-1 flex-row">
-          <Ionicons name="time-outline" size={24} color={colors.neutral[600]} />
+          <TimeSVG height={24} width={24} />
           <Text className="color-neutral-600">Due: {item.date}</Text>
         </View>
       </View>

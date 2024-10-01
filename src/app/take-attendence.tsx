@@ -2,24 +2,15 @@
 /* eslint-disable react-native/no-inline-styles */
 
 // import { Soccer } from '@/ui/icons/soccer';
-import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
-
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import CheckAttendence from '@/components/attendence/check-attendence';
 import { sessionSingleData, takeAttendence } from '@/data/data-base';
-import {
-  colors,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from '@/ui';
+import { ScrollView, TouchableOpacity, View } from '@/ui';
 import TakeAttendenceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { FlatList } from 'react-native';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 const TakeAttendence = () => {
   const navigation = useNavigation();
@@ -34,7 +25,7 @@ const TakeAttendence = () => {
       headerTitle: 'Take Attendence',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });
