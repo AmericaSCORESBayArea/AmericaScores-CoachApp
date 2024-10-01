@@ -3,7 +3,7 @@ import React from 'react';
 
 import { colors, Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
-
+import { FlatList, ScrollView } from 'react-native';
 interface UpComingSessionItem {
   id: number;
   title: string;
@@ -24,6 +24,7 @@ const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
     router.push(item.navigation);
   };
   return (
+    // <ScrollView>
     <Pressable
       className="my-2 w-full rounded-sm  bg-white"
       onPress={navigationHandler}
@@ -72,6 +73,7 @@ const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
       </View>
       {/* )}   */}
     </Pressable>
+    // </ScrollView>
   );
 };
 

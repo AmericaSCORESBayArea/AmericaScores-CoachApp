@@ -6,13 +6,14 @@ import {
   Pressable,
   Platform,
   Modal,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
 import { SimpleLineIcons } from '@expo/vector-icons';
 import { Select } from '@/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { FlashList } from '@shopify/flash-list';
+
 import CreateSessionSaveBtn from '@/components/buttons/createSession/create-session-save-btn';
 import CreateSessionTask from '@/components/sessionCreation/create-session-task';
 import CreateSessionType from '@/components/sessionCreation/create-session-type';
@@ -168,13 +169,12 @@ const CreateSession = () => {
         <Text className="text-sm font-semibold text-gray-700">TYPES</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={sessionCreation}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <CreateSessionType item={item} setSessionType={setSessionType} />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
       </View>
@@ -183,13 +183,12 @@ const CreateSession = () => {
         <Text className="text-sm font-semibold text-gray-700">CREATE TASK</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={createSessionTask}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <CreateSessionTask item={item} setSessionTask={setSessionTask} />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
       </View>

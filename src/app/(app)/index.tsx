@@ -2,7 +2,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
+
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
@@ -32,17 +32,20 @@ import {
   useDeleteCoachEnrollmentsMutation,
   useGetCoachEnrollmentsIdQuery,
   useGetCoachEnrollmentsQuery,
+  useUpdateCoachEnrollmentsIdMutation,
 } from '@/redux/enrollments/enrollments-endpoints';
 import {
   GetEnrollmentsAdapter,
   GetEnrollmentsIdAdapter,
 } from '@/api/adaptars/enrollments/enrollments-adapter';
+import { FlatList } from 'react-native';
 interface SessionPostType {
   SessionDate: string;
   SessionTopic: string;
   TeamSeasonId: string;
 }
 
+// eslint-disable-next-line max-lines-per-function
 export default function Feed() {
   const navigation = useNavigation();
   const router = useRouter();
@@ -168,22 +171,43 @@ export default function Feed() {
   ///////////////////// Delete Enrollments //////////////////////////
 
   const [
-    deleteCoachEnrollments, // Mutation function
+    deleteCoachEnrollments,
     {
-      isLoading: isLoadingDeletingEnrollments, // Loading state
-      error: isErrorDeleteEnrollments, // Error state
+      isLoading: isLoadingDeletingEnrollments,
+      error: isErrorDeleteEnrollments,
     },
-  ] = useDeleteCoachEnrollmentsMutation(); // Add parentheses to properly call the hook
+  ] = useDeleteCoachEnrollmentsMutation();
 
   const handleDeleteEnrollments = async (EnrollmentId: string) => {
     try {
-      const response = await deleteCoachEnrollments({ EnrollmentId }).unwrap(); // Use unwrap to handle response
+      const response = await deleteCoachEnrollments({ EnrollmentId }).unwrap();
       console.log(response, 'Enrollments deleted successfully');
     } catch (err) {
       console.error('Failed to delete Enrollments:', err);
     }
   };
+  ///////////////////// Patch EnrollmentId//////////////////////////
+  const [
+    updateCoachEnrollments,
+    { isLoading: isLoadingUpdateEnrollments, error: isErrorUpdateEnrollments },
+  ] = useUpdateCoachEnrollmentsIdMutation();
 
+  const handleUpdateEnrollments = async () => {
+    try {
+      const EnrollmentPatchData = {
+        EnrollmentId: 'a0m1T000008KwXkQAK',
+        EnrollmentName: 'A-0000333',
+        LastName: 'sdsd',
+      };
+
+      const response = await updateCoachEnrollments(
+        EnrollmentPatchData
+      ).unwrap();
+      console.log('Updated enrollment response: ', response);
+    } catch (err) {
+      console.error('Failed to update enrollment:', err);
+    }
+  };
   ///////////////////// Get Region,TeamSeason,Session,Enrollments//////////////////////////
 
   const allTeamSeasons = teams
@@ -212,6 +236,7 @@ export default function Feed() {
     // handleDeleteSession('a0pcX0000004gqIQAQ');
     // handlePostEnrollmentsSubmit();
     // handleDeleteEnrollments('a0mcX0000004D1tQAE');
+    // handleUpdateEnrollments();
   }, []);
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
@@ -219,7 +244,7 @@ export default function Feed() {
     // console.log('allCoachSessions', allCoachSessions);
     // console.log('allCoachSessionsId', allCoachSessionsId);
     // console.log('allCoachEnrollments', allCoachEnrollments);
-    console.log('allCoachEnrollmentsId', allCoachEnrollmentsId);
+    // console.log('allCoachEnrollmentsId', allCoachEnrollmentsId);
   }, [
     allTeamSeasons,
     allCoachRegions,
@@ -251,22 +276,20 @@ export default function Feed() {
       </View>
 
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={sessionSingleData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <SessionsIndex item={item} />}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
         />
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={sessionData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <HomeTask item={item} />}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
@@ -279,11 +302,10 @@ export default function Feed() {
         </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={soonTaskData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <SoonTask item={item} />}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}

@@ -6,6 +6,7 @@ import {
   Pressable,
   Platform,
   Modal,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
@@ -21,7 +22,6 @@ import {
   sessionOptions,
   teamOptions,
 } from '@/data/data-base';
-import { FlashList } from '@shopify/flash-list';
 
 import CreatePersonalAddDetail from '@/components/personalTaskCreation/create-personal-add-detail-task';
 import CreatePersonalType from '@/components/personalTaskCreation/create-personal-type';
@@ -177,7 +177,7 @@ const CreatePersonalTask = () => {
         <Text className="text-sm font-extrabold text-gray-700">TYPES</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={personalTaskCreation}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -186,7 +186,6 @@ const CreatePersonalTask = () => {
               setPersonalTaskType={setPersonalTaskType}
             />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
@@ -199,7 +198,7 @@ const CreatePersonalTask = () => {
         </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={personalTaskAddDetailTask}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -208,7 +207,6 @@ const CreatePersonalTask = () => {
               setPersonalTaskAddDetail={setPersonalTaskAddDetail}
             />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}

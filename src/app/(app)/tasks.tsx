@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
 
-import { FlashList } from '@shopify/flash-list';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
@@ -10,6 +9,7 @@ import WeekTask from '@/components/task/week-task';
 import { laterTaskData, soonTaskData, weekTaskData } from '@/data/data-base';
 import { ScrollView, Text, TouchableOpacity, View } from '@/ui';
 import { AntDesign, Ionicons } from '@expo/vector-icons';
+import { FlatList } from 'react-native';
 
 // import { Soccer } from '@/ui/icons/soccer';
 
@@ -25,13 +25,7 @@ export default function Tasks() {
       headerTitle: '',
     });
   }, [navigation]);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
 
-  const toggleSessionExpand = (id: number) => {
-    setExpandedSessionItem((prev) => (prev === id ? null : id));
-  };
   const navigationHandler = (item: string) => {
     if (item === 'create-personal-task') router.push('create-personal-task');
   };
@@ -44,15 +38,13 @@ export default function Tasks() {
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={soonTaskData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SoonTask item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            // key={expandedTaskItem}
           />
         </View>
         <View className="ml-6">
@@ -61,15 +53,13 @@ export default function Tasks() {
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={weekTaskData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <WeekTask item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            // key={expandedTaskItem}
           />
         </View>
         <View className="ml-6">
@@ -78,15 +68,13 @@ export default function Tasks() {
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={laterTaskData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <LaterTask item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            // key={expandedTaskItem}
           />
         </View>
       </ScrollView>

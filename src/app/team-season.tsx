@@ -7,7 +7,7 @@ import {
   FontAwesome,
   Ionicons,
 } from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
+
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
@@ -31,6 +31,7 @@ import SeasonStudent from '@/components/teams/season-student';
 
 import UpComingSeasonsSession from '@/components/teams/upcoming-season-session';
 import PastSeasonSession from '@/components/teams/past-season-session';
+import { FlatList } from 'react-native';
 
 export default function TeamSeason() {
   const navigation = useNavigation();
@@ -56,9 +57,7 @@ export default function TeamSeason() {
   };
   const [isSessionPressed, setIsSessionPressed] = useState<boolean>(true);
   const [isStudentPressed, setIsStudentPressed] = useState<boolean>(false);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const sessionsHandlerPress = () => {
     setIsSessionPressed(!isSessionPressed);
     setIsStudentPressed(false);
@@ -111,45 +110,39 @@ export default function TeamSeason() {
             <Text className="my-3 text-base font-[800] text-[#737373]  ">
               Upcoming
             </Text>
-            <FlashList
+            <FlatList
               data={upComingSeasonSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <UpComingSeasonsSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
             <Text className="my-3 text-base font-[800] text-[#737373]  ">
               Past
             </Text>
-            <FlashList
+            <FlatList
               data={pastSeasonSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <PastSeasonSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         </>
       )}
       {sessionEvents === 'Students' && (
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={SeasonStudentData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SeasonStudent item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            key={expandedSessionItem}
           />
         </View>
       )}

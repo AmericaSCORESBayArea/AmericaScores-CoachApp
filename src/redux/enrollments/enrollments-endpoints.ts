@@ -140,6 +140,8 @@ export const brandEndpoints = apiSlice
         },
 
         transformResponse: (response: PatchEnrollmentsId) => {
+          console.log('res : ', response);
+
           return PatchEnrollmentsIdSerializer(response);
         },
 

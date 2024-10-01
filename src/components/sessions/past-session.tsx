@@ -1,7 +1,7 @@
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import React from 'react';
 
-import { colors, Pressable, Text, View } from '@/ui';
+import { colors, Pressable, Text, View, ScrollView } from '@/ui';
 import { useRouter } from 'expo-router';
 
 interface PastSessionItem {

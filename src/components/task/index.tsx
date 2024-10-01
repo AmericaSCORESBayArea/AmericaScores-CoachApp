@@ -21,8 +21,6 @@ interface TaskItem {
 
 interface IndexProps {
   item: TaskItem;
-  // expandedSessionItem: number | null;
-  // toggleSessionExpand: (id: number) => void;
 }
 
 const Index: React.FC<IndexProps> = ({ item }) => {

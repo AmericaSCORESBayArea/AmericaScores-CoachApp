@@ -1,6 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList } from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'expo-router';
 import {
@@ -16,7 +16,7 @@ import {
 } from '@/data/data-base';
 import { colors, ScrollView } from '@/ui';
 import ToDoTask from '@/components/sessionDetails/to-do-task';
-import { FlashList } from '@shopify/flash-list';
+
 import PastTask from '@/components/sessionDetails/past-task';
 import SessionsIndex from '@/components/common/sessionsIndex';
 
@@ -40,34 +40,15 @@ const SessionDetails = () => {
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={sessionSingleData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SessionsIndex item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
           />
         </View>
-        {/* <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
-          data={sessionData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <HomeTask
-              item={item}
-              expandedSessionItem={expandedSessionItem}
-              toggleSessionExpand={toggleSessionExpand}
-            />
-          )}
-          estimatedItemSize={80}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
-         
-        />
-      </View> */}
 
         <View className="ml-6">
           <Text className="my-3 text-base font-[800] text-[#737373]  ">
@@ -75,11 +56,10 @@ const SessionDetails = () => {
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={toDoTaskData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <ToDoTask item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
@@ -92,11 +72,10 @@ const SessionDetails = () => {
           </Text>
         </View>
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={pastTaskData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <PastTask item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}

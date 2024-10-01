@@ -3,7 +3,7 @@
 
 // import { Soccer } from '@/ui/icons/soccer';
 import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
+
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 
@@ -19,6 +19,7 @@ import {
 } from '@/ui';
 import TakeAttendenceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
 import SessionsIndex from '@/components/common/sessionsIndex';
+import { FlatList } from 'react-native';
 
 const TakeAttendence = () => {
   const navigation = useNavigation();
@@ -38,29 +39,23 @@ const TakeAttendence = () => {
       ),
     });
   }, [navigation]);
-  // const [expandedTaskItem, setExpandedTaskItem] = useState<number | null>(null);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const [attendenceCount, setAttendenceCount] = useState<number>(0);
-  const toggleSessionExpand = (id: number) => {
-    setExpandedSessionItem((prev) => (prev === id ? null : id));
-  };
+
   return (
     <ScrollView className=" flex-1 bg-[#EEF0F8]">
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={sessionSingleData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <SessionsIndex item={item} />}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
         />
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={takeAttendence}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -69,11 +64,9 @@ const TakeAttendence = () => {
               setAttendenceCount={setAttendenceCount}
             />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
-          key={expandedSessionItem}
         />
       </View>
       <TakeAttendenceSubmitBtn item={{ attendenceCount }} />

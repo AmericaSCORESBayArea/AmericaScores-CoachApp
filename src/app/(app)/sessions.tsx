@@ -1,22 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 
-import {
-  AntDesign,
-  EvilIcons,
-  FontAwesome,
-  Ionicons,
-} from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
+import { AntDesign } from '@expo/vector-icons';
+
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import { pastSessionData, sessionSingleData } from '@/data/data-base';
 import { colors, Pressable, ScrollView, Text, View } from '@/ui';
-
 import PastSession from '../../components/sessions/past-session';
-import { Item } from '@/components/settings/item';
 import UpComingSession from '@/components/sessions/upcoming-session';
 import SessionsIndex from '@/components/common/sessionsIndex';
+import { FlatList } from 'react-native';
 
 export default function Sessions() {
   const navigation = useNavigation();
@@ -35,9 +28,7 @@ export default function Sessions() {
   };
   const [isPastPressed, setIsPastPressed] = useState<boolean>(true);
   const [isUpComingPressed, setIsUpComingPressed] = useState<boolean>(false);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const pastHandlePress = () => {
     setIsPastPressed(!isPastPressed);
     setIsUpComingPressed(false);
@@ -54,18 +45,18 @@ export default function Sessions() {
     else if (item === 'team-season') router.push('team-season');
     else if (item === 'create-session') router.push('create-session');
   };
+
   return (
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
           <Text className="my-3  text-2xl">Next Session</Text>
         </View>
-        <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+        <View className="mx-6  rounded-sm bg-[#EEF0F8]">
+          <FlatList
             data={sessionSingleData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SessionsIndex item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
@@ -105,29 +96,25 @@ export default function Sessions() {
 
         {sessionEvents === 'Past' && (
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlashList
+            <FlatList
               data={pastSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <PastSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         )}
         {sessionEvents === 'UpComing' && (
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlashList
+            <FlatList
               data={pastSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <UpComingSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         )}
