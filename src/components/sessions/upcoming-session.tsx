@@ -1,9 +1,11 @@
-import { EvilIcons, FontAwesome, Ionicons } from '@expo/vector-icons';
 import React from 'react';
-
-import { colors, Pressable, Text, View } from '@/ui';
+import { Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
-
+import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
+import { LocationSVG } from '@/ui/icons/location';
+import { TimeSVG } from '@/ui/icons/time';
+import { DoubleTakeAttendanceSVG } from '@/ui/icons/double-take-attendance';
+import { SoccerSVG } from '@/ui/icons/soccer';
 interface UpComingSessionItem {
   id: number;
   title: string;
@@ -30,29 +32,21 @@ const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
     >
       <View className="flex-row justify-between p-4">
         <Text className="font-bold">{item.title}</Text>
-        <Ionicons
-          name="chevron-forward-sharp"
-          size={24}
-          color={colors.neutral[600]}
-        />
+        <ArrowForwardSVG height={24} width={24} />
       </View>
 
       <View className="px-4">
         <View className="my-1 flex-row">
-          <EvilIcons name="location" size={24} color={colors.neutral[600]} />
+          <LocationSVG height={24} width={24} />
           <Text className="color-neutral-600">{item.location}</Text>
         </View>
         <View className="my-1 flex-row">
-          <Ionicons name="time-outline" size={24} color={colors.neutral[600]} />
+          <TimeSVG height={24} width={24} />
           <Text className="color-neutral-600">{item.time}</Text>
         </View>
 
         <View className="my-1 flex-row">
-          <Ionicons
-            name="people-outline"
-            size={24}
-            color={colors.neutral[600]}
-          />
+          <DoubleTakeAttendanceSVG height={24} width={24} />
           <Text className="color-neutral-600">{item.attendence}</Text>
         </View>
 
@@ -62,15 +56,12 @@ const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
               key={index}
               className="mx-2 flex-row items-center rounded-2xl bg-slate-200 px-3"
             >
-              <FontAwesome name="soccer-ball-o" size={24} color="gray" />
+              <SoccerSVG height={24} width={24} />
               <Text className="ml-2 color-neutral-600">{hobby}</Text>
             </View>
           ))}
         </View>
-
-        {/* <View className="w-full border-b-2 border-b-gray-400" /> */}
       </View>
-      {/* )}   */}
     </Pressable>
   );
 };

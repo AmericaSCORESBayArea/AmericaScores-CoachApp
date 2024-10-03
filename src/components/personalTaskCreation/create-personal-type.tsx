@@ -1,10 +1,7 @@
-import { Checkbox, CheckboxIcon, colors } from '@/ui'; // Ensure this is the correct path for your Checkbox component
+import { Checkbox } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
-import { Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
 import { SoccerSVG } from '@/ui/icons/soccer';
-import { PoetrySVG } from '@/ui/icons/poety';
-import { GameDaySVG } from '@/ui/icons/game-day';
 import { HumanResourcesSVG } from '@/ui/icons/human-resources';
 import { PersonalSVG } from '@/ui/icons/personal';
 
@@ -42,7 +39,7 @@ const CreatePersonalType: React.FC<CreatePersonalProps> = ({
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'Coaching & Training' && (
-          <SoccerSVG height={24} width={24} />
+          <SoccerSVG height={24} width={24} className="ml-4" />
         )}
         {item.icon === 'SCORES Human Resources' && (
           <HumanResourcesSVG height={24} width={24} />

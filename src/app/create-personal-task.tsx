@@ -6,27 +6,24 @@ import {
   Pressable,
   Platform,
   Modal,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import { SimpleLineIcons } from '@expo/vector-icons';
-
 import { Select } from '@/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 import {
-  createSessionTask,
   personalTaskAddDetailTask,
   personalTaskCreation,
   sessionOptions,
-  teamOptions,
 } from '@/data/data-base';
-import { FlashList } from '@shopify/flash-list';
 
 import CreatePersonalAddDetail from '@/components/personalTaskCreation/create-personal-add-detail-task';
 import CreatePersonalType from '@/components/personalTaskCreation/create-personal-type';
 import CreatePersonalTaskSaveBtn from '@/components/buttons/personalTaskCreation/create-personal-task-save-btn';
 import CreatePersonalCheckBalanceBtn from '@/components/buttons/personalTaskCreation/create-personal-check-balance';
+import { ArrowDownSVG } from '@/ui/icons/arrow-down';
 
 const CreatePersonalTask = () => {
   const navigation = useNavigation();
@@ -76,22 +73,22 @@ const CreatePersonalTask = () => {
           <View className="my-4 w-2/5">
             <Text className="text-md text-gray-700">Due Date (Optional)</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
 
           <View className="mx-3 my-4 w-2/5">
             <Text className="text-md text-gray-700">Time (Optional)</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
             >
               <Text className="text-black">{time.toLocaleTimeString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={17} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
         </View>
@@ -177,7 +174,7 @@ const CreatePersonalTask = () => {
         <Text className="text-sm font-extrabold text-gray-700">TYPES</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={personalTaskCreation}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -186,7 +183,6 @@ const CreatePersonalTask = () => {
               setPersonalTaskType={setPersonalTaskType}
             />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}
@@ -199,7 +195,7 @@ const CreatePersonalTask = () => {
         </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={personalTaskAddDetailTask}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
@@ -208,7 +204,6 @@ const CreatePersonalTask = () => {
               setPersonalTaskAddDetail={setPersonalTaskAddDetail}
             />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{
             paddingVertical: 8,
           }}

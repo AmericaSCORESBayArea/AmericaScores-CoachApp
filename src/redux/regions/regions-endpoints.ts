@@ -1,33 +1,36 @@
 import { EndpointPaths } from '@/interfaces/end-points-paths';
 import type { EntityState } from '@reduxjs/toolkit';
 import { ApiTagTypes } from '../api-tag-types';
-import type { Region } from '@/interfaces/entities/region/region';
+import type { GetRegion } from '@/interfaces/entities/region/regions-entities';
 import { apiSlice, providesList } from '../apiSlice';
-import { regionAdapter } from '@/api/adaptars/region-adapter';
-import { regionSerializer } from '@/serializers/regionSerializer';
+import { GetRegionAdapter } from '@/api/adaptars/regions/region-adapter';
+import { GetRegionSerializer } from '@/serializers/regions/region-serializer';
 
 export const brandEndpoints = apiSlice
   .enhanceEndpoints({
-    addTagTypes: [ApiTagTypes.COACH_REGION],
+    addTagTypes: [ApiTagTypes.COACH_REGIONS],
   })
   .injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
-      getCoachRegions: builder.query<EntityState<Region, string>, void>({
-        query: () => ({
-          url: EndpointPaths.COACH_REGION,
+      getCoachRegions: builder.query<
+        EntityState<GetRegion, string>,
+        { coachId: string }
+      >({
+        query: ({ coachId }) => ({
+          url: `${EndpointPaths.COACH_REGIONS}/${coachId}/regions`,
           method: 'GET',
         }),
 
-        transformResponse: (response: Region[]) => {
-          return regionAdapter.setAll(
-            regionAdapter.getInitialState(),
-            response.map(regionSerializer)
-          ) as EntityState<Region, string>;
+        transformResponse: (response: GetRegion[]) => {
+          return GetRegionAdapter.setAll(
+            GetRegionAdapter.getInitialState(),
+            response.map(GetRegionSerializer)
+          ) as EntityState<GetRegion, string>;
         },
 
         providesTags: (result) =>
-          providesList(result?.ids, ApiTagTypes.COACH_REGION),
+          providesList(result?.ids, ApiTagTypes.COACH_REGIONS),
       }),
     }),
   });

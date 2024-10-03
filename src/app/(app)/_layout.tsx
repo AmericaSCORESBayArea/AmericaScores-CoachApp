@@ -1,11 +1,19 @@
 /* eslint-disable react/no-unstable-nested-components */
+// import { inscribeSessionsParams } from '@/interfaces/params/sessions/session-material';
 import Feather from '@expo/vector-icons/Feather';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, SplashScreen, Tabs } from 'expo-router';
 import React, { useCallback, useEffect } from 'react';
+import { LogBox } from 'react-native';
 
 export default function TabLayout() {
+  // useEffect(() => {
+  //   inscribeSessionsParams('a0qcX000000GEggQAG', '2024-08-23');
+  // }, []);
+  useEffect(() => {
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
+  }, []);
   const hideSplash = useCallback(async () => {
     await SplashScreen.hideAsync();
   }, []);
