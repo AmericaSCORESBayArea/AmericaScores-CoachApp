@@ -17,7 +17,7 @@ import {
   Text,
   View,
 } from '@/ui';
-import { useRouter } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { useLogin } from '@/api/auth';
 
 const Head = ({ opacity = 0.6, paddingHorizontal = 0 }) => {
@@ -43,7 +43,7 @@ const LoginForm = () => {
   const bottomSheetRef = useRef<BottomSheet>(null);
   const bottomSheetConfirmRef = useRef<BottomSheet>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const pathname = usePathname();
   const loginMutation = useLogin();
 
   const onAuthStateChanged = useCallback(async (user: any) => {
@@ -67,6 +67,9 @@ const LoginForm = () => {
     return subscriber; // Unsubscribe on unmount
   }, [onAuthStateChanged]);
 
+  useEffect(() => {
+    auth().settings.forceRecaptchaFlowForTesting;
+  }, []);
   const signInOptionsHandler = () => {
     setSignInOptions('Phone');
     bottomSheetRef.current?.expand();
@@ -120,6 +123,10 @@ const LoginForm = () => {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (pathname === '/firebaseauth/link') router.back();
+  }, [pathname]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
