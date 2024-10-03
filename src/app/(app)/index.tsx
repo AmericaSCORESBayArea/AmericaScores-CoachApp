@@ -35,6 +35,7 @@ import {
   GetEnrollmentsIdAdapter,
 } from '@/api/adaptars/enrollments/enrollments-adapter';
 import { FlatList } from 'react-native';
+import { getItem } from '@/core/storage';
 interface SessionPostType {
   SessionDate: string;
   SessionTopic: string;
@@ -43,18 +44,6 @@ interface SessionPostType {
 
 // eslint-disable-next-line max-lines-per-function
 export default function Feed() {
-  // getItem('user').then((user) => {
-  //   if (user) {
-  //     console.log('user', user);
-  //   }
-  // });
-
-  // useEffect(async () => {
-  //   const user = await getItem('user');
-  //   if (user) {
-  //     console.log('user', user);
-  //   }
-  // }, []);
   const [user, setUser] = useState<any>(null);
   const navigation = useNavigation();
   const router = useRouter();
@@ -69,6 +58,17 @@ export default function Feed() {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    async function fetchUser() {
+      const userFromStorage = await getItem('user');
+      setUser(userFromStorage);
+      userFromStorage ? null : router.push('/login');
+    }
+
+    fetchUser();
+  }, [router]);
+
+  ////////////////////////// API WORKING  //////////////////////////////////
   const {
     data: regions,
     isLoading: isLoadingRegions,
