@@ -1,60 +1,23 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
-
-import {
-  AntDesign,
-  EvilIcons,
-  FontAwesome,
-  Ionicons,
-} from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import {
   pastSeasonSessionData,
-  pastSessionData,
   SeasonStudentData,
-  sessionSingleData,
   upComingSeasonSessionData,
 } from '@/data/data-base';
-import {
-  colors,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from '@/ui';
-
+import { Pressable, ScrollView, Text, TouchableOpacity, View } from '@/ui';
 import SeasonStudent from '@/components/teams/season-student';
-
 import UpComingSeasonsSession from '@/components/teams/upcoming-season-session';
 import PastSeasonSession from '@/components/teams/past-season-session';
+import { FlatList } from 'react-native';
+import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
 export default function TeamSeason() {
   const navigation = useNavigation();
   const router = useRouter();
-  // useEffect(() => {
-  //   navigation.setOptions({
-  //     headerStyle: {
-  //       backgroundColor: '#EEF0F8',
-  //     },
-  //     headerTitle: () => (
-  //       <View>
-  //         <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'black' }}>
-  //           Developer Test Soccer Poets
-  //         </Text>
-  //         <Text style={{ fontSize: 14, color: 'gray' }}>2024/FA</Text>
-  //       </View>
-  //     ),
-  //     headerLeft: () => (
-  //       <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-  //         <Ionicons name="arrow-back" size={24} color="black" />
-  //       </TouchableOpacity>
-  //     ),
-  //   });
-  // }, [navigation]);
+
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -63,7 +26,7 @@ export default function TeamSeason() {
       headerTitle: 'Developer Test Soccer Poets',
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.goBack()} className="mx-4">
-          <Ionicons name="arrow-back" size={24} color="black" />
+          <ArrowBackwardSVG height={24} width={24} />
         </TouchableOpacity>
       ),
     });
@@ -75,9 +38,7 @@ export default function TeamSeason() {
   };
   const [isSessionPressed, setIsSessionPressed] = useState<boolean>(true);
   const [isStudentPressed, setIsStudentPressed] = useState<boolean>(false);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const sessionsHandlerPress = () => {
     setIsSessionPressed(!isSessionPressed);
     setIsStudentPressed(false);
@@ -89,9 +50,7 @@ export default function TeamSeason() {
     setIsSessionPressed(false);
     sessionEventHandler('Students');
   };
-  const navigationHandler = () => {
-    router.push(sessionSingleData[0].navigation);
-  };
+
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       <View className="ml-6 w-[90%]  flex-row justify-between ">
@@ -132,45 +91,39 @@ export default function TeamSeason() {
             <Text className="my-3 text-base font-[800] text-[#737373]  ">
               Upcoming
             </Text>
-            <FlashList
+            <FlatList
               data={upComingSeasonSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <UpComingSeasonsSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
             <Text className="my-3 text-base font-[800] text-[#737373]  ">
               Past
             </Text>
-            <FlashList
+            <FlatList
               data={pastSeasonSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <PastSeasonSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         </>
       )}
       {sessionEvents === 'Students' && (
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={SeasonStudentData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SeasonStudent item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            key={expandedSessionItem}
           />
         </View>
       )}

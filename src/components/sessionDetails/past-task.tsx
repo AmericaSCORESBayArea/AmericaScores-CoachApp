@@ -1,7 +1,10 @@
-import { EvilIcons, Ionicons } from '@expo/vector-icons';
 import React from 'react';
+import { Pressable, Text, View } from '@/ui';
+import { FillRecordVideoSVG } from '@/ui/icons/fill-record-video';
+import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
+import { TimeSVG } from '@/ui/icons/time';
+import { FillRecordPacerSVG } from '@/ui/icons/fill-record-pacer';
 
-import { colors, Pressable, Text, View } from '@/ui';
 interface PastItem {
   id: number;
   title: string;
@@ -15,24 +18,22 @@ interface PastTaskProps {
 const PastTask: React.FC<PastTaskProps> = ({ item }) => {
   return (
     <View className="mb-0.5 w-full rounded-md  bg-white ">
-      <Pressable
-        // onPress={() => toggleTaskExpand(item.id)}
-        className="flex-row justify-between p-4"
-      >
+      <Pressable className="flex-row justify-between p-4">
         <View className="flex-row ">
-          <Ionicons name="camera" size={24} color="black" />
+          {item.title === 'Record a Video' && (
+            <FillRecordVideoSVG height={24} width={24} />
+          )}
+          {item.title === 'Record Pacer Score' && (
+            <FillRecordPacerSVG height={24} width={24} />
+          )}
           <Text className="ml-3 font-bold">{item.title}</Text>
         </View>
-        <Ionicons
-          name="chevron-forward-sharp"
-          size={24}
-          color={colors.neutral[600]}
-        />
+        <ArrowForwardSVG height={24} width={24} />
       </Pressable>
 
       <View className="px-4">
         <View className="my-1 flex-row">
-          <Ionicons name="time-outline" size={24} color={colors.neutral[600]} />
+          <TimeSVG height={24} width={24} />
           <Text className="ml-3 color-neutral-600">Due: {item.date}</Text>
         </View>
       </View>

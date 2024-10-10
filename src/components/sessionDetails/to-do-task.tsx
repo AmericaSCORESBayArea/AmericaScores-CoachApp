@@ -1,7 +1,8 @@
-import { EvilIcons, Ionicons } from '@expo/vector-icons';
 import React from 'react';
-
-import { colors, Pressable, Text, View } from '@/ui';
+import { Pressable, Text, View } from '@/ui';
+import { FillTakeAttendanceSVG } from '@/ui/icons/fill-take-attendance';
+import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
+import { TimeSVG } from '@/ui/icons/time';
 interface ToDoItem {
   id: number;
   title: string;
@@ -15,24 +16,17 @@ interface ToDoTaskProps {
 const ToDoTask: React.FC<ToDoTaskProps> = ({ item }) => {
   return (
     <View className="mb-0.5 w-full rounded-md  bg-white ">
-      <Pressable
-        // onPress={() => toggleTaskExpand(item.id)}
-        className="flex-row justify-between p-4"
-      >
+      <Pressable className="flex-row justify-between p-4">
         <View className="flex-row ">
-          <Ionicons name="person" size={24} color="black" />
+          <FillTakeAttendanceSVG height={24} width={24} />
           <Text className="ml-3 font-bold">{item.title}</Text>
         </View>
-        <Ionicons
-          name="chevron-forward-sharp"
-          size={24}
-          color={colors.neutral[600]}
-        />
+        <ArrowForwardSVG height={24} width={24} />
       </Pressable>
 
       <View className="px-4">
         <View className="my-1 flex-row">
-          <Ionicons name="time-outline" size={24} color={colors.neutral[600]} />
+          <TimeSVG height={24} width={24} />
           <Text className="ml-3 color-neutral-600">Due: {item.date}</Text>
         </View>
       </View>

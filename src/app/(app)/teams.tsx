@@ -1,6 +1,5 @@
 /* eslint-disable react-native/no-inline-styles */
-/* eslint-disable unused-imports/no-unused-vars */
-import { FlashList } from '@shopify/flash-list';
+
 import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -9,6 +8,7 @@ import StudentsRecord from '@/components/teams/students-record';
 import TeamsRecord from '@/components/teams/teams-record';
 import { studentRecordData } from '@/data/data-base';
 import { Pressable, Text, View } from '@/ui';
+import { FlatList } from 'react-native';
 
 export default function Teams() {
   const navigation = useNavigation();
@@ -27,9 +27,7 @@ export default function Teams() {
   };
   const [isTeamPressed, setIsTeamPressed] = useState<boolean>(true);
   const [isStudentPressed, setIsStudentPressed] = useState<boolean>(false);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const TeamHandlePress = () => {
     setIsTeamPressed(!isTeamPressed);
     setIsStudentPressed(false);
@@ -82,29 +80,25 @@ export default function Teams() {
 
       {sessionEvents === 'Team' && (
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlashList
+          <FlatList
             data={studentRecordData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <TeamsRecord item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            key={expandedSessionItem}
           />
         </View>
       )}
       {sessionEvents === 'Student' && (
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8] ">
-          <FlashList
+          <FlatList
             data={studentRecordData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <StudentsRecord item={item} />}
-            estimatedItemSize={80}
             contentContainerStyle={{
               paddingVertical: 8,
             }}
-            key={expandedSessionItem}
           />
         </View>
       )}

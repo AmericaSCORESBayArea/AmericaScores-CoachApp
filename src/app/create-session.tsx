@@ -6,13 +6,13 @@ import {
   Pressable,
   Platform,
   Modal,
+  FlatList,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from 'expo-router';
-import { SimpleLineIcons } from '@expo/vector-icons';
 import { Select } from '@/ui';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { FlashList } from '@shopify/flash-list';
+
 import CreateSessionSaveBtn from '@/components/buttons/createSession/create-session-save-btn';
 import CreateSessionTask from '@/components/sessionCreation/create-session-task';
 import CreateSessionType from '@/components/sessionCreation/create-session-type';
@@ -21,6 +21,7 @@ import {
   sessionCreation,
   teamOptions,
 } from '@/data/data-base';
+import { ArrowDownSVG } from '@/ui/icons/arrow-down';
 
 const CreateSession = () => {
   const navigation = useNavigation();
@@ -64,25 +65,25 @@ const CreateSession = () => {
         </View>
 
         <View className="mx-3 flex-row items-center justify-between">
-          <View className="my-4 w-2/5">
+          <View className="my-4  w-2/5">
             <Text className="text-lg text-gray-700"> Date</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400  p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
 
           <View className="mx-3 my-4 w-2/5">
             <Text className="text-lg text-gray-700"> Time</Text>
             <Pressable
-              className="flex-row justify-between rounded-md border border-gray-400 p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
             >
               <Text className="text-black">{time.toLocaleTimeString()}</Text>
-              <SimpleLineIcons name="arrow-down" size={18} color="black" />
+              <ArrowDownSVG height={24} width={24} />
             </Pressable>
           </View>
         </View>
@@ -168,13 +169,12 @@ const CreateSession = () => {
         <Text className="text-sm font-semibold text-gray-700">TYPES</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={sessionCreation}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <CreateSessionType item={item} setSessionType={setSessionType} />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
       </View>
@@ -183,13 +183,12 @@ const CreateSession = () => {
         <Text className="text-sm font-semibold text-gray-700">CREATE TASK</Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlashList
+        <FlatList
           data={createSessionTask}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <CreateSessionTask item={item} setSessionTask={setSessionTask} />
           )}
-          estimatedItemSize={80}
           contentContainerStyle={{ paddingVertical: 8 }}
         />
       </View>

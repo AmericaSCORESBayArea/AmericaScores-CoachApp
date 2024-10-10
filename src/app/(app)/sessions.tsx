@@ -1,21 +1,15 @@
 /* eslint-disable react-native/no-inline-styles */
 
-import {
-  AntDesign,
-  EvilIcons,
-  FontAwesome,
-  Ionicons,
-} from '@expo/vector-icons';
-import { FlashList } from '@shopify/flash-list';
+import { AntDesign } from '@expo/vector-icons';
+
 import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-
 import { pastSessionData, sessionSingleData } from '@/data/data-base';
-import { colors, Pressable, ScrollView, Text, View } from '@/ui';
-
+import { Pressable, ScrollView, Text, View } from '@/ui';
 import PastSession from '../../components/sessions/past-session';
-import { Item } from '@/components/settings/item';
 import UpComingSession from '@/components/sessions/upcoming-session';
+import SessionsIndex from '@/components/common/sessionsIndex';
+import { FlatList } from 'react-native';
 
 export default function Sessions() {
   const navigation = useNavigation();
@@ -34,9 +28,7 @@ export default function Sessions() {
   };
   const [isPastPressed, setIsPastPressed] = useState<boolean>(true);
   const [isUpComingPressed, setIsUpComingPressed] = useState<boolean>(false);
-  const [expandedSessionItem, setExpandedSessionItem] = useState<number | null>(
-    null
-  );
+
   const pastHandlePress = () => {
     setIsPastPressed(!isPastPressed);
     setIsUpComingPressed(false);
@@ -53,72 +45,27 @@ export default function Sessions() {
     else if (item === 'team-season') router.push('team-season');
     else if (item === 'create-session') router.push('create-session');
   };
+
   return (
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
           <Text className="my-3  text-2xl">Next Session</Text>
         </View>
-        <Pressable
-          className="mx-6 flex-1 rounded-sm bg-white"
-          onPress={() => navigationHandler('session-details')}
-        >
-          <View className="mb-2 w-full rounded-sm">
-            <Pressable
-              className="flex-row  justify-between p-4"
-              onPress={() => navigationHandler('team-season')}
-            >
-              <Text className="font-bold">{sessionSingleData[0].title}</Text>
-              {/* <Ionicons
-                name="chevron-forward-sharp"
-                size={24}
-                color={colors.neutral[600]}
-              /> */}
-            </Pressable>
-            <View className="px-4">
-              <View className="my-1 flex-row">
-                <EvilIcons
-                  name="location"
-                  size={24}
-                  color={colors.neutral[600]}
-                />
-                <Text className="color-neutral-600">
-                  {sessionSingleData[0].location}
-                </Text>
-              </View>
-              <View className="my-1 flex-row">
-                <Ionicons
-                  name="time-outline"
-                  size={24}
-                  color={colors.neutral[600]}
-                />
-                <Text className="color-neutral-600">
-                  {sessionSingleData[0].time}
-                </Text>
-              </View>
-              <View className="my-1 flex-row">
-                {sessionSingleData[0].hobby.map((hobby, index) => (
-                  <View
-                    key={index}
-                    className="mx-2 flex-row items-center rounded-2xl bg-[#EEF0F8] px-3"
-                  >
-                    <FontAwesome
-                      name="soccer-ball-o"
-                      size={24}
-                      color={colors.neutral[600]}
-                    />
-                    <Text className="ml-2  color-neutral-600">{hobby}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-          </View>
-        </Pressable>
+        <View className="mx-6  rounded-sm bg-[#EEF0F8]">
+          <FlatList
+            data={sessionSingleData}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <SessionsIndex item={item} />}
+            contentContainerStyle={{
+              paddingVertical: 8,
+            }}
+          />
+        </View>
         <View className="ml-6 w-[90%]  flex-row justify-between ">
           <Pressable
             className="w-[45%] justify-center  "
             onPress={() => {
-              // sessionEventHandler('Past');
               pastHandlePress();
             }}
             style={{
@@ -148,29 +95,25 @@ export default function Sessions() {
 
         {sessionEvents === 'Past' && (
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlashList
+            <FlatList
               data={pastSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <PastSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         )}
         {sessionEvents === 'UpComing' && (
           <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlashList
+            <FlatList
               data={pastSessionData}
               keyExtractor={(item) => item.id.toString()}
               renderItem={({ item }) => <UpComingSession item={item} />}
-              estimatedItemSize={80}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
-              key={expandedSessionItem}
             />
           </View>
         )}

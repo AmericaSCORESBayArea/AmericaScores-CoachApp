@@ -12,9 +12,8 @@ export const LocationSVG = ({
     width={props.width}
     height={props.height}
     fill="none"
-    viewBox="0 -1 18 18"
+    viewBox="0 0 20 20"
     {...props}
-    className="ml-4  "
   >
     <G id="icons">
       <Path

@@ -14,7 +14,6 @@ export const SoccerSVG = ({
     fill="none"
     viewBox="0 -1 18 18"
     {...props}
-    className="ml-4  "
   >
     <G id="icons">
       <Path

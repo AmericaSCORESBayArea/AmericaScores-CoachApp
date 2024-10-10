@@ -23,9 +23,9 @@ const CreatePersonalCheckBalanceBtn: React.FC<CreateSessionProps> = ({
     typeItem.personalTaskType > 0 || taskItem.personalTaskAddDetail > 0;
 
   return (
-    <View>
+    <View className={'w-full items-center'}>
       <Pressable
-        className={`mx-6 mb-2 w-[90%] flex-row items-center justify-center rounded-md ${
+        className={`mb-2 w-[90%] flex-row items-center justify-center rounded-md ${
           isEnabled ? 'bg-primary-900 py-3' : 'py-3'
         }`}
         disabled={!isEnabled}

@@ -1,13 +1,12 @@
 import {
-  EvilIcons,
   Feather,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons';
 import React from 'react';
-
 import { colors, Text, View } from '@/ui';
+import { LocationSVG } from '@/ui/icons/location';
 
 interface TaskItem {
   id: number;
@@ -21,31 +20,21 @@ interface TaskItem {
 
 interface IndexProps {
   item: TaskItem;
-  // expandedSessionItem: number | null;
-  // toggleSessionExpand: (id: number) => void;
 }
 
 const Index: React.FC<IndexProps> = ({ item }) => {
   return (
     <View className="mb-4 w-full rounded-sm bg-white">
-      <View
-        // onPress={() => toggleSessionExpand(item.id)}
-        className="flex-row justify-between p-4"
-      >
+      <View className="flex-row justify-between p-4">
         <View>
           <Text className="font-bold">{item.title}</Text>
-          {/* <Ionicons
-            name="chevron-forward-sharp"
-            size={24}
-            color={colors.neutral[600]}
-          /> */}
         </View>
         <View>
           <Text className="color-neutral-600">Today {item.time}</Text>
         </View>
       </View>
       <View className="my-1 flex-row px-4 pb-4 ">
-        <EvilIcons name="location" size={24} color={colors.neutral[600]} />
+        <LocationSVG height={24} width={24} />
         <Text className="color-neutral-600">{item.date}</Text>
       </View>
       <View className="428 px-4">
