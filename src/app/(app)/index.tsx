@@ -34,7 +34,7 @@ import {
   GetEnrollmentsAdapter,
   GetEnrollmentsIdAdapter,
 } from '@/api/adaptars/enrollments/enrollments-adapter';
-import { FlatList } from 'react-native';
+import { Dimensions, FlatList } from 'react-native';
 import { getItem } from '@/core/storage';
 interface SessionPostType {
   SessionDate: string;
@@ -262,30 +262,38 @@ export default function Feed() {
     allCoachEnrollments,
     allCoachEnrollmentsId,
   ]);
-  if (
-    isLoadingRegions ||
-    isLoadingTeams ||
-    isLoadingSessions ||
-    isLoadingSessionsId
-  )
-    return <Text>Loading...</Text>;
-  if (
-    isErrorRegions ||
-    isErrorTeams ||
-    isErrorSession ||
-    isErrorSessionId ||
-    isErrorEnrollments
-  )
-    return <Text>Error loading : {isErrorEnrollments}</Text>;
+  // if (
+  //   isLoadingRegions ||
+  //   isLoadingTeams ||
+  //   isLoadingSessions ||
+  //   isLoadingSessionsId
+  // )
+  //   return <Text>Loading...</Text>;
+  // if (
+  //   isErrorRegions ||
+  //   isErrorTeams ||
+  //   isErrorSession ||
+  //   isErrorSessionId ||
+  //   isErrorEnrollments
+  // )
+  //   return <Text>Error loading : {isErrorEnrollments}</Text>;
+  const { width } = Dimensions.get('window');
+  const isTablet = width >= 768;
+
+  // Set dynamic text sizes
+  const hiTextSize = isTablet ? 'text-4xl' : 'text-sm'; // "Hi Joe"
+  const dueSoonTextSize = isTablet ? 'text-2xl' : 'text-sm'; // "Due Soon Task"
 
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
+      {/* Hi, Joe Section */}
       <View className="ml-6">
-        <Text className="my-3 text-lg font-bold text-[#000] ">
+        <Text className={`my-3 font-bold text-[#000] ${hiTextSize}`}>
           Hi {user?.FirstName},
         </Text>
       </View>
 
+      {/* Sessions Section */}
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
           data={sessionSingleData}
@@ -296,6 +304,8 @@ export default function Feed() {
           }}
         />
       </View>
+
+      {/* Home Task Section */}
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
           data={sessionData}
@@ -307,11 +317,14 @@ export default function Feed() {
         />
       </View>
 
+      {/* Due Soon Task Title */}
       <View className="ml-6">
-        <Text className="my-3 text-base font-[800] text-[#737373]  ">
+        <Text className={`my-3 font-[800] text-[#737373] ${dueSoonTextSize}`}>
           Due Soon Task
         </Text>
       </View>
+
+      {/* Due Soon Task List */}
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
           data={soonTaskData}

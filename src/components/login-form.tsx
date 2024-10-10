@@ -145,23 +145,23 @@ const LoginForm = () => {
               source={require('../../assets/ASBA_Logo.jpg')}
             />
           </View>
-          <View className="mx-2.5 h-[12%] w-full items-center   justify-center bg-white ">
+          <View className="mx-2.5 h-[12%] w-full items-center justify-center bg-white ">
             <Pressable
-              className="my-1.5 w-3/6  flex-row justify-between "
+              className="my-1.5 flex-row  items-center  justify-between px-2 "
               onPress={() => {}}
             >
               <FontAwesome name="google" size={22} color={colors.danger[700]} />
-              <Text className="font-bold text-danger-700 ">
+              <Text className="ml-4 font-bold text-danger-700">
                 SIGN IN WITH GOOGLE
               </Text>
             </Pressable>
             <Pressable
-              className="my-1.5 w-3/6 flex-row justify-between "
+              className="my-1.5  flex-row justify-between "
               onPress={signInOptionsHandler}
             >
               <FontAwesome name="phone" size={22} color={colors.primary[700]} />
 
-              <Text className="font-bold text-primary-700 ">
+              <Text className="ml-8 font-bold text-primary-700">
                 SIGN IN WITH PHONE
               </Text>
             </Pressable>
@@ -264,7 +264,7 @@ const LoginForm = () => {
                 </View>
               </View>
 
-              <View className="absolute bottom-0 h-[15%]  w-full">
+              <View className="absolute bottom-12 h-[15%]  w-full">
                 <View className="w-full border-b-2 border-b-gray-400" />
 
                 <Button
@@ -272,7 +272,7 @@ const LoginForm = () => {
                   loading={false}
                   variant="secondary"
                   size="default"
-                  className="w-full bg-white color-red-400  "
+                  className="w-full  bg-white color-red-400  "
                   textClassName="color-gray-400 font-bold"
                   onPress={() => {
                     bottomSheetConfirmRef.current?.close();
@@ -286,14 +286,14 @@ const LoginForm = () => {
                   loading={false}
                   variant="default"
                   size="default"
-                  className="w-full bg-blue-900 "
+                  className="mb-5 w-full bg-blue-900"
                   onPress={confirmCode}
                   icon={
                     <FontAwesome
                       name="phone"
                       size={22}
                       color={colors.black[800]}
-                      className="mr-4"
+                      className="mr-4 "
                     />
                   }
                 />

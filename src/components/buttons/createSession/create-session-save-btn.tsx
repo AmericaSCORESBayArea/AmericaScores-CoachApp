@@ -21,9 +21,9 @@ const CreateSessionSaveBtn: React.FC<CreateSessionProps> = ({
   const isEnabled = typeItem.sessionType > 0 || taskItem.sessionTask > 0;
 
   return (
-    <View>
+    <View className={'w-full items-center'}>
       <Pressable
-        className={`mx-6 mb-2 w-[90%] items-center justify-center rounded-md ${
+        className={`mb-2 w-[90%] items-center justify-center rounded-md ${
           isEnabled ? 'bg-primary-700 py-3' : 'py-3'
         }`}
         disabled={!isEnabled}
@@ -31,7 +31,7 @@ const CreateSessionSaveBtn: React.FC<CreateSessionProps> = ({
         <Text className={`text-${isEnabled ? 'white' : 'black'}`}>Save</Text>
       </Pressable>
       <Pressable
-        className={`mx-6 mb-2 w-[90%] items-center justify-center rounded-md ${
+        className={`mb-2 w-[90%] items-center justify-center rounded-md ${
           isEnabled ? '' : 'bg-primary-700 py-3'
         }`}
       >
