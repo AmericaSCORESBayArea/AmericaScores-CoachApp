@@ -5,7 +5,7 @@ import type {
   GetSessionsId,
   PatchSessionsId,
   PostSessions,
-  GetSessions,
+  GetAllSessions,
 } from '@/interfaces/entities/session/sessions-entities';
 
 import { apiSlice, providesList } from '../apiSlice';
@@ -23,7 +23,7 @@ import { sessionData } from '@/data/data-base';
 
 export const brandEndpoints = apiSlice
   .enhanceEndpoints({
-    addTagTypes: [ApiTagTypes.COACH_SESSIONS],
+    addTagTypes: [ApiTagTypes.COACH_All_SESSIONS],
   })
   .injectEndpoints({
     overrideExisting: true,
@@ -31,23 +31,29 @@ export const brandEndpoints = apiSlice
       ////////////////////////////// Get sessions ////////////////////////////////////////////
 
       getCoachSessions: builder.query<
-        EntityState<GetSessions, string>,
-        { teamSeasonId: string; date: string }
+        EntityState<GetAllSessions, string>,
+        {
+          regions: string;
+          startDate: string;
+          endDate: string;
+          limit?: number;
+          offset?: number;
+        }
       >({
-        query: ({ teamSeasonId, date }) => ({
-          url: `${EndpointPaths.COACH_SESSIONS}?teamSeasonId=${teamSeasonId}&date=${date}`,
+        query: ({ regions, startDate, endDate, limit, offset }) => ({
+          url: `${EndpointPaths.COACH_All_SESSIONS}/allSessions?regions=${regions}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${offset}`,
           method: 'GET',
         }),
 
-        transformResponse: (response: GetSessions[]) => {
+        transformResponse: (response: GetAllSessions[]) => {
           return GetSessionsAdapter.setAll(
             GetSessionsAdapter.getInitialState(),
             response.map(GetSessionsSerializer)
-          ) as EntityState<GetSessions, string>;
+          ) as EntityState<GetAllSessions, string>;
         },
 
         providesTags: (result) =>
-          providesList(result?.ids, ApiTagTypes.COACH_SESSIONS),
+          providesList(result?.ids, ApiTagTypes.COACH_All_SESSIONS),
       }),
       ////////////////////////////// Post sessions ////////////////////////////////////////////
 

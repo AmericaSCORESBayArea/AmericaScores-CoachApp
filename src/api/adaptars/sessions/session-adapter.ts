@@ -1,12 +1,12 @@
 import type {
-  GetSessions,
+  GetAllSessions,
   GetSessionsId,
   PostSessions,
 } from '@/interfaces/entities/session/sessions-entities';
 
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
-export const GetSessionsAdapter = createEntityAdapter<GetSessions, string>({
+export const GetSessionsAdapter = createEntityAdapter<GetAllSessions, string>({
   selectId: (sessions) => sessions.SessionId,
 });
 

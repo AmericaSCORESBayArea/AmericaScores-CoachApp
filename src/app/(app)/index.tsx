@@ -85,9 +85,13 @@ export default function Feed() {
     isLoading: isLoadingSessions,
     isError: isErrorSession,
   } = useGetCoachSessionsQuery({
-    teamSeasonId: 'a0qcX000000GEggQAG',
-    date: '2024-08-23',
+    regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
+    startDate: '2018-08-01', // Adjust to the relevant date range
+    endDate: '2026-06-21', // Use the relevant end date
+    limit: 30, // Optional, can be omitted
+    offset: 0, // Optional, can be omitted
   });
+
   const {
     data: sessionsId,
     isLoading: isLoadingSessionsId,
@@ -251,7 +255,7 @@ export default function Feed() {
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
     // console.log('allTeamSeasons', allTeamSeasons);
-    // console.log('allCoachSessions', allCoachSessions);
+    console.log('allCoachSessions', allCoachSessions);
     // console.log('allCoachSessionsId', allCoachSessionsId);
     // console.log('allCoachEnrollments', allCoachEnrollments);
     // console.log('allCoachEnrollmentsId', allCoachEnrollmentsId);
