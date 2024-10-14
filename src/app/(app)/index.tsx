@@ -14,8 +14,8 @@ import { GetTeamSeasonsAdapter } from '@/api/adaptars/teamSeason/teamseason-adap
 import {
   useCreateCoachSessionMutation,
   useDeleteCoachSessionIdMutation,
+  useGetCoachAllSessionsQuery,
   useGetCoachSessionIdQuery,
-  useGetCoachSessionsQuery,
   useUpdateCoachSessionIdMutation,
 } from '@/redux/sessions/sessions-endpoint';
 import {
@@ -81,10 +81,10 @@ export default function Feed() {
     isError: isErrorTeams,
   } = useGetTeamSeasonQuery();
   const {
-    data: sessions,
+    data: Allsessions,
     isLoading: isLoadingSessions,
     isError: isErrorSession,
-  } = useGetCoachSessionsQuery({
+  } = useGetCoachAllSessionsQuery({
     regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
     startDate: '2018-08-01', // Adjust to the relevant date range
     endDate: '2026-06-21', // Use the relevant end date
@@ -231,8 +231,8 @@ export default function Feed() {
   const allCoachRegions = regions
     ? GetRegionAdapter.getSelectors().selectAll(regions)
     : [];
-  const allCoachSessions = sessions
-    ? GetSessionsAdapter.getSelectors().selectAll(sessions)
+  const allCoachSessions = Allsessions
+    ? GetSessionsAdapter.getSelectors().selectAll(Allsessions)
     : [];
   const allCoachSessionsId = sessionsId
     ? GetSessionsIdAdapter.getSelectors().selectAll(sessionsId)

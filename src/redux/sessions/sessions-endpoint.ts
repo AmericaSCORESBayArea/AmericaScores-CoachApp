@@ -30,7 +30,7 @@ export const brandEndpoints = apiSlice
     endpoints: (builder) => ({
       ////////////////////////////// Get sessions ////////////////////////////////////////////
 
-      getCoachSessions: builder.query<
+      getCoachAllSessions: builder.query<
         EntityState<GetAllSessions, string>,
         {
           regions: string;
@@ -153,7 +153,7 @@ export const brandEndpoints = apiSlice
   });
 
 export const {
-  useGetCoachSessionsQuery,
+  useGetCoachAllSessionsQuery,
   useGetCoachSessionIdQuery,
   useCreateCoachSessionMutation,
   useUpdateCoachSessionIdMutation,
