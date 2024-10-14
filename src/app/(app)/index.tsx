@@ -40,6 +40,7 @@ import typography from '@/metrics/typography';
 import {
   useCreateCoachAttendanceMutation,
   useGetCoachAttendanceQuery,
+  usePatchCoachAttendanceMutation,
 } from '@/redux/attendance/attendance-endpoints';
 import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapter';
 interface SessionPostType {
@@ -252,6 +253,30 @@ export default function Feed() {
   };
 
   // Call this function when you want to post the attendance
+  const [patchCoachAttendance] = usePatchCoachAttendanceMutation(); // Adjust the hook name based on your slice
+
+  const handleUpdateAttendance = async () => {
+    const attendancePatchData = [
+      {
+        AttendanceId: 'a0lcX0000008SyPQAU', // The AttendanceId you want to update
+        Attended: false, // The new attendance status
+      },
+      // Add more students if needed
+    ];
+    try {
+      const response = await patchCoachAttendance({
+        TeamSeasonId: 'a0qcX000000GEggQAG', // Your specific TeamSeasonId
+        SessionId: 'a0pcX0000004gn3QAA', // Your specific SessionId
+        attendancePatchData,
+      }).unwrap();
+
+      console.log('Attendance updated successfully:', response);
+    } catch (err) {
+      console.error('Failed to update attendance:', err);
+    }
+  };
+
+  // Call this function when you want to update the attendance
 
   ///////////////////// Delete Attendance //////////////////////////
   const {
@@ -295,7 +320,8 @@ export default function Feed() {
     // handlePostEnrollmentsSubmit();
     // handleDeleteEnrollments('a0mcX0000004D1tQAE');
     // handleUpdateEnrollments();
-    handlePostAttendance();
+    // handlePostAttendance();
+    handleUpdateAttendance();
   }, []);
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);

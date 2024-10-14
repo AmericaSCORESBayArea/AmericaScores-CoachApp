@@ -5,11 +5,13 @@ import { apiSlice, providesList } from '../apiSlice';
 
 import type {
   GetAttendance,
+  PatchAttendance,
   PostAttendance,
 } from '@/interfaces/entities/attendance/attendance-entities';
 
 import {
   GetAttendanceSerializer,
+  PatchAttendanceSerializer,
   PostAttendanceSerializer,
 } from '@/serializers/attendance/attendance-serializer';
 import type { EntityState } from '@reduxjs/toolkit';
@@ -71,8 +73,39 @@ export const brandEndpoints = apiSlice
 
         invalidatesTags: [ApiTagTypes.COACH_ATTENDANCES], // Invalidate relevant cache tags
       }),
+
+      ////////////////////////////// Patch Attendance ////////////////////////////////////////////
+
+      patchCoachAttendance: builder.mutation<
+        PatchAttendance,
+        {
+          TeamSeasonId: string;
+          SessionId: string;
+          attendancePatchData: Array<{
+            AttendanceId: string;
+            Attended: boolean;
+          }>;
+        }
+      >({
+        query: ({ TeamSeasonId, SessionId, attendancePatchData }) => {
+          return {
+            url: `${EndpointPaths.COACH_ATTENDANCES}/teamseasons/${TeamSeasonId}/sessions/${SessionId}/attendances`,
+            method: 'PATCH', // Use PATCH method for updating
+            body: attendancePatchData, // Only send the fields that need to be updated
+          };
+        },
+
+        transformResponse: (response: PatchAttendance) => {
+          return PatchAttendanceSerializer(response);
+        },
+
+        invalidatesTags: [ApiTagTypes.COACH_ATTENDANCES],
+      }),
     }),
   });
 
-export const { useGetCoachAttendanceQuery, useCreateCoachAttendanceMutation } =
-  brandEndpoints;
+export const {
+  useGetCoachAttendanceQuery,
+  useCreateCoachAttendanceMutation,
+  usePatchCoachAttendanceMutation,
+} = brandEndpoints;

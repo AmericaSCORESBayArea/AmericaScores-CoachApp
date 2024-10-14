@@ -9,3 +9,7 @@ export interface PostAttendance {
   Message: string;
   Attendance_Taken: boolean;
 }
+
+export interface PatchAttendance {
+  message: string;
+}

@@ -1,5 +1,6 @@
 import type {
   GetAttendance,
+  PatchAttendance,
   PostAttendance,
 } from '@/interfaces/entities/attendance/attendance-entities';
 
@@ -23,5 +24,14 @@ export function PostAttendanceSerializer(
   return {
     Message,
     Attendance_Taken,
+  };
+}
+export function PatchAttendanceSerializer(
+  attendance: PatchAttendance
+): PatchAttendance {
+  const { message } = attendance;
+
+  return {
+    message,
   };
 }
