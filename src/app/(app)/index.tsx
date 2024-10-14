@@ -37,6 +37,11 @@ import {
 import { Dimensions, FlatList } from 'react-native';
 import { getItem } from '@/core/storage';
 import typography from '@/metrics/typography';
+import {
+  useCreateCoachAttendanceMutation,
+  useGetCoachAttendanceQuery,
+} from '@/redux/attendance/attendance-endpoints';
+import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapter';
 interface SessionPostType {
   SessionDate: string;
   SessionTopic: string;
@@ -222,6 +227,42 @@ export default function Feed() {
       console.error('Failed to update enrollment:', err);
     }
   };
+  ///////////////////// Post Attendance//////////////////////////
+  const [createCoachAttendance] = useCreateCoachAttendanceMutation();
+  const handlePostAttendance = async () => {
+    try {
+      const attendanceData = [
+        {
+          StudentId: '003UQ00000J6mNBYAZ', // Replace with the actual StudentId
+          Attended: true, // Attendance status
+        },
+        // Add more students if needed
+      ];
+
+      const response = await createCoachAttendance({
+        TeamSeasonId: 'a0qcX000000GEggQAG', // Your specific TeamSeasonId
+        SessionId: 'a0pcX0000004gn3QAA', // Your specific SessionId
+        attendanceData, // Directly pass the array of attendance data
+      }).unwrap();
+
+      console.log('Attendance submitted successfully:', response);
+    } catch (err) {
+      console.error('Failed to submit attendance:', err);
+    }
+  };
+
+  // Call this function when you want to post the attendance
+
+  ///////////////////// Delete Attendance //////////////////////////
+  const {
+    data: attendances,
+    isLoading: isLoadingAttendance,
+    isError: isErrorAttendance,
+  } = useGetCoachAttendanceQuery({
+    teamSeasonId: 'a0qcX000000GEggQAG', // Your specific teamSeasonId
+    sessionId: 'a0pcX0000004gn3QAA', // Your specific sessionId
+  });
+
   ///////////////////// Get Region,TeamSeason,Session,Enrollments//////////////////////////
 
   const allTeamSeasons = teams
@@ -243,6 +284,9 @@ export default function Feed() {
   const allCoachEnrollmentsId = enrollmentsId
     ? GetEnrollmentsIdAdapter.getSelectors().selectAll(enrollmentsId)
     : [];
+  const allCoachAttendances = attendances
+    ? GetAttendanceAdapter.getSelectors().selectAll(attendances)
+    : [];
 
   useEffect(() => {
     // handleCreateSession();
@@ -251,11 +295,13 @@ export default function Feed() {
     // handlePostEnrollmentsSubmit();
     // handleDeleteEnrollments('a0mcX0000004D1tQAE');
     // handleUpdateEnrollments();
+    handlePostAttendance();
   }, []);
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
     // console.log('allTeamSeasons', allTeamSeasons);
-    console.log('allCoachSessions', allCoachSessions);
+    // console.log('allCoachSessions', allCoachSessions);
+    // console.log('allCoachAttendances', allCoachAttendances);
     // console.log('allCoachSessionsId', allCoachSessionsId);
     // console.log('allCoachEnrollments', allCoachEnrollments);
     // console.log('allCoachEnrollmentsId', allCoachEnrollmentsId);
@@ -266,6 +312,7 @@ export default function Feed() {
     allCoachSessionsId,
     allCoachEnrollments,
     allCoachEnrollmentsId,
+    allCoachAttendances,
   ]);
   // if (
   //   isLoadingRegions ||
