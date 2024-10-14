@@ -34,7 +34,7 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
         {/* Title Text with responsive size from typography */}
         <Text
           className={`font-bold`}
-          style={{ fontSize: typography.sizes.textXl }}
+          style={{ fontSize: typography.sizes.textXL }}
         >
           {item.title}
         </Text>
@@ -53,7 +53,7 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
           {/* Location Text with responsive size from typography */}
           <Text
             className={`color-neutral-600`}
-            style={{ fontSize: typography.sizes.textLg }}
+            style={{ fontSize: typography.sizes.textLarge }}
           >
             {item.location}
           </Text>
@@ -67,7 +67,7 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
           {/* Date Text with responsive size from typography */}
           <Text
             className={`color-neutral-600`}
-            style={{ fontSize: typography.sizes.textLg }}
+            style={{ fontSize: typography.sizes.textLarge }}
           >
             Due: {item.date}
           </Text>
