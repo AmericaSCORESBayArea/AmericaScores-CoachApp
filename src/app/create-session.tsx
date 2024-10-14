@@ -22,6 +22,7 @@ import {
   teamOptions,
 } from '@/data/data-base';
 import { ArrowDownSVG } from '@/ui/icons/arrow-down';
+import { Dimensions } from 'react-native';
 
 const CreateSession = () => {
   const navigation = useNavigation();
@@ -32,6 +33,14 @@ const CreateSession = () => {
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
   const [sessionType, setSessionType] = useState<number>(0);
   const [sessionTask, setSessionTask] = useState<number>(0);
+
+  // Determine device type
+  const { width } = Dimensions.get('window');
+  const isTablet = width >= 768;
+
+  // Set responsive text sizes
+  const labelTextSize = isTablet ? 'text-3xl' : 'text-sm';
+  const headerTextSize = isTablet ? 'text-3xl' : 'text-sm';
 
   useEffect(() => {
     navigation.setOptions({
@@ -65,10 +74,10 @@ const CreateSession = () => {
         </View>
 
         <View className="mx-3 flex-row items-center justify-between">
-          <View className="my-4  w-2/5">
-            <Text className="text-lg text-gray-700"> Date</Text>
+          <View className="my-4 w-2/5">
+            <Text className={`${labelTextSize} text-gray-700`}> Date</Text>
             <Pressable
-              className="flex-row items-center justify-between rounded-md border border-gray-400  p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
@@ -77,7 +86,7 @@ const CreateSession = () => {
           </View>
 
           <View className="mx-3 my-4 w-2/5">
-            <Text className="text-lg text-gray-700"> Time</Text>
+            <Text className={`${labelTextSize} text-gray-700`}> Time</Text>
             <Pressable
               className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
@@ -166,7 +175,9 @@ const CreateSession = () => {
       </View>
 
       <View className="mx-6 my-2">
-        <Text className="text-sm font-semibold text-gray-700">TYPES</Text>
+        <Text className={`${headerTextSize} font-semibold text-gray-700`}>
+          TYPES
+        </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
@@ -180,7 +191,9 @@ const CreateSession = () => {
       </View>
 
       <View className="mx-6 my-2">
-        <Text className="text-sm font-semibold text-gray-700">CREATE TASK</Text>
+        <Text className={`${headerTextSize} font-semibold text-gray-700`}>
+          CREATE TASK
+        </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList

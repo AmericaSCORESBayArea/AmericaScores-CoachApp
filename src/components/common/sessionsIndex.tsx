@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { LocationSVG } from '@/ui/icons/location';
 import { TimeSVG } from '@/ui/icons/time';
 import { SoccerSVG } from '@/ui/icons/soccer';
+import typography from '@/metrics/typography';
 
 interface SessionItem {
   id: number;
@@ -21,15 +22,6 @@ interface SessionProps {
 const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
   const router = useRouter();
 
-  // Determine if the device is a tablet or mobile based on width
-  const { width } = Dimensions.get('window');
-  const isTablet = width >= 768;
-
-  // Set dynamic sizes
-  const iconSize = isTablet ? 40 : 22;
-  const titleTextSize = isTablet ? 'text-4xl' : 'text-lg';
-  const contentTextSize = isTablet ? 'text-3xl' : 'text-sm';
-
   // Navigation handler
   const navigationHandler = (item: string) => {
     if (item === 'session-details') {
@@ -41,32 +33,38 @@ const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
 
   return (
     <Pressable
-      className="w-full justify-center rounded-sm bg-white"
+      className="w-full rounded-sm bg-white"
+      style={{
+        marginBottom: typography.paddingSizes.xxs,
+      }}
       onPress={() => navigationHandler('session-details')}
     >
       {/* Title with dynamic font size */}
       <Pressable
-        className="flex-row justify-between p-4"
+        className="flex-row items-center justify-between "
+        style={{ padding: typography.paddingSizes.md }}
         onPress={() => navigationHandler('team-season')}
       >
-        <Text className={`font-bold ${titleTextSize}`}>{item.title}</Text>
+        <Text style={typography.style.heading}>{item.title}</Text>
       </Pressable>
 
       <View className="px-4">
         {/* Location */}
         <View className="my-1 flex-row items-center">
-          <LocationSVG height={iconSize} width={iconSize} />
-          <Text className={`${contentTextSize} ml-2 color-neutral-600`}>
-            {item.location}
-          </Text>
+          <LocationSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          <Text style={typography.style.subHeadingLarge}>{item.location}</Text>
         </View>
 
         {/* Time */}
         <View className="my-1 flex-row items-center">
-          <TimeSVG height={iconSize} width={iconSize} />
-          <Text className={`${contentTextSize} ml-2 color-neutral-600`}>
-            {item.time}
-          </Text>
+          <TimeSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          <Text style={typography.style.subHeadingLarge}>{item.time}</Text>
         </View>
 
         {/* Hobbies */}
@@ -76,10 +74,11 @@ const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
               key={index}
               className="mx-2 flex-row items-center rounded-3xl bg-slate-200 px-3"
             >
-              <SoccerSVG height={iconSize} width={iconSize} />
-              <Text className={`ml-2 ${contentTextSize} color-neutral-600`}>
-                {hobby}
-              </Text>
+              <SoccerSVG
+                height={typography.iconSizes.md}
+                width={typography.iconSizes.md}
+              />
+              <Text style={typography.style.subHeadingLarge}>{hobby}</Text>
             </View>
           ))}
         </View>

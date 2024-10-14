@@ -36,6 +36,7 @@ import {
 } from '@/api/adaptars/enrollments/enrollments-adapter';
 import { Dimensions, FlatList } from 'react-native';
 import { getItem } from '@/core/storage';
+import typography from '@/metrics/typography';
 interface SessionPostType {
   SessionDate: string;
   SessionTopic: string;
@@ -288,7 +289,13 @@ export default function Feed() {
     <ScrollView className="flex-1 bg-[#EEF0F8]">
       {/* Hi, Joe Section */}
       <View className="ml-6">
-        <Text className={`my-3 font-bold text-[#000] ${hiTextSize}`}>
+        <Text
+          className="my-3 font-bold text-[#000]"
+          style={{
+            fontSize: typography.sizes.textLarge,
+            paddingVertical: typography.paddingSizes.sm,
+          }}
+        >
           Hi {user?.FirstName},
         </Text>
       </View>
@@ -330,9 +337,6 @@ export default function Feed() {
           data={soonTaskData}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => <SoonTask item={item} />}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
         />
       </View>
     </ScrollView>

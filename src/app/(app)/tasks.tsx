@@ -6,10 +6,14 @@ import WeekTask from '@/components/task/week-task';
 import { laterTaskData, weekTaskData } from '@/data/data-base';
 import { ScrollView, Text, View } from '@/ui';
 import { AntDesign } from '@expo/vector-icons';
-import { FlatList } from 'react-native';
+import { Dimensions, FlatList } from 'react-native';
 
 export default function Tasks() {
   const router = useRouter();
+  const { width } = Dimensions.get('window'); // Get screen width
+  const isTablet = width >= 768; // Define tablet based on width
+
+  const titleTextSize = isTablet ? 'text-2xl' : 'text-sm'; // Define the text size class for title
 
   const navigation = useNavigation();
   useEffect(() => {
@@ -24,11 +28,12 @@ export default function Tasks() {
   const navigationHandler = (item: string) => {
     if (item === 'create-personal-task') router.push('create-personal-task');
   };
+
   return (
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
-          <Text className="my-3 text-base font-[800] text-[#737373]  ">
+          <Text className={`my-3 font-bold text-[#737373] ${titleTextSize} `}>
             DUE THIS WEEK
           </Text>
         </View>
@@ -43,7 +48,7 @@ export default function Tasks() {
           />
         </View>
         <View className="ml-6">
-          <Text className="my-3 text-base font-[800] text-[#737373]  ">
+          <Text className={`my-3 font-bold text-[#737373] ${titleTextSize} `}>
             LATER
           </Text>
         </View>
@@ -60,14 +65,14 @@ export default function Tasks() {
       </ScrollView>
       <AntDesign
         name="pluscircle"
-        size={45}
+        size={isTablet ? 80 : 40}
         color="#004680"
         style={{
           position: 'absolute',
-          bottom: 20, // Adjust the distance from the bottom
-          right: 20, // Adjust the distance from the right
+          bottom: 20,
+          right: 20,
         }}
-        onPress={() => navigationHandler('create-personal-task')}
+        onPress={() => navigationHandler('create-session')}
       />
     </>
   );

@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { ArrowForwardSVG } from '@/ui/icons/arrow-forward';
 import { LocationSVG } from '@/ui/icons/location';
 import { TimeSVG } from '@/ui/icons/time';
+import typography from '@/metrics/typography'; // Assuming you have a typography file
 
 interface LaterItem {
   id: number;
@@ -19,28 +20,57 @@ interface LaterTaskProps {
 
 const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
   const router = useRouter();
+
   const navigationHandler = () => {
     router.push(item.navigation);
   };
+
   return (
     <Pressable
-      className="mb-0.5 w-full rounded-sm  bg-white"
+      className="mb-0.5 w-full rounded-sm bg-white"
       onPress={navigationHandler}
     >
       <View className="flex-row justify-between p-4">
-        <Text className="font-bold">{item.title}</Text>
-        <ArrowForwardSVG height={24} width={24} />
+        {/* Title Text with responsive size from typography */}
+        <Text
+          className={`font-bold`}
+          style={{ fontSize: typography.sizes.textXl }}
+        >
+          {item.title}
+        </Text>
+        <ArrowForwardSVG
+          height={typography.iconSizes.md}
+          width={typography.iconSizes.md}
+        />
       </View>
 
       <View className="px-4">
         <View className="my-1 flex-row">
-          <LocationSVG height={24} width={24} />
-          <Text className="color-neutral-600">{item.location}</Text>
+          <LocationSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          {/* Location Text with responsive size from typography */}
+          <Text
+            className={`color-neutral-600`}
+            style={{ fontSize: typography.sizes.textLg }}
+          >
+            {item.location}
+          </Text>
         </View>
 
         <View className="my-1 flex-row">
-          <TimeSVG height={24} width={24} />
-          <Text className="color-neutral-600">Due: {item.date}</Text>
+          <TimeSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          {/* Date Text with responsive size from typography */}
+          <Text
+            className={`color-neutral-600`}
+            style={{ fontSize: typography.sizes.textLg }}
+          >
+            Due: {item.date}
+          </Text>
         </View>
       </View>
     </Pressable>

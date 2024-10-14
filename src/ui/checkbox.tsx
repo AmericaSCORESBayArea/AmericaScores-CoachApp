@@ -1,13 +1,14 @@
 import { MotiView } from 'moti';
 import React, { useCallback } from 'react';
-import { Pressable, type PressableProps, View } from 'react-native';
+import { Dimensions, Pressable, type PressableProps, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
 
 import colors from '@/ui/colors';
 
 import { Text } from './text';
-
-const SIZE = 20;
+const { width } = Dimensions.get('window');
+const isTablet = width >= 768; // Adjust this value based on your definition of a tablet
+const SIZE = isTablet ? 40 : 20;
 const WIDTH = 50;
 const HEIGHT = 28;
 const THUMB_HEIGHT = 22;
