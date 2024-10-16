@@ -14,9 +14,14 @@ import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 import { useGetCoachAttendanceQuery } from '@/redux/attendance/attendance-endpoints';
 import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapter';
 import type { GetAttendance } from '@/interfaces/entities/attendance/attendance-entities';
+import type { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 
 const TakeAttendence = () => {
   const navigation = useNavigation();
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
   // const [attendanceList, setAttendanceList] = useState<GetAttendance[]>();
   ///////////////////// Get Attendance //////////////////////////
   const {
@@ -62,8 +67,8 @@ const TakeAttendence = () => {
     <ScrollView className=" flex-1 bg-[#EEF0F8]">
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
-          data={sessionSingleData}
-          keyExtractor={(item) => item.id.toString()}
+          data={currentSessions}
+          keyExtractor={(item) => item.SessionId}
           renderItem={({ item }) => <SessionsIndex item={item} />}
           contentContainerStyle={{
             paddingVertical: 8,

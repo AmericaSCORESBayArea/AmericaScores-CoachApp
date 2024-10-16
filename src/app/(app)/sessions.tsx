@@ -1,5 +1,4 @@
 /* eslint-disable tailwindcss/no-unnecessary-arbitrary-value */
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
 import React, { useEffect, useState } from 'react';
 import { AntDesign } from '@expo/vector-icons';
@@ -10,74 +9,31 @@ import PastSession from '../../components/sessions/past-session';
 import UpComingSession from '@/components/sessions/upcoming-session';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { FlatList } from 'react-native';
-import { pastSessionData, sessionSingleData } from '@/data/data-base';
-import { useGetCoachAllSessionsQuery } from '@/redux/sessions/sessions-endpoint';
-import { GetSessionsAdapter } from '@/api/adaptars/sessions/session-adapter';
-import type { GetAllSessions } from '@/interfaces/entities/session/sessions-entities';
-import pastSession from '../../components/sessions/past-session';
+
 import typography from '@/metrics/typography';
-import { charcoal, neutral, primary } from '@/ui/colors';
+import { charcoal, primary } from '@/ui/colors';
+import type { RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
 
 export default function Sessions() {
   const navigation = useNavigation();
   const router = useRouter();
 
-  const [currentSession, setCurrentSession] = useState<GetAllSessions[]>();
-  const [upComingSession, setUpComingSession] = useState<GetAllSessions[]>();
-  const [pastSession, setPastSession] = useState<GetAllSessions[]>();
-  ///////////////////// All Coach Sessions //////////////////////////
-  const {
-    data: Allsessions,
-    isLoading: isLoadingSessions,
-    isError: isErrorSession,
-  } = useGetCoachAllSessionsQuery({
-    regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
-    startDate: '2018-08-01', // Adjust to the relevant date range
-    endDate: '2026-06-21', // Use the relevant end date
-    limit: 100, // Optional, can be omitted
-    offset: 0, // Optional, can be omitted
-  });
-  const allCoachSessions = Allsessions
-    ? GetSessionsAdapter.getSelectors().selectAll(Allsessions)
-    : [];
-  useEffect(() => {
-    console.log('AllCoachSession: ', allCoachSessions);
+  // Fetch the current sessions from Redux state
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
 
-    // Today's date for comparison
-    const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  const pastSession = useSelector(
+    (state: RootState) => state.allSessions.pastSessions
+  );
+  const upComingSession = useSelector(
+    (state: RootState) => state.allSessions.upComingSessions
+  );
+  const isLoadingAllSessions = useSelector(
+    (state: RootState) => state.allSessions.isLoadingAllSessions
+  );
 
-    const upcomingSessions: GetAllSessions[] = [];
-    const pastSessions: GetAllSessions[] = [];
-    const currentSessions: GetAllSessions[] = [];
-
-    allCoachSessions.forEach((session) => {
-      const sessionDate = new Date(session.SessionDate);
-      // console.log('sesssionDate : ', session.SessionDate);
-
-      const sessionDateString = sessionDate.toISOString().split('T')[0]; // Format session date to YYYY-MM-DD
-      // console.log(sessionDateString, '+', todayString);
-
-      if (sessionDateString === todayString) {
-        currentSessions.push(session);
-      } else if (sessionDate > today) {
-        upcomingSessions.push(session);
-      } else if (sessionDate < today) {
-        pastSessions.push(session);
-      }
-    });
-
-    // Update state
-    setCurrentSession(currentSessions);
-    setUpComingSession(upcomingSessions);
-    setPastSession(pastSessions);
-
-    // Log the state variables after setting them
-    console.log('Current sessions: ', currentSessions);
-    console.log('Upcoming sessions: ', upcomingSessions);
-    console.log('Past sessions: ', pastSessions);
-  }, [Allsessions]);
-  ///////////////////// End //////////////////////////
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -123,8 +79,8 @@ export default function Sessions() {
 
         <View className="mx-6 rounded-sm ">
           <FlatList
-            data={sessionSingleData}
-            keyExtractor={(item) => item.id.toString()}
+            data={currentSessions}
+            keyExtractor={(item) => item.SessionId}
             renderItem={({ item }) => <SessionsIndex item={item} />}
             contentContainerStyle={{ paddingVertical: 8 }}
           />
@@ -166,7 +122,7 @@ export default function Sessions() {
 
         {sessionEvents === 'Past' && (
           <>
-            {isLoadingSessions ? (
+            {isLoadingAllSessions ? (
               <View className="mt-20">
                 <ActivityIndicator size="small" color={'#000000'} />
               </View>
@@ -185,7 +141,7 @@ export default function Sessions() {
 
         {sessionEvents === 'Upcoming' && (
           <>
-            {isLoadingSessions ? (
+            {isLoadingAllSessions ? (
               <View className="mt-20">
                 <ActivityIndicator size="small" color={'#000000'} />
               </View>

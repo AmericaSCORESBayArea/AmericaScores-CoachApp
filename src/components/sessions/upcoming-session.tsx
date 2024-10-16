@@ -18,10 +18,18 @@ interface UpComingSessionTaskProps {
 const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
   const router = useRouter();
 
-  // Fallback for testing
-  const sessionStartTime = item.SessionStartTime || '14:00:00.000Z';
-  const dateString = `1970-01-01T${sessionStartTime}`; // Combine with a date
-  const dateObject = new Date(dateString);
+  const sessionStartTime = item.SessionStartTime || ''; // Empty if not provided
+  let formattedTime = 'No Time Available'; // Default message
+
+  if (sessionStartTime) {
+    // Extract hours and minutes directly if time is provided
+    const [hours, minutes] = sessionStartTime.split(':');
+    const timeObject = new Date();
+    timeObject.setHours(parseInt(hours), parseInt(minutes));
+
+    // Format the time using 'date-fns'
+    formattedTime = format(timeObject, 'hh:mm a');
+  }
 
   // If loading, show a loading indicator
 
@@ -53,7 +61,7 @@ const UpComingSession: React.FC<UpComingSessionTaskProps> = ({ item }) => {
             width={typography.iconSizes.md}
           />
           <Text style={typography.style.subHeadingLarge}>
-            {item.Weekday}, {format(dateObject, 'hh:mm a')}
+            {item.Weekday}, {formattedTime} {item.SessionDate}
           </Text>
         </View>
 

@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 /* eslint-disable @typescript-eslint/no-shadow */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-native/no-inline-styles */
@@ -34,7 +35,7 @@ import {
   GetEnrollmentsAdapter,
   GetEnrollmentsIdAdapter,
 } from '@/api/adaptars/enrollments/enrollments-adapter';
-import { FlatList } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 import { getItem } from '@/core/storage';
 import typography from '@/metrics/typography';
 import {
@@ -43,6 +44,14 @@ import {
   usePatchCoachAttendanceMutation,
 } from '@/redux/attendance/attendance-endpoints';
 import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapter';
+import type { GetAllSessions } from '@/interfaces/entities/session/sessions-entities';
+import {
+  setCurrentSessions,
+  setPastSessions,
+  setUpComingSessions,
+} from '@/redux/slice/all-sessions-slice';
+import type { RootState } from '../../redux/store';
+import { useDispatch, useSelector } from 'react-redux';
 interface SessionPostType {
   SessionDate: string;
   SessionTopic: string;
@@ -51,31 +60,15 @@ interface SessionPostType {
 
 // eslint-disable-next-line max-lines-per-function
 export default function Feed() {
-  const [user, setUser] = useState<any>(null);
-  const navigation = useNavigation();
-  const router = useRouter();
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-START//////-----------------------------------------------------///
 
-  useEffect(() => {
-    // handleCreateSession();
-    navigation.setOptions({
-      headerStyle: {
-        backgroundColor: '#EEF0F8',
-      },
-      headerTitle: '',
-    });
-  }, [navigation]);
-
-  useEffect(() => {
-    async function fetchUser() {
-      const userFromStorage = await getItem('user');
-      setUser(userFromStorage);
-      userFromStorage ? null : router.push('/login');
-    }
-
-    fetchUser();
-  }, [router]);
-
-  ////////////////////////// API WORKING  //////////////////////////////////
   const {
     data: regions,
     isLoading: isLoadingRegions,
@@ -86,17 +79,17 @@ export default function Feed() {
     isLoading: isLoadingTeams,
     isError: isErrorTeams,
   } = useGetTeamSeasonQuery();
-  const {
-    data: Allsessions,
-    isLoading: isLoadingSessions,
-    isError: isErrorSession,
-  } = useGetCoachAllSessionsQuery({
-    regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
-    startDate: '2018-08-01', // Adjust to the relevant date range
-    endDate: '2026-06-21', // Use the relevant end date
-    limit: 30, // Optional, can be omitted
-    offset: 0, // Optional, can be omitted
-  });
+  // const {
+  //   data: Allsessions,
+  //   isLoading: isLoadingSessions,
+  //   isError: isErrorSession,
+  // } = useGetCoachAllSessionsQuery({
+  //   regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
+  //   startDate: '2018-08-01', // Adjust to the relevant date range
+  //   endDate: '2026-06-21', // Use the relevant end date
+  //   limit: 30, // Optional, can be omitted
+  //   offset: 0, // Optional, can be omitted
+  // });
 
   const {
     data: sessionsId,
@@ -296,9 +289,9 @@ export default function Feed() {
   const allCoachRegions = regions
     ? GetRegionAdapter.getSelectors().selectAll(regions)
     : [];
-  const allCoachSessions = Allsessions
-    ? GetSessionsAdapter.getSelectors().selectAll(Allsessions)
-    : [];
+  // const allCoachSessions = Allsessions
+  //   ? GetSessionsAdapter.getSelectors().selectAll(Allsessions)
+  //   : [];
   const allCoachSessionsId = sessionsId
     ? GetSessionsIdAdapter.getSelectors().selectAll(sessionsId)
     : [];
@@ -333,7 +326,7 @@ export default function Feed() {
   }, [
     allTeamSeasons,
     allCoachRegions,
-    allCoachSessions,
+    // allCoachSessions,
     allCoachSessionsId,
     allCoachEnrollments,
     allCoachEnrollmentsId,
@@ -354,6 +347,168 @@ export default function Feed() {
   //   isErrorEnrollments
   // )
   //   return <Text>Error loading : {isErrorEnrollments}</Text>;
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  ///--------------------------------------------/////PRACTICS-API-END//////-----------------------------------------------------///
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////  START ////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  const [user, setUser] = useState<any>(null);
+  const navigation = useNavigation();
+  const router = useRouter();
+  const dispatch = useDispatch();
+  // Select session data from the store
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
+  const isLoadingAllSessions = useSelector(
+    (state: RootState) => state.allSessions.isLoadingAllSessions
+  );
+
+  useEffect(() => {
+    // handleCreateSession();
+    navigation.setOptions({
+      headerStyle: {
+        backgroundColor: '#EEF0F8',
+      },
+      headerTitle: '',
+    });
+  }, [navigation]);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const userFromStorage = await getItem('user');
+      setUser(userFromStorage);
+      userFromStorage ? null : router.push('/login');
+    }
+
+    fetchUser();
+  }, [router]);
+
+  const {
+    data: Allsessions,
+    isLoading: isLoadingSessions,
+    isError: isErrorSession,
+  } = useGetCoachAllSessionsQuery({
+    regions: `'San Francisco Crocker','San Francisco Civic Center'`, // Update to regions
+    startDate: '2018-08-01', // Adjust to the relevant date range
+    endDate: '2026-06-21', // Use the relevant end date
+    limit: 100, // Optional, can be omitted
+    offset: 0, // Optional, can be omitted
+  });
+  const allCoachSessions = Allsessions
+    ? GetSessionsAdapter.getSelectors().selectAll(Allsessions)
+    : [];
+
+  useEffect(() => {
+    if (Allsessions) {
+      const allCoachSessions =
+        GetSessionsAdapter.getSelectors().selectAll(Allsessions);
+      const today = new Date();
+      const todayString = today.toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+      const currentTime = today.getTime(); // Get the current time in milliseconds
+
+      const upcomingSessions: GetAllSessions[] = [];
+      const pastSessions: GetAllSessions[] = [];
+      const currentSessions: GetAllSessions[] = [];
+
+      allCoachSessions.forEach((session) => {
+        const sessionDate = new Date(session.SessionDate);
+        const sessionDateString = sessionDate.toISOString().split('T')[0]; // Format session date to YYYY-MM-DD
+
+        // Parse the session start and end time
+        const sessionStartTime = new Date(session.SessionStartTime).getTime();
+        const sessionEndTime = new Date(session.SessionEndTime).getTime();
+
+        // Log the session date and today's date for comparison
+        console.log(
+          `Session Date: ${sessionDateString}, Today's Date: ${todayString}`
+        );
+
+        if (sessionDateString === todayString) {
+          // Check if the session is currently ongoing
+          if (sessionStartTime <= currentTime && sessionEndTime > currentTime) {
+            currentSessions.push(session); // Add to current sessions if the session is ongoing
+          }
+        } else if (sessionDate > today) {
+          upcomingSessions.push(session);
+        } else {
+          pastSessions.push(session);
+        }
+      });
+
+      // Logic to determine which current session to store based on the criteria
+      let uniqueCurrentSession: GetAllSessions[] = [];
+      if (currentSessions.length > 0) {
+        uniqueCurrentSession = [currentSessions[0]]; // Store the first current session
+      } else if (upcomingSessions.length > 0) {
+        // If there are no current sessions, check for upcoming sessions with empty start or end time
+        const nextSession = upcomingSessions.find(
+          (session) =>
+            !session.SessionStartTime ||
+            session.SessionStartTime === '' ||
+            !session.SessionEndTime ||
+            session.SessionEndTime === ''
+        );
+        if (nextSession) {
+          uniqueCurrentSession = [nextSession]; // Store the next session if it meets criteria
+        }
+      }
+
+      // Log the current sessions for debugging
+      console.log('Current Sessions:', currentSessions);
+      console.log('Unique Current Session:', uniqueCurrentSession);
+
+      // Helper function to convert time "16:00:00.000Z" to a number for sorting
+      const timeToSortableNumber = (timeString: string) => {
+        if (!timeString || timeString === '') return 99999999; // Highest value for empty times
+        const [hours, minutes] = timeString.split(':');
+        return parseInt(hours) * 100 + parseInt(minutes); // Convert time to a sortable number HHMM
+      };
+
+      // Helper function to sort by date and then time
+      const sortSessionsByDateAndTime = (
+        sessions: GetAllSessions[],
+        descending: boolean = false
+      ) => {
+        return sessions.sort((a, b) => {
+          const aDate = new Date(a.SessionDate).getTime();
+          const bDate = new Date(b.SessionDate).getTime();
+
+          // First, sort by date
+          if (aDate !== bDate) {
+            return descending ? bDate - aDate : aDate - bDate; // Ascending or descending order by date
+          }
+
+          // If the dates are the same, sort by time
+          const aTime = timeToSortableNumber(a.SessionStartTime);
+          const bTime = timeToSortableNumber(b.SessionStartTime);
+          return descending ? bTime - aTime : aTime - bTime; // Ascending or descending order by time
+        });
+      };
+
+      // Sort each session category
+      const sortedUpcomingSessions =
+        sortSessionsByDateAndTime(upcomingSessions);
+      const sortedPastSessions = sortSessionsByDateAndTime(pastSessions, true); // Sort past sessions in descending order
+
+      // Dispatch actions to store the categorized and sorted sessions
+      dispatch(setCurrentSessions(uniqueCurrentSession)); // Dispatch unique current session
+      dispatch(setPastSessions(sortedPastSessions));
+      dispatch(setUpComingSessions(sortedUpcomingSessions));
+    }
+  }, [Allsessions, dispatch]);
 
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
@@ -372,14 +527,22 @@ export default function Feed() {
 
       {/* Sessions Section */}
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlatList
-          data={sessionSingleData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <SessionsIndex item={item} />}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
-        />
+        <>
+          {isLoadingAllSessions ? (
+            <View className="mt-5">
+              <ActivityIndicator size="small" color={'#000000'} />
+            </View>
+          ) : (
+            <FlatList
+              data={currentSessions}
+              keyExtractor={(item) => item.SessionId}
+              renderItem={({ item }) => <SessionsIndex item={item} />}
+              contentContainerStyle={{
+                paddingVertical: 8,
+              }}
+            />
+          )}
+        </>
       </View>
 
       {/* Home Task Section */}

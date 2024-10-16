@@ -6,11 +6,22 @@ import {
 
 // Define font types
 const type = {
-  light: 'SpaceGrotesk-light',
-  regular: 'SpaceGrotesk-Regular',
-  medium: 'SpaceGrotesk-Medium',
-  semiBold: 'SpaceGrotesk-SemiBold',
-  bold: 'SpaceGrotesk-Bold',
+  roboto: {
+    light: 'Roboto-Light',
+    regular: 'Roboto-Regular',
+    medium: 'Roboto-Medium',
+    bold: 'Roboto-Bold',
+    semiBold: 'Roboto-SemiBold',
+    black: 'Roboto-Black',
+  },
+  sfPro: {
+    light: 'SFPRODISPLAYLIGHT',
+    regular: 'SFPRODISPLAYREGULAR',
+    medium: 'SFPRODISPLAYMEDIUM',
+    bold: 'SFPRODISPLAYBOLD',
+    semiBold: 'SFPRODISPLAYSEMIBOLD',
+    black: 'SFPRODISPLAYBLACK',
+  },
 };
 
 // Define sizes according to Tailwind CSS
@@ -79,42 +90,42 @@ interface Styles {
 const style: Styles = {
   root: { flex: 1 },
   description: {
-    fontFamily: type.light,
+    fontFamily: type.roboto.light,
     fontSize: sizes.textXS,
     lineHeight: sizes.textS,
   },
   label: {
-    fontFamily: type.semiBold,
+    fontFamily: type.roboto.semiBold,
     fontSize: sizes.textS,
     lineHeight: sizes.textBase,
   },
   input: {
-    fontFamily: type.regular,
+    fontFamily: type.roboto.regular,
     fontSize: sizes.textBase,
     lineHeight: sizes.textLarge,
   },
   heading: {
-    fontFamily: type.bold,
+    fontFamily: type.roboto.bold,
     fontSize: sizes.text2XL,
     lineHeight: sizes.textXL,
   },
   subHeading: {
-    fontFamily: type.light,
+    fontFamily: type.roboto.light,
     fontSize: sizes.textS,
     lineHeight: sizes.textBase,
   },
   subHeadingLarge: {
-    fontFamily: type.bold,
+    fontFamily: type.roboto.bold,
     fontSize: sizes.textLarge,
     lineHeight: sizes.textLarge,
   },
   largeHeading: {
-    fontFamily: type.bold,
+    fontFamily: type.roboto.bold,
     fontSize: sizes.text3XL,
     lineHeight: sizes.text3XL,
   },
   XXLHeading: {
-    fontFamily: type.bold,
+    fontFamily: type.roboto.bold,
     fontSize: sizes.text8XL,
     lineHeight: sizes.text8XL,
   },

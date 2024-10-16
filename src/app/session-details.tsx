@@ -15,9 +15,14 @@ import PastTask from '@/components/sessionDetails/past-task';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/redux/store';
+
 const SessionDetails = () => {
   const navigation = useNavigation();
-
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -36,8 +41,8 @@ const SessionDetails = () => {
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
           <FlatList
-            data={sessionSingleData}
-            keyExtractor={(item) => item.id.toString()}
+            data={currentSessions}
+            keyExtractor={(item) => item.SessionId}
             renderItem={({ item }) => <SessionsIndex item={item} />}
             contentContainerStyle={{
               paddingVertical: 8,

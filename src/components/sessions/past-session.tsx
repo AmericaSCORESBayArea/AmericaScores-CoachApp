@@ -1,3 +1,4 @@
+/* eslint-disable radix */
 import React from 'react';
 import { Pressable, Text, View } from '@/ui';
 import { useRouter } from 'expo-router';
@@ -20,13 +21,18 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
   // const navigationHandler = () => {
   //   router.push(item.navigation);
   // };
-  const sessionStartTime = item.SessionStartTime
-    ? item.SessionStartTime
-    : '14:00:00.000Z'; // Fallback for testing
+  const sessionStartTime = item.SessionStartTime || ''; // Empty if not provided
+  let formattedTime = 'No Time Available'; // Default message
 
-  // Create a valid Date object using a fixed date
-  const dateString = `1970-01-01T${sessionStartTime}`; // Combine with a date
-  const dateObject = new Date(dateString);
+  if (sessionStartTime) {
+    // Extract hours and minutes directly if time is provided
+    const [hours, minutes] = sessionStartTime.split(':');
+    const timeObject = new Date();
+    timeObject.setHours(parseInt(hours), parseInt(minutes));
+
+    // Format the time using 'date-fns'
+    formattedTime = format(timeObject, 'hh:mm a');
+  }
   return (
     <Pressable
       className="my-2 w-full rounded-sm bg-white"
@@ -59,7 +65,7 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
             width={typography.iconSizes.md}
           />
           <Text style={typography.style.subHeadingLarge}>
-            {item.Weekday}, {format(dateObject, 'hh:mm a')}
+            {item.Weekday}, {formattedTime} {item.SessionDate}
           </Text>
         </View>
 
