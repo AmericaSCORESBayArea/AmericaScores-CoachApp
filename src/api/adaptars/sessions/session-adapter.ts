@@ -14,7 +14,7 @@ export const GetSessionsAdapter = createEntityAdapter<GetAllSessions, string>({
 export const GetSessionsIdAdapter = createEntityAdapter<GetSessionsId, string>({
   selectId: (Sessions) => Sessions.SessionId,
 });
-export const GetCoachTeamSeasonSessionSerializerAdapter = createEntityAdapter<
+export const GetCoachTeamSeasonSessionAdapter = createEntityAdapter<
   GetCoachTeamSeasonSession,
   string
 >({
