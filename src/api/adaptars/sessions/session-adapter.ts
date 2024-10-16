@@ -1,5 +1,6 @@
 import type {
   GetAllSessions,
+  GetCoachTeamSeasonSession,
   GetSessionsId,
   PostSessions,
 } from '@/interfaces/entities/session/sessions-entities';
@@ -11,5 +12,11 @@ export const GetSessionsAdapter = createEntityAdapter<GetAllSessions, string>({
 });
 
 export const GetSessionsIdAdapter = createEntityAdapter<GetSessionsId, string>({
+  selectId: (Sessions) => Sessions.SessionId,
+});
+export const GetCoachTeamSeasonSessionSerializerAdapter = createEntityAdapter<
+  GetCoachTeamSeasonSession,
+  string
+>({
   selectId: (Sessions) => Sessions.SessionId,
 });

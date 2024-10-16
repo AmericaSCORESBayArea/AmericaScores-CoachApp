@@ -6,5 +6,6 @@ export enum EndpointPaths {
   COACH_SESSIONS = 'sessions',
   COACH_ENROLLMENTS = 'enrollments',
   COACH_All_SESSIONS = 'coach/003UQ00000EiAy9YAF',
+  COACH_TEAMSEASON_SESSIONS = 'coach/003UQ00000EiAy9YAF',
   COACH_ATTENDANCES = 'coach/003UQ00000EiAy9YAF',
 }

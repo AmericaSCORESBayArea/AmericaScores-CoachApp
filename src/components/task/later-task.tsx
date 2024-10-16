@@ -30,14 +30,9 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
       className="mb-0.5 w-full rounded-sm bg-white"
       onPress={navigationHandler}
     >
-      <View className="flex-row justify-between p-4">
+      <View className="flex-row items-center justify-between p-4">
         {/* Title Text with responsive size from typography */}
-        <Text
-          className={`font-bold`}
-          style={{ fontSize: typography.sizes.textXL }}
-        >
-          {item.title}
-        </Text>
+        <Text style={typography.style.heading}>{item.title}</Text>
         <ArrowForwardSVG
           height={typography.iconSizes.md}
           width={typography.iconSizes.md}
@@ -45,32 +40,22 @@ const LaterTask: React.FC<LaterTaskProps> = ({ item }) => {
       </View>
 
       <View className="px-4">
-        <View className="my-1 flex-row">
+        <View className="my-1 flex-row items-center">
           <LocationSVG
             height={typography.iconSizes.md}
             width={typography.iconSizes.md}
           />
           {/* Location Text with responsive size from typography */}
-          <Text
-            className={`color-neutral-600`}
-            style={{ fontSize: typography.sizes.textLarge }}
-          >
-            {item.location}
-          </Text>
+          <Text style={typography.style.subHeadingLarge}>{item.location}</Text>
         </View>
 
-        <View className="my-1 flex-row">
+        <View className="my-1 flex-row items-center">
           <TimeSVG
             height={typography.iconSizes.md}
             width={typography.iconSizes.md}
           />
           {/* Date Text with responsive size from typography */}
-          <Text
-            className={`color-neutral-600`}
-            style={{ fontSize: typography.sizes.textLarge }}
-          >
-            Due: {item.date}
-          </Text>
+          <Text style={typography.style.subHeadingLarge}>Due: {item.date}</Text>
         </View>
       </View>
     </Pressable>

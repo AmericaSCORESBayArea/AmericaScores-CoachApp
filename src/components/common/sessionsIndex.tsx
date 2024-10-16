@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-shadow */
-import { View, Text, Pressable, Dimensions } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import React from 'react';
 import { useRouter } from 'expo-router';
 import { LocationSVG } from '@/ui/icons/location';

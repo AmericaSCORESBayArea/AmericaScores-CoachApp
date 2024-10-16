@@ -1,4 +1,5 @@
 export interface GetAllSessions {
+  [x: string]: any;
   TeamSeasonId: string;
   SessionId: string;
   SessionName: string;
@@ -7,6 +8,7 @@ export interface GetAllSessions {
   SessionEndTime: string;
   Weekday: string;
   IsDeleted: string;
+  SessionTopic: string;
   StudentsAbsent: string;
   StudentsPresent: string;
   AttendancePercentage: string | null;
@@ -17,6 +19,16 @@ export interface GetAllSessions {
   ProgramType: string;
   UsesHeadcount: string;
 }
+export interface GetCoachTeamSeasonSession {
+  TeamSeasonId: string;
+  SessionId: string;
+  SessionName: string;
+  SessionDate: string;
+  SessionStartTime: string;
+  SessionEndTime: string;
+  SessionTopic: string;
+}
+
 export interface PostSessions {
   SessionId: string;
 }

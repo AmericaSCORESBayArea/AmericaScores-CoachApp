@@ -6,14 +6,11 @@ import WeekTask from '@/components/task/week-task';
 import { laterTaskData, weekTaskData } from '@/data/data-base';
 import { ScrollView, Text, View } from '@/ui';
 import { AntDesign } from '@expo/vector-icons';
-import { Dimensions, FlatList } from 'react-native';
+import { FlatList } from 'react-native';
+import typography from '@/metrics/typography';
 
 export default function Tasks() {
   const router = useRouter();
-  const { width } = Dimensions.get('window'); // Get screen width
-  const isTablet = width >= 768; // Define tablet based on width
-
-  const titleTextSize = isTablet ? 'text-2xl' : 'text-sm'; // Define the text size class for title
 
   const navigation = useNavigation();
   useEffect(() => {
@@ -33,7 +30,10 @@ export default function Tasks() {
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
-          <Text className={`my-3 font-bold text-[#737373] ${titleTextSize} `}>
+          <Text
+            style={typography.style.subHeading}
+            className="text-neutral-500"
+          >
             DUE THIS WEEK
           </Text>
         </View>
@@ -48,7 +48,7 @@ export default function Tasks() {
           />
         </View>
         <View className="ml-6">
-          <Text className={`my-3 font-bold text-[#737373] ${titleTextSize} `}>
+          <Text style={typography.style.subHeading} className="text-gray-700">
             LATER
           </Text>
         </View>
@@ -65,14 +65,14 @@ export default function Tasks() {
       </ScrollView>
       <AntDesign
         name="pluscircle"
-        size={isTablet ? 80 : 40}
+        size={typography.iconSizes.md}
         color="#004680"
         style={{
           position: 'absolute',
           bottom: 20,
           right: 20,
         }}
-        onPress={() => navigationHandler('create-session')}
+        onPress={() => navigationHandler('create-personal-task')}
       />
     </>
   );

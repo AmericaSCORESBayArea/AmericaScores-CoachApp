@@ -1,10 +1,11 @@
 import { Checkbox, CheckboxIcon, colors } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
-import { Text, View, Dimensions } from 'react-native';
+import { Text, View } from 'react-native';
 
 import { TakeAttendenceSVG } from '@/ui/icons/take-attendence';
 import { RecordVideoSVG } from '@/ui/icons/record-video';
 import { RecordPacerSVG } from '@/ui/icons/record-pacer';
+import typography from '@/metrics/typography';
 
 interface CreateSessionTaskType {
   id: number;
@@ -22,14 +23,6 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
   setSessionTask,
 }) => {
   const [checked, setChecked] = useState<boolean>(false);
-
-  // Get the screen dimensions
-  const { width } = Dimensions.get('window');
-  const isTablet = width >= 768; // Adjust this value based on your definition of a tablet
-
-  // Define dynamic sizes
-  const iconSize = isTablet ? 55 : 24; // Increase icon size for tablets
-  const textSize = isTablet ? 'text-3xl' : 'text-sm'; // Use Tailwind classes for text size
 
   const handleToggle = () => {
     setChecked((prevChecked) => {
@@ -49,16 +42,27 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'TakeAttendence' && (
-          <TakeAttendenceSVG height={iconSize} width={iconSize} />
+          <TakeAttendenceSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
         {item.icon === 'RecordVideo' && (
-          <RecordVideoSVG height={iconSize} width={iconSize} />
+          <RecordVideoSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
         {item.icon === 'RecordPacer' && (
-          <RecordPacerSVG height={iconSize} width={iconSize} />
+          <RecordPacerSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
 
-        <Text className={`${textSize} ml-2`}>{item.name}</Text>
+        <Text style={typography.style.heading} className="ml-2">
+          {item.name}
+        </Text>
       </Checkbox.Root>
     </View>
   );

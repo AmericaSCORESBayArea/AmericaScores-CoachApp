@@ -67,6 +67,13 @@ interface Styles {
   subHeading: TextStyle;
   subHeadingLarge: TextStyle;
   largeHeading: TextStyle;
+  XXLHeading: TextStyle;
+  iconSizeXS: ViewStyle;
+  iconSizeSM: ViewStyle;
+  iconSizeMD: ViewStyle;
+  iconSizeLG: ViewStyle;
+  iconSizeXL: ViewStyle;
+  iconSizeXXL: ViewStyle;
 }
 
 const style: Styles = {
@@ -88,7 +95,7 @@ const style: Styles = {
   },
   heading: {
     fontFamily: type.bold,
-    fontSize: sizes.textLarge,
+    fontSize: sizes.text2XL,
     lineHeight: sizes.textXL,
   },
   subHeading: {
@@ -103,8 +110,38 @@ const style: Styles = {
   },
   largeHeading: {
     fontFamily: type.bold,
-    fontSize: sizes.text2XL,
+    fontSize: sizes.text3XL,
     lineHeight: sizes.text3XL,
+  },
+  XXLHeading: {
+    fontFamily: type.bold,
+    fontSize: sizes.text8XL,
+    lineHeight: sizes.text8XL,
+  },
+  // Define icon sizes as styles
+  iconSizeXS: {
+    width: iconSizes.xs,
+    height: iconSizes.xs,
+  },
+  iconSizeSM: {
+    width: iconSizes.sm,
+    height: iconSizes.sm,
+  },
+  iconSizeMD: {
+    width: iconSizes.md,
+    height: iconSizes.md,
+  },
+  iconSizeLG: {
+    width: iconSizes.lg,
+    height: iconSizes.lg,
+  },
+  iconSizeXL: {
+    width: iconSizes.xl,
+    height: iconSizes.xl,
+  },
+  iconSizeXXL: {
+    width: iconSizes.xxl,
+    height: iconSizes.xxl,
   },
 };
 

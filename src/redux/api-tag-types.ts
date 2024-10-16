@@ -7,4 +7,5 @@ export enum ApiTagTypes {
   COACH_SESSIONSID = 'CoachSessionsId',
   COACH_ATTENDANCES = 'CoachAttendances',
   COACH_ENROLLMENTS = 'CoachEnrollments',
+  COACH_TEAMSEASON_SESSIONS = 'CoachTeamSeasonSessions',
 }

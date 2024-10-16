@@ -1,7 +1,7 @@
 export interface GetAttendance {
   AttendanceId: string;
   StudentName: string;
-  Attended: boolean;
+  Attended: string;
   StudentId: string;
 }
 

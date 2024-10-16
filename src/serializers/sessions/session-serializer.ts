@@ -4,6 +4,7 @@ import type {
   DeleteSessionsId,
   PatchSessionsId,
   PostSessions,
+  GetCoachTeamSeasonSession,
 } from '@/interfaces/entities/session/sessions-entities';
 
 export function GetSessionsSerializer(
@@ -18,6 +19,7 @@ export function GetSessionsSerializer(
     SessionEndTime,
     Weekday,
     IsDeleted,
+    SessionTopic,
     StudentsAbsent,
     StudentsPresent,
     AttendancePercentage,
@@ -38,6 +40,7 @@ export function GetSessionsSerializer(
     SessionEndTime,
     Weekday,
     IsDeleted,
+    SessionTopic,
     StudentsAbsent,
     StudentsPresent,
     AttendancePercentage,
@@ -47,6 +50,30 @@ export function GetSessionsSerializer(
     Region,
     ProgramType,
     UsesHeadcount,
+  };
+}
+
+export function GetCoachTeamSeasonSessionSerializer(
+  sessions: GetCoachTeamSeasonSession
+): GetCoachTeamSeasonSession {
+  const {
+    TeamSeasonId,
+    SessionId,
+    SessionName,
+    SessionDate,
+    SessionStartTime,
+    SessionEndTime,
+    SessionTopic,
+  } = sessions;
+
+  return {
+    TeamSeasonId,
+    SessionId,
+    SessionName,
+    SessionDate,
+    SessionStartTime,
+    SessionEndTime,
+    SessionTopic,
   };
 }
 

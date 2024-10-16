@@ -121,9 +121,6 @@ export default function TeamSeason() {
             data={SeasonStudentData}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <SeasonStudent item={item} />}
-            contentContainerStyle={{
-              paddingVertical: 8,
-            }}
           />
         </View>
       )}

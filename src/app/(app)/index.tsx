@@ -34,7 +34,7 @@ import {
   GetEnrollmentsAdapter,
   GetEnrollmentsIdAdapter,
 } from '@/api/adaptars/enrollments/enrollments-adapter';
-import { Dimensions, FlatList } from 'react-native';
+import { FlatList } from 'react-native';
 import { getItem } from '@/core/storage';
 import typography from '@/metrics/typography';
 import {
@@ -251,6 +251,7 @@ export default function Feed() {
       console.error('Failed to submit attendance:', err);
     }
   };
+  ///////////////////// Patch Attendance//////////////////////////
 
   // Call this function when you want to post the attendance
   const [patchCoachAttendance] = usePatchCoachAttendanceMutation(); // Adjust the hook name based on your slice
@@ -276,9 +277,7 @@ export default function Feed() {
     }
   };
 
-  // Call this function when you want to update the attendance
-
-  ///////////////////// Delete Attendance //////////////////////////
+  ///////////////////// Get Attendance //////////////////////////
   const {
     data: attendances,
     isLoading: isLoadingAttendance,
@@ -321,7 +320,7 @@ export default function Feed() {
     // handleDeleteEnrollments('a0mcX0000004D1tQAE');
     // handleUpdateEnrollments();
     // handlePostAttendance();
-    handleUpdateAttendance();
+    // handleUpdateAttendance();
   }, []);
   useEffect(() => {
     // console.log('allCoachRegions', allCoachRegions);
@@ -355,12 +354,6 @@ export default function Feed() {
   //   isErrorEnrollments
   // )
   //   return <Text>Error loading : {isErrorEnrollments}</Text>;
-  const { width } = Dimensions.get('window');
-  const isTablet = width >= 768;
-
-  // Set dynamic text sizes
-  const hiTextSize = isTablet ? 'text-4xl' : 'text-sm'; // "Hi Joe"
-  const dueSoonTextSize = isTablet ? 'text-2xl' : 'text-sm'; // "Due Soon Task"
 
   return (
     <ScrollView className="flex-1 bg-[#EEF0F8]">
@@ -402,8 +395,8 @@ export default function Feed() {
       </View>
 
       {/* Due Soon Task Title */}
-      <View className="ml-6">
-        <Text className={`my-3 font-[800] text-[#737373] ${dueSoonTextSize}`}>
+      <View className="my-3 ml-6">
+        <Text style={typography.style.subHeading} className="text-gray-700">
           Due Soon Task
         </Text>
       </View>
