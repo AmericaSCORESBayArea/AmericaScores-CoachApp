@@ -65,7 +65,7 @@ export default function Tasks() {
       </ScrollView>
       <AntDesign
         name="pluscircle"
-        size={typography.iconSizes.md}
+        size={typography.iconSizes.xxl}
         color="#004680"
         style={{
           position: 'absolute',

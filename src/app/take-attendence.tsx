@@ -6,10 +6,10 @@ import { useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import CheckAttendence from '@/components/attendence/check-attendence';
 import { sessionSingleData, takeAttendence } from '@/data/data-base';
-import { ScrollView, TouchableOpacity, View } from '@/ui';
+import { ScrollView, TouchableOpacity, View, Text } from '@/ui';
 import TakeAttendenceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
 import SessionsIndex from '@/components/common/sessionsIndex';
-import { FlatList } from 'react-native';
+import { ActivityIndicator, FlatList } from 'react-native';
 import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 import { useGetCoachAttendanceQuery } from '@/redux/attendance/attendance-endpoints';
 import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapter';
@@ -22,6 +22,10 @@ const TakeAttendence = () => {
   const currentSessions = useSelector(
     (state: RootState) => state.allSessions.currentSessions
   );
+  const isLoadingAllSessions = useSelector(
+    (state: RootState) => state.allSessions.isLoadingAllSessions
+  );
+
   // const [attendanceList, setAttendanceList] = useState<GetAttendance[]>();
   ///////////////////// Get Attendance //////////////////////////
   const {
@@ -66,14 +70,27 @@ const TakeAttendence = () => {
   return (
     <ScrollView className=" flex-1 bg-[#EEF0F8]">
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlatList
-          data={currentSessions}
-          keyExtractor={(item) => item.SessionId}
-          renderItem={({ item }) => <SessionsIndex item={item} />}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
-        />
+        <>
+          {isLoadingAllSessions ? (
+            <View className="mt-5">
+              <ActivityIndicator size="small" color={'#000000'} />
+            </View>
+          ) : currentSessions && currentSessions.length > 0 ? ( // Check if currentSessions exist and are not empty
+            <FlatList
+              data={currentSessions}
+              keyExtractor={(item) => item.SessionId}
+              renderItem={({ item }) => <SessionsIndex item={item} />}
+              contentContainerStyle={{
+                paddingVertical: 8,
+              }}
+            />
+          ) : (
+            // Show message when no sessions are available
+            <View className="my-10 items-center justify-center">
+              <Text>No Current Session Available</Text>
+            </View>
+          )}
+        </>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList

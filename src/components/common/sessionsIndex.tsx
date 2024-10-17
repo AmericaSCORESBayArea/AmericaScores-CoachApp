@@ -1,7 +1,7 @@
 /* eslint-disable radix */
 /* eslint-disable @typescript-eslint/no-shadow */
 import { View, Text, Pressable } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { LocationSVG } from '@/ui/icons/location';
 import { TimeSVG } from '@/ui/icons/time';

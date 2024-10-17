@@ -432,51 +432,30 @@ export default function Feed() {
         const sessionEndTime = new Date(session.SessionEndTime).getTime();
 
         // Log the session date and today's date for comparison
-        console.log(
-          `Session Date: ${sessionDateString}, Today's Date: ${todayString}`
-        );
 
         if (sessionDateString === todayString) {
+          console.log(
+            `Session Date: ${sessionDateString}, Today's Date: ${todayString}`
+          );
+          // console.log('dateee Sessions : ', session);
           // Check if the session is currently ongoing
+          console.log('currentTime : ', currentTime);
+          console.log('sessionStartTime : ', sessionStartTime);
+
           if (sessionStartTime <= currentTime && sessionEndTime > currentTime) {
+            console.log('current Sessions : ', session);
             currentSessions.push(session); // Add to current sessions if the session is ongoing
           }
         } else if (sessionDate > today) {
+          // console.log('Upcoming sessions : ', session);
+
           upcomingSessions.push(session);
         } else {
+          // console.log('past sessions : ', session);
+
           pastSessions.push(session);
         }
       });
-
-      // Logic to determine which current session to store based on the criteria
-      let uniqueCurrentSession: GetAllSessions[] = [];
-      if (currentSessions.length > 0) {
-        uniqueCurrentSession = [currentSessions[0]]; // Store the first current session
-      } else if (upcomingSessions.length > 0) {
-        // If there are no current sessions, check for upcoming sessions with empty start or end time
-        const nextSession = upcomingSessions.find(
-          (session) =>
-            !session.SessionStartTime ||
-            session.SessionStartTime === '' ||
-            !session.SessionEndTime ||
-            session.SessionEndTime === ''
-        );
-        if (nextSession) {
-          uniqueCurrentSession = [nextSession]; // Store the next session if it meets criteria
-        }
-      }
-
-      // Log the current sessions for debugging
-      console.log('Current Sessions:', currentSessions);
-      console.log('Unique Current Session:', uniqueCurrentSession);
-
-      // Helper function to convert time "16:00:00.000Z" to a number for sorting
-      const timeToSortableNumber = (timeString: string) => {
-        if (!timeString || timeString === '') return 99999999; // Highest value for empty times
-        const [hours, minutes] = timeString.split(':');
-        return parseInt(hours) * 100 + parseInt(minutes); // Convert time to a sortable number HHMM
-      };
-
       // Helper function to sort by date and then time
       const sortSessionsByDateAndTime = (
         sessions: GetAllSessions[],
@@ -497,14 +476,58 @@ export default function Feed() {
           return descending ? bTime - aTime : aTime - bTime; // Ascending or descending order by time
         });
       };
+      // Logic to determine which current session to store based on the criteria
+      let uniqueCurrentSession: GetAllSessions[] = [];
+      // console.log('a:', uniqueCurrentSession);
+
+      if (currentSessions.length > 0) {
+        console.log('b : ', [currentSessions[0]]);
+
+        uniqueCurrentSession = [currentSessions[0]]; // Store the first current session
+      }
+      // else if (upcomingSessions.length > 0) {
+      //   const sortedUpcomingSessions =
+      //     sortSessionsByDateAndTime(upcomingSessions);
+      //   console.log('sorted : ', sortedUpcomingSessions);
+      //   console.log('uniqueCurrentSession', sortedUpcomingSessions[0]);
+      //   console.log('uniqueCurrentSession', [sortedUpcomingSessions[0]]);
+
+      //   uniqueCurrentSession = [sortedUpcomingSessions[0]];
+      // dispatch(setCurrentSessions(uniqueCurrentSession)); // Dispatch unique current session
+
+      //   dispatch(setUpComingSessions(sortedUpcomingSessions));
+      // If there are no current sessions, check for upcoming sessions with empty start or end time
+      // const nextSession = upcomingSessions.find(
+      //   (session) =>
+      //     !session.SessionStartTime ||
+      //     session.SessionStartTime === '' ||
+      //     !session.SessionEndTime ||
+      //     session.SessionEndTime === ''
+      // );
+      // if (nextSession) {
+      //   uniqueCurrentSession = [nextSession]; // Store the next session if it meets criteria
+      // }
+      // }
+
+      // Log the current sessions for debugging
+      // console.log('Current Sessions:', currentSessions);
+      // console.log('Unique Current Session:', uniqueCurrentSession);
+
+      // Helper function to convert time "16:00:00.000Z" to a number for sorting
+      const timeToSortableNumber = (timeString: string) => {
+        if (!timeString || timeString === '') return 99999999; // Highest value for empty times
+        const [hours, minutes] = timeString.split(':');
+        return parseInt(hours) * 100 + parseInt(minutes); // Convert time to a sortable number HHMM
+      };
 
       // Sort each session category
+      const sortedCurrentSessions = sortSessionsByDateAndTime(currentSessions);
       const sortedUpcomingSessions =
         sortSessionsByDateAndTime(upcomingSessions);
-      const sortedPastSessions = sortSessionsByDateAndTime(pastSessions, true); // Sort past sessions in descending order
+      const sortedPastSessions = sortSessionsByDateAndTime(pastSessions, true);
 
       // Dispatch actions to store the categorized and sorted sessions
-      dispatch(setCurrentSessions(uniqueCurrentSession)); // Dispatch unique current session
+      dispatch(setCurrentSessions(sortedCurrentSessions)); // Dispatch unique current session
       dispatch(setPastSessions(sortedPastSessions));
       dispatch(setUpComingSessions(sortedUpcomingSessions));
     }
@@ -532,29 +555,38 @@ export default function Feed() {
             <View className="mt-5">
               <ActivityIndicator size="small" color={'#000000'} />
             </View>
+          ) : currentSessions && currentSessions.length > 0 ? (
+            // If sessions exist, show both Sessions and Home Task sections
+            <>
+              {/* Sessions Section */}
+              <FlatList
+                data={currentSessions}
+                keyExtractor={(item) => item.SessionId}
+                renderItem={({ item }) => <SessionsIndex item={item} />}
+                contentContainerStyle={{
+                  paddingVertical: 8,
+                }}
+              />
+
+              {/* Home Task Section */}
+              <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
+                <FlatList
+                  data={sessionData}
+                  keyExtractor={(item) => item.id.toString()}
+                  renderItem={({ item }) => <HomeTask item={item} />}
+                  contentContainerStyle={{
+                    paddingVertical: 8,
+                  }}
+                />
+              </View>
+            </>
           ) : (
-            <FlatList
-              data={currentSessions}
-              keyExtractor={(item) => item.SessionId}
-              renderItem={({ item }) => <SessionsIndex item={item} />}
-              contentContainerStyle={{
-                paddingVertical: 8,
-              }}
-            />
+            // Show message when no sessions are available
+            <View className="my-10 items-center justify-center">
+              <Text>No Current Session Available</Text>
+            </View>
           )}
         </>
-      </View>
-
-      {/* Home Task Section */}
-      <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-        <FlatList
-          data={sessionData}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <HomeTask item={item} />}
-          contentContainerStyle={{
-            paddingVertical: 8,
-          }}
-        />
       </View>
 
       {/* Due Soon Task Title */}

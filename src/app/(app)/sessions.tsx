@@ -73,17 +73,32 @@ export default function Sessions() {
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
           <Text style={(typography.style.heading, { color: charcoal[700] })}>
-            Next Session
+            Current Session
           </Text>
         </View>
 
         <View className="mx-6 rounded-sm ">
-          <FlatList
-            data={currentSessions}
-            keyExtractor={(item) => item.SessionId}
-            renderItem={({ item }) => <SessionsIndex item={item} />}
-            contentContainerStyle={{ paddingVertical: 8 }}
-          />
+          <>
+            {isLoadingAllSessions ? (
+              <View className="mt-5">
+                <ActivityIndicator size="small" color={'#000000'} />
+              </View>
+            ) : currentSessions && currentSessions.length > 0 ? ( // Check if currentSessions exist and are not empty
+              <FlatList
+                data={currentSessions}
+                keyExtractor={(item) => item.SessionId}
+                renderItem={({ item }) => <SessionsIndex item={item} />}
+                contentContainerStyle={{
+                  paddingVertical: 8,
+                }}
+              />
+            ) : (
+              // Show message when no sessions are available
+              <View className="my-10 items-center justify-center">
+                <Text>No Current Session Available</Text>
+              </View>
+            )}
+          </>
         </View>
 
         <View className="ml-6 mt-4 w-[90%] flex-row justify-between">

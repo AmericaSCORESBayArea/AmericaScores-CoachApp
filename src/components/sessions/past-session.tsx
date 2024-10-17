@@ -33,19 +33,30 @@ const PastSession: React.FC<PastSessionTaskProps> = ({ item }) => {
     // Format the time using 'date-fns'
     formattedTime = format(timeObject, 'hh:mm a');
   }
+  // Navigation handler
+  const navigationHandler = (item: string) => {
+    if (item === 'session-details') {
+      router.push('session-details');
+    } else if (item === 'team-season') {
+      router.push('team-season');
+    }
+  };
   return (
     <Pressable
       className="my-2 w-full rounded-sm bg-white"
-      // onPress={navigationHandler}
+      onPress={() => navigationHandler('session-details')}
     >
       {/* Title with dynamic font size */}
-      <View className="flex-row items-center justify-between p-4">
+      <Pressable
+        className="flex-row items-center justify-between p-4"
+        onPress={() => navigationHandler('team-season')}
+      >
         <Text style={typography.style.heading}>{item.TeamSeasonName}</Text>
         <ArrowForwardSVG
           height={typography.iconSizes.md}
           width={typography.iconSizes.md}
         />
-      </View>
+      </Pressable>
 
       <View className="px-4">
         {/* Location */}
