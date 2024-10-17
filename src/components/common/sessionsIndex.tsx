@@ -49,9 +49,15 @@ const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
   };
 
   return (
-    <Pressable className="my-2 w-full rounded-sm bg-white">
+    <Pressable
+      className="my-2 w-full rounded-sm bg-white"
+      onPress={() => navigationHandler('session-details')}
+    >
       {/* Title with dynamic font size */}
-      <Pressable className="flex-row items-center justify-between p-4">
+      <Pressable
+        className="flex-row items-center justify-between p-4"
+        onPress={() => navigationHandler('team-season')}
+      >
         <Text style={typography.style.heading}>{item.TeamSeasonName}</Text>
       </Pressable>
 
