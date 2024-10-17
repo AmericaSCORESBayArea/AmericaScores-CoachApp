@@ -1,4 +1,5 @@
-import { Checkbox } from '@/ui'; // Ensure this is the correct path for your Checkbox component
+import typography from '@/metrics/typography';
+import { Checkbox, Text } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
 import { View } from 'react-native';
 
@@ -37,7 +38,9 @@ const CreatePersonalAddDetail: React.FC<CreatePersonalAddDetailProps> = ({
         checked={checked}
       >
         <Checkbox.Icon checked={checked} />
-        <Checkbox.Label text={item.name} />
+        <Text style={typography.style.heading} className="ml-2">
+          {item.name}
+        </Text>
       </Checkbox.Root>
     </View>
   );

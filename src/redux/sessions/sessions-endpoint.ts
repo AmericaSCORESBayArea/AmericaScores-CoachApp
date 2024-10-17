@@ -5,11 +5,13 @@ import type {
   GetSessionsId,
   PatchSessionsId,
   PostSessions,
-  GetSessions,
+  GetAllSessions,
+  GetCoachTeamSeasonSession,
 } from '@/interfaces/entities/session/sessions-entities';
 
 import { apiSlice, providesList } from '../apiSlice';
 import {
+  GetCoachTeamSeasonSessionAdapter,
   GetSessionsAdapter,
   GetSessionsIdAdapter,
 } from '@/api/adaptars/sessions/session-adapter';
@@ -18,36 +20,43 @@ import {
   GetSessionsIdSerializer,
   PostSessionsSerializer,
   PatchSessionsIdSerializer,
+  GetCoachTeamSeasonSessionSerializer,
 } from '@/serializers/sessions/session-serializer';
 import { sessionData } from '@/data/data-base';
 
 export const brandEndpoints = apiSlice
   .enhanceEndpoints({
-    addTagTypes: [ApiTagTypes.COACH_SESSIONS],
+    addTagTypes: [ApiTagTypes.COACH_All_SESSIONS],
   })
   .injectEndpoints({
     overrideExisting: true,
     endpoints: (builder) => ({
       ////////////////////////////// Get sessions ////////////////////////////////////////////
 
-      getCoachSessions: builder.query<
-        EntityState<GetSessions, string>,
-        { teamSeasonId: string; date: string }
+      getCoachAllSessions: builder.query<
+        EntityState<GetAllSessions, string>,
+        {
+          regions: string;
+          startDate: string;
+          endDate: string;
+          limit?: number;
+          offset?: number;
+        }
       >({
-        query: ({ teamSeasonId, date }) => ({
-          url: `${EndpointPaths.COACH_SESSIONS}?teamSeasonId=${teamSeasonId}&date=${date}`,
+        query: ({ regions, startDate, endDate, limit, offset }) => ({
+          url: `${EndpointPaths.COACH_All_SESSIONS}/allSessions?regions=${regions}&startDate=${startDate}&endDate=${endDate}&limit=${limit}&offset=${offset}`,
           method: 'GET',
         }),
 
-        transformResponse: (response: GetSessions[]) => {
+        transformResponse: (response: GetAllSessions[]) => {
           return GetSessionsAdapter.setAll(
             GetSessionsAdapter.getInitialState(),
             response.map(GetSessionsSerializer)
-          ) as EntityState<GetSessions, string>;
+          ) as EntityState<GetAllSessions, string>;
         },
 
         providesTags: (result) =>
-          providesList(result?.ids, ApiTagTypes.COACH_SESSIONS),
+          providesList(result?.ids, ApiTagTypes.COACH_All_SESSIONS),
       }),
       ////////////////////////////// Post sessions ////////////////////////////////////////////
 
@@ -143,12 +152,35 @@ export const brandEndpoints = apiSlice
         }),
         invalidatesTags: [ApiTagTypes.COACH_SESSIONS],
       }),
+      ////////////////////////////// GetCoachTeamSeason sessions ////////////////////////////////////////////
+
+      getCoachTeamSeasonSessions: builder.query<
+        EntityState<GetCoachTeamSeasonSession, string>,
+        {
+          TeamSeasonId: string;
+        }
+      >({
+        query: ({ TeamSeasonId }) => ({
+          url: `${EndpointPaths.COACH_TEAMSEASON_SESSIONS}/teamseasons/${TeamSeasonId}/sessions`,
+          method: 'GET',
+        }),
+
+        transformResponse: (response: GetCoachTeamSeasonSession[]) => {
+          return GetCoachTeamSeasonSessionAdapter.setAll(
+            GetCoachTeamSeasonSessionAdapter.getInitialState(),
+            response.map(GetCoachTeamSeasonSessionSerializer)
+          ) as EntityState<GetCoachTeamSeasonSession, string>;
+        },
+        providesTags: (result) =>
+          providesList(result?.ids, ApiTagTypes.COACH_All_SESSIONS),
+      }),
     }),
   });
 
 export const {
-  useGetCoachSessionsQuery,
+  useGetCoachAllSessionsQuery,
   useGetCoachSessionIdQuery,
+  useGetCoachTeamSeasonSessionsQuery,
   useCreateCoachSessionMutation,
   useUpdateCoachSessionIdMutation,
   useDeleteCoachSessionIdMutation,

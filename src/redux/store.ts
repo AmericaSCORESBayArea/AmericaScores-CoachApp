@@ -1,9 +1,9 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/query';
 import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { apiSlice } from './apiSlice';
 import { authSlice } from './auth/auth-slice';
+import allSessionsReducer from './slice/all-sessions-slice';
 
 const persistConfig = {
   key: 'root',
@@ -14,6 +14,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   [apiSlice.reducerPath]: apiSlice.reducer,
   auth: authSlice.reducer,
+  allSessions: allSessionsReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -26,9 +27,9 @@ export const store = configureStore({
     ),
 });
 
+// Persistor for the store
 export const persistor = persistStore(store);
 
-setupListeners(store.dispatch);
-
-export type RootState = ReturnType<typeof store.getState>;
+// Define the RootState type
+export type RootState = ReturnType<typeof rootReducer>;
 export type AppDispatch = typeof store.dispatch;

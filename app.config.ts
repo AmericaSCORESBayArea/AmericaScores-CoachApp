@@ -47,11 +47,22 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'expo-font',
       {
         fonts: [
-          './assets/fonts/Inter.ttf',
+          // SF Pro Display fonts
+          './assets/fonts/sfprodisplay/SFDISPLAYLIGHT.ttf',
           './assets/fonts/sfprodisplay/SFDISPLAYREGULAR.ttf',
-          './assets/fonts/roboto/RobotoBlackItalic.ttf',
-          './assets/fonts/sfprodisplay',
-          './assets/fonts/roboto',
+          './assets/fonts/sfprodisplay/SFDISPLAYMEDIUM.ttf',
+          './assets/fonts/sfprodisplay/SFDISPLAYBOLD.ttf',
+          './assets/fonts/sfprodisplay/SFDISPLAYSEMIBOLD.ttf',
+          './assets/fonts/sfprodisplay/SFDISPLAYBLACK.ttf',
+
+          // Roboto fonts
+          './assets/fonts/roboto/Roboto-Light.ttf',
+          './assets/fonts/roboto/Roboto-Regular.ttf',
+          './assets/fonts/roboto/Roboto-Medium.ttf',
+          './assets/fonts/roboto/Roboto-SemiBold.ttf',
+          './assets/fonts/roboto/Roboto-Bold.ttf',
+          './assets/fonts/roboto/Roboto-Black.ttf',
+          './assets/fonts/roboto/Roboto-BlackItalic.ttf',
         ],
       },
     ],

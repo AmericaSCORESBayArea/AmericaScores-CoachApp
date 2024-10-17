@@ -1,34 +1,43 @@
+/* eslint-disable radix */
 /* eslint-disable @typescript-eslint/no-shadow */
-import { View, Text, Pressable, Dimensions } from 'react-native';
-import React from 'react';
+import { View, Text, Pressable } from 'react-native';
+import React, { useEffect } from 'react';
 import { useRouter } from 'expo-router';
 import { LocationSVG } from '@/ui/icons/location';
 import { TimeSVG } from '@/ui/icons/time';
 import { SoccerSVG } from '@/ui/icons/soccer';
+import typography from '@/metrics/typography';
+import type { GetAllSessions } from '@/interfaces/entities/session/sessions-entities';
+import { format, parseISO } from 'date-fns';
 
-interface SessionItem {
-  id: number;
-  title: string;
-  location: string;
-  time: string;
-  hobby: string[];
-  navigation: string;
-}
 interface SessionProps {
-  item: SessionItem;
+  item: GetAllSessions;
 }
 
 const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
   const router = useRouter();
 
-  // Determine if the device is a tablet or mobile based on width
-  const { width } = Dimensions.get('window');
-  const isTablet = width >= 768;
+  // Fallback for missing SessionStartTime
+  const sessionStartTime = item.SessionStartTime || ''; // Empty if not provided
+  let formattedTime = 'No Time Available'; // Default message
 
-  // Set dynamic sizes
-  const iconSize = isTablet ? 40 : 22;
-  const titleTextSize = isTablet ? 'text-4xl' : 'text-lg';
-  const contentTextSize = isTablet ? 'text-3xl' : 'text-sm';
+  // Use date-fns to format time
+  if (sessionStartTime) {
+    try {
+      const [hours, minutes] = sessionStartTime.split(':');
+      const timeObject = new Date();
+      timeObject.setHours(parseInt(hours), parseInt(minutes));
+      formattedTime = format(timeObject, 'hh:mm a'); // Format as '12:00 PM'
+    } catch (error) {
+      console.error('Error formatting time:', error);
+    }
+  }
+
+  // Format the SessionDate
+  const sessionDate = item.SessionDate ? parseISO(item.SessionDate) : null;
+  const formattedDate = sessionDate
+    ? format(sessionDate, 'MMMM d, yyyy')
+    : 'No Date Available';
 
   // Navigation handler
   const navigationHandler = (item: string) => {
@@ -40,48 +49,55 @@ const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
   };
 
   return (
-    <Pressable
-      className="w-full justify-center rounded-sm bg-white"
-      onPress={() => navigationHandler('session-details')}
-    >
+    <Pressable className="my-2 w-full rounded-sm bg-white">
       {/* Title with dynamic font size */}
-      <Pressable
-        className="flex-row justify-between p-4"
-        onPress={() => navigationHandler('team-season')}
-      >
-        <Text className={`font-bold ${titleTextSize}`}>{item.title}</Text>
+      <Pressable className="flex-row items-center justify-between p-4">
+        <Text style={typography.style.heading}>{item.TeamSeasonName}</Text>
       </Pressable>
 
-      <View className="px-4">
+      <View className="px-4 ">
         {/* Location */}
         <View className="my-1 flex-row items-center">
-          <LocationSVG height={iconSize} width={iconSize} />
-          <Text className={`${contentTextSize} ml-2 color-neutral-600`}>
-            {item.location}
-          </Text>
+          <LocationSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          <Text style={typography.style.subHeadingLarge}>Albhany School</Text>
         </View>
 
         {/* Time */}
         <View className="my-1 flex-row items-center">
-          <TimeSVG height={iconSize} width={iconSize} />
-          <Text className={`${contentTextSize} ml-2 color-neutral-600`}>
-            {item.time}
+          <TimeSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+          <Text style={typography.style.subHeadingLarge}>
+            {item.Weekday}, {formattedTime} {formattedDate}
           </Text>
         </View>
 
-        {/* Hobbies */}
+        {/* Session Topics */}
         <View className="my-1 flex-row">
-          {item.hobby.map((hobby, index) => (
-            <View
-              key={index}
-              className="mx-2 flex-row items-center rounded-3xl bg-slate-200 px-3"
-            >
-              <SoccerSVG height={iconSize} width={iconSize} />
-              <Text className={`ml-2 ${contentTextSize} color-neutral-600`}>
-                {hobby}
-              </Text>
-            </View>
-          ))}
+          {item.SessionTopic.replace(/['"]+/g, '')
+            .split(',')
+            .map((topic, index) => {
+              const trimmedTopic = topic.trim();
+
+              return (
+                <View
+                  key={index}
+                  className="mx-2 flex-row items-center rounded-2xl bg-slate-200 px-3"
+                >
+                  <SoccerSVG
+                    height={typography.iconSizes.md}
+                    width={typography.iconSizes.md}
+                  />
+                  <Text style={typography.style.subHeadingLarge}>
+                    {trimmedTopic}
+                  </Text>
+                </View>
+              );
+            })}
         </View>
       </View>
     </Pressable>

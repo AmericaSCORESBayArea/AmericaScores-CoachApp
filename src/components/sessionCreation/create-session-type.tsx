@@ -1,9 +1,11 @@
-import { Checkbox } from '@/ui'; // Ensure this is the correct path for your Checkbox component
+import { Checkbox, Text } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
 import { View } from 'react-native';
+
 import { SoccerSVG } from '@/ui/icons/soccer';
 import { PoetrySVG } from '@/ui/icons/poety';
 import { GameDaySVG } from '@/ui/icons/game-day';
+import typography from '@/metrics/typography';
 
 interface CreateSession {
   id: number;
@@ -36,15 +38,31 @@ const CreateSessionType: React.FC<SessionProps> = ({
         onChange={handleToggle}
         accessibilityLabel={`Toggle attendance for ${item.name}`}
         checked={checked}
+        className="flex-row items-center" // Ensure the checkbox is aligned properly
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'Soccer' && (
-          <SoccerSVG height={24} width={24} className="ml-4" />
+          <SoccerSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+            className="ml-4"
+          />
         )}
-        {item.icon === 'Poetry' && <PoetrySVG height={24} width={24} />}
-        {item.icon === 'GameDay' && <GameDaySVG height={24} width={24} />}
-
-        <Checkbox.Label text={item.name} />
+        {item.icon === 'Poetry' && (
+          <PoetrySVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+        )}
+        {item.icon === 'GameDay' && (
+          <GameDaySVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+        )}
+        <Text style={typography.style.heading} className="ml-2">
+          {item.name}
+        </Text>
       </Checkbox.Root>
     </View>
   );

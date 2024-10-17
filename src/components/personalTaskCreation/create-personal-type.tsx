@@ -1,9 +1,10 @@
-import { Checkbox } from '@/ui'; // Ensure this is the correct path for your Checkbox component
+import { Checkbox, Text } from '@/ui'; // Ensure this is the correct path for your Checkbox component
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { SoccerSVG } from '@/ui/icons/soccer';
 import { HumanResourcesSVG } from '@/ui/icons/human-resources';
 import { PersonalSVG } from '@/ui/icons/personal';
+import typography from '@/metrics/typography';
 
 interface CreatePersonal {
   id: number;
@@ -39,14 +40,28 @@ const CreatePersonalType: React.FC<CreatePersonalProps> = ({
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'Coaching & Training' && (
-          <SoccerSVG height={24} width={24} className="ml-4" />
+          <SoccerSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+            className="ml-4"
+          />
         )}
         {item.icon === 'SCORES Human Resources' && (
-          <HumanResourcesSVG height={24} width={24} />
+          <HumanResourcesSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
-        {item.icon === 'Personal' && <PersonalSVG height={24} width={24} />}
+        {item.icon === 'Personal' && (
+          <PersonalSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
+        )}
 
-        <Checkbox.Label text={item.name} />
+        <Text style={typography.style.heading} className="ml-2">
+          {item.name}
+        </Text>
       </Checkbox.Root>
     </View>
   );

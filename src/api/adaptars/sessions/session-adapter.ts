@@ -1,15 +1,22 @@
 import type {
-  GetSessions,
+  GetAllSessions,
+  GetCoachTeamSeasonSession,
   GetSessionsId,
   PostSessions,
 } from '@/interfaces/entities/session/sessions-entities';
 
 import { createEntityAdapter } from '@reduxjs/toolkit';
 
-export const GetSessionsAdapter = createEntityAdapter<GetSessions, string>({
+export const GetSessionsAdapter = createEntityAdapter<GetAllSessions, string>({
   selectId: (sessions) => sessions.SessionId,
 });
 
 export const GetSessionsIdAdapter = createEntityAdapter<GetSessionsId, string>({
+  selectId: (Sessions) => Sessions.SessionId,
+});
+export const GetCoachTeamSeasonSessionAdapter = createEntityAdapter<
+  GetCoachTeamSeasonSession,
+  string
+>({
   selectId: (Sessions) => Sessions.SessionId,
 });

@@ -1,5 +1,15 @@
-export interface PostAttendance {
-  SessionId: string;
+export interface GetAttendance {
+  AttendanceId: string;
+  StudentName: string;
+  Attended: string;
   StudentId: string;
-  Attended?: string;
+}
+
+export interface PostAttendance {
+  Message: string;
+  Attendance_Taken: boolean;
+}
+
+export interface PatchAttendance {
+  message: string;
 }

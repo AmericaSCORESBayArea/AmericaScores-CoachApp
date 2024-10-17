@@ -7,6 +7,7 @@ import { laterTaskData, weekTaskData } from '@/data/data-base';
 import { ScrollView, Text, View } from '@/ui';
 import { AntDesign } from '@expo/vector-icons';
 import { FlatList } from 'react-native';
+import typography from '@/metrics/typography';
 
 export default function Tasks() {
   const router = useRouter();
@@ -24,11 +25,15 @@ export default function Tasks() {
   const navigationHandler = (item: string) => {
     if (item === 'create-personal-task') router.push('create-personal-task');
   };
+
   return (
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
-          <Text className="my-3 text-base font-[800] text-[#737373]  ">
+          <Text
+            style={typography.style.subHeading}
+            className="text-neutral-500"
+          >
             DUE THIS WEEK
           </Text>
         </View>
@@ -43,7 +48,7 @@ export default function Tasks() {
           />
         </View>
         <View className="ml-6">
-          <Text className="my-3 text-base font-[800] text-[#737373]  ">
+          <Text style={typography.style.subHeading} className="text-gray-700">
             LATER
           </Text>
         </View>
@@ -60,12 +65,12 @@ export default function Tasks() {
       </ScrollView>
       <AntDesign
         name="pluscircle"
-        size={45}
+        size={typography.iconSizes.xxl}
         color="#004680"
         style={{
           position: 'absolute',
-          bottom: 20, // Adjust the distance from the bottom
-          right: 20, // Adjust the distance from the right
+          bottom: 20,
+          right: 20,
         }}
         onPress={() => navigationHandler('create-personal-task')}
       />

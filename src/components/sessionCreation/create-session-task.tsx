@@ -5,6 +5,7 @@ import { Text, View } from 'react-native';
 import { TakeAttendenceSVG } from '@/ui/icons/take-attendence';
 import { RecordVideoSVG } from '@/ui/icons/record-video';
 import { RecordPacerSVG } from '@/ui/icons/record-pacer';
+import typography from '@/metrics/typography';
 
 interface CreateSessionTaskType {
   id: number;
@@ -37,19 +38,31 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
         onChange={handleToggle}
         accessibilityLabel={`Toggle attendance for ${item.name}`}
         checked={checked}
+        className="flex-row items-center" // Ensure the checkbox is aligned properly
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'TakeAttendence' && (
-          <TakeAttendenceSVG height={24} width={24} />
+          <TakeAttendenceSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
         {item.icon === 'RecordVideo' && (
-          <RecordVideoSVG height={24} width={24} />
+          <RecordVideoSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
         {item.icon === 'RecordPacer' && (
-          <RecordPacerSVG height={24} width={24} />
+          <RecordPacerSVG
+            height={typography.iconSizes.md}
+            width={typography.iconSizes.md}
+          />
         )}
 
-        <Checkbox.Label text={item.name} />
+        <Text style={typography.style.heading} className="ml-2">
+          {item.name}
+        </Text>
       </Checkbox.Root>
     </View>
   );

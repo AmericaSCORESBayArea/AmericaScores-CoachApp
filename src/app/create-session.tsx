@@ -22,6 +22,7 @@ import {
   teamOptions,
 } from '@/data/data-base';
 import { ArrowDownSVG } from '@/ui/icons/arrow-down';
+import typography from '@/metrics/typography';
 
 const CreateSession = () => {
   const navigation = useNavigation();
@@ -65,10 +66,12 @@ const CreateSession = () => {
         </View>
 
         <View className="mx-3 flex-row items-center justify-between">
-          <View className="my-4  w-2/5">
-            <Text className="text-lg text-gray-700"> Date</Text>
+          <View className="my-4 w-2/5">
+            <Text style={typography.style.subHeading} className="text-gray-700">
+              Date
+            </Text>
             <Pressable
-              className="flex-row items-center justify-between rounded-md border border-gray-400  p-2"
+              className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowDatePicker(true)}
             >
               <Text className="text-black">{date.toLocaleDateString()}</Text>
@@ -77,7 +80,10 @@ const CreateSession = () => {
           </View>
 
           <View className="mx-3 my-4 w-2/5">
-            <Text className="text-lg text-gray-700"> Time</Text>
+            <Text style={typography.style.subHeading} className="text-gray-700">
+              {' '}
+              Time
+            </Text>
             <Pressable
               className="flex-row items-center justify-between rounded-md border border-gray-400 p-2"
               onPress={() => setShowTimePicker(true)}
@@ -166,7 +172,9 @@ const CreateSession = () => {
       </View>
 
       <View className="mx-6 my-2">
-        <Text className="text-sm font-semibold text-gray-700">TYPES</Text>
+        <Text style={typography.style.subHeading} className="text-gray-700">
+          TYPES
+        </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList
@@ -180,7 +188,9 @@ const CreateSession = () => {
       </View>
 
       <View className="mx-6 my-2">
-        <Text className="text-sm font-semibold text-gray-700">CREATE TASK</Text>
+        <Text style={typography.style.subHeading} className="text-gray-700">
+          CREATE TASK
+        </Text>
       </View>
       <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
         <FlatList

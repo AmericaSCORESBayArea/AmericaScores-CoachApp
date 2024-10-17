@@ -1,19 +1,39 @@
+/* eslint-disable tailwindcss/no-unnecessary-arbitrary-value */
 /* eslint-disable react-native/no-inline-styles */
-
-import { AntDesign } from '@expo/vector-icons';
-
-import { useNavigation, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { pastSessionData, sessionSingleData } from '@/data/data-base';
+import { AntDesign } from '@expo/vector-icons';
+import { useNavigation, useRouter } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from '@/ui';
+import { ActivityIndicator } from 'react-native';
 import PastSession from '../../components/sessions/past-session';
 import UpComingSession from '@/components/sessions/upcoming-session';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { FlatList } from 'react-native';
 
+import typography from '@/metrics/typography';
+import { charcoal, primary } from '@/ui/colors';
+import type { RootState } from '../../redux/store';
+import { useSelector } from 'react-redux';
+
 export default function Sessions() {
   const navigation = useNavigation();
   const router = useRouter();
+
+  // Fetch the current sessions from Redux state
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
+
+  const pastSession = useSelector(
+    (state: RootState) => state.allSessions.pastSessions
+  );
+  const upComingSession = useSelector(
+    (state: RootState) => state.allSessions.upComingSessions
+  );
+  const isLoadingAllSessions = useSelector(
+    (state: RootState) => state.allSessions.isLoadingAllSessions
+  );
+
   useEffect(() => {
     navigation.setOptions({
       headerStyle: {
@@ -21,25 +41,27 @@ export default function Sessions() {
       },
     });
   }, [navigation]);
-  const [sessionEvents, setEvents] = useState<string>('Past');
+
+  const [sessionEvents, setEvents] = useState<string>('Upcoming');
+  const [isPastPressed, setIsPastPressed] = useState<boolean>(false);
+  const [isUpComingPressed, setIsUpComingPressed] = useState<boolean>(true);
 
   const sessionEventHandler = (event: string) => {
     setEvents(event);
   };
-  const [isPastPressed, setIsPastPressed] = useState<boolean>(true);
-  const [isUpComingPressed, setIsUpComingPressed] = useState<boolean>(false);
 
   const pastHandlePress = () => {
-    setIsPastPressed(!isPastPressed);
+    setIsPastPressed(true);
     setIsUpComingPressed(false);
-    sessionEventHandler('UpComing');
+    sessionEventHandler('Past');
   };
 
   const upcomingHandlePress = () => {
-    setIsUpComingPressed(!isUpComingPressed);
+    setIsUpComingPressed(true);
     setIsPastPressed(false);
-    sessionEventHandler('Past');
+    sessionEventHandler('Upcoming');
   };
+
   const navigationHandler = (item: string) => {
     if (item === 'session-details') router.push('session-details');
     else if (item === 'team-season') router.push('team-season');
@@ -50,82 +72,116 @@ export default function Sessions() {
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="ml-6">
-          <Text className="my-3  text-2xl">Next Session</Text>
+          <Text style={(typography.style.heading, { color: charcoal[700] })}>
+            Current Session
+          </Text>
         </View>
-        <View className="mx-6  rounded-sm bg-[#EEF0F8]">
-          <FlatList
-            data={sessionSingleData}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <SessionsIndex item={item} />}
-            contentContainerStyle={{
-              paddingVertical: 8,
-            }}
-          />
+
+        <View className="mx-6 rounded-sm ">
+          <>
+            {isLoadingAllSessions ? (
+              <View className="mt-5">
+                <ActivityIndicator size="small" color={'#000000'} />
+              </View>
+            ) : currentSessions && currentSessions.length > 0 ? ( // Check if currentSessions exist and are not empty
+              <FlatList
+                data={currentSessions}
+                keyExtractor={(item) => item.SessionId}
+                renderItem={({ item }) => <SessionsIndex item={item} />}
+                contentContainerStyle={{
+                  paddingVertical: 8,
+                }}
+              />
+            ) : (
+              // Show message when no sessions are available
+              <View className="my-10 items-center justify-center">
+                <Text>No Current Session Available</Text>
+              </View>
+            )}
+          </>
         </View>
-        <View className="ml-6 w-[90%]  flex-row justify-between ">
+
+        <View className="ml-6 mt-4 w-[90%] flex-row justify-between">
           <Pressable
-            className="w-[45%] justify-center  "
-            onPress={() => {
-              pastHandlePress();
-            }}
+            className="w-[50%] items-center justify-center"
+            onPress={upcomingHandlePress}
             style={{
-              borderColor: isPastPressed ? '#004680' : 'null',
-              borderBottomWidth: isPastPressed ? 2 : 0,
-            }}
-          >
-            <Text className="my-3 self-center font-robotoBlackItalic text-xl text-[#004680]">
-              Upcoming
-            </Text>
-          </Pressable>
-          <Pressable
-            className="w-[45%]  justify-center "
-            onPress={() => {
-              upcomingHandlePress();
-            }}
-            style={{
-              borderColor: isUpComingPressed ? '#004680' : 'null',
+              borderColor: isUpComingPressed ? primary[700] : 'null',
               borderBottomWidth: isUpComingPressed ? 2 : 0,
             }}
           >
-            <Text className="my-3 self-center font-sFDISPLAYREGULAR text-xl text-[#004680] ">
+            <Text
+              style={typography.style.XXLHeading}
+              className="text-primary-700"
+            >
+              Upcoming
+            </Text>
+          </Pressable>
+
+          <Pressable
+            className="w-[50%] items-center justify-center"
+            onPress={pastHandlePress}
+            style={{
+              borderColor: isPastPressed ? primary[700] : 'null',
+              borderBottomWidth: isPastPressed ? 2 : 0,
+            }}
+          >
+            <Text
+              style={typography.style.XXLHeading}
+              className="text-primary-700"
+            >
               Past
             </Text>
           </Pressable>
         </View>
 
         {sessionEvents === 'Past' && (
-          <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlatList
-              data={pastSessionData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <PastSession item={item} />}
-              contentContainerStyle={{
-                paddingVertical: 8,
-              }}
-            />
-          </View>
+          <>
+            {isLoadingAllSessions ? (
+              <View className="mt-20">
+                <ActivityIndicator size="small" color={'#000000'} />
+              </View>
+            ) : (
+              <View className="mx-6 flex-1 rounded-sm ">
+                <FlatList
+                  data={pastSession}
+                  keyExtractor={(item) => item.SessionId}
+                  renderItem={({ item }) => <PastSession item={item} />}
+                  contentContainerStyle={{ paddingVertical: 8 }}
+                />
+              </View>
+            )}
+          </>
         )}
-        {sessionEvents === 'UpComing' && (
-          <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-            <FlatList
-              data={pastSessionData}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={({ item }) => <UpComingSession item={item} />}
-              contentContainerStyle={{
-                paddingVertical: 8,
-              }}
-            />
-          </View>
+
+        {sessionEvents === 'Upcoming' && (
+          <>
+            {isLoadingAllSessions ? (
+              <View className="mt-20">
+                <ActivityIndicator size="small" color={'#000000'} />
+              </View>
+            ) : (
+              <View className="mx-6 flex-1 rounded-sm ">
+                <FlatList
+                  data={upComingSession}
+                  keyExtractor={(item) => item.SessionId}
+                  renderItem={({ item }) => <UpComingSession item={item} />}
+                  contentContainerStyle={{ paddingVertical: 8 }}
+                />
+              </View>
+            )}
+          </>
         )}
       </ScrollView>
+
       <AntDesign
         name="pluscircle"
-        size={45}
+        size={typography.iconSizes.xxl}
         color="#004680"
         style={{
           position: 'absolute',
-          bottom: 20, // Adjust the distance from the bottom
-          right: 20, // Adjust the distance from the right
+          bottom: 20,
+          right: 20,
         }}
         onPress={() => navigationHandler('create-session')}
       />

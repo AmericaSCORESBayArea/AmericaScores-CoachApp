@@ -1,6 +1,12 @@
 /* eslint-disable react-native/no-inline-styles */
 /* eslint-disable react/no-unstable-nested-components */
-import { View, Text, TouchableOpacity, FlatList } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
 import React, { useEffect } from 'react';
 import { useNavigation } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
@@ -15,8 +21,17 @@ import PastTask from '@/components/sessionDetails/past-task';
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
 
+import { useSelector } from 'react-redux';
+import type { RootState } from '@/redux/store';
+
 const SessionDetails = () => {
   const navigation = useNavigation();
+  const currentSessions = useSelector(
+    (state: RootState) => state.allSessions.currentSessions
+  );
+  const isLoadingAllSessions = useSelector(
+    (state: RootState) => state.allSessions.isLoadingAllSessions
+  );
 
   useEffect(() => {
     navigation.setOptions({
@@ -35,14 +50,27 @@ const SessionDetails = () => {
     <>
       <ScrollView className="flex-1 bg-[#EEF0F8]">
         <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
-          <FlatList
-            data={sessionSingleData}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <SessionsIndex item={item} />}
-            contentContainerStyle={{
-              paddingVertical: 8,
-            }}
-          />
+          <>
+            {isLoadingAllSessions ? (
+              <View className="mt-5">
+                <ActivityIndicator size="small" color={'#000000'} />
+              </View>
+            ) : currentSessions && currentSessions.length > 0 ? ( // Check if currentSessions exist and are not empty
+              <FlatList
+                data={currentSessions}
+                keyExtractor={(item) => item.SessionId}
+                renderItem={({ item }) => <SessionsIndex item={item} />}
+                contentContainerStyle={{
+                  paddingVertical: 8,
+                }}
+              />
+            ) : (
+              // Show message when no sessions are available
+              <View className="my-10 items-center justify-center">
+                <Text>No Current Session Available</Text>
+              </View>
+            )}
+          </>
         </View>
 
         <View className="ml-6">
