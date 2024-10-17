@@ -65,7 +65,7 @@ export const brandEndpoints = apiSlice
         { SessionDate: string; SessionTopic: string; TeamSeasonId: string }
       >({
         query: (newSession) => {
-          console.log('newSession : ', newSession);
+          // console.log('newSession : ', newSession);
 
           return {
             url: EndpointPaths.COACH_SESSIONS,
@@ -123,7 +123,7 @@ export const brandEndpoints = apiSlice
         }
       >({
         query: ({ SessionId, ...sessionPatch }) => {
-          console.log('PatchSessionsId: ', SessionId, sessionPatch);
+          // console.log('PatchSessionsId: ', SessionId, sessionPatch);
 
           return {
             url: `${EndpointPaths.COACH_SESSIONS}/${SessionId}`,

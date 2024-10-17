@@ -21,7 +21,7 @@ export async function setItem<T>(key: string, value: T): Promise<void> {
 export async function removeItem(key: string): Promise<void> {
   try {
     await AsyncStorage.removeItem(key);
-    console.log(`Item with key "${key}" removed successfully.`);
+    // console.log(`Item with key "${key}" removed successfully.`);
   } catch (error) {
     console.error(`Error removing item with key "${key}":`, error);
   }

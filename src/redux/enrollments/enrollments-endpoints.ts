@@ -60,7 +60,7 @@ export const brandEndpoints = apiSlice
         }
       >({
         query: (newEnrollment) => {
-          console.log('newEnrollment: ', newEnrollment);
+          // console.log('newEnrollment: ', newEnrollment);
 
           return {
             url: EndpointPaths.COACH_ENROLLMENTS,
@@ -128,7 +128,7 @@ export const brandEndpoints = apiSlice
         }
       >({
         query: ({ EnrollmentId, ...enrollmentPatch }) => {
-          console.log('PatchSessionsId: ', EnrollmentId, enrollmentPatch);
+          // console.log('PatchSessionsId: ', EnrollmentId, enrollmentPatch);
 
           return {
             url: `${EndpointPaths.COACH_ENROLLMENTS}/${EnrollmentId}`,
@@ -140,7 +140,7 @@ export const brandEndpoints = apiSlice
         },
 
         transformResponse: (response: PatchEnrollmentsId) => {
-          console.log('res : ', response);
+          // console.log('res : ', response);
 
           return PatchEnrollmentsIdSerializer(response);
         },

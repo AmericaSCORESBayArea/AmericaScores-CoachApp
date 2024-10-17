@@ -1,5 +1,5 @@
 /* eslint-disable radix */
-/* eslint-disable @typescript-eslint/no-shadow */
+
 import { View, Text, Pressable } from 'react-native';
 import React, { useEffect } from 'react';
 import { useRouter } from 'expo-router';
@@ -12,9 +12,13 @@ import { format, parseISO } from 'date-fns';
 
 interface SessionProps {
   item: GetAllSessions;
+  isNavigationAllowed?: boolean;
 }
 
-const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
+const SessionsIndex: React.FC<SessionProps> = ({
+  item,
+  isNavigationAllowed = true,
+}) => {
   const router = useRouter();
 
   // Fallback for missing SessionStartTime
@@ -40,11 +44,9 @@ const SessionsIndex: React.FC<SessionProps> = ({ item }) => {
     : 'No Date Available';
 
   // Navigation handler
-  const navigationHandler = (item: string) => {
-    if (item === 'session-details') {
-      router.push('session-details');
-    } else if (item === 'team-season') {
-      router.push('team-season');
+  const navigationHandler = (route: string) => {
+    if (isNavigationAllowed) {
+      router.push(route);
     }
   };
 

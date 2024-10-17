@@ -2,10 +2,10 @@ import { Checkbox, CheckboxIcon, colors } from '@/ui'; // Ensure this is the cor
 import React, { useState } from 'react';
 import { Text, View } from 'react-native';
 
-import { TakeAttendenceSVG } from '@/ui/icons/take-attendence';
 import { RecordVideoSVG } from '@/ui/icons/record-video';
 import { RecordPacerSVG } from '@/ui/icons/record-pacer';
 import typography from '@/metrics/typography';
+import { TakeAttendanceSVG } from '@/ui/icons/take-attendance';
 
 interface CreateSessionTaskType {
   id: number;
@@ -42,7 +42,7 @@ const CreateSessionTask: React.FC<CreateSessionTaskProps> = ({
       >
         <Checkbox.Icon checked={checked} />
         {item.icon === 'TakeAttendence' && (
-          <TakeAttendenceSVG
+          <TakeAttendanceSVG
             height={typography.iconSizes.md}
             width={typography.iconSizes.md}
           />

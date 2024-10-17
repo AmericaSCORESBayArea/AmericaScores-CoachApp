@@ -21,7 +21,7 @@ export const getStudent = createQuery<Response, Variables, AxiosError>({
     const response = await client.get(
       '/003U8000008dKdNIAU/teamseasons/a0qHs00000BvrIUIAZ/sessions/a0pHs00000TqrmUIAR/assessments'
     );
-    console.log('response', response);
+    // console.log('response', response);
     return response.data;
   },
 });

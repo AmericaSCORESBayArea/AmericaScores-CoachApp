@@ -12,7 +12,7 @@ interface AttendenceSubmitProps {
   item: AttendenceSubmitType;
 }
 
-const TakeAttendenceSubmitBtn: React.FC<AttendenceSubmitProps> = ({ item }) => {
+const TakeAttendanceSubmitBtn: React.FC<AttendenceSubmitProps> = ({ item }) => {
   const [
     patchCoachAttendance,
     { isLoading: isLoadingUpdateSession, error: isErrorUpdateSession },
@@ -33,7 +33,7 @@ const TakeAttendenceSubmitBtn: React.FC<AttendenceSubmitProps> = ({ item }) => {
         attendancePatchData, // Pass the constructed attendance patch data
       }).unwrap();
 
-      console.log('Attendance updated successfully:', response);
+      // console.log('Attendance updated successfully:', response);
       router.push('/');
     } catch (err) {
       console.error('Failed to update attendance:', err);
@@ -66,4 +66,4 @@ const TakeAttendenceSubmitBtn: React.FC<AttendenceSubmitProps> = ({ item }) => {
   );
 };
 
-export default TakeAttendenceSubmitBtn;
+export default TakeAttendanceSubmitBtn;

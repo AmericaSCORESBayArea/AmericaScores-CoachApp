@@ -59,7 +59,9 @@ const SessionDetails = () => {
               <FlatList
                 data={currentSessions}
                 keyExtractor={(item) => item.SessionId}
-                renderItem={({ item }) => <SessionsIndex item={item} />}
+                renderItem={({ item }) => (
+                  <SessionsIndex item={item} isNavigationAllowed={false} />
+                )}
                 contentContainerStyle={{
                   paddingVertical: 8,
                 }}

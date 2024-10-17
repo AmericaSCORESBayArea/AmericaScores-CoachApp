@@ -114,7 +114,7 @@ const LoginForm = () => {
       setLoading(true);
       const userCredential = await confirm.confirm(code);
       if (userCredential && userCredential.user) {
-        console.log('user', userCredential.user);
+        // console.log('user', userCredential.user);
         router.push('/');
       }
     } catch (error) {

@@ -4,7 +4,7 @@ import Svg, { G, Path } from 'react-native-svg';
 
 import colors from '../colors';
 
-export const TakeAttendenceSVG = ({
+export const TakeAttendanceSVG = ({
   color = colors.neutral[500],
   ...props
 }: SvgProps) => (

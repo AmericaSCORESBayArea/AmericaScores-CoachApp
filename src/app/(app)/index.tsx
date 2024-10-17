@@ -127,7 +127,7 @@ export default function Feed() {
       };
 
       const response = await createCoachSession(sessionData).unwrap();
-      console.log('response :', response);
+      // console.log('response :', response);
     } catch (err) {
       console.error('Failed to create session:', err);
     }
@@ -151,7 +151,7 @@ export default function Feed() {
       };
 
       const response = await updateCoachSession(sessionPatchData).unwrap();
-      console.log('Updated session response: ', response);
+      // console.log('Updated session response: ', response);
     } catch (err) {
       console.error('Failed to update session:', err);
     }
@@ -165,7 +165,7 @@ export default function Feed() {
   const handleDeleteSession = async (SessionId: string) => {
     try {
       const response = await deleteCoachSession({ SessionId }).unwrap();
-      console.log(response, 'Session deleted successfully');
+      // console.log(response, 'Session deleted successfully');
     } catch (err) {
       console.error('Failed to delete session:', err);
     }
@@ -194,7 +194,7 @@ export default function Feed() {
   const handleDeleteEnrollments = async (EnrollmentId: string) => {
     try {
       const response = await deleteCoachEnrollments({ EnrollmentId }).unwrap();
-      console.log(response, 'Enrollments deleted successfully');
+      // console.log(response, 'Enrollments deleted successfully');
     } catch (err) {
       console.error('Failed to delete Enrollments:', err);
     }
@@ -216,7 +216,7 @@ export default function Feed() {
       const response = await updateCoachEnrollments(
         EnrollmentPatchData
       ).unwrap();
-      console.log('Updated enrollment response: ', response);
+      // console.log('Updated enrollment response: ', response);
     } catch (err) {
       console.error('Failed to update enrollment:', err);
     }
@@ -239,7 +239,7 @@ export default function Feed() {
         attendanceData, // Directly pass the array of attendance data
       }).unwrap();
 
-      console.log('Attendance submitted successfully:', response);
+      // console.log('Attendance submitted successfully:', response);
     } catch (err) {
       console.error('Failed to submit attendance:', err);
     }
@@ -264,7 +264,7 @@ export default function Feed() {
         attendancePatchData,
       }).unwrap();
 
-      console.log('Attendance updated successfully:', response);
+      // console.log('Attendance updated successfully:', response);
     } catch (err) {
       console.error('Failed to update attendance:', err);
     }
@@ -443,19 +443,19 @@ export default function Feed() {
         // Log the session date and today's date for comparison
 
         if (sessionDateString === todayString) {
-          console.log(
-            `Session Date: ${sessionDateString}, Today's Date: ${todayString}`
-          );
+          // console.log(
+          //   `Session Date: ${sessionDateString}, Today's Date: ${todayString}`
+          // );
           // console.log('dateee Sessions : ', session);
           // Check if the session is currently ongoing
-          console.log('currentTime : ', currentTime);
-          console.log('sessionStartTime : ', sessionStartTime);
+          // console.log('currentTime : ', currentTime);
+          // console.log('sessionStartTime : ', sessionStartTime);
 
           if (
             (sessionStartTime <= currentTime && sessionEndTime > currentTime) ||
             sessionStartTime === 0
           ) {
-            console.log('current Sessions : ', session);
+            // console.log('current Sessions : ', session);
             currentSessions.push(session); // Add to current sessions if the session is ongoing
           }
         } else if (sessionDate > today) {

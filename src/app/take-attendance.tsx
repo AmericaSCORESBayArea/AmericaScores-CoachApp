@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import CheckAttendence from '@/components/attendence/check-attendence';
 import { sessionSingleData, takeAttendence } from '@/data/data-base';
 import { ScrollView, TouchableOpacity, View, Text } from '@/ui';
-import TakeAttendenceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
+
 import SessionsIndex from '@/components/common/sessionsIndex';
 import { ActivityIndicator, FlatList } from 'react-native';
 import { ArrowBackwardSVG } from '@/ui/icons/arrow-backward';
@@ -16,6 +16,7 @@ import { GetAttendanceAdapter } from '@/api/adaptars/attendance/attendance-adapt
 import type { GetAttendance } from '@/interfaces/entities/attendance/attendance-entities';
 import type { RootState } from '@/redux/store';
 import { useSelector } from 'react-redux';
+import TakeAttendanceSubmitBtn from '@/components/buttons/Attendence/take-attendence-submit-btn';
 
 const TakeAttendence = () => {
   const navigation = useNavigation();
@@ -79,7 +80,9 @@ const TakeAttendence = () => {
             <FlatList
               data={currentSessions}
               keyExtractor={(item) => item.SessionId}
-              renderItem={({ item }) => <SessionsIndex item={item} />}
+              renderItem={({ item }) => (
+                <SessionsIndex item={item} isNavigationAllowed={false} />
+              )}
               contentContainerStyle={{
                 paddingVertical: 8,
               }}
@@ -108,7 +111,7 @@ const TakeAttendence = () => {
           }}
         />
       </View>
-      <TakeAttendenceSubmitBtn
+      <TakeAttendanceSubmitBtn
         item={{ attendenceCount, studentAttendanceMark }} // Use the correct property name
       />
     </ScrollView>

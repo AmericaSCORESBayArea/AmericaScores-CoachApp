@@ -166,7 +166,7 @@ export const toDoTaskData: toDoTaskType[] = [
     id: 1,
     title: 'Take Attendence',
     date: '12/08/24',
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
 ];
 export const pastTaskData: pastTaskType[] = [
@@ -174,13 +174,13 @@ export const pastTaskData: pastTaskType[] = [
     id: 1,
     title: 'Record a Video',
     date: '12/08/24',
-    navigation: 'take-attendence',
+    navigation: 'record-video',
   },
   {
     id: 2,
     title: 'Record Pacer Score',
     date: '12/08/24',
-    navigation: 'take-attendence',
+    navigation: 'record-pacer-score',
   },
 ];
 export const sessionData: sessionType[] = [
@@ -188,7 +188,7 @@ export const sessionData: sessionType[] = [
     id: 1,
     title: 'Take Attendance',
 
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -210,7 +210,7 @@ export const upComingSeasonSessionData: upComingSeasonSessionType[] = [
     location: 'Albhany High',
     time: 'Today, 12:00 PM',
     hobby: ['Soccer', 'Poetry'],
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -229,7 +229,7 @@ export const pastSeasonSessionData: pastSeasonSessionType[] = [
     time: 'Today, 12:00 PM',
     attendence: '12/24',
     hobby: ['Soccer', 'Poetry'],
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -295,7 +295,7 @@ export const soonTaskData: soonTaskType[] = [
     title: 'Take Attendance',
     location: 'Albhany High',
     date: '2024/08/12',
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -326,7 +326,7 @@ export const weekTaskData: weekTaskType[] = [
     title: 'Take Attendance',
     location: 'Albhany High',
     date: '2024/08/12',
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -357,7 +357,7 @@ export const laterTaskData: laterTaskType[] = [
     title: 'Take Attendance',
     location: 'Albhany High',
     date: '2024/08/12',
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -390,7 +390,7 @@ export const pastSessionData: pastSessionType[] = [
     time: 'Today, 12:00 PM',
     attendence: '12/24',
     hobby: ['Soccer', 'Poetry'],
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,
@@ -429,7 +429,7 @@ export const upComingSessionData: upComingSessionType[] = [
     time: 'Today, 12:00 PM',
     attendence: '12/24',
     hobby: ['Soccer', 'Poetry'],
-    navigation: 'take-attendence',
+    navigation: 'take-attendance',
   },
   {
     id: 2,

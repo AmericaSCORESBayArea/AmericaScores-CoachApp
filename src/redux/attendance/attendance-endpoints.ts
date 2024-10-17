@@ -57,7 +57,7 @@ export const brandEndpoints = apiSlice
         }
       >({
         query: ({ TeamSeasonId, SessionId, attendanceData }) => {
-          console.log('attendanceData : ', attendanceData);
+          // console.log('attendanceData : ', attendanceData);
 
           return {
             url: `${EndpointPaths.COACH_ATTENDANCES}/teamseasons/${TeamSeasonId}/sessions/${SessionId}/attendances`, // Construct URL with TeamSeasonId and SessionId

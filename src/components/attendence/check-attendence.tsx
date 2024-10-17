@@ -26,7 +26,7 @@ const CheckAttendence: React.FC<TakeAttendenceProps> = ({
       const newChecked = !prevChecked; // Toggle checked state
 
       // Always increase attendance count when checked
-      console.log('newCheck :  ', newChecked);
+      // console.log('newCheck :  ', newChecked);
 
       if (newChecked || !newChecked) {
         setAttendenceCount((prevCount) => prevCount + 1); // Increase count
@@ -55,8 +55,8 @@ const CheckAttendence: React.FC<TakeAttendenceProps> = ({
     });
   };
 
-  console.log('Item Attended: ', item.Attended);
-  console.log('Checked state: ', checked);
+  // console.log('Item Attended: ', item.Attended);
+  // console.log('Checked state: ', checked);
 
   return (
     <View className="w-full rounded-sm bg-white p-4">
