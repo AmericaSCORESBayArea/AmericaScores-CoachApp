@@ -427,9 +427,18 @@ export default function Feed() {
         const sessionDate = new Date(session.SessionDate);
         const sessionDateString = sessionDate.toISOString().split('T')[0]; // Format session date to YYYY-MM-DD
 
-        // Parse the session start and end time
-        const sessionStartTime = new Date(session.SessionStartTime).getTime();
-        const sessionEndTime = new Date(session.SessionEndTime).getTime();
+        // Function to safely parse a time if it's not an empty string
+        const parseSessionTime = (time: string) => {
+          if (time) {
+            return new Date(time).getTime();
+          }
+          return null; // or handle it as you need (e.g., return 0 or another default value)
+        };
+
+        // Parse the session start and end time safely
+        const sessionStartTime =
+          parseSessionTime(session.SessionStartTime) ?? 0; // Default to 0 if null
+        const sessionEndTime = parseSessionTime(session.SessionEndTime) ?? 0; // Default to 0 if null
 
         // Log the session date and today's date for comparison
 
@@ -442,7 +451,10 @@ export default function Feed() {
           console.log('currentTime : ', currentTime);
           console.log('sessionStartTime : ', sessionStartTime);
 
-          if (sessionStartTime <= currentTime && sessionEndTime > currentTime) {
+          if (
+            (sessionStartTime <= currentTime && sessionEndTime > currentTime) ||
+            sessionStartTime === 0
+          ) {
             console.log('current Sessions : ', session);
             currentSessions.push(session); // Add to current sessions if the session is ongoing
           }
@@ -569,7 +581,7 @@ export default function Feed() {
               />
 
               {/* Home Task Section */}
-              <View className="mx-6 flex-1 rounded-sm bg-[#EEF0F8]">
+              <View className=" flex-1 rounded-sm bg-[#EEF0F8]">
                 <FlatList
                   data={sessionData}
                   keyExtractor={(item) => item.id.toString()}
